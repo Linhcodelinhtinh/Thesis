@@ -1,0 +1,98 @@
+# Official Model Manifest: SmolVLA-LIBERO
+# Provenance: https://huggingface.co/lerobot/smolvla_libero
+# Pinned Commit Hash: 31d453f7edd78c839a8bbc39744a292686daf0de
+# Framework: lerobot==0.6.1, torch>=2.2.0, transformers>=4.40.0
+# License: Apache-2.0
+
+model_id: "lerobot/smolvla_libero"
+repository: "https://huggingface.co/lerobot/smolvla_libero"
+revision: "31d453f7edd78c839a8bbc39744a292686daf0de"
+commit_url: "https://huggingface.co/lerobot/smolvla_libero/commit/31d453f7edd78c839a8bbc39744a292686daf0de"
+checkpoint: "lerobot/smolvla_libero"
+lerobot_version: "0.6.1"
+
+# Cryptographic File Inventory (SHA-256 and Sizes)
+files:
+  model.safetensors:
+    sha256: "9a9f6413e42c0f332fccbce9a0dc796af2790f82cf002f791cdbf7e01e1afca8"
+    size_bytes: 906712520
+  config.json:
+    sha256: "5c9f3ba9f5f37ea7024c9501b0b20b1941f232989c2167853cb46d9071a70dd7"
+    size_bytes: 2419
+  policy_preprocessor.json:
+    sha256: "122ec5106602b1bf129f49690d05ab2f49748a0ac6119de55ea0677d4e90d248"
+    size_bytes: 2042
+  policy_preprocessor_step_5_normalizer_processor.safetensors:
+    sha256: "b0cdde6e8a6f49a8e19eefb376728e47c09d3b3cc20ce3a97c45619fe7a732d9"
+    size_bytes: 5676
+  policy_postprocessor.json:
+    sha256: "3b51f092c70c710ce0213ee1b63bf51b4878ec67828dd2d67daf9ef51081a41a"
+    size_bytes: 660
+  policy_postprocessor_step_0_unnormalizer_processor.safetensors:
+    sha256: "b0cdde6e8a6f49a8e19eefb376728e47c09d3b3cc20ce3a97c45619fe7a732d9"
+    size_bytes: 5676
+
+action_dim: 7
+chunk_size: 50
+n_action_steps: 50
+image_resolution: [256, 256]
+
+camera_mapping:
+  agentview: "observation.images.camera1"
+  robot0_eye_in_hand: "observation.images.camera2"
+
+state_inputs:
+  shape: [6]
+  type: "STATE"
+  semantics: ["eef_pos_x", "eef_pos_y", "eef_pos_z", "eef_axis_x", "eef_axis_y", "eef_axis_z"]
+
+processor_pipeline:
+  preprocessor_steps:
+    - step: 0
+      name: "RenameObservationsProcessorStep"
+      mapping: {"observation.images.image": "observation.images.camera1", "observation.images.image2": "observation.images.camera2"}
+    - step: 1
+      name: "AddBatchDimensionProcessorStep"
+    - step: 2
+      name: "NewLineTaskProcessorStep"
+    - step: 3
+      name: "TokenizerProcessorStep"
+    - step: 4
+      name: "DeviceProcessorStep"
+    - step: 5
+      name: "NormalizerProcessorStep"
+      source_file: "policy_preprocessor_step_5_normalizer_processor.safetensors"
+  postprocessor_steps:
+    - step: 0
+      name: "UnnormalizerProcessorStep"
+      source_file: "policy_postprocessor_step_0_unnormalizer_processor.safetensors"
+    - step: 1
+      name: "DeviceProcessorStep"
+
+normalization:
+  VISUAL: "IDENTITY"
+  STATE: "MEAN_STD"
+  ACTION: "MEAN_STD"
+
+action_semantics:
+  - "dx"
+  - "dy"
+  - "dz"
+  - "droll"
+  - "dpitch"
+  - "dyaw"
+  - "gripper"
+
+action_range: [-1.0, 1.0]
+action_decoder: "flow_matching"
+
+hardware_requirements:
+  recommended_gpu: "NVIDIA RTX 4060 (8GB VRAM) or higher"
+  dtype: "float32 / bfloat16"
+  min_ram_gb: 16
+
+metadata_notes: >
+  DISCREPANCY AUDIT: config.json declares observation.images.camera3, but official
+  policy_preprocessor.json only renames image -> camera1 and image2 -> camera2.
+  In actual LIBERO benchmark training, only agentview and eye_in_hand are utilized.
+  camera3 is unused and omitted in evaluation observations.

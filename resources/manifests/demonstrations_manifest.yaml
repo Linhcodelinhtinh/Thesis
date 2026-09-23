@@ -1,0 +1,19 @@
+# Cryptographic Provenance Manifest for Official LIBERO Demonstrations
+# Generated per RESOURCE_POLICY.md and SRS.md (Level 1 Benchmark Resource)
+
+schema_version: "1.0.0"
+source_repository: "https://huggingface.co/datasets/yifengzhu-hf/LIBERO-datasets"
+upstream_commit_or_tag: "main"
+download_timestamp: "2026-09-23T08:16:18Z"
+
+demonstrations:
+  - task_suite: "libero_object"
+    task_name: "pick_up_the_alphabet_soup_and_place_it_in_the_basket"
+    relative_path: "resources/demonstrations/libero_object/pick_up_the_alphabet_soup_and_place_it_in_the_basket_demo.hdf5"
+    upstream_url: "https://huggingface.co/datasets/yifengzhu-hf/LIBERO-datasets/resolve/main/libero_object/pick_up_the_alphabet_soup_and_place_it_in_the_basket_demo.hdf5"
+    sha256: "42189d4415d4c51aaaf0708300653fccc39239cd3f2709079a713cd8d1678a8d"
+    file_size_bytes: 780181352
+    num_demos: 50
+    state_dim: 110
+    action_dim: 7
+    format: "hdf5"

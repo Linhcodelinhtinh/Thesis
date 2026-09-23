@@ -1,0 +1,34 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pytest
+.pytest_cache/
+
+# Virtual Environments
+.venv*/
+venv/
+ENV/
+
+# Large binaries & model weights
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.onnx
+
+# Datasets and demonstrations (downloaded on demand)
+resources/demonstrations/**/*.hdf5
+resources/demonstrations/.cache/
+
+# Experiment artifacts and videos
+experiments/results/
+*.mp4
+*.avi
+*.webm
+
+# OS files
+.DS_Store
+Thumbs.db
