@@ -1,0 +1,64 @@
+manifest_version: 1.0.0
+benchmark: libero_object
+libero_commit: 8f1084e3132a39270c3a13ebe37270a43ece2a01
+tasks:
+  pick_up_the_alphabet_soup_and_place_it_in_the_basket:
+    bddl_file: pick_up_the_alphabet_soup_and_place_it_in_the_basket.bddl
+    bddl_sha256: df088984da13131f8332ee0f13a7896c6a97afd02ee5007a42e8fc5e0893571e
+    init_file: pick_up_the_alphabet_soup_and_place_it_in_the_basket.init
+    init_sha256: b9023e5546b239cacb2aaa3c76df3b73c3de6f97500fea5e27a0db9827002a19
+    pruned_init_sha256: b9023e5546b239cacb2aaa3c76df3b73c3de6f97500fea5e27a0db9827002a19
+  pick_up_the_bbq_sauce_and_place_it_in_the_basket:
+    bddl_file: pick_up_the_bbq_sauce_and_place_it_in_the_basket.bddl
+    bddl_sha256: 8a7e37b76fce5621e649e260dbcfcec7ce2f9a055ca09a4f1ebaf5ca74a739c2
+    init_file: pick_up_the_bbq_sauce_and_place_it_in_the_basket.init
+    init_sha256: c524077b0c23006f28fc06760a5b5ab37eee67287b5329e84a34b0a8bd599b4a
+    pruned_init_sha256: c524077b0c23006f28fc06760a5b5ab37eee67287b5329e84a34b0a8bd599b4a
+  pick_up_the_butter_and_place_it_in_the_basket:
+    bddl_file: pick_up_the_butter_and_place_it_in_the_basket.bddl
+    bddl_sha256: 5d8053b40ff33246fdbcc38548db84032c6bb647b4b88b6646d9cf6b73a5006c
+    init_file: pick_up_the_butter_and_place_it_in_the_basket.init
+    init_sha256: f0925a8653c5902c5a4d78a2053365382ad7d05be7f059abe19c2004ffc5dc59
+    pruned_init_sha256: f0925a8653c5902c5a4d78a2053365382ad7d05be7f059abe19c2004ffc5dc59
+  pick_up_the_chocolate_pudding_and_place_it_in_the_basket:
+    bddl_file: pick_up_the_chocolate_pudding_and_place_it_in_the_basket.bddl
+    bddl_sha256: 674ceabc400b7b16d46e8eaf678709d4a633235c7e0a80233775044fe38b19b0
+    init_file: pick_up_the_chocolate_pudding_and_place_it_in_the_basket.init
+    init_sha256: 1124189363e76609da182dd92217cd02c41be58e88c42e3949d23ba160da75a5
+    pruned_init_sha256: 1124189363e76609da182dd92217cd02c41be58e88c42e3949d23ba160da75a5
+  pick_up_the_cream_cheese_and_place_it_in_the_basket:
+    bddl_file: pick_up_the_cream_cheese_and_place_it_in_the_basket.bddl
+    bddl_sha256: 7019f37ee158d67a21338a6df0c441dd8f84979b946b5e20bb49463ef0508ea2
+    init_file: pick_up_the_cream_cheese_and_place_it_in_the_basket.init
+    init_sha256: 5ea5483bca8abd80a8f1935e2c60570d60eaaf6a985c283d62805b46fb76aa94
+    pruned_init_sha256: 5ea5483bca8abd80a8f1935e2c60570d60eaaf6a985c283d62805b46fb76aa94
+  pick_up_the_ketchup_and_place_it_in_the_basket:
+    bddl_file: pick_up_the_ketchup_and_place_it_in_the_basket.bddl
+    bddl_sha256: 4a4e545483a3fe30cf0ef3dc05bfe5e6ad5e37c94b4376dfa73fe1b60e75b319
+    init_file: pick_up_the_ketchup_and_place_it_in_the_basket.init
+    init_sha256: b987f7b11e8f9b47353cd7882e1da38ecdf6ec9715ad8a84346583ea71049fd3
+    pruned_init_sha256: b987f7b11e8f9b47353cd7882e1da38ecdf6ec9715ad8a84346583ea71049fd3
+  pick_up_the_milk_and_place_it_in_the_basket:
+    bddl_file: pick_up_the_milk_and_place_it_in_the_basket.bddl
+    bddl_sha256: 9910aabf6717e8ba3e24a3f8500d9bce9ee075346ea6961e8fd766f1257d2996
+    init_file: pick_up_the_milk_and_place_it_in_the_basket.init
+    init_sha256: 4a86269faf4c98baff4c1428997ac828d00c56922a9a131be94e19b6027e1db2
+    pruned_init_sha256: 4a86269faf4c98baff4c1428997ac828d00c56922a9a131be94e19b6027e1db2
+  pick_up_the_orange_juice_and_place_it_in_the_basket:
+    bddl_file: pick_up_the_orange_juice_and_place_it_in_the_basket.bddl
+    bddl_sha256: 6298533e7bcfb83e40779a77fda39216e8cd53f22bf1af6388585dad0abb0b50
+    init_file: pick_up_the_orange_juice_and_place_it_in_the_basket.init
+    init_sha256: 35b19ffab1fe08c6457ebd732c37d04b9bc0d22b7ce7de015986092ddddea151
+    pruned_init_sha256: 35b19ffab1fe08c6457ebd732c37d04b9bc0d22b7ce7de015986092ddddea151
+  pick_up_the_salad_dressing_and_place_it_in_the_basket:
+    bddl_file: pick_up_the_salad_dressing_and_place_it_in_the_basket.bddl
+    bddl_sha256: 024978e9e8f43a49b49d0965f4f426d364ce056307f0fcf5733dc4682fac437a
+    init_file: pick_up_the_salad_dressing_and_place_it_in_the_basket.init
+    init_sha256: 6f6793ee550419a4a79dcb6ac83a9ba7bbf5e76e92fef26b82b6a7a10f72b04a
+    pruned_init_sha256: 6f6793ee550419a4a79dcb6ac83a9ba7bbf5e76e92fef26b82b6a7a10f72b04a
+  pick_up_the_tomato_sauce_and_place_it_in_the_basket:
+    bddl_file: pick_up_the_tomato_sauce_and_place_it_in_the_basket.bddl
+    bddl_sha256: b1f4bb69d256a05f693838de46182bb0d3de0de68eec350df1b5b1e76f6c136d
+    init_file: pick_up_the_tomato_sauce_and_place_it_in_the_basket.init
+    init_sha256: 2326da7ccacd3ebc75d80847f92d2e310b537b8dbbd8a76840a29b13f00f9a65
+    pruned_init_sha256: 2326da7ccacd3ebc75d80847f92d2e310b537b8dbbd8a76840a29b13f00f9a65

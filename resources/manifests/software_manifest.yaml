@@ -1,0 +1,50 @@
+manifest_version: "1.0"
+generated_at: "2026-09-22T15:32:00+07:00"
+
+core_dependencies:
+  libero:
+    repository: "https://github.com/Lifelong-Robot-Learning/LIBERO.git"
+    revision: "8f1084e3132a39270c3a13ebe37270a43ece2a01"
+    license: "MIT"
+    tier: "official"
+  robosuite:
+    version_baseline: "1.4.0"
+    version_host: "1.5.2"
+    license: "Apache-2.0"
+    tier: "official"
+  bddl:
+    version: "1.0.1"
+    license: "MIT"
+    tier: "official"
+  robomimic:
+    version_baseline: "0.2.0"
+    version_host: "0.3.0"
+    license: "MIT"
+    tier: "official"
+  mujoco:
+    version_baseline: "2.3.x"
+    version_host: "3.12.0"
+    license: "Apache-2.0"
+    tier: "official"
+
+isolated_environment_plans:
+  - id: "libero_reference"
+    spec: "envs/libero_reference.yml"
+    target: "LIBERO reproduction baseline (Mode A)"
+    python: "3.8.x"
+  - id: "smolvla"
+    spec: "envs/smolvla.yml"
+    target: "SmolVLA inference and evaluation"
+    python: "3.10.x"
+  - id: "minivla"
+    spec: "envs/minivla.yml"
+    target: "MiniVLA inference and evaluation"
+    python: "3.10.x"
+  - id: "training"
+    spec: "envs/training.yml"
+    target: "Model fine-tuning and training scripts"
+    python: "3.10.x"
+  - id: "research"
+    spec: "envs/research.yml"
+    target: "Data science, analysis, and plotting"
+    python: "3.10.x"

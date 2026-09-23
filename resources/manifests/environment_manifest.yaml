@@ -1,0 +1,47 @@
+benchmark_provenance:
+  benchmark_name: LIBERO
+  canonical_repository: https://github.com/Lifelong-Robot-Learning/LIBERO.git
+  pinned_commit: 8f1084e3132a39270c3a13ebe37270a43ece2a01
+  pinned_date: "2025-03-15T12:13:56Z"
+  benchmark_tier: official
+  reference_specification:
+    python: "3.8.13"
+    robosuite: "1.4.0"
+    bddl: "1.0.1"
+    robomimic: "0.2.0"
+    numpy: "1.22.4"
+    gym: "0.25.2"
+    control_freq: 20
+    horizon: 1000
+    robot: "Panda"
+    controller: "OSC_POSE"
+    cameras:
+      - name: "agentview"
+        resolution: [128, 128]
+      - name: "robot0_eye_in_hand"
+        resolution: [128, 128]
+
+environments:
+  libero_reference_env:
+    name: "libero_reference"
+    spec_file: "envs/libero_reference.yml"
+    target_os: "Linux (Ubuntu via WSL2)"
+    python_version: "3.8.20"
+    robosuite_version: "1.4.0"
+    bddl_version: "1.0.1"
+    rendering_backend: "egl"
+    role: "Canonical Mode A (STRICT-LIBERO) baseline reference execution"
+
+  host_execution_env:
+    name: "host_windows"
+    target_os: "Windows 11 (AMD64)"
+    python_version: "3.12.2"
+    robosuite_version: "1.5.2"
+    mujoco_version: "3.12.0"
+    rendering_backend: "wgl"
+    hardware:
+      cpu: "AMD Ryzen 7 7840H"
+      gpu: "NVIDIA GeForce RTX 4060 Laptop GPU (8GB VRAM)"
+      driver: "571.96"
+      cuda: "12.8"
+    role: "Local diagnostic and development runner"
