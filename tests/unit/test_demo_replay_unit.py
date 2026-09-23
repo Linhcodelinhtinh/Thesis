@@ -83,3 +83,33 @@ def test_verify_hdf5_hash_and_manifest(tmp_path):
     with pytest.raises(ValueError, match="Cryptographic integrity check failed"):
         replayer.verify_hdf5_hash(manifest_file)
 
+
+def test_demonstrations_manifest_audit():
+    """Verify that the official demonstrations manifest has immutable commit and valid tier."""
+    import yaml
+
+    manifest_path = Path("resources/manifests/demonstrations_manifest.yaml")
+    assert manifest_path.exists(), "demonstrations_manifest.yaml missing"
+
+    with open(manifest_path, "r", encoding="utf-8") as f:
+        data = yaml.safe_load(f)
+
+    assert data.get("schema_version") == "1.0.0"
+    prov = data.get("benchmark_provenance", {})
+    assert "pinned_commit" in prov
+    pinned_commit = prov["pinned_commit"]
+    assert len(pinned_commit) == 40, f"pinned_commit must be full 40-character SHA, got: {pinned_commit}"
+    assert int(pinned_commit, 16) >= 0  # Valid hex
+
+    assert prov.get("classification_tier") in ["official", "author-released"]
+    assert "https://huggingface.co/datasets/yifengzhu-hf/LIBERO-datasets" in prov.get("canonical_source", "")
+
+    demos = data.get("demonstrations", [])
+    assert len(demos) >= 1
+    demo0 = demos[0]
+    assert demo0.get("sha256") == "42189d4415d4c51aaaf0708300653fccc39239cd3f2709079a713cd8d1678a8d"
+    assert demo0.get("file_size_bytes") == 780181352
+    assert demo0.get("num_demos") == 50
+    assert pinned_commit in demo0.get("upstream_url", "")
+
+
