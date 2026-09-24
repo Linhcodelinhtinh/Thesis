@@ -1,0 +1,27 @@
+{
+  "task_name": "libero_object_0",
+  "instruction": "pick up the alphabet soup and place it in the basket",
+  "execution_horizon_s": 10,
+  "num_steps": 1000,
+  "success": false,
+  "total_reward": 0.0,
+  "mean_inference_ms": 2382.56459600012,
+  "mean_simulation_ms": 20.27384840004015,
+  "action_shape": [
+    1000,
+    7
+  ],
+  "video_path": "experiments\\results\\raw_baseline\\libero_object_task0_s10_init0\\video.mp4",
+  "checkpoint": "resources/checkpoints/smolvla_libero",
+  "initial_state_id": 0,
+  "provenance": {
+    "mode": "STRICT-LIBERO",
+    "execution_tier": "HOST-SMOKE-ONLY (NON-COMPARABLE)",
+    "is_benchmark_comparable": false,
+    "is_official_reference_stack": false,
+    "python_version": "3.12.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "robosuite_version": "1.5.2",
+    "backend": "wgl"
+  }
+}

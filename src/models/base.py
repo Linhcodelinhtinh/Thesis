@@ -27,6 +27,12 @@ class VLAPolicy(ABC):
         self._action_queue: Deque[np.ndarray] = deque()
         self._last_chunk: Optional[np.ndarray] = None
         self._step_count: int = 0
+        self._is_loaded: bool = False
+
+    @property
+    def loaded(self) -> bool:
+        """Return True if the model and processors have been successfully loaded."""
+        return self._is_loaded
 
     @abstractmethod
     def load(self, checkpoint_path: str, **kwargs: Any) -> None:
