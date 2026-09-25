@@ -24,8 +24,8 @@ resources/demonstrations/**/*.hdf5
 resources/demonstrations/.cache/
 
 # Experiment artifacts and videos
-# experiments/results/
-# *.mp4
+experiments/results/
+*.mp4
 *.avi
 *.webm
 

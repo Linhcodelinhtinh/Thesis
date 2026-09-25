@@ -195,7 +195,9 @@ class DemonstrationReplayer:
                 if render:
                     frame = obs.get("agentview_image")
                     if frame is not None:
-                        rendered_frames.append(frame)
+                        # Robosuite OffScreenRenderEnv outputs raw OpenGL buffer which is vertically inverted.
+                        # Flip vertically (frame[::-1]) to match upright video convention (consistent with LiberoEnv.render).
+                        rendered_frames.append(frame[::-1])
 
                 if t < len(states) - 1:
                     replayed_state = env.sim.get_state().flatten()

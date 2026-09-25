@@ -132,8 +132,12 @@ class SmolVLAAdapter(VLAPolicy):
         raw_features: Dict[str, Any] = {}
 
         # 1. Images: Convert to channel-first float tensors (3, 256, 256)
+        # IMPORTANT: Rotate 180 degrees ([::-1, ::-1]) on both spatial axes to match
+        # the training data preprocessing convention established by the OpenVLA/LeRobot LIBERO pipeline.
+        # np.ascontiguousarray is required because negative slicing produces negative strides unsupported by PyTorch.
         if "agentview_image" in obs:
-            agentview_arr = _resize_rgb_image(obs["agentview_image"], (256, 256))
+            agentview_rotated = np.ascontiguousarray(obs["agentview_image"][::-1, ::-1])
+            agentview_arr = _resize_rgb_image(agentview_rotated, (256, 256))
             raw_features["observation.images.image"] = (
                 torch.from_numpy(agentview_arr).permute(2, 0, 1).float()
             )
@@ -143,7 +147,8 @@ class SmolVLAAdapter(VLAPolicy):
             raw_features["observation.images.image"] = obs["observation.images.camera1"]
 
         if "robot0_eye_in_hand_image" in obs:
-            wrist_arr = _resize_rgb_image(obs["robot0_eye_in_hand_image"], (256, 256))
+            wrist_rotated = np.ascontiguousarray(obs["robot0_eye_in_hand_image"][::-1, ::-1])
+            wrist_arr = _resize_rgb_image(wrist_rotated, (256, 256))
             raw_features["observation.images.image2"] = (
                 torch.from_numpy(wrist_arr).permute(2, 0, 1).float()
             )

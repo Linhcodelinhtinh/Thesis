@@ -143,3 +143,33 @@ def test_smolvla_adapter_mock_pipeline_execution():
     action_0 = adapter.select_action(sample_obs, "test task")
     assert action_0.shape == (7,)
     assert adapter.queue_size == 4
+
+
+def test_smolvla_adapter_image_180_rotation():
+    """Verify that agentview and wrist images are rotated 180 degrees ([::-1, ::-1])."""
+    adapter = SmolVLAAdapter()
+    
+    # Create an asymmetric 128x128 image with top-left pixel = 255 and rest 0
+    img = np.zeros((128, 128, 3), dtype=np.uint8)
+    img[0, 0, :] = 255  # Top-left corner
+    
+    sample_obs = {
+        "agentview_image": img.copy(),
+        "robot0_eye_in_hand_image": img.copy(),
+        "robot0_eef_pos": np.zeros(3, dtype=np.float32),
+        "robot0_eef_quat": np.array([0, 0, 0, 1], dtype=np.float32),
+        "robot0_gripper_qpos": np.array([0.02, -0.02], dtype=np.float32),
+    }
+
+    raw = adapter.build_raw_features(sample_obs, "test task")
+    
+    # In a 180-degree rotation, top-left pixel (0, 0) moves to bottom-right (255, 255)
+    cam1 = raw["observation.images.image"]  # (3, 256, 256)
+    cam2 = raw["observation.images.image2"]
+    
+    # Top-left should now be 0, and bottom-right should be non-zero (due to resize interpolation)
+    assert cam1[:, 0, 0].max().item() == 0.0
+    assert cam1[:, -1, -1].max().item() > 0.0
+    assert cam2[:, 0, 0].max().item() == 0.0
+    assert cam2[:, -1, -1].max().item() > 0.0
+

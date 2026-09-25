@@ -5,8 +5,8 @@
   "num_steps": 1000,
   "success": false,
   "total_reward": 0.0,
-  "mean_inference_ms": 2382.56459600012,
-  "mean_simulation_ms": 20.27384840004015,
+  "mean_inference_ms": 2448.295958000108,
+  "mean_simulation_ms": 21.21904389998417,
   "action_shape": [
     1000,
     7
