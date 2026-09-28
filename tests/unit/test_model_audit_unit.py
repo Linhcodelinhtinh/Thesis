@@ -82,9 +82,28 @@ def test_smolvla_manifest_audit():
     assert "agentview" in manifest.camera_mapping
     assert "robot0_eye_in_hand" in manifest.camera_mapping
 
+    # Observation state audit contract
+    assert manifest.observation_state is not None
+    assert manifest.observation_state["runtime_dim"] == 8
+    expected_semantics = [
+        "eef_pos_x",
+        "eef_pos_y",
+        "eef_pos_z",
+        "eef_axis_x",
+        "eef_axis_y",
+        "eef_axis_z",
+        "gripper_qpos_0",
+        "gripper_qpos_1",
+    ]
+    assert manifest.observation_state["semantics"] == expected_semantics
+    assert manifest.observation_state["source_of_truth"] == [
+        "policy_preprocessor_step_5_normalizer_processor.safetensors"
+    ]
+
     audit = audit_model_interface(manifest)
     assert audit["audit_status"] == "PASS"
     assert audit["is_valid"] is True
+    assert audit["observation_state"]["runtime_dim"] == 8
     # Verify immutable 40-char commit SHA
     assert manifest.revision == "31d453f7edd78c839a8bbc39744a292686daf0de"
     assert len(manifest.revision) == 40
@@ -93,6 +112,70 @@ def test_smolvla_manifest_audit():
     assert "policy_preprocessor.json" in manifest.files
     # Verify camera3 discrepancy was flagged in audit warnings
     assert any("camera3" in w for w in audit["warnings"])
+
+
+def test_normalizer_safetensors_8d_state_shapes():
+    """Verify that the official normalizer safetensors contains exact 8D observation.state statistics."""
+    from src.models.model_manifest import verify_normalizer_safetensors_shape
+    from pathlib import Path
+
+    safetensors_path = "resources/checkpoints/smolvla_libero/policy_preprocessor_step_5_normalizer_processor.safetensors"
+    res = verify_normalizer_safetensors_shape(safetensors_path, expected_dim=8)
+
+    assert res["status"] == "PASS"
+    assert res["is_valid"] is True
+    assert len(res["issues"]) == 0
+
+    # Ensure all core statistics are strictly 8-dimensional
+    assert res["state_tensors"]["observation.state.mean"] == (8,)
+    assert res["state_tensors"]["observation.state.std"] == (8,)
+    assert res["state_tensors"]["observation.state.min"] == (8,)
+    assert res["state_tensors"]["observation.state.max"] == (8,)
+    assert res["state_tensors"]["observation.state.q01"] == (8,)
+    assert res["state_tensors"]["observation.state.q99"] == (8,)
+
+
+def test_observation_state_audit_failures():
+    """Verify that invalid observation_state configurations fail the audit."""
+    manifest_path = "resources/manifests/models/smolvla_libero.yaml"
+    manifest = load_model_manifest(manifest_path)
+
+    # Corrupt runtime_dim to 6
+    manifest.observation_state["runtime_dim"] = 6
+    audit = audit_model_interface(manifest)
+    assert audit["audit_status"] == "FAIL"
+    assert audit["is_valid"] is False
+    assert any("runtime_dim 6" in issue for issue in audit["issues"])
+
+    # Corrupt semantics
+    manifest.observation_state["runtime_dim"] = 8
+    manifest.observation_state["semantics"] = ["eef_x", "eef_y"]
+    audit = audit_model_interface(manifest)
+    assert audit["audit_status"] == "FAIL"
+    assert any("semantics mismatch" in issue for issue in audit["issues"])
+
+    # Corrupt source of truth
+    manifest.observation_state["semantics"] = [
+        "eef_pos_x", "eef_pos_y", "eef_pos_z", "eef_axis_x",
+        "eef_axis_y", "eef_axis_z", "gripper_qpos_0", "gripper_qpos_1"
+    ]
+    manifest.observation_state["source_of_truth"] = ["wrong_file.json"]
+    audit = audit_model_interface(manifest)
+    assert audit["audit_status"] == "FAIL"
+    assert any("source_of_truth must include" in issue for issue in audit["issues"])
+
+
+def test_normalizer_safetensors_shape_mismatch():
+    """Verify that expecting wrong dimension on 8D safetensors reports failure."""
+    from src.models.model_manifest import verify_normalizer_safetensors_shape
+
+    safetensors_path = "resources/checkpoints/smolvla_libero/policy_preprocessor_step_5_normalizer_processor.safetensors"
+    # Expecting 6D on 8D safetensors must fail
+    res = verify_normalizer_safetensors_shape(safetensors_path, expected_dim=6)
+    assert res["status"] == "FAIL"
+    assert res["is_valid"] is False
+    assert len(res["issues"]) > 0
+    assert any("shape mismatch: expected (6,), got (8,)" in issue for issue in res["issues"])
 
 
 def test_checkpoint_integrity_verification(tmp_path):

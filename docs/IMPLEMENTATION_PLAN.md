@@ -463,7 +463,19 @@ checkpoint:
 checkpoint_hash:
 
 image_inputs:
-state_inputs:
+observation_state:
+  runtime_dim: 8
+  semantics:
+    - eef_pos_x
+    - eef_pos_y
+    - eef_pos_z
+    - eef_axis_x
+    - eef_axis_y
+    - eef_axis_z
+    - gripper_qpos_0
+    - gripper_qpos_1
+  source_of_truth:
+    - policy_preprocessor_step_5_normalizer_processor.safetensors
 
 image_resolution:
 camera_order:

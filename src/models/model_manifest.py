@@ -32,6 +32,7 @@ class ModelManifest:
     metadata_notes: Optional[str] = None
     files: Dict[str, Dict[str, Any]] = field(default_factory=dict)
     lerobot_version: Optional[str] = None
+    observation_state: Optional[Dict[str, Any]] = None
     extra_attributes: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -46,6 +47,7 @@ class ModelManifest:
             "n_action_steps": self.n_action_steps,
             "image_resolution": list(self.image_resolution),
             "camera_mapping": self.camera_mapping,
+            "observation_state": self.observation_state,
             "normalization": self.normalization,
             "action_semantics": self.action_semantics,
             "action_range": list(self.action_range),
@@ -88,6 +90,14 @@ def load_model_manifest(filepath: Union[str, Path]) -> ModelManifest:
     resolution = tuple(data["image_resolution"])
     action_range = tuple(data.get("action_range", [-1.0, 1.0]))
 
+    obs_state = data.get("observation_state", None)
+    if obs_state is not None:
+        obs_state = {
+            "runtime_dim": int(obs_state.get("runtime_dim", 8)),
+            "semantics": list(obs_state.get("semantics", [])),
+            "source_of_truth": list(obs_state.get("source_of_truth", [])),
+        }
+
     return ModelManifest(
         model_id=data["model_id"],
         repository=data["repository"],
@@ -106,6 +116,7 @@ def load_model_manifest(filepath: Union[str, Path]) -> ModelManifest:
         metadata_notes=data.get("metadata_notes", None),
         files=dict(data.get("files", {})),
         lerobot_version=data.get("lerobot_version", None),
+        observation_state=obs_state,
     )
 
 
@@ -118,6 +129,8 @@ def audit_model_interface(manifest: ModelManifest) -> Dict[str, Any]:
     - Resolution is valid (e.g. 256x256 or 224x224).
     - Camera mappings cover LIBERO agentview and eye-in-hand cameras.
     - Revision is an immutable commit hash rather than generic 'main'.
+    - Observation state contract: 8D runtime vector [pos(3), axis(3), gripper(2)],
+      with source of truth in normalizer safetensors.
     - Flags any metadata inconsistencies (e.g. unused camera3 in SmolVLA).
     """
     issues: List[str] = []
@@ -143,6 +156,38 @@ def audit_model_interface(manifest: ModelManifest) -> Dict[str, Any]:
             "SRS requires full 40-character immutable Git commit SHA for strict evaluation."
         )
 
+    # Observation state audit contract
+    if manifest.observation_state is not None:
+        obs_state = manifest.observation_state
+        runtime_dim = obs_state.get("runtime_dim")
+        semantics = obs_state.get("semantics", [])
+        source_of_truth = obs_state.get("source_of_truth", [])
+
+        if runtime_dim != 8:
+            issues.append(f"Invalid observation_state runtime_dim {runtime_dim}; expected 8.")
+
+        expected_semantics = [
+            "eef_pos_x",
+            "eef_pos_y",
+            "eef_pos_z",
+            "eef_axis_x",
+            "eef_axis_y",
+            "eef_axis_z",
+            "gripper_qpos_0",
+            "gripper_qpos_1",
+        ]
+        if semantics != expected_semantics:
+            issues.append(
+                f"observation_state semantics mismatch: expected {expected_semantics}, got {semantics}"
+            )
+
+        if not source_of_truth or not any("policy_preprocessor_step_5_normalizer_processor.safetensors" in s for s in source_of_truth):
+            issues.append(
+                "observation_state source_of_truth must include 'policy_preprocessor_step_5_normalizer_processor.safetensors'."
+            )
+    else:
+        warnings.append("Manifest does not explicitly define 'observation_state' contract.")
+
     # Audit camera3 discrepancy
     if "camera3" in manifest.camera_mapping.values() or "observation.images.camera3" in str(manifest.metadata_notes):
         warnings.append(
@@ -159,9 +204,64 @@ def audit_model_interface(manifest: ModelManifest) -> Dict[str, Any]:
         "action_dim": manifest.action_dim,
         "chunk_size": manifest.chunk_size,
         "resolution": manifest.image_resolution,
+        "observation_state": manifest.observation_state,
         "issues": issues,
         "warnings": warnings,
         "audit_status": "PASS" if is_valid else "FAIL",
+    }
+
+
+def verify_normalizer_safetensors_shape(
+    safetensors_path: Union[str, Path],
+    expected_dim: int = 8,
+) -> Dict[str, Any]:
+    """Verify that observation.state tensors in normalizer safetensors have exact expected_dim.
+
+    Args:
+        safetensors_path: Path to the normalizer processor safetensors file.
+        expected_dim: Expected dimension of observation.state tensors (default 8).
+
+    Returns:
+        Dictionary with validation results and per-tensor shapes.
+    """
+    import safetensors.torch
+
+    path = Path(safetensors_path)
+    if not path.exists():
+        raise FileNotFoundError(f"Normalizer safetensors not found: {path}")
+
+    tensors = safetensors.torch.load_file(str(path))
+    state_tensors = {k: tuple(v.shape) for k, v in tensors.items() if k.startswith("observation.state.")}
+
+    issues: List[str] = []
+    required_stats = [
+        "observation.state.mean",
+        "observation.state.std",
+        "observation.state.min",
+        "observation.state.max",
+    ]
+
+    for stat in required_stats:
+        if stat not in state_tensors:
+            issues.append(f"Missing required normalizer tensor '{stat}'.")
+        elif state_tensors[stat] != (expected_dim,):
+            issues.append(f"Tensor '{stat}' shape mismatch: expected ({expected_dim},), got {state_tensors[stat]}")
+
+    for k, shape in state_tensors.items():
+        if k.endswith(".count"):
+            if shape != (1,):
+                issues.append(f"Scalar tensor '{k}' expected shape (1,), got {shape}")
+        else:
+            if shape != (expected_dim,):
+                issues.append(f"State tensor '{k}' expected shape ({expected_dim},), got {shape}")
+
+    return {
+        "path": str(path),
+        "expected_dim": expected_dim,
+        "is_valid": len(issues) == 0,
+        "state_tensors": state_tensors,
+        "issues": issues,
+        "status": "PASS" if len(issues) == 0 else "FAIL",
     }
 
 

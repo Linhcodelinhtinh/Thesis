@@ -30,7 +30,19 @@ Checkpoint:
 Training distribution:
 LIBERO adaptation:
 Image inputs:
-State inputs:
+observation_state:
+  runtime_dim: 8
+  semantics:
+    - eef_pos_x
+    - eef_pos_y
+    - eef_pos_z
+    - eef_axis_x
+    - eef_axis_y
+    - eef_axis_z
+    - gripper_qpos_0
+    - gripper_qpos_1
+  source_of_truth:
+    - policy_preprocessor_step_5_normalizer_processor.safetensors
 Action:
 Action decoder:
 Chunk size:
@@ -38,4 +50,4 @@ Normalization:
 Official inference:
 Official LIBERO evaluation:
 Hardware requirement:
-Known incompatibilities:
+Known incompatibilities:

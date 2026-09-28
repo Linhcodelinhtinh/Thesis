@@ -161,15 +161,31 @@ class SmolVLAAdapter(VLAPolicy):
         if "observation.state" in obs:
             state_val = obs["observation.state"]
             if isinstance(state_val, np.ndarray):
-                raw_features["observation.state"] = torch.from_numpy(state_val).float()
+                state_tensor = torch.from_numpy(state_val).float()
+            elif isinstance(state_val, torch.Tensor):
+                state_tensor = state_val.float()
             else:
-                raw_features["observation.state"] = state_val.float()
+                state_tensor = torch.as_tensor(state_val, dtype=torch.float32)
+
+            if state_tensor.shape[-1] != 8:
+                raise ValueError(
+                    f"Observation state dimension mismatch: expected 8D vector, got shape {state_tensor.shape}. "
+                    "SmolVLA audit contract requires [eef_pos(3), eef_axis(3), gripper_qpos(2)] (runtime_dim=8)."
+                )
+            raw_features["observation.state"] = state_tensor
         elif "robot0_eef_pos" in obs and "robot0_eef_quat" in obs:
             pos = np.asarray(obs["robot0_eef_pos"], dtype=np.float32).flatten()
-            axis_angle = quat2axisangle(obs["robot0_eef_quat"]).astype(np.float32)
+            axis_angle = quat2axisangle(obs["robot0_eef_quat"]).astype(np.float32).flatten()
+
+            if pos.shape[0] != 3:
+                raise ValueError(f"Expected robot0_eef_pos of shape (3,), got {pos.shape}")
+            if axis_angle.shape[0] != 3:
+                raise ValueError(f"Expected robot0_eef_quat axis_angle of shape (3,), got {axis_angle.shape}")
 
             if "robot0_gripper_qpos" in obs:
                 gripper = np.asarray(obs["robot0_gripper_qpos"], dtype=np.float32).flatten()
+                if gripper.shape[0] != 2:
+                    raise ValueError(f"Expected robot0_gripper_qpos of shape (2,), got {gripper.shape}")
             else:
                 # Default open gripper values if gripper_qpos not provided
                 gripper = np.array([0.02, -0.02], dtype=np.float32)
@@ -266,6 +282,17 @@ class SmolVLAAdapter(VLAPolicy):
             "action_dim": self.action_dim,
             "cameras": ["observation.images.camera1", "observation.images.camera2"],
             "camera_resolution": [256, 256],
+            "observation_state": {
+                "runtime_dim": 8,
+                "semantics": [
+                    "eef_pos_x", "eef_pos_y", "eef_pos_z",
+                    "eef_axis_x", "eef_axis_y", "eef_axis_z",
+                    "gripper_qpos_0", "gripper_qpos_1",
+                ],
+                "source_of_truth": [
+                    "policy_preprocessor_step_5_normalizer_processor.safetensors"
+                ],
+            },
             "state_dim": 8,
             "state_semantics": [
                 "eef_pos_x", "eef_pos_y", "eef_pos_z",

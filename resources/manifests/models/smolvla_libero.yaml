@@ -41,10 +41,32 @@ camera_mapping:
   agentview: "observation.images.camera1"
   robot0_eye_in_hand: "observation.images.camera2"
 
+observation_state:
+  runtime_dim: 8
+  semantics:
+    - eef_pos_x
+    - eef_pos_y
+    - eef_pos_z
+    - eef_axis_x
+    - eef_axis_y
+    - eef_axis_z
+    - gripper_qpos_0
+    - gripper_qpos_1
+  source_of_truth:
+    - policy_preprocessor_step_5_normalizer_processor.safetensors
+
 state_inputs:
-  shape: [6]
+  shape: [8]
   type: "STATE"
-  semantics: ["eef_pos_x", "eef_pos_y", "eef_pos_z", "eef_axis_x", "eef_axis_y", "eef_axis_z"]
+  semantics:
+    - "eef_pos_x"
+    - "eef_pos_y"
+    - "eef_pos_z"
+    - "eef_axis_x"
+    - "eef_axis_y"
+    - "eef_axis_z"
+    - "gripper_qpos_0"
+    - "gripper_qpos_1"
 
 processor_pipeline:
   preprocessor_steps:
@@ -92,7 +114,6 @@ hardware_requirements:
   min_ram_gb: 16
 
 metadata_notes: >
-  DISCREPANCY AUDIT: config.json declares observation.images.camera3, but official
-  policy_preprocessor.json only renames image -> camera1 and image2 -> camera2.
-  In actual LIBERO benchmark training, only agentview and eye_in_hand are utilized.
-  camera3 is unused and omitted in evaluation observations.
+  DISCREPANCY AUDIT:
+  1. config.json declares observation.images.camera3, but official policy_preprocessor.json only renames image -> camera1 and image2 -> camera2. In actual LIBERO benchmark training, only agentview and eye_in_hand are utilized. camera3 is unused and omitted in evaluation observations.
+  2. policy_preprocessor.json declares observation.state shape as [6], but the true ground truth normalizer weights in policy_preprocessor_step_5_normalizer_processor.safetensors contain 8-dimensional parameters for observation.state (mean, std, min, max, quantiles of shape (8,)). The runtime observation state is strictly 8D: [eef_pos(3), eef_axis(3), gripper_qpos(2)].

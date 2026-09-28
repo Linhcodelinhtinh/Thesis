@@ -239,3 +239,20 @@ def test_execution_environment_provenance_labeling(libero_env):
         assert meta["execution_tier"] == "STRICT-LIBERO-CERTIFIED"
         assert meta["is_official_reference_stack"] is True
         assert meta["is_benchmark_comparable"] is True
+
+
+def test_libero_spatial_suite_loading():
+    """Test 13: Verify that libero_spatial tasks load and verify cryptographic asset provenance."""
+    env = LiberoEnv(benchmark_name="libero_spatial", task_id=0, mode=BenchmarkMode.STRICT_LIBERO)
+    try:
+        assert env.task_name == "pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate"
+        assert env.num_initial_states == 50
+        assert env.asset_integrity_info["integrity_status"] == "PASS"
+        assert env.asset_integrity_info["bddl_sha256"] == "9b59eb1287802868ad9bc78d58e6d36d4ba31134e679cfdbdf4b0feb660c959b"
+        assert env.asset_integrity_info["init_verified"] is True
+        obs = env.reset(initial_state_id=0)
+        assert "agentview_image" in obs
+        assert obs["agentview_image"].shape == (128, 128, 3)
+    finally:
+        env.close()
+
