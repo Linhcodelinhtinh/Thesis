@@ -137,7 +137,8 @@ def test_smolvla_adapter_mock_pipeline_execution():
 
     chunk = adapter.predict_action_chunk(sample_obs, "test task")
     assert chunk.shape == (5, 7)
-    assert np.allclose(chunk, 0.5)
+    assert np.allclose(chunk[:, :6], 0.5)
+    assert np.allclose(chunk[:, 6], -0.5)  # ADR-0009 gripper inversion: 0.5 -> -0.5
 
     # Test FIFO queue action selection
     action_0 = adapter.select_action(sample_obs, "test task")

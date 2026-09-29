@@ -107,6 +107,7 @@ action_semantics:
 
 action_range: [-1.0, 1.0]
 action_decoder: "flow_matching"
+gripper_action_polarity: "INVERTED_RLDS_TO_ROBOSUITE"
 
 hardware_requirements:
   recommended_gpu: "NVIDIA RTX 4060 (8GB VRAM) or higher"
@@ -117,3 +118,4 @@ metadata_notes: >
   DISCREPANCY AUDIT:
   1. config.json declares observation.images.camera3, but official policy_preprocessor.json only renames image -> camera1 and image2 -> camera2. In actual LIBERO benchmark training, only agentview and eye_in_hand are utilized. camera3 is unused and omitted in evaluation observations.
   2. policy_preprocessor.json declares observation.state shape as [6], but the true ground truth normalizer weights in policy_preprocessor_step_5_normalizer_processor.safetensors contain 8-dimensional parameters for observation.state (mean, std, min, max, quantiles of shape (8,)). The runtime observation state is strictly 8D: [eef_pos(3), eef_axis(3), gripper_qpos(2)].
+  3. ADR-0009 GRIPPER POLARITY: lerobot/libero originates from RLDS convention (+1 = Open, -1 = Close). Robosuite PandaGripper expects (-1 = Open, +1 = Close). SmolVLAAdapter explicitly inverts the 7th dimension (action[..., -1] = -1.0 * action[..., -1]) during postprocessing to align with robosuite physics.

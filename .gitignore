@@ -32,3 +32,8 @@ experiments/results/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Agents
+AGENTS.md 
+.agents/
+docs/DECISIONS.md

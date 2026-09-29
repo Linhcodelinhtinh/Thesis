@@ -5,6 +5,7 @@ across s in {1, 5, 10, 25, 50}, telemetry recording, video export, and
 model_output.jsonl serialization per SRS.md Section 8.
 """
 
+import json
 from pathlib import Path
 from typing import Any, Dict, List
 import numpy as np
@@ -136,7 +137,7 @@ def test_rollout_result_serialization(tmp_path: Path):
     assert jsonl_path.exists()
     lines = jsonl_path.read_text(encoding="utf-8").strip().splitlines()
     assert len(lines) == 5
-    first_step = eval(lines[0].replace("true", "True").replace("false", "False"))
+    first_step = json.loads(lines[0])
     assert first_step["step"] == 0
     assert first_step["chunk_step"] == 0
     assert len(first_step["action"]) == 7

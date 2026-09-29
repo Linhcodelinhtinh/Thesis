@@ -33,6 +33,7 @@ class ModelManifest:
     files: Dict[str, Dict[str, Any]] = field(default_factory=dict)
     lerobot_version: Optional[str] = None
     observation_state: Optional[Dict[str, Any]] = None
+    gripper_action_polarity: Optional[str] = None
     extra_attributes: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -48,6 +49,7 @@ class ModelManifest:
             "image_resolution": list(self.image_resolution),
             "camera_mapping": self.camera_mapping,
             "observation_state": self.observation_state,
+            "gripper_action_polarity": self.gripper_action_polarity,
             "normalization": self.normalization,
             "action_semantics": self.action_semantics,
             "action_range": list(self.action_range),
@@ -117,6 +119,7 @@ def load_model_manifest(filepath: Union[str, Path]) -> ModelManifest:
         files=dict(data.get("files", {})),
         lerobot_version=data.get("lerobot_version", None),
         observation_state=obs_state,
+        gripper_action_polarity=data.get("gripper_action_polarity", "DIRECT"),
     )
 
 
@@ -131,6 +134,7 @@ def audit_model_interface(manifest: ModelManifest) -> Dict[str, Any]:
     - Revision is an immutable commit hash rather than generic 'main'.
     - Observation state contract: 8D runtime vector [pos(3), axis(3), gripper(2)],
       with source of truth in normalizer safetensors.
+    - Gripper action polarity alignment (ADR-0009).
     - Flags any metadata inconsistencies (e.g. unused camera3 in SmolVLA).
     """
     issues: List[str] = []
@@ -188,6 +192,14 @@ def audit_model_interface(manifest: ModelManifest) -> Dict[str, Any]:
     else:
         warnings.append("Manifest does not explicitly define 'observation_state' contract.")
 
+    # Gripper action polarity audit (ADR-0009)
+    valid_polarities = ["DIRECT", "INVERTED_RLDS_TO_ROBOSUITE"]
+    if manifest.gripper_action_polarity and manifest.gripper_action_polarity not in valid_polarities:
+        issues.append(
+            f"Invalid gripper_action_polarity '{manifest.gripper_action_polarity}'. "
+            f"Expected one of: {valid_polarities} per ADR-0009."
+        )
+
     # Audit camera3 discrepancy
     if "camera3" in manifest.camera_mapping.values() or "observation.images.camera3" in str(manifest.metadata_notes):
         warnings.append(
@@ -205,6 +217,7 @@ def audit_model_interface(manifest: ModelManifest) -> Dict[str, Any]:
         "chunk_size": manifest.chunk_size,
         "resolution": manifest.image_resolution,
         "observation_state": manifest.observation_state,
+        "gripper_action_polarity": manifest.gripper_action_polarity,
         "issues": issues,
         "warnings": warnings,
         "audit_status": "PASS" if is_valid else "FAIL",

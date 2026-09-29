@@ -21,6 +21,7 @@ from typing import Any, Dict, List, Optional, Union
 import numpy as np
 
 from src.models.base import VLAPolicy
+from src.evaluation.diagnostics import ContactDiagnostics
 
 
 def save_video(frames: List[np.ndarray], output_path: Union[str, Path], fps: int = 20) -> bool:
@@ -119,6 +120,8 @@ def rollout_episode(
     task_name: str = "unknown_task",
     record_video: bool = False,
     video_path: Optional[Union[str, Path]] = None,
+    enable_diagnostics: bool = False,
+    target_object_name: Optional[str] = None,
 ) -> EpisodeResult:
     """Execute a single closed-loop episode with receding-horizon action chunking.
 
@@ -137,12 +140,16 @@ def rollout_episode(
         task_name: Human-readable name of the evaluated task.
         record_video: Whether to capture RGB camera frames for video recording.
         video_path: Target path to save MP4 video if record_video is True.
+        enable_diagnostics: Whether to collect physical contact and lift telemetry.
+        target_object_name: Name/substring of target object for diagnostics.
 
     Returns:
         EpisodeResult containing outcome, telemetry, executed trajectory, and model outputs.
     """
     if execution_horizon < 1:
         raise ValueError(f"execution_horizon must be >= 1, got {execution_horizon}")
+
+    diag = ContactDiagnostics(env=env, target_object_name=target_object_name) if enable_diagnostics else None
 
     # Reset environment & policy without silent fallback
     if initial_state_id is not None:
@@ -194,18 +201,53 @@ def rollout_episode(
                     f"got {current_chunk.shape}"
                 )
 
+        # Retrieve dual-action telemetry from policy if supported
+        telemetry_raw_chunk = None
+        telemetry_unnorm_chunk = None
+        if hasattr(policy, "get_last_telemetry"):
+            tel = policy.get_last_telemetry()
+            telemetry_raw_chunk = tel.get("raw_normalized_chunk")
+            telemetry_unnorm_chunk = tel.get("unnormalized_chunk")
+
         # Select action for the current step in the chunk
         action = current_chunk[chunk_step_idx]
+        raw_norm_act = (
+            [float(x) for x in telemetry_raw_chunk[chunk_step_idx]]
+            if telemetry_raw_chunk is not None and chunk_step_idx < len(telemetry_raw_chunk)
+            else None
+        )
+        unnorm_act = (
+            [float(x) for x in telemetry_unnorm_chunk[chunk_step_idx]]
+            if telemetry_unnorm_chunk is not None and chunk_step_idx < len(telemetry_unnorm_chunk)
+            else None
+        )
+
         chunk_step_idx += 1
         recorded_actions.append(action)
 
-        # Record model output telemetry
+        # Record physical state from observation before action
+        eef_pos_actual = (
+            [float(x) for x in obs["robot0_eef_pos"]]
+            if "robot0_eef_pos" in obs
+            else None
+        )
+        gripper_qpos_actual = (
+            [float(x) for x in obs["robot0_gripper_qpos"]]
+            if "robot0_gripper_qpos" in obs
+            else None
+        )
+
+        # Record model output telemetry (Dual-Action Observability - Phase 2)
         model_output_entry = {
             "step": step_num,
             "chunk_step": chunk_step_idx - 1,
-            "action": [float(x) for x in action],
+            "raw_normalized_action": raw_norm_act,
+            "unnormalized_action": unnorm_act,
+            "action": [float(x) for x in action],  # Executed action in simulator
             "is_replanned": is_replanned,
             "inference_time_ms": last_infer_latency if is_replanned else None,
+            "eef_pos_actual": eef_pos_actual,
+            "gripper_qpos_actual": gripper_qpos_actual,
         }
 
         # Step simulation environment
@@ -230,6 +272,19 @@ def rollout_episode(
             success = bool(env.check_success())
         elif hasattr(env, "_check_success"):
             success = bool(env._check_success())
+
+        # Physical contact & lift diagnostics (Phase 4)
+        if diag is not None:
+            c_info = diag.inspect_gripper_contacts()
+            l_info = diag.inspect_object_lift()
+            model_output_entry["contact_diagnostics"] = {
+                "any_contact": c_info["any_contact"],
+                "both_fingers_contact": c_info["both_fingers_contact"],
+                "left_finger_contact": c_info["left_finger_contact"],
+                "right_finger_contact": c_info["right_finger_contact"],
+                "is_lifted": l_info["is_lifted"],
+                "delta_z": l_info["delta_z"],
+            }
 
         model_output_entry["success"] = success
         model_outputs.append(model_output_entry)

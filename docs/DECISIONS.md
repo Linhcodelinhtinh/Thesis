@@ -76,3 +76,16 @@ This document records the architectural and design decisions for **VLA Policy Ev
   - Every evaluation run shall inspect runtime provenance: if the execution environment deviates from the locked reference stack (`envs/libero_reference.yml`: Python 3.8.x, robosuite 1.4.0, bddl 1.0.1, Linux EGL), the run shall be tagged as `NON-COMPARABLE_HOST_SMOKE` and disqualified from official benchmark certification.
 - **Consequences**: Guarantees zero silent deviation from official LIBERO evaluation protocol and prevents invalid score claims.
 
+---
+
+## ADR-0009: Action Space and Gripper Polarity Alignment Protocol for VLA Adapters
+- **Status**: Accepted
+- **Context**: SmolVLA (`lerobot/smolvla_libero`) was trained on `lerobot/libero`, which originated from the RLDS dataset `openvla/modified_libero_rlds`. RLDS formats standardize gripper actions with the convention $+1 = \text{Open}, -1 = \text{Close}$. Conversely, robosuite's native `PandaGripper` controller uses $-1 = \text{Open}, +1 = \text{Close}$. Sending raw policy outputs directly to robosuite causes the gripper to close during approach and open during grasp, resulting in 0% grasp success.
+- **Decision**:
+  - The model adapter (`SmolVLAAdapter`) must explicitly align the gripper action space via `invert_gripper_action: bool = True` during `postprocess()`:
+    $$a_{\text{sim}}[-1] = -1.0 \times a_{\text{vla}}[-1]$$
+  - This transformation is placed strictly within the model adapter layer per ADR-0004 (Layer Separation), leaving simulator and controller layers unchanged.
+  - The model manifest (`smolvla_libero.yaml`) and audit framework (`src/models/model_manifest.py`) must record and audit `gripper_action_polarity: "INVERTED_RLDS_TO_ROBOSUITE"` to prevent silent or undocumented transformations.
+  - Telemetry logs (`model_output.jsonl`) must record both the raw policy action (`unnormalized_action`) and the final executed simulator action (`executed_sim_action`) for transparent auditability.
+- **Consequences**: Restores correct physical grasping behavior while preserving strict traceability and compliance with AGENTS.md Rule 3.
+

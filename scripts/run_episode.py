@@ -21,7 +21,7 @@ import numpy as np
 from src.evaluation.rollout import rollout_episode
 from src.models.registry import get_model_class
 import src.models.smolvla.adapter  # Explicitly register SmolVLA policy class
-from src.simulator.libero_env import LiberoEnv
+from src.simulator.libero_env import LiberoEnv, BenchmarkMode
 
 
 def parse_args():
@@ -69,6 +69,31 @@ def parse_args():
         default=False,
         help="Capture camera frames and save an MP4 video of the rollout.",
     )
+    parser.add_argument(
+        "--camera-resolution",
+        type=int,
+        default=256,
+        choices=[128, 256],
+        help="Camera rendering resolution (official LeRobot default is 256).",
+    )
+    parser.add_argument(
+        "--enable-diagnostics",
+        action="store_true",
+        default=True,
+        help="Enable physics contact and lift diagnostics (default: True).",
+    )
+    parser.add_argument(
+        "--no-diagnostics",
+        dest="enable_diagnostics",
+        action="store_false",
+        help="Disable physics contact and lift diagnostics.",
+    )
+    parser.add_argument(
+        "--target-object",
+        type=str,
+        default=None,
+        help="Target object name/substring for diagnostics (e.g., 'cream_cheese').",
+    )
     return parser.parse_args()
 
 
@@ -106,10 +131,18 @@ def main():
 
     # 2. Initialize simulation environment
     print("\nInitializing LiberoEnv...")
+    mode = (
+        BenchmarkMode.STRICT_LIBERO
+        if args.max_steps == 1000 and args.camera_resolution == 128
+        else BenchmarkMode.LIBERO_DERIVED
+    )
     env = LiberoEnv(
         benchmark_name=args.task_suite,
         task_id=args.task_id,
+        mode=mode,
         horizon=args.max_steps,
+        camera_height=args.camera_resolution,
+        camera_width=args.camera_resolution,
     )
 
     task_desc = env.language_instruction
@@ -125,8 +158,36 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
     video_path = out_dir / "video.mp4" if args.record_video else None
 
+    # Auto-detect target object for diagnostics if not specified
+    target_obj = args.target_object
+    if target_obj is None and task_desc:
+        inst_lower = task_desc.lower()
+        candidates = [
+            "cream_cheese",
+            "alphabet_soup",
+            "salad_dressing",
+            "bbq_sauce",
+            "ketchup",
+            "tomato_sauce",
+            "butter",
+            "milk",
+            "chocolate_pudding",
+            "orange_juice",
+            "soup",
+            "bowl",
+            "plate",
+            "mug",
+            "cup",
+        ]
+        for c in candidates:
+            if c.replace("_", " ") in inst_lower or c in inst_lower:
+                target_obj = c
+                break
+
     # 3. Execute rollout
     print(f"\nStarting episode rollout (max {args.max_steps} steps, s={args.execution_horizon})...")
+    if args.enable_diagnostics:
+        print(f"Diagnostics: Enabled (Target Object: {target_obj})")
     result = rollout_episode(
         env=env,
         policy=policy,
@@ -137,6 +198,8 @@ def main():
         task_name=f"{args.task_suite}_{args.task_id}",
         record_video=args.record_video,
         video_path=video_path,
+        enable_diagnostics=args.enable_diagnostics,
+        target_object_name=target_obj,
     )
 
     # 4. Save standardized evaluation artifacts

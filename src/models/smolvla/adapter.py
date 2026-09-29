@@ -42,6 +42,9 @@ def _ensure_pyav_compatibility() -> None:
         pass
 
 
+_ensure_pyav_compatibility()
+
+
 def _resize_rgb_image(img: np.ndarray, target_shape: Tuple[int, int] = (256, 256)) -> np.ndarray:
     """Resize RGB image to target (H, W) using bilinear interpolation, returning float32 [0, 1]."""
     if img.ndim != 3:
@@ -63,16 +66,41 @@ def _resize_rgb_image(img: np.ndarray, target_shape: Tuple[int, int] = (256, 256
 
 @register_model("smolvla_libero")
 class SmolVLAAdapter(VLAPolicy):
-    """Adapter for official SmolVLA (lerobot/smolvla_libero) evaluated on LIBERO."""
+    """Adapter for official SmolVLA (lerobot/smolvla_libero) evaluated on LIBERO.
 
-    def __init__(self, chunk_size: int = 50, action_dim: int = 7) -> None:
+    Delegates environment-level transformation (image 180° rotation, 8D state extraction)
+    strictly to official LeRobot LiberoProcessorStep, and policy-level transformations
+    (tokenization, normalizer, batching) to official LeRobot PolicyProcessorPipeline.
+    """
+
+    def __init__(
+        self,
+        chunk_size: int = 50,
+        action_dim: int = 7,
+        invert_gripper_action: bool = True,
+    ) -> None:
         super().__init__(chunk_size=chunk_size, action_dim=action_dim)
         self.checkpoint_path: Optional[str] = None
         self.device: str = "cpu"
         self.policy: Optional[Any] = None
+        self.env_preprocessor: Optional[Any] = None
         self.preprocessor: Optional[Any] = None
         self.postprocessor: Optional[Any] = None
         self._is_loaded: bool = False
+        self.invert_gripper_action: bool = invert_gripper_action
+
+        # Telemetry cache for dual-action observability (Phase 2)
+        self.last_raw_normalized_chunk: Optional[np.ndarray] = None
+        self.last_unnormalized_chunk: Optional[np.ndarray] = None
+        self.last_executed_chunk: Optional[np.ndarray] = None
+
+    def _ensure_env_preprocessor(self) -> Any:
+        """Lazily initialize official LeRobot LiberoProcessorStep."""
+        if self.env_preprocessor is None:
+            _ensure_pyav_compatibility()
+            from lerobot.processor.env_processor import LiberoProcessorStep
+            self.env_preprocessor = LiberoProcessorStep()
+        return self.env_preprocessor
 
     def load(
         self,
@@ -104,7 +132,10 @@ class SmolVLAAdapter(VLAPolicy):
         self.policy.to(self.device)
         self.policy.eval()
 
-        # 2. Load official preprocessor and postprocessor pipelines
+        # 2. Instantiate official LiberoProcessorStep (environment preprocessor)
+        self.env_preprocessor = self._ensure_env_preprocessor()
+
+        # 3. Load official policy preprocessor and postprocessor pipelines
         self.preprocessor, self.postprocessor = make_pre_post_processors(
             policy_cfg=self.policy.config,
             pretrained_path=checkpoint_path,
@@ -121,43 +152,46 @@ class SmolVLAAdapter(VLAPolicy):
             self.policy.reset()
 
     def build_raw_features(self, obs: Dict[str, Any], instruction: str) -> Dict[str, Any]:
-        """Convert LIBERO simulator observations into the raw dictionary format for LeRobot preprocessor.
+        """Convert LIBERO simulator observations using official LiberoProcessorStep.
+
+        Delegates image rotation (180° / flip H,W) and 8D state vector formulation
+        strictly to official LeRobot LiberoProcessorStep per AGENTS.md Rule 3 & 7.
 
         Computes:
-          - observation.images.image: agentview resized to (3, 256, 256) float tensor in [0, 1]
-          - observation.images.image2: wrist camera resized to (3, 256, 256) float tensor in [0, 1]
+          - observation.images.image: agentview rotated 180° via LiberoProcessorStep (3, 256, 256)
+          - observation.images.image2: wrist rotated 180° via LiberoProcessorStep (3, 256, 256)
           - observation.state: 8D state vector [pos (3,), axis_angle (3,), gripper_qpos (2,)]
           - task: language instruction string
         """
-        raw_features: Dict[str, Any] = {}
+        env_step = self._ensure_env_preprocessor()
+        raw_obs: Dict[str, Any] = {}
 
-        # 1. Images: Convert to channel-first float tensors (3, 256, 256)
-        # IMPORTANT: Rotate 180 degrees ([::-1, ::-1]) on both spatial axes to match
-        # the training data preprocessing convention established by the OpenVLA/LeRobot LIBERO pipeline.
-        # np.ascontiguousarray is required because negative slicing produces negative strides unsupported by PyTorch.
+        # 1. Images: Convert to unflipped (1, 3, 256, 256) float tensors in [0, 1] for LiberoProcessorStep
         if "agentview_image" in obs:
-            agentview_rotated = np.ascontiguousarray(obs["agentview_image"][::-1, ::-1])
-            agentview_arr = _resize_rgb_image(agentview_rotated, (256, 256))
-            raw_features["observation.images.image"] = (
-                torch.from_numpy(agentview_arr).permute(2, 0, 1).float()
+            agentview_arr = _resize_rgb_image(obs["agentview_image"], (256, 256))
+            raw_obs["observation.images.image"] = (
+                torch.from_numpy(agentview_arr).permute(2, 0, 1).unsqueeze(0).float()
             )
         elif "observation.images.image" in obs:
-            raw_features["observation.images.image"] = obs["observation.images.image"]
+            img = obs["observation.images.image"]
+            raw_obs["observation.images.image"] = img.unsqueeze(0) if img.dim() == 3 else img
         elif "observation.images.camera1" in obs:
-            raw_features["observation.images.image"] = obs["observation.images.camera1"]
+            img = obs["observation.images.camera1"]
+            raw_obs["observation.images.image"] = img.unsqueeze(0) if img.dim() == 3 else img
 
         if "robot0_eye_in_hand_image" in obs:
-            wrist_rotated = np.ascontiguousarray(obs["robot0_eye_in_hand_image"][::-1, ::-1])
-            wrist_arr = _resize_rgb_image(wrist_rotated, (256, 256))
-            raw_features["observation.images.image2"] = (
-                torch.from_numpy(wrist_arr).permute(2, 0, 1).float()
+            wrist_arr = _resize_rgb_image(obs["robot0_eye_in_hand_image"], (256, 256))
+            raw_obs["observation.images.image2"] = (
+                torch.from_numpy(wrist_arr).permute(2, 0, 1).unsqueeze(0).float()
             )
         elif "observation.images.image2" in obs:
-            raw_features["observation.images.image2"] = obs["observation.images.image2"]
+            img = obs["observation.images.image2"]
+            raw_obs["observation.images.image2"] = img.unsqueeze(0) if img.dim() == 3 else img
         elif "observation.images.camera2" in obs:
-            raw_features["observation.images.image2"] = obs["observation.images.camera2"]
+            img = obs["observation.images.camera2"]
+            raw_obs["observation.images.image2"] = img.unsqueeze(0) if img.dim() == 3 else img
 
-        # 2. State: Compute 8D vector [pos(3), axis_angle(3), gripper(2)]
+        # 2. State: Structure as observation.robot_state for LiberoProcessorStep or pass 8D state
         if "observation.state" in obs:
             state_val = obs["observation.state"]
             if isinstance(state_val, np.ndarray):
@@ -172,30 +206,37 @@ class SmolVLAAdapter(VLAPolicy):
                     f"Observation state dimension mismatch: expected 8D vector, got shape {state_tensor.shape}. "
                     "SmolVLA audit contract requires [eef_pos(3), eef_axis(3), gripper_qpos(2)] (runtime_dim=8)."
                 )
-            raw_features["observation.state"] = state_tensor
+            raw_obs["observation.state"] = state_tensor.unsqueeze(0) if state_tensor.dim() == 1 else state_tensor
         elif "robot0_eef_pos" in obs and "robot0_eef_quat" in obs:
-            pos = np.asarray(obs["robot0_eef_pos"], dtype=np.float32).flatten()
-            axis_angle = quat2axisangle(obs["robot0_eef_quat"]).astype(np.float32).flatten()
-
-            if pos.shape[0] != 3:
-                raise ValueError(f"Expected robot0_eef_pos of shape (3,), got {pos.shape}")
-            if axis_angle.shape[0] != 3:
-                raise ValueError(f"Expected robot0_eef_quat axis_angle of shape (3,), got {axis_angle.shape}")
-
+            pos = torch.as_tensor(obs["robot0_eef_pos"], dtype=torch.float32).reshape(1, 3)
+            quat = torch.as_tensor(obs["robot0_eef_quat"], dtype=torch.float32).reshape(1, 4)
             if "robot0_gripper_qpos" in obs:
-                gripper = np.asarray(obs["robot0_gripper_qpos"], dtype=np.float32).flatten()
-                if gripper.shape[0] != 2:
-                    raise ValueError(f"Expected robot0_gripper_qpos of shape (2,), got {gripper.shape}")
+                gripper = torch.as_tensor(obs["robot0_gripper_qpos"], dtype=torch.float32).reshape(1, 2)
             else:
-                # Default open gripper values if gripper_qpos not provided
-                gripper = np.array([0.02, -0.02], dtype=np.float32)
+                gripper = torch.tensor([[0.02, -0.02]], dtype=torch.float32)
 
-            state_8d = np.concatenate([pos, axis_angle, gripper])
-            raw_features["observation.state"] = torch.from_numpy(state_8d).float()
+            raw_obs["observation.robot_state"] = {
+                "eef": {"pos": pos, "quat": quat},
+                "gripper": {"qpos": gripper},
+            }
 
-        # 3. Language instruction
-        raw_features["task"] = instruction
-        return raw_features
+        # 3. Instruction
+        raw_obs["task"] = instruction
+
+        # 4. Process through official LeRobot LiberoProcessorStep
+        processed_obs = env_step._process_observation(raw_obs)
+
+        # 5. Format features for policy preprocessor (unbatched shapes (3, 256, 256) and (8,))
+        features: Dict[str, Any] = {}
+        if "observation.images.image" in processed_obs:
+            features["observation.images.image"] = processed_obs["observation.images.image"].squeeze(0)
+        if "observation.images.image2" in processed_obs:
+            features["observation.images.image2"] = processed_obs["observation.images.image2"].squeeze(0)
+        if "observation.state" in processed_obs:
+            features["observation.state"] = processed_obs["observation.state"].squeeze(0)
+        features["task"] = instruction
+
+        return features
 
     def preprocess(self, obs: Dict[str, Any], instruction: str) -> Dict[str, Any]:
         """Preprocess observation through official LeRobot preprocessor pipeline.
@@ -243,14 +284,33 @@ class SmolVLAAdapter(VLAPolicy):
             else:
                 raw_chunk = self.policy(batch)
 
+            # Cache raw normalized chunk for telemetry (Phase 2)
+            if isinstance(raw_chunk, torch.Tensor):
+                raw_norm_arr = raw_chunk.detach().cpu().numpy().copy()
+            else:
+                raw_norm_arr = np.asarray(raw_chunk, dtype=np.float32).copy()
+
+            if raw_norm_arr.ndim == 3 and raw_norm_arr.shape[0] == 1:
+                raw_norm_arr = raw_norm_arr[0]
+            self.last_raw_normalized_chunk = raw_norm_arr
+
             # Apply official unnormalizer postprocessor
             unnormalized_actions = self.postprocessor(raw_chunk)
 
-        chunk = self.postprocess(unnormalized_actions)
+            # Cache unnormalized chunk before gripper inversion
+            raw_unnorm = self.postprocess(unnormalized_actions, apply_gripper_inversion=False)
+            self.last_unnormalized_chunk = raw_unnorm.copy()
+
+        chunk = self.postprocess(unnormalized_actions, apply_gripper_inversion=True)
+        self.last_executed_chunk = chunk.copy()
         return chunk
 
-    def postprocess(self, output: Any) -> np.ndarray:
-        """Format postprocessor output into numpy array of shape (chunk_size, action_dim)."""
+    def postprocess(self, output: Any, apply_gripper_inversion: bool = True) -> np.ndarray:
+        """Format postprocessor output into numpy array of shape (chunk_size, action_dim).
+
+        Applies ADR-0009 gripper polarity inversion when apply_gripper_inversion and
+        self.invert_gripper_action are True (+1 Open -> -1 Open for Robosuite).
+        """
         if isinstance(output, torch.Tensor):
             actions = output.detach().cpu().numpy()
         elif isinstance(output, np.ndarray):
@@ -269,7 +329,20 @@ class SmolVLAAdapter(VLAPolicy):
                 f"Action dimension mismatch: expected (*, {self.action_dim}), got {actions.shape}"
             )
 
-        return actions.astype(np.float32)
+        actions_out = actions.astype(np.float32).copy()
+        if apply_gripper_inversion and self.invert_gripper_action:
+            # ADR-0009: Invert gripper polarity from RLDS (+1=Open, -1=Close) to Robosuite (-1=Open, +1=Close)
+            actions_out[..., -1] = -1.0 * actions_out[..., -1]
+
+        return actions_out
+
+    def get_last_telemetry(self) -> Dict[str, Optional[np.ndarray]]:
+        """Return dual-action telemetry (raw normalized, unnormalized, executed) for last inference."""
+        return {
+            "raw_normalized_chunk": self.last_raw_normalized_chunk,
+            "unnormalized_chunk": self.last_unnormalized_chunk,
+            "executed_chunk": self.last_executed_chunk,
+        }
 
     def validate_interface(self) -> Dict[str, Any]:
         """Return interface audit details for this adapter."""
@@ -280,6 +353,10 @@ class SmolVLAAdapter(VLAPolicy):
             "is_loaded": self._is_loaded,
             "chunk_size": self.chunk_size,
             "action_dim": self.action_dim,
+            "invert_gripper_action": self.invert_gripper_action,
+            "gripper_action_polarity": (
+                "INVERTED_RLDS_TO_ROBOSUITE" if self.invert_gripper_action else "DIRECT"
+            ),
             "cameras": ["observation.images.camera1", "observation.images.camera2"],
             "camera_resolution": [256, 256],
             "observation_state": {
