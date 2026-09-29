@@ -208,16 +208,23 @@ class SmolVLAAdapter(VLAPolicy):
                 )
             raw_obs["observation.state"] = state_tensor.unsqueeze(0) if state_tensor.dim() == 1 else state_tensor
         elif "robot0_eef_pos" in obs and "robot0_eef_quat" in obs:
-            pos = torch.as_tensor(obs["robot0_eef_pos"], dtype=torch.float32).reshape(1, 3)
-            quat = torch.as_tensor(obs["robot0_eef_quat"], dtype=torch.float32).reshape(1, 4)
+            pos_t = torch.as_tensor(obs["robot0_eef_pos"], dtype=torch.float32).flatten()
+            quat_t = torch.as_tensor(obs["robot0_eef_quat"], dtype=torch.float32).flatten()
+            if pos_t.numel() != 3:
+                raise ValueError(f"Expected robot0_eef_pos of shape (3,), got shape ({pos_t.numel()},)")
+            if quat_t.numel() != 4:
+                raise ValueError(f"Expected robot0_eef_quat of shape (4,), got shape ({quat_t.numel()},)")
+
             if "robot0_gripper_qpos" in obs:
-                gripper = torch.as_tensor(obs["robot0_gripper_qpos"], dtype=torch.float32).reshape(1, 2)
+                gripper_t = torch.as_tensor(obs["robot0_gripper_qpos"], dtype=torch.float32).flatten()
+                if gripper_t.numel() != 2:
+                    raise ValueError(f"Expected robot0_gripper_qpos of shape (2,), got shape ({gripper_t.numel()},)")
             else:
-                gripper = torch.tensor([[0.02, -0.02]], dtype=torch.float32)
+                gripper_t = torch.tensor([0.02, -0.02], dtype=torch.float32)
 
             raw_obs["observation.robot_state"] = {
-                "eef": {"pos": pos, "quat": quat},
-                "gripper": {"qpos": gripper},
+                "eef": {"pos": pos_t.reshape(1, 3), "quat": quat_t.reshape(1, 4)},
+                "gripper": {"qpos": gripper_t.reshape(1, 2)},
             }
 
         # 3. Instruction
