@@ -77,7 +77,7 @@ class SmolVLAAdapter(VLAPolicy):
         self,
         chunk_size: int = 50,
         action_dim: int = 7,
-        invert_gripper_action: bool = True,
+        invert_gripper_action: bool = False,
     ) -> None:
         super().__init__(chunk_size=chunk_size, action_dim=action_dim)
         self.checkpoint_path: Optional[str] = None
@@ -315,8 +315,9 @@ class SmolVLAAdapter(VLAPolicy):
     def postprocess(self, output: Any, apply_gripper_inversion: bool = True) -> np.ndarray:
         """Format postprocessor output into numpy array of shape (chunk_size, action_dim).
 
-        Applies ADR-0009 gripper polarity inversion when apply_gripper_inversion and
-        self.invert_gripper_action are True (+1 Open -> -1 Open for Robosuite).
+        By default, SmolVLA outputs native Robosuite actions (-1 = Open, +1 = Close) matching
+        the lerobot/libero dataset, requiring direct passthrough (invert_gripper_action=False).
+        If invert_gripper_action is explicitly True, flips the 7th dimension.
         """
         if isinstance(output, torch.Tensor):
             actions = output.detach().cpu().numpy()
@@ -338,7 +339,7 @@ class SmolVLAAdapter(VLAPolicy):
 
         actions_out = actions.astype(np.float32).copy()
         if apply_gripper_inversion and self.invert_gripper_action:
-            # ADR-0009: Invert gripper polarity from RLDS (+1=Open, -1=Close) to Robosuite (-1=Open, +1=Close)
+            # Optional gripper polarity flip (e.g. if adapting RLDS-trained models)
             actions_out[..., -1] = -1.0 * actions_out[..., -1]
 
         return actions_out

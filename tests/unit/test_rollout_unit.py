@@ -171,3 +171,78 @@ def test_rollout_invalid_horizon_fails_fast():
     policy = MockPolicy()
     with pytest.raises(ValueError, match="execution_horizon must be >= 1"):
         rollout_episode(env=env, policy=policy, instruction="test", execution_horizon=0)
+
+
+def test_rollout_diagnostics_report_generation(tmp_path: Path):
+    """Verify EpisodeResult includes diagnostic report and save_diagnostics writes valid JSON."""
+    env = MockEnv(success_at_step=5, max_steps=10)
+    policy = MockPolicy(chunk_size=50, action_dim=7)
+
+    result = rollout_episode(
+        env=env,
+        policy=policy,
+        instruction="pick up the object",
+        execution_horizon=5,
+        max_steps=10,
+        enable_diagnostics=True,
+    )
+
+    assert result.diagnostics_report is not None
+    assert result.diagnostics_report["termination_reason"] == "SUCCESS"
+    assert result.diagnostics_report["failure_phase"] == "NONE"
+
+    diag_file = tmp_path / "diagnostics.json"
+    result.save_diagnostics(diag_file)
+    assert diag_file.exists()
+    loaded = json.loads(diag_file.read_text(encoding="utf-8"))
+    assert loaded["termination_reason"] == "SUCCESS"
+
+
+def test_rollout_video_policy_failed_and_first(tmp_path: Path):
+    """Verify failed_and_first video policy: saves on init 0 or on failure, skips on success for init > 0."""
+    policy = MockPolicy(chunk_size=50, action_dim=7)
+
+    # 1. Success on init_state 0 -> SHOULD save (first episode)
+    env_succ_0 = MockEnv(success_at_step=2, max_steps=10)
+    path_0 = tmp_path / "video_0.mp4"
+    res_0 = rollout_episode(
+        env=env_succ_0,
+        policy=policy,
+        instruction="task 0",
+        initial_state_id=0,
+        record_video=True,
+        record_video_policy="failed_and_first",
+        video_path=path_0,
+    )
+    assert res_0.success is True
+    assert path_0.exists()
+
+    # 2. Success on init_state 1 -> SHOULD NOT save
+    env_succ_1 = MockEnv(success_at_step=2, max_steps=10)
+    path_1 = tmp_path / "video_1.mp4"
+    res_1 = rollout_episode(
+        env=env_succ_1,
+        policy=policy,
+        instruction="task 1",
+        initial_state_id=1,
+        record_video=True,
+        record_video_policy="failed_and_first",
+        video_path=path_1,
+    )
+    assert res_1.success is True
+    assert not path_1.exists()
+
+    # 3. Failure on init_state 1 -> SHOULD save
+    env_fail_1 = MockEnv(success_at_step=20, max_steps=5)  # fails at step 5
+    path_fail = tmp_path / "video_fail.mp4"
+    res_fail = rollout_episode(
+        env=env_fail_1,
+        policy=policy,
+        instruction="task fail",
+        initial_state_id=1,
+        record_video=True,
+        record_video_policy="failed_and_first",
+        video_path=path_fail,
+    )
+    assert res_fail.success is False
+    assert path_fail.exists()

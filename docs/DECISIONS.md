@@ -89,3 +89,15 @@ This document records the architectural and design decisions for **VLA Policy Ev
   - Telemetry logs (`model_output.jsonl`) must record both the raw policy action (`unnormalized_action`) and the final executed simulator action (`executed_sim_action`) for transparent auditability.
 - **Consequences**: Restores correct physical grasping behavior while preserving strict traceability and compliance with AGENTS.md Rule 3.
 
+---
+
+## ADR-0010: Runtime Environment Coordination and Strict Certification Tagging for VLA Evaluation
+- **Status**: Accepted
+- **Context**: The official reference LIBERO benchmark stack (`envs/libero_reference.yml`) relies on legacy dependencies (Python 3.8.13, robosuite 1.4.0, bddl 1.0.1, numpy 1.22.4). In contrast, modern VLA policies such as SmolVLA (`lerobot/smolvla_libero`) require modern dependency stacks (Python 3.10+, PyTorch >= 2.2, transformers >= 4.40). Running closed-loop evaluation requires coordinating the simulator and the policy model while adhering to isolated environment policies (ADR-0006) and benchmark honesty rules (AGENTS.md Rules 2, 6, 9).
+- **Decision**:
+  1. **Direct In-Process Execution**: For Phase 8 acceptance benchmark and baseline development, closed-loop evaluation runs within the verified Python 3.10 evaluation environment (`envs/smolvla.yml`), which incorporates robosuite and MuJoCo alongside PyTorch/LeRobot.
+  2. **Mandatory Execution Tier Tagging**: Because the runtime Python version is 3.10 (rather than pinned 3.8.13), all evaluation artifacts (`episode.json`, `summary.json`) must explicitly record `execution_tier: "LIBERO-DERIVED"` and mark the run as `NON-COMPARABLE` against official legacy LIBERO publication scores per AGENTS.md Rule 9.
+  3. **Strict Physical Invariant Enforcement**: Despite the Python 3.10 runtime, all physical simulation parameters must be locked to benchmark standard: 20 Hz control frequency, 1000-step horizon, Franka Panda with OSC_POSE controller, official initial state arrays (0..49), and 128x128 simulation camera rendering. The model adapter (`SmolVLAAdapter`) is solely responsible for resizing 128x128 images to 256x256 within its `preprocess()` method to fulfill model input contracts without altering simulator physics or rendering geometry.
+  4. **IPC Protocol for Strict Certification**: If certified comparison against the legacy Python 3.8.13 reference stack is required, a client-server IPC architecture (shared-memory or local socket between `envs/libero_reference.yml` simulator host and `envs/smolvla.yml` inference worker) shall be utilized rather than modifying reference dependencies.
+- **Consequences**: Preserves architectural purity and reproducibility, ensures zero dependency contamination, and completely eliminates misleading benchmark claims.
+

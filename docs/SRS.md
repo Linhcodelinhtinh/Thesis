@@ -226,18 +226,18 @@ The V1 core benchmark shall contain:
 
 All 10 official tasks.
 
-The official task list contains:
+The official task list (in canonical benchmark order per `libero_suite_task_map.py`):
 
-1. pick up the alphabet soup and place it in the basket;
-2. pick up the cream cheese and place it in the basket;
-3. pick up the milk and place it in the basket;
-4. pick up the tomato sauce and place it in the basket;
-5. pick up the butter and place it in the basket;
-6. pick up the orange juice and place it in the basket;
-7. pick up the chocolate pudding and place it in the basket;
-8. pick up the BBQ sauce and place it in the basket;
-9. pick up the ketchup and place it in the basket;
-10. pick up the salad dressing and place it in the basket.
+1. `pick up the alphabet soup and place it in the basket` (ID 0)
+2. `pick up the cream cheese and place it in the basket` (ID 1)
+3. `pick up the salad dressing and place it in the basket` (ID 2)
+4. `pick up the bbq sauce and place it in the basket` (ID 3)
+5. `pick up the ketchup and place it in the basket` (ID 4)
+6. `pick up the tomato sauce and place it in the basket` (ID 5)
+7. `pick up the butter and place it in the basket` (ID 6)
+8. `pick up the milk and place it in the basket` (ID 7)
+9. `pick up the chocolate pudding and place it in the basket` (ID 8)
+10. `pick up the orange juice and place it in the basket` (ID 9)
 
 These form the **basic manipulation/control suite**.
 
@@ -2112,6 +2112,8 @@ Only after this condition is satisfied shall the thesis memory mechanism be intr
 ---
 
 # 52. Recommended Execution Order
+
+> **Note on Roadmap Terminology**: The phases below represent macro-level research milestones of the entire thesis (where Phase 7 marks the transition to V2 memory research). For the detailed, day-to-day software engineering execution of the V1 evaluation sandbox, see `docs/IMPLEMENTATION_PLAN.md` (which decomposes V1 into 12 engineering phases, including Phase 7 Control Diagnostics and Phase 8 Acceptance Benchmark).
 
 ## Phase 0 — Environment verification
 

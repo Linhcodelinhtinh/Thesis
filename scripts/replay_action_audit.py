@@ -96,7 +96,8 @@ def audit_saved_run(
         raise FileNotFoundError(f"Expected model_output.jsonl and episode.json in {source_dir}")
 
     rows = _load_rows(source_log)
-    episode = json.loads(episode_path.read_text(encoding="utf-8"))
+    saved_provenance = episode.get("provenance", {})
+    num_steps_wait = saved_provenance.get("num_steps_wait", 0)
     env = LiberoEnv(
         benchmark_name=task_suite,
         task_id=task_id,
@@ -104,6 +105,7 @@ def audit_saved_run(
         horizon=max(1000, len(rows)),
         camera_height=camera_resolution,
         camera_width=camera_resolution,
+        num_steps_wait=num_steps_wait,
     )
 
     try:

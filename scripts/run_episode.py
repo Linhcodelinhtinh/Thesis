@@ -70,11 +70,18 @@ def parse_args():
         help="Capture camera frames and save an MP4 video of the rollout.",
     )
     parser.add_argument(
+        "--record-video-policy",
+        type=str,
+        default="all",
+        choices=["all", "failed_and_first", "none"],
+        help="Video recording persistence policy: 'all', 'failed_and_first', or 'none'.",
+    )
+    parser.add_argument(
         "--camera-resolution",
         type=int,
         default=256,
         choices=[128, 256],
-        help="Camera rendering resolution (official LeRobot default is 256).",
+        help="Camera rendering resolution (official LIBERO benchmark standard is 128).",
     )
     parser.add_argument(
         "--enable-diagnostics",
@@ -93,6 +100,26 @@ def parse_args():
         type=str,
         default=None,
         help="Target object name/substring for diagnostics (e.g., 'cream_cheese').",
+    )
+    parser.add_argument(
+        "--goal-container",
+        type=str,
+        default=None,
+        help="Goal container name/substring for diagnostics (e.g., 'basket').",
+    )
+    parser.add_argument(
+        "--render-overlay",
+        action="store_true",
+        default=False,
+        help="Render text telemetry overlay on saved video frames (default: False).",
+    )
+    parser.add_argument(
+        "--num-steps-wait",
+        "--settle-steps",
+        dest="num_steps_wait",
+        type=int,
+        default=10,
+        help="Number of simulator stabilization dummy steps after reset (official LeRobot default is 10).",
     )
     return parser.parse_args()
 
@@ -143,6 +170,7 @@ def main():
         horizon=args.max_steps,
         camera_height=args.camera_resolution,
         camera_width=args.camera_resolution,
+        num_steps_wait=args.num_steps_wait,
     )
 
     task_desc = env.language_instruction
@@ -200,6 +228,9 @@ def main():
         video_path=video_path,
         enable_diagnostics=args.enable_diagnostics,
         target_object_name=target_obj,
+        goal_container_name=args.goal_container,
+        record_video_policy=args.record_video_policy,
+        render_overlay=args.render_overlay,
     )
 
     # 4. Save standardized evaluation artifacts
@@ -211,8 +242,15 @@ def main():
     with open(out_dir / "episode.json", "w", encoding="utf-8") as f:
         json.dump(episode_data, f, indent=2)
 
+    # Save diagnostics.json (Phase 7)
+    if result.diagnostics_report:
+        result.save_diagnostics(out_dir / "diagnostics.json")
+
     # Save trajectory.npz
-    np.savez_compressed(out_dir / "trajectory.npz", actions=result.actions)
+    traj_kwargs = {"actions": result.actions}
+    if result.states is not None and len(result.states) > 0:
+        traj_kwargs["states"] = result.states
+    np.savez_compressed(out_dir / "trajectory.npz", **traj_kwargs)
 
     # Save timing.json
     timing_data = {

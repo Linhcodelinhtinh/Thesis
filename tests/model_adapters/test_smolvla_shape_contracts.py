@@ -184,8 +184,8 @@ def test_adapter_interface_validation_contract():
     assert info["state_dim"] == 8
     assert info["action_dim"] == 7
     assert info["chunk_size"] == 50
-    assert info["invert_gripper_action"] is True
-    assert info["gripper_action_polarity"] == "INVERTED_RLDS_TO_ROBOSUITE"
+    assert info["invert_gripper_action"] is False
+    assert info["gripper_action_polarity"] == "DIRECT"
     assert "observation_state" in info
 
     contract = info["observation_state"]
@@ -199,32 +199,31 @@ def test_adapter_interface_validation_contract():
     assert "policy_preprocessor_step_5_normalizer_processor.safetensors" in contract["source_of_truth"]
 
 
-def test_smolvla_gripper_polarity_inversion():
-    """Verify ADR-0009 gripper action polarity inversion."""
-    # When invert_gripper_action=True (default)
-    adapter = SmolVLAAdapter(chunk_size=2, action_dim=7, invert_gripper_action=True)
+def test_smolvla_gripper_polarity_direct_and_inversion():
+    """Verify SmolVLA native direct gripper passthrough (default) and optional inversion."""
+    # When invert_gripper_action=False (default: native Robosuite -1=Open, +1=Close)
+    adapter = SmolVLAAdapter(chunk_size=2, action_dim=7, invert_gripper_action=False)
 
-    # Raw model unnormalized output: step 0 has gripper +1.0 (Open in RLDS), step 1 has -1.0 (Close in RLDS)
+    # Model output: step 0 has gripper -1.0 (Open in Robosuite), step 1 has +1.0 (Close in Robosuite)
     raw_unnorm = torch.tensor([
-        [0.1, 0.2, 0.3, 0.0, 0.0, 0.0, 1.0],
         [0.1, 0.2, 0.3, 0.0, 0.0, 0.0, -1.0],
+        [0.1, 0.2, 0.3, 0.0, 0.0, 0.0, 1.0],
     ], dtype=torch.float32)
 
     sim_actions = adapter.postprocess(raw_unnorm)
-    # Robosuite expects -1.0 for Open and +1.0 for Close
     assert np.isclose(sim_actions[0, -1], -1.0)
     assert np.isclose(sim_actions[1, -1], 1.0)
 
-    # When invert_gripper_action=False (direct passthrough)
-    adapter_direct = SmolVLAAdapter(chunk_size=2, action_dim=7, invert_gripper_action=False)
-    sim_direct = adapter_direct.postprocess(raw_unnorm)
-    assert np.isclose(sim_direct[0, -1], 1.0)
-    assert np.isclose(sim_direct[1, -1], -1.0)
+    # When invert_gripper_action=True (explicit inversion)
+    adapter_inverted = SmolVLAAdapter(chunk_size=2, action_dim=7, invert_gripper_action=True)
+    sim_inverted = adapter_inverted.postprocess(raw_unnorm)
+    assert np.isclose(sim_inverted[0, -1], 1.0)
+    assert np.isclose(sim_inverted[1, -1], -1.0)
 
 
 def test_smolvla_dual_action_telemetry_cache():
     """Verify caching of raw normalized chunk, unnormalized chunk, and executed chunk."""
-    adapter = SmolVLAAdapter(chunk_size=2, action_dim=7, invert_gripper_action=True)
+    adapter = SmolVLAAdapter(chunk_size=2, action_dim=7, invert_gripper_action=False)
 
     class MockPolicy:
         def predict_action_chunk(self, batch):
@@ -233,9 +232,9 @@ def test_smolvla_dual_action_telemetry_cache():
 
     class MockUnnormalizer:
         def __call__(self, x):
-            # Unnormalizer converts to [-1, 1] range: e.g. gripper = 0.8
+            # Unnormalizer converts to [-1, 1] range: e.g. gripper = -0.8 (Robosuite Open)
             arr = torch.zeros((1, 2, 7), dtype=torch.float32)
-            arr[..., -1] = 0.8  # RLDS Open
+            arr[..., -1] = -0.8
             return arr
 
     adapter.policy = MockPolicy()
@@ -251,7 +250,7 @@ def test_smolvla_dual_action_telemetry_cache():
 
     executed_chunk = adapter.predict_action_chunk(sample_obs, "test task")
     assert executed_chunk.shape == (2, 7)
-    # Gripper inverted: 0.8 -> -0.8
+    # Direct passthrough: -0.8 -> -0.8
     assert np.isclose(executed_chunk[0, -1], -0.8)
 
     # Verify telemetry cache
@@ -262,7 +261,7 @@ def test_smolvla_dual_action_telemetry_cache():
 
     assert tel["unnormalized_chunk"] is not None
     assert tel["unnormalized_chunk"].shape == (2, 7)
-    assert np.isclose(tel["unnormalized_chunk"][0, -1], 0.8)
+    assert np.isclose(tel["unnormalized_chunk"][0, -1], -0.8)
 
     assert tel["executed_chunk"] is not None
     assert np.isclose(tel["executed_chunk"][0, -1], -0.8)

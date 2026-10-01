@@ -1,12 +1,11 @@
-manifest_version: 1.1.0
+manifest_version: 1.2.0
 benchmarks:
-  - libero_object
-  - libero_spatial
+- libero_object
+- libero_spatial
+- libero_goal
+- libero_10
 libero_commit: 8f1084e3132a39270c3a13ebe37270a43ece2a01
 tasks:
-  # ==========================================
-  # LIBERO-Object Suite (10 tasks)
-  # ==========================================
   pick_up_the_alphabet_soup_and_place_it_in_the_basket:
     bddl_file: pick_up_the_alphabet_soup_and_place_it_in_the_basket.bddl
     bddl_sha256: df088984da13131f8332ee0f13a7896c6a97afd02ee5007a42e8fc5e0893571e
@@ -67,10 +66,6 @@ tasks:
     init_file: pick_up_the_tomato_sauce_and_place_it_in_the_basket.init
     init_sha256: 2326da7ccacd3ebc75d80847f92d2e310b537b8dbbd8a76840a29b13f00f9a65
     pruned_init_sha256: 2326da7ccacd3ebc75d80847f92d2e310b537b8dbbd8a76840a29b13f00f9a65
-
-  # ==========================================
-  # LIBERO-Spatial Suite (10 tasks)
-  # ==========================================
   pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate:
     bddl_file: pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate.bddl
     bddl_sha256: 9b59eb1287802868ad9bc78d58e6d36d4ba31134e679cfdbdf4b0feb660c959b
@@ -131,3 +126,123 @@ tasks:
     init_file: pick_up_the_black_bowl_on_the_wooden_cabinet_and_place_it_on_the_plate.init
     init_sha256: cf88d880ab359681b7ca07df895738221e8cc19f68efaba0e332669b3b1e3fe2
     pruned_init_sha256: 08b0ac928dcc524a66d963851a6a4eece9aeb782b38466006e403a70e3287867
+  open_the_middle_drawer_of_the_cabinet:
+    bddl_file: open_the_middle_drawer_of_the_cabinet.bddl
+    bddl_sha256: 832ab48ec476807c767e8985666e295700f92d1f8daeae1c34eee1e75293769b
+    init_file: open_the_middle_drawer_of_the_cabinet.pruned_init
+    init_sha256: 977efe1216bee72bb4e9fa9ec4be1bcfe37fb00ece815eac117feba019b34b9f
+    pruned_init_sha256: 977efe1216bee72bb4e9fa9ec4be1bcfe37fb00ece815eac117feba019b34b9f
+  put_the_bowl_on_the_stove:
+    bddl_file: put_the_bowl_on_the_stove.bddl
+    bddl_sha256: c6812d6c988be830412aa6fc4801af04d60f8c4565d2625763b6a0f2b843a87f
+    init_file: put_the_bowl_on_the_stove.pruned_init
+    init_sha256: 7c1819725af8d08988078d6efb98ddb6dbefadb2e6d20df4ed23a2074f4d9ed1
+    pruned_init_sha256: 7c1819725af8d08988078d6efb98ddb6dbefadb2e6d20df4ed23a2074f4d9ed1
+  put_the_wine_bottle_on_top_of_the_cabinet:
+    bddl_file: put_the_wine_bottle_on_top_of_the_cabinet.bddl
+    bddl_sha256: 2ef6f403a8451e216af44158c1a6c975cf8e5058ad02d78367ac0be443d096fe
+    init_file: put_the_wine_bottle_on_top_of_the_cabinet.pruned_init
+    init_sha256: b8c659d17c722bf848065bec6b4d088ab8e90f48b5ae991b2f118b0f2b5bbe4b
+    pruned_init_sha256: b8c659d17c722bf848065bec6b4d088ab8e90f48b5ae991b2f118b0f2b5bbe4b
+  open_the_top_drawer_and_put_the_bowl_inside:
+    bddl_file: open_the_top_drawer_and_put_the_bowl_inside.bddl
+    bddl_sha256: 3056e4dc72ee590432cfb18c610fd077a572c8b8f256e45328031005dd0b6757
+    init_file: open_the_top_drawer_and_put_the_bowl_inside.pruned_init
+    init_sha256: 1cd5354ade9ab9f323a518515f961df96123b7daeca017df1f62d3e9ff18794f
+    pruned_init_sha256: 1cd5354ade9ab9f323a518515f961df96123b7daeca017df1f62d3e9ff18794f
+  put_the_bowl_on_top_of_the_cabinet:
+    bddl_file: put_the_bowl_on_top_of_the_cabinet.bddl
+    bddl_sha256: 2ffba859a154f50c3c99ffb3420743fa5aa65c70bf7d4cd26f5bc81d07be5713
+    init_file: put_the_bowl_on_top_of_the_cabinet.pruned_init
+    init_sha256: c0b7baf82f36f5304488bac91d788800a1c93d0a9fd19a73f448992d5366e145
+    pruned_init_sha256: c0b7baf82f36f5304488bac91d788800a1c93d0a9fd19a73f448992d5366e145
+  push_the_plate_to_the_front_of_the_stove:
+    bddl_file: push_the_plate_to_the_front_of_the_stove.bddl
+    bddl_sha256: 26f22f8ad39a4b2b344b049115c45661a877fa0b4821fb78246725e7e87d8c0b
+    init_file: push_the_plate_to_the_front_of_the_stove.pruned_init
+    init_sha256: 794beed679b18bbd7d9fb851c81877a974915ad63addff2d5ac5af0607fafac9
+    pruned_init_sha256: 794beed679b18bbd7d9fb851c81877a974915ad63addff2d5ac5af0607fafac9
+  put_the_cream_cheese_in_the_bowl:
+    bddl_file: put_the_cream_cheese_in_the_bowl.bddl
+    bddl_sha256: 81c54eace32b92466598103b3b6e8435ce90f10996ef18cec4a35fe6c4d31a98
+    init_file: put_the_cream_cheese_in_the_bowl.pruned_init
+    init_sha256: 524de11d240f33b93d5218b1779a1ded1037950fcf865f07d0c0029cc48cf3f5
+    pruned_init_sha256: 524de11d240f33b93d5218b1779a1ded1037950fcf865f07d0c0029cc48cf3f5
+  turn_on_the_stove:
+    bddl_file: turn_on_the_stove.bddl
+    bddl_sha256: cbd2a0514d53226c5d09e17af40b22935d4cb6ff8fdaff0d55f555de1adecc13
+    init_file: turn_on_the_stove.pruned_init
+    init_sha256: ed121db31d749647d70741c4c4ef0bd8e0876663986578795968e962d9b91340
+    pruned_init_sha256: ed121db31d749647d70741c4c4ef0bd8e0876663986578795968e962d9b91340
+  put_the_bowl_on_the_plate:
+    bddl_file: put_the_bowl_on_the_plate.bddl
+    bddl_sha256: 358b7781437e412c67d6a7648c1c28796b6b1bf117a25e61316cb8dfeb940e5b
+    init_file: put_the_bowl_on_the_plate.pruned_init
+    init_sha256: ef3466ffad734754dc40eba1f6f5712e37aa46b9692c595e0da34f16d3a0c668
+    pruned_init_sha256: ef3466ffad734754dc40eba1f6f5712e37aa46b9692c595e0da34f16d3a0c668
+  put_the_wine_bottle_on_the_rack:
+    bddl_file: put_the_wine_bottle_on_the_rack.bddl
+    bddl_sha256: 3d3ee18139056aa3780572cde17b1c50dc20ae0d299403f65e514e8471ba0e8e
+    init_file: put_the_wine_bottle_on_the_rack.pruned_init
+    init_sha256: fa09aa4ade871c1c6be3dd8c93eb3437ea15190fd7dc73b8c986c8d2d3cfb062
+    pruned_init_sha256: fa09aa4ade871c1c6be3dd8c93eb3437ea15190fd7dc73b8c986c8d2d3cfb062
+  LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket:
+    bddl_file: LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket.bddl
+    bddl_sha256: 2e661058917f683a25bce480015197f0a2c1911bcbc2b9dd9d947199069c9618
+    init_file: LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket.init
+    init_sha256: 7cef6cd0973d5c125d3cba94469ee58b116825a8d1df32693fd48119647348c8
+    pruned_init_sha256: 1899fe54c51e24a41d5f9e32254730d6777f4894ab68e0e873f1fa7ae2062030
+  LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket:
+    bddl_file: LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket.bddl
+    bddl_sha256: 3f552805c7ab34c44debcf38a48b8131d6fee3011dd86c039650b84e0f77d058
+    init_file: LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket.init
+    init_sha256: a2357ab3a089b11c99a932f3e05fb33252f564f9ad66d39a61984156c04e288f
+    pruned_init_sha256: f8ac06ea8f43bb328d40cba1e6a9767da2f8f5386fd7ff3f845c64a96bf6d2ce
+  KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it:
+    bddl_file: KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it.bddl
+    bddl_sha256: 491835cc2eb6956f7ce3d1ee4e266377116168fe453e6529fe105e3b0333635d
+    init_file: KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it.init
+    init_sha256: 8519d4638868ce661a20d331495d97e0521f8e1535479dd26ba875d5cc06b88f
+    pruned_init_sha256: 02a8401f8d59f5447fc8c5a16f4c158dd8c426c3eaed6779927a2a53e9abf3c5
+  KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it:
+    bddl_file: KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it.bddl
+    bddl_sha256: 5255fe54d7f25fad4dee8fa30a30033d8cb908f1708d953c91ab609264fb4fb8
+    init_file: KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it.init
+    init_sha256: 7eba1f68f9d3a553b14e99a437356fbcc91ba1a531ac2475fc858c1e9bcbe2fc
+    pruned_init_sha256: e98ded151f64a036c74c872336dd09b968c379f3c9db7bc333aba37e7c235b86
+  LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate:
+    bddl_file: LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate.bddl
+    bddl_sha256: 0c6749b920bff1e1efe47ffb0e0b801a3e6959a650e710f376dd2b812c74e865
+    init_file: LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate.init
+    init_sha256: 13269d4d8b2738111d6d2df1949c9b361536d2d3f9e294e472fdbbaaf20eb1c2
+    pruned_init_sha256: b6f20784b381c75d715f4fdaadda1fb460cbe24adcbad76f381a009419b8474e
+  STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy:
+    bddl_file: STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy.bddl
+    bddl_sha256: 07ca32c940d70c065e870452ef9c63e6dfa1d8506e6a86cf9b3763f652ba2d9f
+    init_file: STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy.init
+    init_sha256: 98f00fb67ffc25888fc89349daec00dcf686209e09cf0a1b92f8b87f4617244b
+    pruned_init_sha256: 6cd3937ba18d64e72223222af36888d26ea201840415adbc4dae590454d0a5a8
+  LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate:
+    bddl_file: LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate.bddl
+    bddl_sha256: dbc9464b424cdc9b771b92d0b8a8c185b1b539f6a4133b323dc858bcf8f6a9c2
+    init_file: LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate.init
+    init_sha256: 96e6a59d8a2db8752526dde1ef66c03b09e86a9c601c97f672c862c4d5aa483f
+    pruned_init_sha256: 6e811394c4ff9a43ae23515d8512e9b657c04344b94dd5baed121b595490514f
+  LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket:
+    bddl_file: LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket.bddl
+    bddl_sha256: e27ab37f512fe42e35771d6130f531e6a9656929e7b4c60b348b81360cf5675d
+    init_file: LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket.init
+    init_sha256: 75f99004a33c2d4f6c543e471e1798b75e6609f6727326611b0368f5abb85af0
+    pruned_init_sha256: 2113ea5923fcbbe1b57b428383934496072f062729d0b72d3021573d55d25abc
+  KITCHEN_SCENE8_put_both_moka_pots_on_the_stove:
+    bddl_file: KITCHEN_SCENE8_put_both_moka_pots_on_the_stove.bddl
+    bddl_sha256: ae1299a707d3e810096ad648948c517de40474bcdacca93a15e17d191e34454a
+    init_file: KITCHEN_SCENE8_put_both_moka_pots_on_the_stove.init
+    init_sha256: 4d4dcf9bd3930bc560143fbdcf8e6ffc519544ce6d4fa6034cefda34ac1bbe6c
+    pruned_init_sha256: 44f992e911c84a1340589510ecdaf947a4872966f7678c8364d8bb5d13dc4dac
+  KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it:
+    bddl_file: KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it.bddl
+    bddl_sha256: 456d145f92be049f445fc77673dc583d9d17ea7afe92f6ffcb2fd1fa5565d420
+    init_file: KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it.init
+    init_sha256: b8efe4c7a74062ed6732ac47f65611a8b39afe60b635cb43ab0942f99d47c1b6
+    pruned_init_sha256: 6b75c8d4d1e1c40b5d99c78ceea380d99ccffb0a484a4cb2d3153488a0afbbe2

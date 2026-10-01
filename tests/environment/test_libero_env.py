@@ -256,3 +256,30 @@ def test_libero_spatial_suite_loading():
     finally:
         env.close()
 
+
+def test_settle_wait_steps_and_provenance(libero_env):
+    """Test 14: Verify settling dummy steps (num_steps_wait) protocol and provenance."""
+    assert libero_env.num_steps_wait == 10
+    assert libero_env.OFFICIAL_SETTLE_STEPS == 10
+    assert libero_env.OFFICIAL_DUMMY_ACTION == [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0]
+
+    # Verify reset with default 10 wait steps
+    obs_settled = libero_env.reset(initial_state_id=0)
+    assert libero_env.current_step == 0
+    assert "agentview_image" in obs_settled
+    assert "robot0_eef_pos" in obs_settled
+
+    # Verify override num_steps_wait=0
+    obs_raw = libero_env.reset(initial_state_id=0, num_steps_wait=0)
+    assert libero_env.current_step == 0
+    assert "agentview_image" in obs_raw
+
+    # Negative num_steps_wait must raise ValueError
+    with pytest.raises(ValueError, match="num_steps_wait must be non-negative"):
+        libero_env.reset(initial_state_id=0, num_steps_wait=-1)
+
+    # Provenance metadata must report num_steps_wait
+    meta = libero_env.get_provenance_metadata()
+    assert meta["num_steps_wait"] == 10
+
+

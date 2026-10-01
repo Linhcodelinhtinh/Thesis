@@ -48,6 +48,8 @@ class LiberoEnv:
     OFFICIAL_CAMERAS = ["agentview", "robot0_eye_in_hand"]
     OFFICIAL_IMAGE_SIZE = (128, 128)
     OFFICIAL_ROBOT = "Panda"
+    OFFICIAL_SETTLE_STEPS = 10
+    OFFICIAL_DUMMY_ACTION = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0]
 
     def __init__(
         self,
@@ -60,6 +62,7 @@ class LiberoEnv:
         camera_names: Optional[List[str]] = None,
         camera_height: int = 128,
         camera_width: int = 128,
+        num_steps_wait: int = 10,
         verify_assets: bool = True,
         **kwargs: Any,
     ) -> None:
@@ -95,6 +98,7 @@ class LiberoEnv:
         self.camera_names = list(camera_names)
         self.camera_height = camera_height
         self.camera_width = camera_width
+        self.num_steps_wait = int(num_steps_wait)
 
         # Enforce strict benchmark invariants if in STRICT-LIBERO mode
         if self.mode == BenchmarkMode.STRICT_LIBERO:
@@ -151,6 +155,9 @@ class LiberoEnv:
             )
 
         # Instantiate official LIBERO OffScreenRenderEnv
+        env_kwargs = dict(kwargs)
+        env_kwargs.setdefault("ignore_done", True)
+
         self._env = OffScreenRenderEnv(
             bddl_file_name=self.bddl_file_path,
             robots=[self.OFFICIAL_ROBOT],
@@ -163,7 +170,7 @@ class LiberoEnv:
             camera_widths=self.camera_width,
             has_renderer=False,
             has_offscreen_renderer=True,
-            **kwargs,
+            **env_kwargs,
         )
 
         self.current_step = 0
@@ -215,11 +222,18 @@ class LiberoEnv:
     def num_initial_states(self) -> int:
         return len(self.init_states)
 
-    def reset(self, initial_state_id: int = 0) -> Dict[str, np.ndarray]:
+    def reset(
+        self,
+        initial_state_id: int = 0,
+        num_steps_wait: Optional[int] = None,
+    ) -> Dict[str, np.ndarray]:
         """Reset the environment to an exact official benchmark initial state.
 
         Args:
             initial_state_id: Index of the initial state from official benchmark array (0 to 49).
+            num_steps_wait: Optional override for settling steps (defaults to self.num_steps_wait).
+                            Executes no-op dummy actions to allow MuJoCo collision micro-penetrations
+                            to relax and tabletop objects to reach stable resting contact per LeRobot.
 
         Returns:
             Dictionary of initial observations.
@@ -230,11 +244,29 @@ class LiberoEnv:
                 f"Available states: 0 to {len(self.init_states) - 1}."
             )
 
-        self.current_init_state_id = initial_state_id
-        self.current_step = 0
+        steps_wait = self.num_steps_wait if num_steps_wait is None else int(num_steps_wait)
+        if steps_wait < 0:
+            raise ValueError(f"num_steps_wait must be non-negative, got {steps_wait}")
 
+        self.current_init_state_id = initial_state_id
         target_state = self.init_states[initial_state_id]
         obs = self._env.set_init_state(target_state)
+
+        # Execute settling wait steps per official LeRobot LiberoEnv protocol
+        if steps_wait > 0:
+            dummy_action = np.array(self.OFFICIAL_DUMMY_ACTION, dtype=np.float32)
+            for _ in range(steps_wait):
+                obs, _, _, _ = self._env.step(dummy_action)
+
+        self.current_step = 0
+
+        # Reset underlying Robosuite timestep and done flag after settling phase
+        # so policy receives a clean, unpenalized step budget from 0 to horizon
+        underlying = getattr(self._env, "env", self._env)
+        if hasattr(underlying, "timestep"):
+            underlying.timestep = 0
+        if hasattr(underlying, "done"):
+            underlying.done = False
 
         # Validate observation sanity
         self._validate_observation(obs)
@@ -363,6 +395,7 @@ class LiberoEnv:
             "platform": platform.platform(),
             "robosuite_version": robosuite_ver,
             "backend": os.environ.get("MUJOCO_GL", "default"),
+            "num_steps_wait": self.num_steps_wait,
         }
 
     def render(self, camera_name: str = "agentview") -> np.ndarray:

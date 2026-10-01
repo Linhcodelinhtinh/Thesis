@@ -631,58 +631,29 @@ Một task đơn giản phải có thể chạy end-to-end mà không interventi
 
 ## Mục tiêu
 
-Nếu task fail, biết **fail ở đâu**.
+Nếu task fail, biết **fail ở đâu** và ghi nhận **bằng chứng cụ thể** (evidence-based attribution), không ép buộc gán nhãn suy đoán.
 
 ## Implement
 
-Tạo:
-
+Module:
 ```text
 src/evaluation/diagnostics.py
 ```
 
-Tự động phân loại:
+### Schema 4 trường độc lập:
+1. `termination_reason`: `SUCCESS`, `MAX_STEPS`, `INVALID_ACTION`, `POLICY_ERROR`, `SIMULATOR_ERROR`
+2. `failure_phase`: `NONE`, `REACH`, `GRASP`, `LIFT`, `TRANSPORT`, `PLACEMENT`, `TIMEOUT`
+3. `primary_failure_code`: 17 mã F1–F17 per SRS Section 22 hoặc `UNATTRIBUTED` khi không có log lỗi xác thực
+4. `evidence`: Bằng chứng định lượng (`min_eef_to_object_dist`, `max_lift_delta_z`, tiếp xúc ngón kẹp, exception trace)
 
+### Chụp baseline t=0:
+- Vị trí vật thể ban đầu ($z_0$) được chụp ngay sau `env.reset()`, trước bước điều khiển đầu tiên.
+
+### Logging Artifacts:
+Mỗi episode lưu thêm:
 ```text
-reach
-grasp
-lift
-transport
-placement
-release
-timeout
-invalid action
+diagnostics.json
 ```
-
-## Logging thêm
-
-```text
-EEF pose
-target pose
-distance-to-object
-distance-to-target
-gripper state
-collision
-object lift state
-```
-
-## Visualization
-
-Render:
-
-```text
-current EEF
-predicted EEF target
-object
-target
-gripper state
-```
-
-## Acceptance
-
-Một failed episode phải có đủ thông tin để trả lời:
-
-> “VLA fail ở reach, grasp, action decoding hay controller?”
 
 ---
 
@@ -690,52 +661,30 @@ Một failed episode phải có đủ thông tin để trả lời:
 
 ## Mục tiêu
 
-Không chạy 20 task.
+Chạy kiểm thử nghiệm thu trên tập hạt nhân gồm **10 tasks đa dạng** qua 4 suites chính thức (Object, Spatial, Goal, 10) trên 10 official initial states (0..9) nhằm thiết lập baseline thực nghiệm đáng tin cậy trước khi scale.
 
-Chạy khoảng:
+## Implement
 
+Batch Runner & Aggregator:
 ```text
-3 simple official tasks
+src/evaluation/benchmark_aggregator.py
+scripts/run_benchmark.py
 ```
 
-Ví dụ:
+### Protocol & Invariants (ADR-0010):
+- **Simulation**: Khóa 1000 max steps, camera render `128x128`, 20 Hz, Franka Panda / OSC_POSE.
+- **Model Adapter**: Tự động chuyển đổi quan sát visual từ 128 lên 256 per `smolvla_libero.yaml`.
+- **Initial States**: Locked set `[0, 1, ..., 9]` (10 episodes/task, 100 episodes total).
+- **Receding Horizon $s$**: Default $s=50$, hỗ trợ cấu hình linh động qua CLI `--execution-horizon`.
+- **Video Buffering**: Buffer trong RAM, lưu file theo chính sách `failed_and_first` (lưu init 0 và các episode thất bại).
 
+### Output Artifacts:
 ```text
-pick object A → basket
-pick object B → basket
-pick object C → basket
+benchmark_summary.json
+benchmark_summary.csv
+failure_distribution.csv
+BENCHMARK_REPORT.md
 ```
-
-## Evaluation
-
-Mỗi task:
-
-```text 10 episodes
-```
-
-hoặc sử dụng official initial-state set nếu pipeline đã ổn.
-
-## Metrics
-
-Tối thiểu:
-
-```text
-success rate
-grasp success
-placement success
-failure phase
-episode length
-inference latency
-```
-
-## Acceptance
-
-Ta cần biết:
-
-```text “model actually works”
-```
-
-trước khi scale.
 
 ---
 
@@ -765,6 +714,7 @@ same controller
 same success predicate
 same episode set
 ```
+nhưng vẫn cần đáp ứng các chuẩn đầu vào của mỗi model theo original repository
 
 Model-specific preprocessing/action decoding được giữ nguyên.
 
@@ -1033,17 +983,17 @@ environment hash
 ## V1 release checklist
 
 ```text
-[ ] resource manifest
-[ ] environment manifest
-[ ] model manifest
-[ ] reproducible install
-[ ] demo replay
-[ ] basic policy rollout
+[x] resource manifest
+[x] environment manifest
+[x] model manifest
+[x] reproducible install
+[x] demo replay
+[x] basic policy rollout
 [ ] Object suite
 [ ] LIBERO-10
 [ ] quantitative report
 [ ] qualitative report
-[ ] failure taxonomy
+[x] failure taxonomy
 [ ] selected frozen baseline
 ```
 
