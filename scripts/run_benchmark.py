@@ -21,11 +21,12 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 import numpy as np
+import yaml
 
 from src.evaluation.benchmark_aggregator import BenchmarkAggregator
 from src.evaluation.rollout import rollout_episode
 from src.models.registry import get_model_class
-import src.models.smolvla.adapter  # Explicitly register SmolVLA policy class
+import src.models  # Explicitly register all policy classes (SmolVLA, MiniVLA, MiniVLA-VQ)
 from src.simulator.libero_env import BenchmarkMode, LiberoEnv
 
 
@@ -73,6 +74,19 @@ def parse_args():
             "custom",
         ],
         help="Benchmark task preset to evaluate (default: acceptance_10). Shortcuts: full / all_40 (all 40 tasks), pilot_5, libero_spatial, libero_object, libero_goal, libero_10.",
+    )
+    parser.add_argument(
+        "--config",
+        type=str,
+        default=None,
+        help="Path to YAML benchmark configuration file (e.g., configs/benchmarks/libero_object.yaml).",
+    )
+    parser.add_argument(
+        "--sample-level",
+        type=str,
+        default=None,
+        choices=["pilot", "full", "custom"],
+        help="Evaluation sample level: 'pilot' (10 locked states 0..9) or 'full' (50 states 0..49).",
     )
     parser.add_argument(
         "--task-suite",
@@ -174,8 +188,19 @@ def parse_args():
     return parser.parse_args()
 
 
-def resolve_tasks(args) -> List[Dict[str, Any]]:
+def resolve_tasks(args, config_data: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
     """Determine the list of tasks to evaluate."""
+    if config_data and "tasks" in config_data:
+        suite = config_data.get("task_suite", "libero_object")
+        return [
+            {
+                "task_suite": suite,
+                "task_id": t["task_id"],
+                "name": t.get("name", f"{suite}_{t['task_id']}"),
+            }
+            for t in config_data["tasks"]
+        ]
+
     if args.preset == "acceptance_10":
         return ACCEPTANCE_10_TASKS
 
@@ -210,14 +235,46 @@ def resolve_tasks(args) -> List[Dict[str, Any]]:
 
 def main():
     args = parse_args()
-    tasks_to_run = resolve_tasks(args)
-    init_state_ids = args.initial_state_ids if args.initial_state_ids is not None else list(range(args.episodes_per_task))
+
+    config_data = None
+    if args.config and os.path.exists(args.config):
+        with open(args.config, "r", encoding="utf-8") as f:
+            config_data = yaml.safe_load(f)
+
+    tasks_to_run = resolve_tasks(args, config_data)
+
+    # Resolve initial states and sample level tier
+    if args.initial_state_ids is not None:
+        init_state_ids = args.initial_state_ids
+    elif args.sample_level == "full":
+        init_state_ids = list(range(50))
+    elif args.sample_level == "pilot":
+        init_state_ids = list(range(10))
+    elif config_data and "sample_levels" in config_data:
+        lvl_key = args.sample_level or "pilot"
+        init_state_ids = config_data["sample_levels"].get(lvl_key, {}).get("initial_state_ids", list(range(args.episodes_per_task)))
+    else:
+        init_state_ids = list(range(args.episodes_per_task))
+
+    if len(init_state_ids) == 50 and set(init_state_ids) == set(range(50)):
+        sample_level_tier = "FULL_50_STATES"
+    else:
+        sample_level_tier = f"PILOT_{len(init_state_ids)}_STATES"
+
+    benchmark_name = "Acceptance Benchmark Baseline"
+    if config_data and "benchmark_name" in config_data:
+        benchmark_name = config_data["benchmark_name"]
+    elif args.preset in ("libero_object", "object_10"):
+        benchmark_name = "Core LIBERO-Object Benchmark (Phase 10)"
+    elif args.preset == "libero_10":
+        benchmark_name = "LIBERO-10 Compositional Benchmark (Phase 11)"
 
     print("=" * 70)
-    print("VLA Batch Acceptance Benchmark Runner (Phase 8)")
+    print(f"VLA Benchmark Evaluation Runner: {benchmark_name}")
     print("=" * 70)
     print(f"Model: {args.model_name} ({args.checkpoint})")
     print(f"Execution Horizon (s): {args.execution_horizon}")
+    print(f"Sample Level Tier: {sample_level_tier}")
     print(f"Tasks to Evaluate ({len(tasks_to_run)} tasks):")
     for idx, t in enumerate(tasks_to_run):
         print(f"  [{idx+1:02d}] {t['task_suite']} (Task ID {t['task_id']}): {t['name']}")
@@ -259,7 +316,9 @@ def main():
         "execution_tier": "STRICT_LIBERO" if is_py38 and args.max_steps == 1000 and args.camera_resolution == 128 else f"LIBERO-DERIVED (HOST_PY{sys.version_info.major}.{sys.version_info.minor})",
         "certification": "CERTIFIED_OFFICIAL" if is_py38 and args.camera_resolution == 128 else "NON-COMPARABLE_OFFICIAL_PAPER",
         "python_version": py_version,
-        "note": "Acceptance pilot baseline evaluated across locked initial states 0..N-1. SmolVLA uses native 256x256 camera rendering per LeRobot training distribution.",
+        "sample_level": sample_level_tier,
+        "benchmark_name": benchmark_name,
+        "note": f"Evaluated under {sample_level_tier}. Native camera rendering per model specification.",
         "model_name": args.model_name,
         "checkpoint": args.checkpoint,
         "execution_horizon_s": args.execution_horizon,
@@ -278,7 +337,7 @@ def main():
 
     # 2. Initialize Aggregator
     aggregator = BenchmarkAggregator(
-        benchmark_name="Acceptance Benchmark Baseline (Phase 8)",
+        benchmark_name=benchmark_name,
         provenance=provenance,
     )
 

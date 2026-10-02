@@ -1,0 +1,75 @@
+# Benchmark Configuration: Core LIBERO-Object (Phase 10)
+# Comprehensive Single-Object Manipulation across 10 diverse objects
+# Pinned LIBERO Commit: 8f1084e3132a39270c3a13ebe37270a43ece2a01
+
+benchmark_name: "LIBERO-Object Core Benchmark (Phase 10)"
+task_suite: "libero_object"
+num_tasks: 10
+
+# Source of truth: runtime benchmark.get_task(i)
+tasks:
+  - task_id: 0
+    name: "pick_up_the_alphabet_soup_and_place_it_in_the_basket"
+    object_geometry: "cylinder"
+    object_class: "alphabet_soup"
+  - task_id: 1
+    name: "pick_up_the_cream_cheese_and_place_it_in_the_basket"
+    object_geometry: "box"
+    object_class: "cream_cheese"
+  - task_id: 2
+    name: "pick_up_the_salad_dressing_and_place_it_in_the_basket"
+    object_geometry: "bottle"
+    object_class: "salad_dressing"
+  - task_id: 3
+    name: "pick_up_the_bbq_sauce_and_place_it_in_the_basket"
+    object_geometry: "bottle"
+    object_class: "bbq_sauce"
+  - task_id: 4
+    name: "pick_up_the_ketchup_and_place_it_in_the_basket"
+    object_geometry: "bottle"
+    object_class: "ketchup"
+  - task_id: 5
+    name: "pick_up_the_tomato_sauce_and_place_it_in_the_basket"
+    object_geometry: "can"
+    object_class: "tomato_sauce"
+  - task_id: 6
+    name: "pick_up_the_butter_and_place_it_in_the_basket"
+    object_geometry: "box"
+    object_class: "butter"
+  - task_id: 7
+    name: "pick_up_the_milk_and_place_it_in_the_basket"
+    object_geometry: "carton"
+    object_class: "milk"
+  - task_id: 8
+    name: "pick_up_the_chocolate_pudding_and_place_it_in_the_basket"
+    object_geometry: "cup"
+    object_class: "chocolate_pudding"
+  - task_id: 9
+    name: "pick_up_the_orange_juice_and_place_it_in_the_basket"
+    object_geometry: "bottle"
+    object_class: "orange_juice"
+
+sample_levels:
+  pilot:
+    tier: "PILOT_10_STATES"
+    episodes_per_task: 10
+    initial_state_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    total_episodes: 100
+    description: "Preliminary comparative pilot across locked states 0..9 per task"
+  full:
+    tier: "FULL_50_STATES"
+    episodes_per_task: 50
+    initial_state_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49]
+    total_episodes: 500
+    description: "Full benchmark across all 50 official initial states per task"
+
+simulation:
+  robot: "Panda"
+  gripper: "PandaGripper"
+  controller: "OSC_POSE"
+  control_frequency_hz: 20
+  max_steps_per_episode: 1000
+  camera_resolution: [256, 256]
+  camera_names:
+    - "agentview"
+    - "robot0_eye_in_hand"

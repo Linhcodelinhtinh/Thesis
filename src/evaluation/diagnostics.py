@@ -75,6 +75,20 @@ class DiagnosticsConfig:
 
 
 @dataclass
+class SubtaskMilestone:
+    """Subtask milestone extracted from BDDL goal condition conjuncts (Phase 11)."""
+    name: str
+    description: str
+    predicate_key: Optional[str] = None
+    target_object: Optional[str] = None
+    achieved: bool = False
+    first_achieved_step: Optional[int] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass
 class DiagnosticReport:
     """Telemetry report with decoupled termination reason, phase, and evidence."""
     termination_reason: str
@@ -85,6 +99,7 @@ class DiagnosticReport:
     evidence: Dict[str, Any] = field(default_factory=dict)
     summary_metrics: Dict[str, Any] = field(default_factory=dict)
     config: Dict[str, Any] = field(default_factory=dict)
+    subtask_milestones: List[Dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -287,8 +302,170 @@ class ContactDiagnostics:
         }
 
 
+def extract_subtask_milestones(
+    env: Any,
+    instruction: Optional[str] = None,
+    task_name: Optional[str] = None,
+) -> List[SubtaskMilestone]:
+    """Decompose benchmark task goal into subtask milestone predicates (Phase 11).
+
+    Checks BDDL parsed_problem AST if accessible; otherwise decomposes natural language
+    instruction or task name into sequential or compositional subgoals.
+    """
+    # 1. Attempt BDDL parsed_problem AST extraction
+    parsed_problem = None
+    for candidate in [
+        getattr(env, "parsed_problem", None),
+        getattr(getattr(env, "_env", None), "parsed_problem", None),
+        getattr(getattr(getattr(env, "_env", None), "env", None), "parsed_problem", None),
+    ]:
+        if candidate is not None and isinstance(candidate, dict):
+            parsed_problem = candidate
+            break
+
+    if parsed_problem is not None and "goal" in parsed_problem:
+        goal_ast = parsed_problem["goal"]
+        if isinstance(goal_ast, list) and len(goal_ast) > 1 and goal_ast[0] == "and":
+            milestones = []
+            for i, conjunct in enumerate(goal_ast[1:]):
+                if isinstance(conjunct, list) and len(conjunct) > 0:
+                    pred_name = str(conjunct[0])
+                    args = [str(a) for a in conjunct[1:]]
+                    target_obj = args[0] if len(args) > 0 else None
+                    milestones.append(
+                        SubtaskMilestone(
+                            name=f"milestone_{i}_{pred_name}_{'_'.join(args)}",
+                            description=f"({pred_name} {' '.join(args)})",
+                            predicate_key=f"{pred_name}({','.join(args)})",
+                            target_object=target_obj,
+                        )
+                    )
+            if milestones:
+                return milestones
+
+    # 2. Decompose from natural language instruction or task name
+    raw_text = (
+        instruction
+        or getattr(env, "language_instruction", "")
+        or getattr(env, "task_description", "")
+        or task_name
+        or ""
+    ).strip()
+    text = raw_text.lower()
+
+    # Pattern A: "put both the X and the Y in the basket"
+    both_match = re.search(r"put both (?:the )?([a-z0-9_ ]+?) and (?:the )?([a-z0-9_ ]+?) in (?:the )?([a-z0-9_ ]+)", text)
+    if both_match:
+        obj1 = both_match.group(1).strip().replace(" ", "_")
+        obj2 = both_match.group(2).strip().replace(" ", "_")
+        container = both_match.group(3).strip().replace(" ", "_")
+        return [
+            SubtaskMilestone(
+                name=f"milestone_0_put_{obj1}_in_{container}",
+                description=f"Put {obj1} in {container}",
+                target_object=obj1,
+            ),
+            SubtaskMilestone(
+                name=f"milestone_1_put_{obj2}_in_{container}",
+                description=f"Put {obj2} in {container}",
+                target_object=obj2,
+            ),
+        ]
+
+    # Pattern B: "turn on the stove and put the moka pot on it"
+    stove_match = re.search(r"turn on (?:the )?([a-z0-9_ ]+?) and put (?:the )?([a-z0-9_ ]+?) on", text)
+    if stove_match:
+        fixture = stove_match.group(1).strip().replace(" ", "_")
+        obj = stove_match.group(2).strip().replace(" ", "_")
+        return [
+            SubtaskMilestone(
+                name=f"milestone_0_turn_on_{fixture}",
+                description=f"Turn on the {fixture}",
+                target_object=fixture,
+            ),
+            SubtaskMilestone(
+                name=f"milestone_1_put_{obj}_on_{fixture}",
+                description=f"Put {obj} on the {fixture}",
+                target_object=obj,
+            ),
+        ]
+
+    # Pattern C: "put X in Y and close it" (drawer, microwave, etc.)
+    close_match = re.search(r"put (?:the )?([a-z0-9_ ]+?) in (?:the )?([a-z0-9_ ]+?) and close it", text)
+    if close_match:
+        obj = close_match.group(1).strip().replace(" ", "_")
+        fixture = close_match.group(2).strip().replace(" ", "_")
+        return [
+            SubtaskMilestone(
+                name=f"milestone_0_put_{obj}_in_{fixture}",
+                description=f"Put {obj} in {fixture}",
+                target_object=obj,
+            ),
+            SubtaskMilestone(
+                name=f"milestone_1_close_{fixture}",
+                description=f"Close {fixture}",
+                target_object=fixture,
+            ),
+        ]
+
+    # Pattern D: "put X on left plate and put Y on right plate"
+    dual_plate = re.search(r"put (?:the )?([a-z0-9_ ]+?) on (?:the )?left plate and put (?:the )?([a-z0-9_ ]+?) on (?:the )?right plate", text)
+    if dual_plate:
+        obj1 = dual_plate.group(1).strip().replace(" ", "_")
+        obj2 = dual_plate.group(2).strip().replace(" ", "_")
+        return [
+            SubtaskMilestone(
+                name=f"milestone_0_put_{obj1}_on_left_plate",
+                description=f"Put {obj1} on left plate",
+                target_object=obj1,
+            ),
+            SubtaskMilestone(
+                name=f"milestone_1_put_{obj2}_on_right_plate",
+                description=f"Put {obj2} on right plate",
+                target_object=obj2,
+            ),
+        ]
+
+    # Pattern E: Single-object atomic pick and place: "pick up the X and place it in/on Y"
+    if re.search(r"pick up (?:the )?[a-z0-9_ ]+? and place it (?:in|on) ", text):
+        target_obj, _ = extract_target_and_goal(env, raw_text)
+        return [
+            SubtaskMilestone(
+                name="milestone_0_complete_task",
+                description=raw_text or "Task completion goal",
+                target_object=target_obj,
+            )
+        ]
+
+    # Pattern F: generic " and " conjunction
+    if " and " in text:
+        parts = text.split(" and ")
+        m_list = []
+        for i, p in enumerate(parts):
+            p_clean = p.strip()
+            obj_sub, _ = extract_target_and_goal(env, p_clean)
+            m_list.append(
+                SubtaskMilestone(
+                    name=f"milestone_{i}_{p_clean[:30].replace(' ', '_')}",
+                    description=p_clean,
+                    target_object=obj_sub,
+                )
+            )
+        return m_list
+
+    # Pattern F: Default single task milestone
+    target_obj, _ = extract_target_and_goal(env, raw_text)
+    return [
+        SubtaskMilestone(
+            name="milestone_0_complete_task",
+            description=raw_text or "Task completion goal",
+            target_object=target_obj,
+        )
+    ]
+
+
 class EpisodeDiagnosticsCollector:
-    """Step-by-step telemetry collector and evidence-based failure classifier (Phase 7)."""
+    """Step-by-step telemetry collector and evidence-based failure classifier (Phase 7 & 11)."""
 
     def __init__(
         self,
@@ -296,13 +473,22 @@ class EpisodeDiagnosticsCollector:
         target_object_name: Optional[str] = None,
         goal_container_name: Optional[str] = None,
         config: Optional[DiagnosticsConfig] = None,
+        instruction: Optional[str] = None,
+        task_name: Optional[str] = None,
     ) -> None:
         self.config = config or DiagnosticsConfig()
+        self.instruction = instruction
+        self.task_name = task_name
         self.diagnostics = ContactDiagnostics(
             env=env,
             target_object_name=target_object_name,
             goal_container_name=goal_container_name,
             config=self.config,
+        )
+
+        # Subtask milestones for multi-stage compositional tracking (Phase 11)
+        self.subtask_milestones: List[SubtaskMilestone] = extract_subtask_milestones(
+            env=env, instruction=instruction, task_name=task_name
         )
 
         # Progression flags
@@ -416,6 +602,9 @@ class EpisodeDiagnosticsCollector:
         if "robot0_gripper_qpos" in obs:
             gripper_qpos = [round(float(v), 5) for v in np.asarray(obs["robot0_gripper_qpos"]).flatten()]
 
+        # 5. Update subtask milestones (Phase 11)
+        self._update_subtasks(step_num, obs, action)
+
         step_telemetry = {
             "step": step_num,
             "dist_eef_to_object": round(d_eef_obj, 4) if d_eef_obj != float("inf") else None,
@@ -432,6 +621,34 @@ class EpisodeDiagnosticsCollector:
         self.step_records.append(step_telemetry)
         return step_telemetry
 
+    def _update_subtasks(self, step_num: int, obs: Dict[str, Any], action: np.ndarray) -> None:
+        """Update subtask milestone satisfaction at step_num."""
+        for m in self.subtask_milestones:
+            if m.achieved:
+                continue
+
+            achieved = False
+            if m.target_object:
+                tgt = m.target_object.lower().replace(" ", "_")
+                tgt_pos = self.diagnostics.get_target_object_pos(tgt)
+                goal_pos = self.diagnostics.get_goal_container_pos()
+                if tgt_pos is not None and goal_pos is not None:
+                    dist = float(np.linalg.norm(tgt_pos - goal_pos))
+                    if dist <= self.config.placement_distance_threshold:
+                        achieved = True
+
+                # Fixtures/mechanisms (e.g. stove, drawer, microwave)
+                if any(k in tgt for k in ["stove", "drawer", "microwave"]):
+                    # If EEF interacted with fixture within reach threshold
+                    eef_pos = np.asarray(obs["robot0_eef_pos"]) if "robot0_eef_pos" in obs else None
+                    if eef_pos is not None and tgt_pos is not None:
+                        if float(np.linalg.norm(eef_pos - tgt_pos)) <= self.config.reach_distance_threshold:
+                            achieved = True
+
+            if achieved:
+                m.achieved = True
+                m.first_achieved_step = step_num
+
     def finalize(
         self,
         final_success: bool,
@@ -445,6 +662,36 @@ class EpisodeDiagnosticsCollector:
             self.ever_placed = True
             if self.placement_step is None:
                 self.placement_step = len(self.step_records) - 1
+
+            # Mark all subtask milestones achieved
+            for m in self.subtask_milestones:
+                if not m.achieved:
+                    m.achieved = True
+                    m.first_achieved_step = len(self.step_records) - 1
+
+        completed_subtasks = sum(1 for m in self.subtask_milestones if m.achieved)
+        total_subtasks = len(self.subtask_milestones)
+        subtask_comp_rate = completed_subtasks / total_subtasks if total_subtasks > 0 else (1.0 if final_success else 0.0)
+
+        # Sequential survival steps: steps during which valid progress was sustained
+        if final_success:
+            survival_steps = len(self.step_records)
+        else:
+            achieved_steps = [
+                m.first_achieved_step
+                for m in self.subtask_milestones
+                if m.achieved and m.first_achieved_step is not None
+            ]
+            if achieved_steps:
+                survival_steps = max(achieved_steps)
+            elif self.ever_lifted and self.lift_step is not None:
+                survival_steps = self.lift_step
+            elif self.ever_grasped and self.grasp_step is not None:
+                survival_steps = self.grasp_step
+            elif self.ever_reached and self.reach_step is not None:
+                survival_steps = self.reach_step
+            else:
+                survival_steps = 0
 
         evidence: Dict[str, Any] = {
             "min_eef_to_object_dist": round(self.min_eef_to_object_dist, 4) if self.min_eef_to_object_dist != float("inf") else None,
@@ -460,6 +707,7 @@ class EpisodeDiagnosticsCollector:
             "lift_step": self.lift_step,
             "transport_step": self.transport_step,
             "placement_step": self.placement_step,
+            "subtask_progression": [m.to_dict() for m in self.subtask_milestones],
         }
         if exception:
             evidence["exception_type"] = type(exception).__name__
@@ -472,6 +720,10 @@ class EpisodeDiagnosticsCollector:
             "ever_reached": self.ever_reached,
             "ever_grasped": self.ever_grasped,
             "ever_lifted": self.ever_lifted,
+            "subtask_completion_rate": round(subtask_comp_rate, 4),
+            "sequential_survival_steps": survival_steps,
+            "total_subtasks": total_subtasks,
+            "completed_subtasks": completed_subtasks,
         }
 
         # Case 1: Task completed successfully
@@ -485,20 +737,27 @@ class EpisodeDiagnosticsCollector:
                 evidence=evidence,
                 summary_metrics=summary_metrics,
                 config=asdict(self.config),
+                subtask_milestones=[m.to_dict() for m in self.subtask_milestones],
             )
 
         # Case 2: Explicit abnormal exceptions / invalid actions
         secondary_tags: List[str] = []
+        if completed_subtasks > 0:
+            secondary_tags.append("SEQUENCE_TRANSITION_FAILURE")
+        else:
+            secondary_tags.append("ATOMIC_MANIPULATION_FAILURE")
+
         if termination_reason == TerminationReason.INVALID_ACTION:
             return DiagnosticReport(
                 termination_reason=termination_reason.value,
                 failure_phase=FailurePhase.REACH.value if not self.ever_reached else FailurePhase.GRASP.value,
                 primary_failure_code=SRSAttributionCode.F10_ACTION_DECODING.value,
-                secondary_failure_tags=["action_bounds_violation"],
+                secondary_failure_tags=secondary_tags + ["action_bounds_violation"],
                 first_failure_step=len(self.step_records) - 1,
                 evidence=evidence,
                 summary_metrics=summary_metrics,
                 config=asdict(self.config),
+                subtask_milestones=[m.to_dict() for m in self.subtask_milestones],
             )
 
         if termination_reason == TerminationReason.SIMULATOR_ERROR:
@@ -506,11 +765,12 @@ class EpisodeDiagnosticsCollector:
                 termination_reason=termination_reason.value,
                 failure_phase=FailurePhase.TIMEOUT.value,
                 primary_failure_code=SRSAttributionCode.F15_SIMULATOR_INSTABILITY.value,
-                secondary_failure_tags=["mujoco_physics_error"],
+                secondary_failure_tags=secondary_tags + ["mujoco_physics_error"],
                 first_failure_step=len(self.step_records) - 1,
                 evidence=evidence,
                 summary_metrics=summary_metrics,
                 config=asdict(self.config),
+                subtask_milestones=[m.to_dict() for m in self.subtask_milestones],
             )
 
         if termination_reason == TerminationReason.POLICY_ERROR:
@@ -518,11 +778,12 @@ class EpisodeDiagnosticsCollector:
                 termination_reason=termination_reason.value,
                 failure_phase=FailurePhase.TIMEOUT.value,
                 primary_failure_code=SRSAttributionCode.F16_POLICY_INFERENCE_FAILURE.value,
-                secondary_failure_tags=["torch_inference_exception"],
+                secondary_failure_tags=secondary_tags + ["torch_inference_exception"],
                 first_failure_step=len(self.step_records) - 1,
                 evidence=evidence,
                 summary_metrics=summary_metrics,
                 config=asdict(self.config),
+                subtask_milestones=[m.to_dict() for m in self.subtask_milestones],
             )
 
         # Case 3: Reached max steps (timeout) without explicit crash
@@ -576,4 +837,5 @@ class EpisodeDiagnosticsCollector:
             evidence=evidence,
             summary_metrics=summary_metrics,
             config=asdict(self.config),
+            subtask_milestones=[m.to_dict() for m in self.subtask_milestones],
         )

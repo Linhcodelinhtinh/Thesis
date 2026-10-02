@@ -201,3 +201,40 @@ def test_checkpoint_integrity_verification(tmp_path):
     assert res["file_results"]["policy_preprocessor.json"]["status"] == "MATCH"
     assert res["file_results"]["policy_preprocessor.json"]["passed"] is True
 
+
+def test_minivla_manifest_audit():
+    """Verify loading and auditing official minivla_libero90 manifest (Candidate B)."""
+    manifest_path = "resources/manifests/models/minivla_libero90.yaml"
+    manifest = load_model_manifest(manifest_path)
+
+    assert manifest.model_id == "Stanford-ILIAD/minivla-libero90-prismatic"
+    assert manifest.action_dim == 7
+    assert manifest.chunk_size == 1
+    assert manifest.image_resolution == (224, 224)
+    assert "agentview" in manifest.camera_mapping
+    assert "robot0_eye_in_hand" in manifest.camera_mapping
+    assert len(manifest.revision) == 40
+
+    audit = audit_model_interface(manifest)
+    assert audit["audit_status"] == "PASS"
+    assert audit["is_valid"] is True
+
+
+def test_minivla_vq_manifest_audit():
+    """Verify loading and auditing official minivla_vq_libero90 manifest (Candidate C)."""
+    manifest_path = "resources/manifests/models/minivla_vq_libero90.yaml"
+    manifest = load_model_manifest(manifest_path)
+
+    assert manifest.model_id == "Stanford-ILIAD/minivla-vq-libero90-prismatic"
+    assert manifest.action_dim == 7
+    assert manifest.chunk_size == 10
+    assert manifest.image_resolution == (224, 224)
+    assert "agentview" in manifest.camera_mapping
+    assert "robot0_eye_in_hand" in manifest.camera_mapping
+    assert len(manifest.revision) == 40
+
+    audit = audit_model_interface(manifest)
+    assert audit["audit_status"] == "PASS"
+    assert audit["is_valid"] is True
+
+

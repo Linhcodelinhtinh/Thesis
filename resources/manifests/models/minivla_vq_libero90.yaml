@@ -1,0 +1,46 @@
+# Official Model Manifest: MiniVLA-VQ-LIBERO90 (Candidate C)
+# Provenance: https://huggingface.co/Stanford-ILIAD/minivla-vq-libero90-prismatic
+# Pinned Commit Hash: b08980cdc05dcaea09673e0d97e2c3bc6aef2494
+# Upstream Codebase: https://github.com/Stanford-ILIAD/openvla-mini
+# Framework: torch>=2.2.0, transformers>=4.40.0, prismatic, vq_bet_official
+# License: MIT
+
+model_id: "Stanford-ILIAD/minivla-vq-libero90-prismatic"
+repository: "https://huggingface.co/Stanford-ILIAD/minivla-vq-libero90-prismatic"
+revision: "b08980cdc05dcaea09673e0d97e2c3bc6aef2494"
+commit_url: "https://huggingface.co/Stanford-ILIAD/minivla-vq-libero90-prismatic/commit/b08980cdc05dcaea09673e0d97e2c3bc6aef2494"
+checkpoint: "Stanford-ILIAD/minivla-vq-libero90-prismatic"
+
+action_dim: 7
+chunk_size: 10
+n_action_steps: 10
+image_resolution: [224, 224]
+
+action_decoder: "libero_vq_extra_action_tokenizer"
+action_range: [-1.0, 1.0]
+
+camera_mapping:
+  agentview: "image_primary"
+  robot0_eye_in_hand: "image_wrist"
+
+action_semantics:
+  - "delta_x"
+  - "delta_y"
+  - "delta_z"
+  - "delta_roll"
+  - "delta_pitch"
+  - "delta_yaw"
+  - "gripper"
+
+normalization:
+  method: "residual_vq_codebook"
+  source: "dataset_statistics.json"
+
+hardware_requirements:
+  min_ram_gb: 16
+  min_vram_gb: 4
+  recommended_device: "cuda"
+
+gripper_action_polarity: "DIRECT"
+
+metadata_notes: "MiniVLA 0.5B VQ (Qwen2.5-0.5B + SigLIP-224px + Residual-VQ tokenizer) for LIBERO-90 chunk prediction."

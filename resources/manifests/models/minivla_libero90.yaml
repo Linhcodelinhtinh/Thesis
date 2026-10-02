@@ -1,0 +1,47 @@
+# Official Model Manifest: MiniVLA-LIBERO90 (Candidate B)
+# Provenance: https://huggingface.co/Stanford-ILIAD/minivla-libero90-prismatic
+# Pinned Commit Hash: 4289f87e8e00706e188c7a3a61fc6e7d72ab2564
+# Upstream Codebase: https://github.com/Stanford-ILIAD/openvla-mini
+# Framework: torch>=2.2.0, transformers>=4.40.0, prismatic
+# License: MIT
+
+model_id: "Stanford-ILIAD/minivla-libero90-prismatic"
+repository: "https://huggingface.co/Stanford-ILIAD/minivla-libero90-prismatic"
+revision: "4289f87e8e00706e188c7a3a61fc6e7d72ab2564"
+commit_url: "https://huggingface.co/Stanford-ILIAD/minivla-libero90-prismatic/commit/4289f87e8e00706e188c7a3a61fc6e7d72ab2564"
+checkpoint: "Stanford-ILIAD/minivla-libero90-prismatic"
+
+action_dim: 7
+chunk_size: 1
+n_action_steps: 1
+image_resolution: [224, 224]
+
+action_decoder: "extra_action_tokenizer"
+action_bins: 256
+action_range: [-1.0, 1.0]
+
+camera_mapping:
+  agentview: "image_primary"
+  robot0_eye_in_hand: "image_wrist"
+
+action_semantics:
+  - "delta_x"
+  - "delta_y"
+  - "delta_z"
+  - "delta_roll"
+  - "delta_pitch"
+  - "delta_yaw"
+  - "gripper"
+
+normalization:
+  method: "quantile_normalization"
+  source: "dataset_statistics.json"
+
+hardware_requirements:
+  min_ram_gb: 16
+  min_vram_gb: 4
+  recommended_device: "cuda"
+
+gripper_action_polarity: "DIRECT"
+
+metadata_notes: "MiniVLA 0.5B (Qwen2.5-0.5B + SigLIP-224px) trained on LIBERO-90 with extra_action_tokenizer."

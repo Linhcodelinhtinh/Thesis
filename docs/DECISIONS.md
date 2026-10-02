@@ -101,3 +101,23 @@ This document records the architectural and design decisions for **VLA Policy Ev
   4. **IPC Protocol for Strict Certification**: If certified comparison against the legacy Python 3.8.13 reference stack is required, a client-server IPC architecture (shared-memory or local socket between `envs/libero_reference.yml` simulator host and `envs/smolvla.yml` inference worker) shall be utilized rather than modifying reference dependencies.
 - **Consequences**: Preserves architectural purity and reproducibility, ensures zero dependency contamination, and completely eliminates misleading benchmark claims.
 
+---
+
+## ADR-0011: Native Simulation Camera Resolution and Controller Configuration Provenance for VLA Evaluation
+- **Status**: Accepted
+- **Context**: 
+  - ADR-0010 item 3 initially specified a strict 128×128 simulation camera rendering resolution matching legacy LIBERO, with `SmolVLAAdapter` resizing observations to 256×256.
+  - However, official training of SmolVLA (`lerobot/smolvla_libero`) and the underlying LeRobot dataset used native 256×256 camera rendering. Empirical evaluation during Phase 8 demonstrated that rendering at 128×128 followed by bilinear upsampling introduced visual blur and artifacting that severely degraded visual feature alignment, causing false grasp misses even on deterministic pick-and-place tasks.
+  - Furthermore, undocumented assertions regarding controller gains (e.g. `kp=150`) risked violating AGENTS.md Rule 1 and Rule 6 without traceable provenance from official Robosuite/LIBERO controller definitions.
+- **Decision**:
+  1. **Dual Resolution Support with Transparent Tier Tagging**:
+     - The simulation environment supports both `--camera-resolution 128` (legacy standard) and `--camera-resolution 256` (native SmolVLA/LeRobot training distribution).
+     - Whenever native 256×256 rendering is selected, the run MUST be explicitly classified under the `LIBERO-DERIVED (HOST_PY...)` execution tier with certification `NON-COMPARABLE_OFFICIAL_PAPER`.
+     - Certified strict comparison against official legacy LIBERO papers remains reserved for 128×128 rendering in the isolated reference environment (`envs/libero_reference.yml`).
+  2. **Controller Configuration Provenance**:
+     - All controller parameters are strictly derived from official Robosuite definitions for `OSC_POSE` with Franka Panda (`robosuite/controllers/config/osc_pose.json` and `robosuite/models/robots/manipulators/panda_robot.py`), operating at 20 Hz (control step dt = 0.05s).
+     - Individual parameter values (impedance gains `kp`, `damping_ratio`) must never be hard-coded or asserted without direct reference to the loaded controller specification.
+- **Consequences**:
+  - Restores the natural perceptual distribution expected by modern 256×256 VLAs while preserving strict benchmark honesty and eliminating undocumented simulation modifications.
+
+

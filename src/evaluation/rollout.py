@@ -202,6 +202,8 @@ def rollout_episode(
             target_object_name=target_object_name,
             goal_container_name=goal_container_name,
             config=diagnostics_config,
+            instruction=instruction,
+            task_name=task_name,
         )
 
     # Reset environment & policy without silent fallback

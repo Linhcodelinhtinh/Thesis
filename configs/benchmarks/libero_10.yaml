@@ -1,0 +1,101 @@
+# Benchmark Configuration: LIBERO-10 (Phase 11)
+# Compositional & Multi-Stage Long-Horizon Manipulation
+# Pinned LIBERO Commit: 8f1084e3132a39270c3a13ebe37270a43ece2a01
+
+benchmark_name: "LIBERO-10 Compositional Benchmark (Phase 11)"
+task_suite: "libero_10"
+num_tasks: 10
+
+# Official 10 tasks in exact commit 8f1084e canonical ordering
+tasks:
+  - task_id: 0
+    name: "LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket"
+    composition_type: "multi_object_dual_pick_place"
+    subtasks:
+      - "put alphabet soup in basket"
+      - "put tomato sauce in basket"
+  - task_id: 1
+    name: "LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket"
+    composition_type: "multi_object_dual_pick_place"
+    subtasks:
+      - "put cream cheese box in basket"
+      - "put butter in basket"
+  - task_id: 2
+    name: "KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it"
+    composition_type: "mechanism_and_placement"
+    subtasks:
+      - "turn on stove"
+      - "put moka pot on stove"
+  - task_id: 3
+    name: "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it"
+    composition_type: "placement_and_mechanism_close"
+    subtasks:
+      - "put black bowl in bottom drawer"
+      - "close bottom drawer"
+  - task_id: 4
+    name: "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate"
+    composition_type: "multi_object_spatial_sorting"
+    subtasks:
+      - "put white mug on left plate"
+      - "put yellow and white mug on right plate"
+  - task_id: 5
+    name: "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy"
+    composition_type: "precise_slot_insertion"
+    subtasks:
+      - "pick up book"
+      - "place book in back compartment of caddy"
+  - task_id: 6
+    name: "LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate"
+    composition_type: "multi_object_relational_placement"
+    subtasks:
+      - "put white mug on plate"
+      - "put chocolate pudding to right of plate"
+  - task_id: 7
+    name: "LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket"
+    composition_type: "multi_object_dual_pick_place"
+    subtasks:
+      - "put alphabet soup in basket"
+      - "put cream cheese box in basket"
+  - task_id: 8
+    name: "KITCHEN_SCENE8_put_both_moka_pots_on_the_stove"
+    composition_type: "multi_object_dual_pick_place"
+    subtasks:
+      - "put first moka pot on stove"
+      - "put second moka pot on stove"
+  - task_id: 9
+    name: "KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it"
+    composition_type: "placement_and_mechanism_close"
+    subtasks:
+      - "put mug in microwave"
+      - "close microwave door"
+
+sample_levels:
+  pilot:
+    tier: "PILOT_10_STATES"
+    episodes_per_task: 10
+    initial_state_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    total_episodes: 100
+    description: "Preliminary comparative pilot across locked states 0..9 per task"
+  full:
+    tier: "FULL_50_STATES"
+    episodes_per_task: 50
+    initial_state_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49]
+    total_episodes: 500
+    description: "Full benchmark across all 50 official initial states per task"
+
+diagnostics:
+  subtask_tracking: true
+  track_milestone_timestamps: true
+  track_sequential_survival: true
+  failure_taxonomy_decomposition: true
+
+simulation:
+  robot: "Panda"
+  gripper: "PandaGripper"
+  controller: "OSC_POSE"
+  control_frequency_hz: 20
+  max_steps_per_episode: 1000
+  camera_resolution: [256, 256]
+  camera_names:
+    - "agentview"
+    - "robot0_eye_in_hand"
