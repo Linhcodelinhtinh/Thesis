@@ -715,9 +715,9 @@ Phase 8 chính thức **ĐÓNG BĂNG VÀ KHÓA (LOCKED)**. Baseline raw-policy �
 
 ---
 
-# 11. Phase 9 — Multi-Model Integration & Preliminary Screening (MiniVLA, MiniVLA-VQ vs. SmolVLA) [IMPLEMENTED & VERIFIED]
+# 11. Phase 9 — Multi-Model Integration & Preliminary Screening (MiniVLA, MiniVLA-VQ vs. SmolVLA) [IN PROGRESS - CODE COMPLETED, AWAITING BENCHMARK EXECUTION]
 
-**Trạng thái Triển khai**: Đã hoàn thành toàn bộ adapter, tokenizers (discrete 256-bin & Residual-VQ), manifests, pre/post-processors và unit test suite (100% passed).
+**Trạng thái Triển khai**: Đã hoàn thành code architecture: model adapters, tokenizers (discrete reverse 255-bin tail mapping & Residual-VQ), manifests, pre/post-processors và unit test suite (100% passed). Đang chờ tải trọng số chính thức từ HuggingFace để chạy screening đối đầu.
 **Điều kiện tiên quyết**: Phase 8 Acceptance Benchmark đã hoàn thành, được kiểm toán đối soát độc lập (`scripts/reconcile_phase8.py`) và khóa baseline.
 
 ## 11.1. Mục tiêu & Vị trí trong Quy trình (SRS §14 & §52)
@@ -804,9 +804,9 @@ Thesis_26/
 
 ---
 
-# 12. Phase 10 — Core LIBERO-Object Benchmark (Comprehensive Single-Object Manipulation) [IMPLEMENTED & VERIFIED]
+# 12. Phase 10 — Core LIBERO-Object Benchmark (Comprehensive Single-Object Manipulation) [IN PROGRESS - CODE COMPLETED, AWAITING BENCHMARK EXECUTION]
 
-**Trạng thái Triển khai**: Đã hoàn thành configuration `configs/benchmarks/libero_object.yaml`, tích hợp benchmark runner CLI với `--config`, phân định sample levels (`PILOT_10_STATES` vs `FULL_50_STATES`) và unit test suite (100% passed).
+**Trạng thái Triển khai**: Đã hoàn thành configuration `configs/benchmarks/libero_object.yaml`, benchmark runner CLI với `--config`, phân định sample levels (`PILOT_10_STATES` vs `FULL_50_STATES`), isolated output directories và unit tests (100% passed). Đang chờ thực thi benchmark pilot/full trên model chính thức.
 
 ## 12.1. Mục tiêu
 1. Mở rộng đánh giá năng lực thao tác đơn vật thể (single-object pick-and-place) trên **toàn bộ 10 tasks** của suite `libero_object`.
@@ -855,9 +855,9 @@ Kế hoạch phân định rành mạch 2 cấp độ đánh giá:
 
 ---
 
-# 13. Phase 11 — LIBERO-10 Benchmark (Compositional & Multi-Stage Long-Horizon Evaluation) [IMPLEMENTED & VERIFIED]
+# 13. Phase 11 — LIBERO-10 Benchmark (Compositional & Multi-Stage Long-Horizon Evaluation) [IN PROGRESS - CODE COMPLETED, AWAITING BENCHMARK EXECUTION]
 
-**Trạng thái Triển khai**: Đã hoàn thành configuration `configs/benchmarks/libero_10.yaml` (10 tasks canonical commit `8f1084e`), Subtask Milestone Diagnostics (`SubtaskMilestone`, $t_{\text{milestone}}$, completion rates, sequential survival steps, `SEQUENCE_TRANSITION_FAILURE` vs `ATOMIC_MANIPULATION_FAILURE`), tích hợp rollout và unit test suite (100% passed).
+**Trạng thái Triển khai**: Đã hoàn thành configuration `configs/benchmarks/libero_10.yaml` (10 tasks canonical commit `8f1084e`), Subtask Milestone Diagnostics (`SubtaskMilestone`, BDDL `goal_state` AST parsing, authentic `_eval_predicate` simulation verification, $t_{\text{milestone}}$, completion rates, sequential survival steps, `SEQUENCE_TRANSITION_FAILURE` vs `ATOMIC_MANIPULATION_FAILURE`), tích hợp aggregator và unit test suite (100% passed). Đang chờ thực thi benchmark trên model chính thức.
 
 ## 13.1. Mục tiêu & Vị trí Khoa học trong Luận văn
 1. Đánh giá năng lực của các mô hình VLA trên tập tác vụ phức tạp nhất: **`libero_10` (Long-Horizon & Compositional Manipulation Suite)**.
@@ -977,7 +977,8 @@ Không cần lưu video tất cả episode nếu storage lớn.
 
 Đến đây mới chọn:
 
-```text PRIMARY VLA
+```text
+PRIMARY VLA
 ```
 
 ## Tiêu chí

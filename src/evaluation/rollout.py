@@ -258,7 +258,11 @@ def rollout_episode(
     for step_num in range(max_steps):
         # Determine if we need to predict a new action chunk
         is_replanned = False
-        if current_chunk is None or chunk_step_idx >= execution_horizon:
+        effective_horizon = min(execution_horizon, getattr(policy, "chunk_size", execution_horizon))
+        if current_chunk is not None:
+            effective_horizon = min(effective_horizon, len(current_chunk))
+
+        if current_chunk is None or chunk_step_idx >= effective_horizon:
             t0_infer = time.perf_counter()
             try:
                 current_chunk = policy.predict_action_chunk(obs, instruction)
@@ -287,8 +291,9 @@ def rollout_episode(
             telemetry_raw_chunk = tel.get("raw_normalized_chunk")
             telemetry_unnorm_chunk = tel.get("unnormalized_chunk")
 
-        # Select action for the current step in the chunk
-        action = current_chunk[chunk_step_idx]
+        # Select action for the current step in the chunk (with safe bounds protection)
+        current_step_in_chunk = min(chunk_step_idx, len(current_chunk) - 1)
+        action = current_chunk[current_step_in_chunk]
 
         # Check for invalid action (NaN or Inf)
         if not np.all(np.isfinite(action)):
@@ -296,66 +301,18 @@ def rollout_episode(
             break
 
         raw_norm_act = (
-            [float(x) for x in telemetry_raw_chunk[chunk_step_idx]]
-            if telemetry_raw_chunk is not None and chunk_step_idx < len(telemetry_raw_chunk)
+            [float(x) for x in telemetry_raw_chunk[current_step_in_chunk]]
+            if telemetry_raw_chunk is not None and current_step_in_chunk < len(telemetry_raw_chunk)
             else None
         )
         unnorm_act = (
-            [float(x) for x in telemetry_unnorm_chunk[chunk_step_idx]]
-            if telemetry_unnorm_chunk is not None and chunk_step_idx < len(telemetry_unnorm_chunk)
+            [float(x) for x in telemetry_unnorm_chunk[current_step_in_chunk]]
+            if telemetry_unnorm_chunk is not None and current_step_in_chunk < len(telemetry_unnorm_chunk)
             else None
         )
 
         chunk_step_idx += 1
         recorded_actions.append(action)
-
-        # Record physical state from observation before action
-        eef_pos_actual = (
-            [float(x) for x in obs["robot0_eef_pos"]]
-            if "robot0_eef_pos" in obs
-            else None
-        )
-        gripper_qpos_actual = (
-            [float(x) for x in obs["robot0_gripper_qpos"]]
-            if "robot0_gripper_qpos" in obs
-            else None
-        )
-
-        state_vec: List[float] = []
-        if "robot0_eef_pos" in obs:
-            state_vec.extend([float(x) for x in obs["robot0_eef_pos"]])
-        if "robot0_eef_quat" in obs:
-            state_vec.extend([float(x) for x in obs["robot0_eef_quat"]])
-        if "robot0_gripper_qpos" in obs:
-            state_vec.extend([float(x) for x in obs["robot0_gripper_qpos"]])
-        if state_vec:
-            recorded_states.append(np.asarray(state_vec, dtype=np.float32))
-
-        # Step-level telemetry
-        diag_step_info = None
-        if collector is not None:
-            diag_step_info = collector.record_step(
-                step_num=step_num,
-                obs=obs,
-                action=action,
-                eef_pos=np.asarray(eef_pos_actual) if eef_pos_actual else None,
-                is_replanned=is_replanned,
-                infer_latency_ms=last_infer_latency if is_replanned else 0.0,
-            )
-
-        # Record model output telemetry (Dual-Action Observability - Phase 2)
-        model_output_entry = {
-            "step": step_num,
-            "chunk_step": chunk_step_idx - 1,
-            "raw_normalized_action": raw_norm_act,
-            "unnormalized_action": unnorm_act,
-            "action": [float(x) for x in action],  # Executed action in simulator
-            "is_replanned": is_replanned,
-            "inference_time_ms": last_infer_latency if is_replanned else None,
-            "eef_pos_actual": eef_pos_actual,
-            "gripper_qpos_actual": gripper_qpos_actual,
-            "contact_diagnostics": diag_step_info,
-        }
 
         # Step simulation environment
         t0_step = time.perf_counter()
@@ -370,9 +327,9 @@ def rollout_episode(
 
         # Unpack gym / robosuite step return
         if len(step_res) == 4:
-            obs, reward, done, info = step_res
+            next_obs, reward, done, info = step_res
         elif len(step_res) == 5:
-            obs, reward, terminated, truncated, info = step_res
+            next_obs, reward, terminated, truncated, info = step_res
             done = terminated or truncated
         else:
             raise ValueError(f"Unexpected env.step return length: {len(step_res)}")
@@ -385,8 +342,56 @@ def rollout_episode(
         elif hasattr(env, "_check_success"):
             success = bool(env._check_success())
 
-        model_output_entry["success"] = success
+        # Record physical state from observation post-action (exact state transitions)
+        eef_pos_actual = (
+            [float(x) for x in next_obs["robot0_eef_pos"]]
+            if "robot0_eef_pos" in next_obs
+            else None
+        )
+        gripper_qpos_actual = (
+            [float(x) for x in next_obs["robot0_gripper_qpos"]]
+            if "robot0_gripper_qpos" in next_obs
+            else None
+        )
+
+        state_vec: List[float] = []
+        if "robot0_eef_pos" in next_obs:
+            state_vec.extend([float(x) for x in next_obs["robot0_eef_pos"]])
+        if "robot0_eef_quat" in next_obs:
+            state_vec.extend([float(x) for x in next_obs["robot0_eef_quat"]])
+        if "robot0_gripper_qpos" in next_obs:
+            state_vec.extend([float(x) for x in next_obs["robot0_gripper_qpos"]])
+        if state_vec:
+            recorded_states.append(np.asarray(state_vec, dtype=np.float32))
+
+        # Step-level telemetry evaluated on resulting physical state (zero-lag observation)
+        diag_step_info = None
+        if collector is not None:
+            diag_step_info = collector.record_step(
+                step_num=step_num,
+                obs=next_obs,
+                action=action,
+                eef_pos=np.asarray(eef_pos_actual) if eef_pos_actual else None,
+                is_replanned=is_replanned,
+                infer_latency_ms=last_infer_latency if is_replanned else 0.0,
+            )
+
+        # Record model output telemetry (Dual-Action Observability - Phase 2)
+        model_output_entry = {
+            "step": step_num,
+            "chunk_step": current_step_in_chunk,
+            "raw_normalized_action": raw_norm_act,
+            "unnormalized_action": unnorm_act,
+            "action": [float(x) for x in action],  # Executed action in simulator
+            "is_replanned": is_replanned,
+            "inference_time_ms": last_infer_latency if is_replanned else None,
+            "eef_pos_actual": eef_pos_actual,
+            "gripper_qpos_actual": gripper_qpos_actual,
+            "contact_diagnostics": diag_step_info,
+            "success": success,
+        }
         model_outputs.append(model_output_entry)
+        obs = next_obs
 
         # Record video frame with optional telemetry overlay
         if record_video:

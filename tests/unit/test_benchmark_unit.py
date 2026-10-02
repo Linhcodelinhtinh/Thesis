@@ -150,3 +150,89 @@ def test_benchmark_aggregator_multi_task(tmp_path: Path):
     assert "ADR-0010" in md_text
     assert "`libero_object`" in md_text
     assert "`GRASP`" in md_text
+
+
+def test_benchmark_aggregator_subtask_progression(tmp_path: Path):
+    """Verify multi-stage subtask milestone aggregation and report formatting (Phase 11)."""
+    aggregator = BenchmarkAggregator(
+        benchmark_name="LIBERO-10 Milestone Test",
+        provenance={"execution_tier": "LIBERO-DERIVED"},
+    )
+
+    # Episode 1: Full success, both milestones achieved
+    ep1 = {
+        "num_steps": 40,
+        "success": True,
+        "mean_inference_ms": 15.0,
+        "mean_simulation_ms": 2.0,
+        "diagnostics": {
+            "termination_reason": "SUCCESS",
+            "failure_phase": "NONE",
+            "primary_failure_code": None,
+            "evidence": {"ever_grasped": True, "ever_lifted": True, "ever_placed": True},
+            "summary_metrics": {"sequential_survival_steps": 40, "subtask_completion_rate": 1.0},
+            "subtask_milestones": [
+                {"name": "m0_soup", "description": "Put soup in basket", "achieved": True, "first_achieved_step": 15},
+                {"name": "m1_sauce", "description": "Put sauce in basket", "achieved": True, "first_achieved_step": 38},
+            ],
+        },
+    }
+
+    # Episode 2: Milestone 0 achieved, failed transition on Milestone 1
+    ep2 = {
+        "num_steps": 100,
+        "success": False,
+        "mean_inference_ms": 15.0,
+        "mean_simulation_ms": 2.0,
+        "diagnostics": {
+            "termination_reason": "MAX_STEPS",
+            "failure_phase": "GRASP",
+            "primary_failure_code": "UNATTRIBUTED",
+            "evidence": {"ever_grasped": True, "ever_lifted": True, "ever_placed": False},
+            "summary_metrics": {"sequential_survival_steps": 18, "subtask_completion_rate": 0.5},
+            "subtask_milestones": [
+                {"name": "m0_soup", "description": "Put soup in basket", "achieved": True, "first_achieved_step": 18},
+                {"name": "m1_sauce", "description": "Put sauce in basket", "achieved": False, "first_achieved_step": None},
+            ],
+        },
+    }
+
+    # Episode 3: Failed before achieving milestone 0
+    ep3 = {
+        "num_steps": 100,
+        "success": False,
+        "mean_inference_ms": 15.0,
+        "mean_simulation_ms": 2.0,
+        "diagnostics": {
+            "termination_reason": "MAX_STEPS",
+            "failure_phase": "REACH",
+            "primary_failure_code": "UNATTRIBUTED",
+            "evidence": {"ever_grasped": False, "ever_lifted": False, "ever_placed": False},
+            "summary_metrics": {"sequential_survival_steps": 0, "subtask_completion_rate": 0.0},
+            "subtask_milestones": [
+                {"name": "m0_soup", "description": "Put soup in basket", "achieved": False, "first_achieved_step": None},
+                {"name": "m1_sauce", "description": "Put sauce in basket", "achieved": False, "first_achieved_step": None},
+            ],
+        },
+    }
+
+    aggregator.add_episode_result("libero_10", 0, "task_0_soup_sauce", "put both", 0, ep1)
+    aggregator.add_episode_result("libero_10", 0, "task_0_soup_sauce", "put both", 1, ep2)
+    aggregator.add_episode_result("libero_10", 0, "task_0_soup_sauce", "put both", 2, ep3)
+
+    summary = aggregator.compute_summary()
+    t0 = summary["tasks"][0]
+
+    assert t0["subtask_milestones"]["m0_soup"]["achieved_count"] == 2
+    assert t0["subtask_milestones"]["m0_soup"]["achieved_rate"] == pytest.approx(2 / 3, abs=1e-3)
+    assert t0["subtask_milestones"]["m1_sauce"]["achieved_count"] == 1
+    assert t0["subtask_milestones"]["m1_sauce"]["achieved_rate"] == pytest.approx(1 / 3, abs=1e-3)
+    assert t0["sequence_transition_failures"] == 1
+    assert t0["atomic_manipulation_failures"] == 1
+    assert t0["mean_sequential_survival_steps"] == pytest.approx((40 + 18 + 0) / 3, abs=1e-2)
+
+    report_paths = aggregator.save_reports(tmp_path)
+    md_text = report_paths["report_md"].read_text(encoding="utf-8")
+    assert "Multi-Stage Subtask Progression" in md_text
+    assert "m0_soup" in md_text
+    assert "m1_sauce" in md_text

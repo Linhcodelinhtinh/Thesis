@@ -22,7 +22,7 @@ class MiniVLAConfig:
     dtype: str = "bfloat16"  # or float32, float16
     dataset_statistics: Optional[Dict[str, Any]] = None
     gripper_polarity: str = "DIRECT"  # or "INVERTED", determined by stats audit
-    extra_tokens_offset: int = 151665
+    tokenizer_len: int = 152192  # Qwen2.5 base (151936) + 256 extra action tokens
 
     @classmethod
     def from_checkpoint(cls, checkpoint_dir: Union[str, Path], device: str = "cpu") -> "MiniVLAConfig":
@@ -53,8 +53,10 @@ class MiniVLAConfig:
             with open(dataset_stats_file, "r", encoding="utf-8") as f:
                 stats = json.load(f)
 
-        # Determine gripper polarity from statistics
-        # In LIBERO-90, open gripper typically corresponds to action[-1] > 0 or 1
+        # In upstream Stanford-ILIAD OpenVLA for LIBERO-90:
+        # RLDS dataloader aligns gripper actions such that 0 = close, 1 = open.
+        # Robosuite / LIBERO simulation: 1 = open, -1 = close.
+        # Direct unnormalization keeps gripper in [-1, 1] without modification.
         gripper_polarity = "DIRECT"
 
         return cls(
@@ -66,4 +68,5 @@ class MiniVLAConfig:
             device=device,
             dataset_statistics=stats,
             gripper_polarity=gripper_polarity,
+            tokenizer_len=152192,
         )

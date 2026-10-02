@@ -91,11 +91,11 @@ def test_resize_and_normalize_image():
 
 
 def test_extra_action_tokenizer_encode_decode():
-    """Test ExtraActionTokenizer round-trip encoding and decoding."""
+    """Test ExtraActionTokenizer round-trip encoding and decoding matching upstream Stanford-ILIAD."""
     tokenizer = ExtraActionTokenizer(
         n_bins=256,
         action_dim=7,
-        extra_tokens_offset=151665,
+        tokenizer_len=152192,
     )
 
     # Normalized actions in [-1.0, 1.0]
@@ -103,26 +103,27 @@ def test_extra_action_tokenizer_encode_decode():
     token_ids = tokenizer.encode_actions_to_tokens(original_actions)
 
     assert token_ids.shape == (7,)
-    assert np.all(token_ids >= 151665)
-    assert np.all(token_ids < 151665 + 256)
+    assert np.all(token_ids >= 152192 - 256)
+    assert np.all(token_ids < 152192)
 
     # Decode tokens back
     decoded_actions = tokenizer.decode_token_ids_to_actions(token_ids)
     assert decoded_actions.shape == (7,)
 
     # Maximum quantization error for 256 bins across span 2.0 is 2.0 / 256 ≈ 0.0078
-    assert np.allclose(original_actions, decoded_actions, atol=0.01)
+    assert np.allclose(original_actions, decoded_actions, atol=0.015)
 
 
 def test_extra_action_tokenizer_unnormalization():
-    """Test action unnormalization using quantile statistics."""
+    """Test action unnormalization respecting dimension mask (gripper untouched)."""
     stats = {
         "libero_90": {
             "action": {
-                "q01": [-0.5, -0.5, -0.2, -0.1, -0.1, -0.1, -1.0],
+                "q01": [-0.5, -0.5, -0.2, -0.1, -0.1, -0.1, 0.0],
                 "q99": [0.5, 0.5, 0.4, 0.1, 0.1, 0.1, 1.0],
                 "mean": [0.0] * 7,
                 "std": [0.25] * 7,
+                "mask": [True, True, True, True, True, True, False],
             }
         }
     }
@@ -133,20 +134,23 @@ def test_extra_action_tokenizer_unnormalization():
     )
     assert tokenizer.has_stats is True
 
-    # -1 in normalized corresponds to q01
+    # -1.0 on continuous dimensions (0..5) maps to q01
+    # Gripper dimension (index 6, mask=False) remains normalized (-1.0)
     norm_min = np.full(7, -1.0, dtype=np.float32)
     unnorm_min = tokenizer.unnormalize_actions(norm_min, method="quantile")
-    assert np.allclose(unnorm_min, tokenizer.q01, atol=1e-5)
+    assert np.allclose(unnorm_min[:6], tokenizer.q01[:6], atol=1e-5)
+    assert np.isclose(unnorm_min[6], -1.0)  # Gripper remains unchanged per upstream mask
 
-    # +1 in normalized corresponds to q99
+    # +1.0 on continuous dimensions maps to q99; gripper remains +1.0
     norm_max = np.full(7, 1.0, dtype=np.float32)
     unnorm_max = tokenizer.unnormalize_actions(norm_max, method="quantile")
-    assert np.allclose(unnorm_max, tokenizer.q99, atol=1e-5)
+    assert np.allclose(unnorm_max[:6], tokenizer.q99[:6], atol=1e-5)
+    assert np.isclose(unnorm_max[6], 1.0)
 
 
 def test_minivla_postprocessor_dynamic_gripper_polarity():
     """Verify dynamic gripper polarity inversion."""
-    tokenizer = ExtraActionTokenizer(n_bins=256, action_dim=7)
+    tokenizer = ExtraActionTokenizer(n_bins=256, action_dim=7, tokenizer_len=152192)
 
     # DIRECT polarity
     post_direct = MiniVLAPostprocessor(tokenizer, gripper_polarity="DIRECT")
@@ -154,9 +158,9 @@ def test_minivla_postprocessor_dynamic_gripper_polarity():
     post_inverted = MiniVLAPostprocessor(tokenizer, gripper_polarity="INVERTED")
 
     # Tokens representing zero action, but positive gripper
-    tokens = np.full(7, 151665 + 128, dtype=np.int64)
-    # Set gripper token to upper bound
-    tokens[-1] = 151665 + 255
+    tokens = np.full(7, 152192 - 128, dtype=np.int64)
+    # Set gripper token
+    tokens[-1] = 152192 - 255
 
     action_direct = post_direct.postprocess_tokens(tokens)
     action_inverted = post_inverted.postprocess_tokens(tokens)

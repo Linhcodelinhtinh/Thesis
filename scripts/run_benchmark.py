@@ -237,7 +237,14 @@ def main():
     args = parse_args()
 
     config_data = None
-    if args.config and os.path.exists(args.config):
+    if args.config:
+        if not os.path.exists(args.config):
+            print(
+                f"ERROR: Specified benchmark configuration file '{args.config}' does not exist!\n"
+                "Fail-fast per AGENTS.md Rule 10 (no silent fallback to default preset allowed).",
+                file=sys.stderr,
+            )
+            return 1
         with open(args.config, "r", encoding="utf-8") as f:
             config_data = yaml.safe_load(f)
 
@@ -269,6 +276,17 @@ def main():
     elif args.preset == "libero_10":
         benchmark_name = "LIBERO-10 Compositional Benchmark (Phase 11)"
 
+    # Isolate output directory if using default and custom preset/config is provided
+    if args.output_dir == "experiments/results/raw_baseline/phase8_acceptance":
+        if config_data and "output_dir" in config_data:
+            args.output_dir = config_data["output_dir"]
+        elif args.preset in ("libero_object", "object_10"):
+            args.output_dir = f"experiments/results/libero_object/{args.model_name}"
+        elif args.preset == "libero_10":
+            args.output_dir = f"experiments/results/libero_10/{args.model_name}"
+        elif args.preset in ("pilot_5", "test_5"):
+            args.output_dir = f"experiments/results/raw_baseline/pilot_5_{args.model_name}"
+
     print("=" * 70)
     print(f"VLA Benchmark Evaluation Runner: {benchmark_name}")
     print("=" * 70)
@@ -285,9 +303,10 @@ def main():
     print("=" * 70)
 
     # Fail-fast checkpoint check per AGENTS.md Rule 2
-    if not args.checkpoint or not os.path.exists(args.checkpoint):
+    is_hub_id = any(args.checkpoint.startswith(p) for p in ["Stanford-ILIAD/", "openvla/", "lerobot/", "HuggingFace/"]) or ("/" in args.checkpoint and not os.path.exists(args.checkpoint) and not args.checkpoint.startswith(".") and not args.checkpoint.startswith("resources"))
+    if not args.checkpoint or (not os.path.exists(args.checkpoint) and not is_hub_id):
         print(
-            f"ERROR: Checkpoint path '{args.checkpoint}' does not exist!\n"
+            f"ERROR: Checkpoint path '{args.checkpoint}' does not exist locally and is not a recognized Hub repository!\n"
             "Per AGENTS.md Rule 2 & 10, mock/fallback policy execution is strictly forbidden in benchmark evaluation.\n"
             "Please download or verify the official checkpoint before running evaluation.",
             file=sys.stderr,
@@ -309,22 +328,6 @@ def main():
     else:
         print("[WARNING] Camera resolution set to 128x128 (legacy LIBERO standard). SmolVLA was trained on 256x256, so 128x128 will undergo bilinear upsampling which may cause grasping degradation.")
 
-    # Provenance metadata per ADR-0010
-    py_version = sys.version.split()[0]
-    is_py38 = py_version.startswith("3.8")
-    provenance = {
-        "execution_tier": "STRICT_LIBERO" if is_py38 and args.max_steps == 1000 and args.camera_resolution == 128 else f"LIBERO-DERIVED (HOST_PY{sys.version_info.major}.{sys.version_info.minor})",
-        "certification": "CERTIFIED_OFFICIAL" if is_py38 and args.camera_resolution == 128 else "NON-COMPARABLE_OFFICIAL_PAPER",
-        "python_version": py_version,
-        "sample_level": sample_level_tier,
-        "benchmark_name": benchmark_name,
-        "note": f"Evaluated under {sample_level_tier}. Native camera rendering per model specification.",
-        "model_name": args.model_name,
-        "checkpoint": args.checkpoint,
-        "execution_horizon_s": args.execution_horizon,
-        "camera_resolution": args.camera_resolution,
-    }
-
     # 1. Instantiate Policy
     print(f"\nInstantiating policy '{args.model_name}'...")
     policy_cls = get_model_class(args.model_name)
@@ -334,6 +337,64 @@ def main():
     if not policy.loaded:
         print(f"ERROR: Policy '{args.model_name}' failed to load from '{args.checkpoint}'.", file=sys.stderr)
         return 1
+
+    # Clamp execution horizon to policy chunk size to prevent IndexError
+    policy_chunk_size = getattr(policy, "chunk_size", args.execution_horizon)
+    effective_horizon = min(args.execution_horizon, policy_chunk_size)
+    if args.execution_horizon > policy_chunk_size:
+        print(f"[INFO] Automatically clamped execution_horizon from {args.execution_horizon} to {policy_chunk_size} (matching {args.model_name} chunk size).")
+
+    # Provenance metadata per ADR-0010 & AGENTS.md Source of Truth
+    py_version = sys.version.split()[0]
+    is_py38 = py_version.startswith("3.8")
+    is_linux = sys.platform.startswith("linux")
+
+    robosuite_ver = None
+    try:
+        import robosuite
+        robosuite_ver = getattr(robosuite, "__version__", None)
+    except ImportError:
+        pass
+
+    bddl_ver = None
+    try:
+        import bddl
+        bddl_ver = getattr(bddl, "__version__", None)
+    except ImportError:
+        pass
+
+    non_comparable_reasons = []
+    if not is_linux:
+        non_comparable_reasons.append(f"Operating system is {sys.platform} (official reference stack requires Linux)")
+    if not is_py38:
+        non_comparable_reasons.append(f"Python version is {py_version} (official reference stack requires Python 3.8.13)")
+    if args.camera_resolution != 128:
+        non_comparable_reasons.append(f"Camera resolution is {args.camera_resolution}x{args.camera_resolution} (official benchmark baseline uses 128x128)")
+    if args.max_steps != 1000:
+        non_comparable_reasons.append(f"Max steps is {args.max_steps} (official reference requires 1000)")
+    if robosuite_ver != "1.4.0":
+        non_comparable_reasons.append(f"robosuite version is {robosuite_ver} (official reference requires 1.4.0)")
+    if bddl_ver not in ("1.0.1", "1.0"):
+        non_comparable_reasons.append(f"bddl version is {bddl_ver} (official reference requires 1.0.1)")
+
+    is_official_certified = len(non_comparable_reasons) == 0
+
+    provenance = {
+        "execution_tier": "STRICT_LIBERO" if is_official_certified else f"LIBERO-DERIVED (HOST_{sys.platform.upper()}_PY{sys.version_info.major}.{sys.version_info.minor})",
+        "certification": "CERTIFIED_OFFICIAL" if is_official_certified else "NON-COMPARABLE_OFFICIAL_PAPER",
+        "python_version": py_version,
+        "robosuite_version": robosuite_ver,
+        "bddl_version": bddl_ver,
+        "sample_level": sample_level_tier,
+        "benchmark_name": benchmark_name,
+        "note": f"Evaluated under {sample_level_tier}. Native camera rendering per model specification.",
+        "model_name": args.model_name,
+        "checkpoint": args.checkpoint,
+        "execution_horizon_s": effective_horizon,
+        "policy_chunk_size": policy_chunk_size,
+        "camera_resolution": args.camera_resolution,
+        "non_comparable_reasons": non_comparable_reasons,
+    }
 
     # 2. Initialize Aggregator
     aggregator = BenchmarkAggregator(
@@ -382,7 +443,7 @@ def main():
 
         for init_id in init_state_ids:
             global_ep_counter += 1
-            print(f"\n--> Running Episode [{global_ep_counter}/{total_episodes}]: {actual_task_name} | Init State {init_id} (s={args.execution_horizon})...")
+            print(f"\n--> Running Episode [{global_ep_counter}/{total_episodes}]: {actual_task_name} | Init State {init_id} (s={effective_horizon})...")
 
             ep_dir = out_base / f"{suite}_task{tid}" / f"init_{init_id}"
             ep_dir.mkdir(parents=True, exist_ok=True)
@@ -393,7 +454,7 @@ def main():
                 policy=policy,
                 instruction=instruction,
                 initial_state_id=init_id,
-                execution_horizon=args.execution_horizon,
+                execution_horizon=effective_horizon,
                 max_steps=args.max_steps,
                 task_name=actual_task_name,
                 record_video=args.record_video,

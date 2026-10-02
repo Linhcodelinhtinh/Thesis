@@ -83,6 +83,7 @@ class SubtaskMilestone:
     target_object: Optional[str] = None
     achieved: bool = False
     first_achieved_step: Optional[int] = None
+    clause: Optional[List[str]] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -318,17 +319,28 @@ def extract_subtask_milestones(
         getattr(env, "parsed_problem", None),
         getattr(getattr(env, "_env", None), "parsed_problem", None),
         getattr(getattr(getattr(env, "_env", None), "env", None), "parsed_problem", None),
+        getattr(getattr(env, "env", None), "parsed_problem", None),
     ]:
         if candidate is not None and isinstance(candidate, dict):
             parsed_problem = candidate
             break
 
-    if parsed_problem is not None and "goal" in parsed_problem:
-        goal_ast = parsed_problem["goal"]
-        if isinstance(goal_ast, list) and len(goal_ast) > 1 and goal_ast[0] == "and":
+    if parsed_problem is not None:
+        clauses = None
+        if "goal_state" in parsed_problem and isinstance(parsed_problem["goal_state"], list):
+            clauses = parsed_problem["goal_state"]
+        elif "goal" in parsed_problem:
+            goal_ast = parsed_problem["goal"]
+            if isinstance(goal_ast, list):
+                if len(goal_ast) > 1 and goal_ast[0] == "and":
+                    clauses = goal_ast[1:]
+                else:
+                    clauses = goal_ast
+
+        if clauses:
             milestones = []
-            for i, conjunct in enumerate(goal_ast[1:]):
-                if isinstance(conjunct, list) and len(conjunct) > 0:
+            for i, conjunct in enumerate(clauses):
+                if isinstance(conjunct, (list, tuple)) and len(conjunct) > 0:
                     pred_name = str(conjunct[0])
                     args = [str(a) for a in conjunct[1:]]
                     target_obj = args[0] if len(args) > 0 else None
@@ -338,6 +350,7 @@ def extract_subtask_milestones(
                             description=f"({pred_name} {' '.join(args)})",
                             predicate_key=f"{pred_name}({','.join(args)})",
                             target_object=target_obj,
+                            clause=[str(c) for c in conjunct],
                         )
                     )
             if milestones:
@@ -621,14 +634,48 @@ class EpisodeDiagnosticsCollector:
         self.step_records.append(step_telemetry)
         return step_telemetry
 
+    def _find_eval_env(self) -> Any:
+        """Locate the underlying LIBERO problem environment possessing _eval_predicate."""
+        sim_env = getattr(self.diagnostics, "env", None)
+        for candidate in [
+            sim_env,
+            getattr(sim_env, "env", None),
+            getattr(sim_env, "_env", None),
+            getattr(getattr(sim_env, "_env", None), "env", None),
+            getattr(getattr(getattr(sim_env, "_env", None), "env", None), "env", None),
+        ]:
+            if candidate is not None and hasattr(candidate, "_eval_predicate") and hasattr(candidate, "object_states_dict"):
+                return candidate
+        return None
+
     def _update_subtasks(self, step_num: int, obs: Dict[str, Any], action: np.ndarray) -> None:
-        """Update subtask milestone satisfaction at step_num."""
+        """Update subtask milestone satisfaction at step_num using genuine simulation predicates."""
+        eval_env = self._find_eval_env()
+
         for m in self.subtask_milestones:
             if m.achieved:
                 continue
 
             achieved = False
-            if m.target_object:
+
+            # Strategy 1: Evaluate genuine simulation predicate via LIBERO problem environment
+            if eval_env is not None:
+                clause = m.clause
+                if clause is None and m.target_object:
+                    goal_state = getattr(eval_env, "parsed_problem", {}).get("goal_state", [])
+                    for cand_clause in goal_state:
+                        if isinstance(cand_clause, (list, tuple)) and m.target_object in [str(x) for x in cand_clause]:
+                            clause = cand_clause
+                            break
+                if clause is not None:
+                    try:
+                        if eval_env._eval_predicate(clause):
+                            achieved = True
+                    except Exception:
+                        pass
+
+            # Strategy 2: Kinematic distance check for placement (when eval_env is absent)
+            if not achieved and m.target_object:
                 tgt = m.target_object.lower().replace(" ", "_")
                 tgt_pos = self.diagnostics.get_target_object_pos(tgt)
                 goal_pos = self.diagnostics.get_goal_container_pos()
@@ -636,14 +683,6 @@ class EpisodeDiagnosticsCollector:
                     dist = float(np.linalg.norm(tgt_pos - goal_pos))
                     if dist <= self.config.placement_distance_threshold:
                         achieved = True
-
-                # Fixtures/mechanisms (e.g. stove, drawer, microwave)
-                if any(k in tgt for k in ["stove", "drawer", "microwave"]):
-                    # If EEF interacted with fixture within reach threshold
-                    eef_pos = np.asarray(obs["robot0_eef_pos"]) if "robot0_eef_pos" in obs else None
-                    if eef_pos is not None and tgt_pos is not None:
-                        if float(np.linalg.norm(eef_pos - tgt_pos)) <= self.config.reach_distance_threshold:
-                            achieved = True
 
             if achieved:
                 m.achieved = True

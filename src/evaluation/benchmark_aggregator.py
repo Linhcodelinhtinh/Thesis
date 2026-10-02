@@ -69,6 +69,10 @@ class TaskSummary:
     failure_phase_counts: Dict[str, int] = field(default_factory=dict)
     primary_failure_code_counts: Dict[str, int] = field(default_factory=dict)
     termination_reason_counts: Dict[str, int] = field(default_factory=dict)
+    subtask_milestones: Dict[str, Any] = field(default_factory=dict)
+    mean_sequential_survival_steps: Optional[float] = None
+    sequence_transition_failures: int = 0
+    atomic_manipulation_failures: int = 0
 
 
 class BenchmarkAggregator:
@@ -134,6 +138,13 @@ class BenchmarkAggregator:
             task_call_lats: List[float] = []
             sim_lats: List[float] = []
 
+            # Multi-stage subtask milestone telemetry (Phase 11)
+            milestone_completions: Dict[str, int] = {}
+            milestone_total_definitions: Dict[str, str] = {}
+            survival_step_records: List[int] = []
+            transition_failures = 0
+            atomic_failures = 0
+
             for e in eps:
                 # Diagnostics inspection
                 diag = e.get("diagnostics") or {}
@@ -144,6 +155,27 @@ class BenchmarkAggregator:
                     n_lifted += 1
                 if evidence.get("ever_placed", False) or e.get("success", False):
                     n_placed += 1
+
+                # Subtask milestone telemetry
+                subtasks = diag.get("subtask_milestones") or []
+                s_metrics = diag.get("summary_metrics") or {}
+                if "sequential_survival_steps" in s_metrics and s_metrics["sequential_survival_steps"] is not None:
+                    survival_step_records.append(int(s_metrics["sequential_survival_steps"]))
+
+                if subtasks:
+                    comp_count = sum(1 for m in subtasks if m.get("achieved", False))
+                    if comp_count == len(subtasks) or e.get("success", False):
+                        pass
+                    elif comp_count > 0:
+                        transition_failures += 1
+                    else:
+                        atomic_failures += 1
+
+                    for m in subtasks:
+                        m_name = m.get("name", "unknown")
+                        milestone_total_definitions[m_name] = m.get("description", m_name)
+                        if m.get("achieved", False):
+                            milestone_completions[m_name] = milestone_completions.get(m_name, 0) + 1
 
                 # Failure taxonomy counts
                 term_reason = diag.get("termination_reason") or ("SUCCESS" if e.get("success") else "MAX_STEPS")
@@ -210,6 +242,17 @@ class BenchmarkAggregator:
                 "failure_phase_counts": phase_counts,
                 "primary_failure_code_counts": code_counts,
                 "termination_reason_counts": term_counts,
+                "subtask_milestones": {
+                    m_name: {
+                        "description": m_desc,
+                        "achieved_count": milestone_completions.get(m_name, 0),
+                        "achieved_rate": round(milestone_completions.get(m_name, 0) / n_total, 4) if n_total > 0 else 0.0,
+                    }
+                    for m_name, m_desc in milestone_total_definitions.items()
+                },
+                "mean_sequential_survival_steps": round(float(np.mean(survival_step_records)), 2) if survival_step_records else None,
+                "sequence_transition_failures": transition_failures,
+                "atomic_manipulation_failures": atomic_failures,
             }
             task_summaries.append(t_summary)
             all_successes += n_success
@@ -377,4 +420,29 @@ class BenchmarkAggregator:
             criteria = "Concrete fault logged" if code != "UNATTRIBUTED" else "No conclusive instrumentation evidence to isolate visual perception vs control"
             md.append(f"| `{code}` | {count} | {criteria} |")
         md.append("")
+
+        # 4. Multi-Stage Subtask Progression & Sequential Degradation (Phase 11)
+        tasks_with_milestones = [t for t in summary["tasks"] if t.get("subtask_milestones")]
+        if tasks_with_milestones:
+            md.append("## 4. Multi-Stage Subtask Progression & Sequential Degradation (Phase 11)")
+            md.append("")
+            md.append("| Task ID | Task Name | Subtask Milestone | Completion Rate | Transition Failures | Atomic Failures | Mean Survival Steps |")
+            md.append("| :---: | :--- | :--- | :---: | :---: | :---: | :---: |")
+            for t in tasks_with_milestones:
+                m_items = list(t["subtask_milestones"].items())
+                surv_str = f"{t['mean_sequential_survival_steps']:.1f}" if t.get("mean_sequential_survival_steps") is not None else "N/A"
+                if m_items:
+                    for idx, (m_name, m_info) in enumerate(m_items):
+                        rate_pct = f"{m_info['achieved_rate']*100:.1f}%"
+                        if idx == 0:
+                            md.append(
+                                f"| {t['task_id']} | `{t['task_name']}` | `{m_name}`: {m_info['description']} | **{rate_pct}** | "
+                                f"{t.get('sequence_transition_failures', 0)} | {t.get('atomic_manipulation_failures', 0)} | {surv_str} |"
+                            )
+                        else:
+                            md.append(
+                                f"| | | `{m_name}`: {m_info['description']} | **{rate_pct}** | | | |"
+                            )
+            md.append("")
+
         return "\n".join(md)

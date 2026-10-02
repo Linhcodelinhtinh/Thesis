@@ -47,6 +47,67 @@ def test_extract_subtask_milestones_from_bddl_ast():
     assert "in" in milestones[0].description
 
 
+def test_extract_subtask_milestones_from_libero_goal_state():
+    """Verify extracting milestones from official LIBERO parsed_problem['goal_state'] format."""
+    goal_state = [
+        ["in", "alphabet_soup_1", "basket_1"],
+        ["in", "tomato_sauce_1", "basket_1"],
+    ]
+    mock_env = type("MockLiberoEnv", (), {
+        "parsed_problem": {"goal_state": goal_state},
+        "language_instruction": "put both the alphabet soup and the tomato sauce in the basket",
+        "sim": None,
+    })()
+    milestones = extract_subtask_milestones(mock_env)
+
+    assert len(milestones) == 2
+    assert milestones[0].name == "milestone_0_in_alphabet_soup_1_basket_1"
+    assert milestones[0].clause == ["in", "alphabet_soup_1", "basket_1"]
+    assert milestones[1].name == "milestone_1_in_tomato_sauce_1_basket_1"
+    assert milestones[1].clause == ["in", "tomato_sauce_1", "basket_1"]
+
+
+def test_subtask_milestone_evaluation_via_eval_predicate():
+    """Verify authentic _eval_predicate evaluation during step progression."""
+    achieved_clauses = set()
+
+    class MockLiberoProblemEnv:
+        def __init__(self):
+            self.parsed_problem = {
+                "goal_state": [
+                    ["open", "cabinet_middle_drawer_1"],
+                    ["in", "black_bowl_1", "cabinet_middle_drawer_1"],
+                ]
+            }
+            self.object_states_dict = {"cabinet_middle_drawer_1": object(), "black_bowl_1": object()}
+            self.sim = None
+
+        def _eval_predicate(self, state):
+            return tuple(state) in achieved_clauses
+
+    env = MockLiberoProblemEnv()
+    collector = EpisodeDiagnosticsCollector(
+        env=env,
+        instruction="put the black bowl in the middle drawer and open it",
+    )
+    assert len(collector.subtask_milestones) == 2
+    assert collector.subtask_milestones[0].achieved is False
+
+    sample_obs = {"robot0_eef_pos": np.array([0.0, 0.0, 0.5])}
+    dummy_act = np.zeros(7, dtype=np.float32)
+
+    # Step 0: nothing achieved
+    collector.record_step(0, sample_obs, dummy_act)
+    assert collector.subtask_milestones[0].achieved is False
+
+    # Simulate drawer opened at step 1
+    achieved_clauses.add(("open", "cabinet_middle_drawer_1"))
+    collector.record_step(1, sample_obs, dummy_act)
+    assert collector.subtask_milestones[0].achieved is True
+    assert collector.subtask_milestones[0].first_achieved_step == 1
+    assert collector.subtask_milestones[1].achieved is False
+
+
 def test_extract_subtask_milestones_from_language():
     """Verify natural language decomposition across compositional patterns."""
     # Pattern A: dual pick and place
