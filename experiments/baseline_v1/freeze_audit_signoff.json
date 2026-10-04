@@ -1,0 +1,11 @@
+{
+  "status": "V1_BASELINE_COMPLETED_AND_FROZEN",
+  "git_commit": "12509989bd4d05ad422ad2e71bd06faef3afe3ad",
+  "release_tag": "v1.0-baseline",
+  "all_criteria_met": true,
+  "gates_verified": true,
+  "acceptance_10_success_rate": 0.7,
+  "full_40_success_rate": 0.4813,
+  "primary_baseline": "smolvla_libero",
+  "ready_for_memory_v2": true
+}

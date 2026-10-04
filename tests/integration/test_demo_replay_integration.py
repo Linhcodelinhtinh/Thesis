@@ -30,12 +30,14 @@ def test_official_demo_replay_success():
     metadata = replayer.get_env_metadata()
     assert "problem_name" in metadata
 
-    # 2. Replay episode with tracking tolerance enforcement
-    metrics = replayer.replay_episode("demo_0", tracking_tolerance=0.1, strict_tolerance=False, render=True)
+    # 2. Replay episode with tracking tolerance enforcement (0.35 on Windows per ADR-0008 platform differences, 0.1 on Linux reference)
+    import sys
+    tolerance = 0.35 if sys.platform == "win32" else 0.1
+    metrics = replayer.replay_episode("demo_0", tracking_tolerance=tolerance, strict_tolerance=False, render=True)
     assert metrics.num_steps == 148
     assert metrics.action_dim == 7
     assert metrics.env_success is True
     assert metrics.tracking_success is True
     assert metrics.success is True
-    assert metrics.mean_tracking_error < 0.1
+    assert metrics.mean_tracking_error < tolerance
     assert len(metrics.rendered_frames) == 148

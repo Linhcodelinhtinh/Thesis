@@ -340,9 +340,12 @@ def main():
 
     # Clamp execution horizon to policy chunk size to prevent IndexError
     policy_chunk_size = getattr(policy, "chunk_size", args.execution_horizon)
-    effective_horizon = min(args.execution_horizon, policy_chunk_size)
-    if args.execution_horizon > policy_chunk_size:
-        print(f"[INFO] Automatically clamped execution_horizon from {args.execution_horizon} to {policy_chunk_size} (matching {args.model_name} chunk size).")
+    if isinstance(policy_chunk_size, int):
+        effective_horizon = min(args.execution_horizon, policy_chunk_size)
+        if args.execution_horizon > policy_chunk_size:
+            print(f"[INFO] Automatically clamped execution_horizon from {args.execution_horizon} to {policy_chunk_size} (matching {args.model_name} chunk size).")
+    else:
+        effective_horizon = args.execution_horizon
 
     # Provenance metadata per ADR-0010 & AGENTS.md Source of Truth
     py_version = sys.version.split()[0]
@@ -391,7 +394,7 @@ def main():
         "model_name": args.model_name,
         "checkpoint": args.checkpoint,
         "execution_horizon_s": effective_horizon,
-        "policy_chunk_size": policy_chunk_size,
+        "policy_chunk_size": policy_chunk_size if isinstance(policy_chunk_size, int) else None,
         "camera_resolution": args.camera_resolution,
         "non_comparable_reasons": non_comparable_reasons,
     }

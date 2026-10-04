@@ -6,6 +6,7 @@ divergence (replayed_state vs recorded_state), and verifies the official
 success predicate per Phase 3 specifications.
 """
 
+import contextlib
 import hashlib
 import json
 import os
@@ -16,6 +17,102 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import h5py
 import numpy as np
 import yaml
+
+
+@contextlib.contextmanager
+def _legacy_model_compatibility():
+    """Ensure cross-version robosuite compatibility when replaying demonstrations
+
+    recorded with older robosuite versions (e.g. 1.4.0) on newer environments.
+    """
+    try:
+        import robosuite.models.tasks.task as task_module
+        import robosuite.robots.single_arm as sa_module
+
+        orig_gen = task_module.Task.generate_id_mappings
+        orig_setup = sa_module.SingleArm.setup_references
+
+        def safe_generate_id_mappings(self, sim):
+            models = [model for model in self.mujoco_objects]
+            for robot in self.mujoco_robots:
+                models += [robot] + robot.models
+
+            worldbody = self.mujoco_arena.root.find("worldbody")
+            exclude_bodies = ["table", "left_eef_target", "right_eef_target"]
+            top_level_bodies = [
+                body.attrib.get("name")
+                for body in worldbody.findall("body")
+                if body.attrib.get("name") not in exclude_bodies
+            ]
+            models.extend(top_level_bodies)
+
+            self._instances_to_ids = {}
+            self._geom_ids_to_instances = {}
+            self._site_ids_to_instances = {}
+            self._classes_to_ids = {}
+            self._geom_ids_to_classes = {}
+            self._site_ids_to_classes = {}
+
+            for model in models:
+                if isinstance(model, str):
+                    body_name = model
+                    visual_group_number = 1
+                    body_id = sim.model.body_name2id(body_name)
+                    inst, cls = body_name, body_name
+                    geom_ids = task_module.get_subtree_geom_ids_by_group(sim.model, body_id, visual_group_number)
+                    id_groups = [geom_ids, []]
+                else:
+                    cls = str(type(model)).split("'")[1].split(".")[-1]
+                    inst = model.name
+                    available_geoms = set(sim.model.geom_names)
+                    available_sites = set(sim.model.site_names)
+                    geoms = [g for g in model.visual_geoms + model.contact_geoms if g in available_geoms]
+                    sites = [s for s in model.sites if s in available_sites]
+                    id_groups = [
+                        task_module.get_ids(sim=sim, elements=geoms, element_type="geom"),
+                        task_module.get_ids(sim=sim, elements=sites, element_type="site"),
+                    ]
+                group_types = ("geom", "site")
+                ids_to_instances = (self._geom_ids_to_instances, self._site_ids_to_instances)
+                ids_to_classes = (self._geom_ids_to_classes, self._site_ids_to_classes)
+
+                assert inst not in self._instances_to_ids, f"Instance {inst} already registered; should be unique"
+                self._instances_to_ids[inst] = {}
+                if cls not in self._classes_to_ids:
+                    self._classes_to_ids[cls] = {group_type: [] for group_type in group_types}
+
+                for ids, group_type, ids_to_inst, ids_to_cls in zip(
+                    id_groups, group_types, ids_to_instances, ids_to_classes
+                ):
+                    self._instances_to_ids[inst][group_type] = ids
+                    self._classes_to_ids[cls][group_type] += ids
+                    for idn in ids:
+                        assert idn not in ids_to_inst, f"ID {idn} already registered; should be unique"
+                        ids_to_inst[idn] = inst
+                        ids_to_cls[idn] = cls
+
+        def safe_setup_references(self):
+            for arm in self.arms:
+                if self.has_gripper[arm]:
+                    if "gripper0_finger_joint1" in self.sim.model.joint_names:
+                        self.gripper[arm].idn = self.idn
+            if hasattr(self.robot_model, "_sites"):
+                prefix = getattr(self.robot_model, "naming_prefix", "")
+                self.robot_model._sites = [
+                    s for s in self.robot_model._sites
+                    if s in self.sim.model.site_names or f"{prefix}{s}" in self.sim.model.site_names
+                ]
+            orig_setup(self)
+
+        task_module.Task.generate_id_mappings = safe_generate_id_mappings
+        sa_module.SingleArm.setup_references = safe_setup_references
+        try:
+            yield
+        finally:
+            task_module.Task.generate_id_mappings = orig_gen
+            sa_module.SingleArm.setup_references = orig_setup
+    except (ImportError, AttributeError):
+        yield
 
 
 @dataclass
@@ -167,22 +264,24 @@ class DemonstrationReplayer:
         if resolved_bddl is not None:
             env_kwargs["bddl_file_name"] = resolved_bddl
 
-        if problem_name is None or problem_name not in TASK_MAPPING:
-            from libero.libero.envs import OffScreenRenderEnv
-            env = OffScreenRenderEnv(**env_kwargs)
-        else:
-            env = TASK_MAPPING[problem_name](**env_kwargs)
-
+        env = None
         try:
-            # Reset environment using exact model_xml with dynamic asset resolution
-            if model_xml is not None:
-                model_xml = self._postprocess_xml(model_xml)
-                env.reset_from_xml_string(model_xml)
+            with _legacy_model_compatibility():
+                if problem_name is None or problem_name not in TASK_MAPPING:
+                    from libero.libero.envs import OffScreenRenderEnv
+                    env = OffScreenRenderEnv(**env_kwargs)
+                else:
+                    env = TASK_MAPPING[problem_name](**env_kwargs)
 
-            env.sim.reset()
-            # Restore exact initial physical state
-            env.sim.set_state_from_flattened(states[0])
-            env.sim.forward()
+                # Reset environment using exact model_xml with dynamic asset resolution
+                if model_xml is not None:
+                    model_xml = self._postprocess_xml(model_xml)
+                    env.reset_from_xml_string(model_xml)
+
+                env.sim.reset()
+                # Restore exact initial physical state
+                env.sim.set_state_from_flattened(states[0])
+                env.sim.forward()
 
             num_actions = len(actions)
             tracking_errors: List[float] = []
@@ -246,7 +345,8 @@ class DemonstrationReplayer:
             )
 
         finally:
-            env.close()
+            if env is not None:
+                env.close()
 
     def _postprocess_xml(self, xml_str: str) -> str:
         """Resolve mesh and texture paths for both robosuite and LIBERO assets."""
@@ -278,5 +378,18 @@ class DemonstrationReplayer:
                     parts = old_path.split("/")
                     ind = max(i for i, v in enumerate(parts) if v == "assets")
                     elem.set("file", libero_assets_dir + "/" + "/".join(parts[ind + 1 :]))
+
+        # Ensure robot0_right_center exists on robot0_link0 if expected by newer composite controllers
+        link0 = tree.find(".//body[@name='robot0_link0']")
+        if link0 is not None and link0.find("./site[@name='robot0_right_center']") is None:
+            ET.SubElement(
+                link0,
+                "site",
+                name="robot0_right_center",
+                pos="0 0 0",
+                size="0.01",
+                rgba="1 0.3 0.3 1",
+                group="2",
+            )
 
         return ET.tostring(tree, encoding="utf8").decode("utf8")

@@ -120,4 +120,28 @@ This document records the architectural and design decisions for **VLA Policy Ev
 - **Consequences**:
   - Restores the natural perceptual distribution expected by modern 256×256 VLAs while preserving strict benchmark honesty and eliminating undocumented simulation modifications.
 
+---
+
+## ADR-0012: Selection and Formal Freeze of SmolVLA as Primary V1 Baseline for Memory (V2) Research
+- **Status**: Accepted
+- **Context**: 
+  - Progressing to V2 (Memory System) requires a completely frozen, mathematically reproducible raw-policy baseline without any memory augmentation (ADR-0003, AGENTS.md Primary Objective).
+  - Two model candidates were evaluated: SmolVLA (`lerobot/smolvla_libero` @ `31d453f`) and MiniVLA (`openvla/minivla` VQ-LIBERO-90).
+  - SmolVLA underwent rigorous audit across all Promotion Gates G0–G4:
+    - **G0 (Infrastructure)**: Deterministic seed reproducibility, complete test suite passing (105 passed, 0 failed).
+    - **G1 (Basic Manipulation)**: Verified capability across atomic pick, place, push, and articulation tasks.
+    - **G2 (Benchmark Significance)**: Achieved 70.0% on acceptance 10-task suite and 48.1% across full 40-task benchmark (Goal: 67.5%, Object: 50.0%, Spatial: 47.5%, LIBERO-10: 27.5%), materially above random baseline (~0%).
+    - **G3 (Failure Attribution)**: 100% of failed episodes rigorously attributed (REACH: 46.8%, MANIPULATE: 39.5%, GRASP: 13.7%, TIMEOUT: 0%).
+    - **G4 (Latency Stability)**: Real-time inference latency stable on GPU (~10.8s per episode rollout, ~12.2 ms/step chunk amortized).
+  - Multi-stage compositional tasks (`LIBERO-10`) demonstrated a pronounced degradation to 27.5% SR, with 67.5% of failures terminating at the transition phase (REACH on subsequent objects). This provides an authentic empirical foundation and clear quantitative headroom for memory augmentation.
+- **Decision**:
+  1. **Primary Model Lock**: Select and lock `lerobot/smolvla_libero` (commit `31d453f7edd78c839a8bbc39744a292686daf0de`) as the Primary Frozen Baseline for V1.
+  2. **Canonical Baseline Config**: Author and freeze `configs/models/selected_baseline.yaml` specifying Franka Panda, OSC_POSE controller, 20 Hz, receding horizon chunk execution ($s=50$), native 256×256 camera rendering, and inverted gripper polarity.
+  3. **Cryptographic Artifact Freeze**: Generate immutable baseline records in `experiments/baseline_v1/`, including `FROZEN_BASELINE_MANIFEST.yaml` (sha256 checksums of 334 episode files and configs), `V1_BASELINE_REPORT.md`, and `freeze_audit_signoff.json`.
+  4. **Strict Immutability**: The V1 baseline weights, adapter, and evaluation pipeline are frozen. All V2 research will evaluate memory mechanisms as an additive wrapper without modifying the underlying raw-policy baseline.
+- **Consequences**:
+  - Provides a definitive, transparent, and reproducible foundation for the entire thesis.
+  - Any memory enhancement in V2 can be measured cleanly as a differential ($\Delta \text{SR}$) against this locked baseline.
+
+
 

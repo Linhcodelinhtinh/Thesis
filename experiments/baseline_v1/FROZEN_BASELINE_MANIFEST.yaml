@@ -1,0 +1,77 @@
+version: 1.0-baseline
+release_tag: v1.0-baseline
+freeze_date: '2026-10-04'
+git_commit: 12509989bd4d05ad422ad2e71bd06faef3afe3ad
+selected_baseline_model:
+  model_id: smolvla_libero
+  model_name: SmolVLA-LIBERO
+  repository: https://huggingface.co/lerobot/smolvla_libero
+  revision: 31d453f7edd78c839a8bbc39744a292686daf0de
+  backbone: SmolVLM2-500M-Video-Instruct
+  execution_horizon_s: 50
+  camera_resolution:
+  - 256
+  - 256
+  gripper_polarity: INVERTED_RLDS_TO_ROBOSUITE
+simulation_invariants:
+  robot: Panda
+  gripper: PandaGripper
+  controller: OSC_POSE
+  control_frequency_hz: 20
+  max_steps: 1000
+  libero_pinned_commit: 8f1084e3132a39270c3a13ebe37270a43ece2a01
+provenance_and_certification:
+  execution_tier: LIBERO-DERIVED (HOST_PY3.12)
+  certification: NON-COMPARABLE_OFFICIAL_PAPER
+  adrs_enforced:
+  - ADR-0001
+  - ADR-0002
+  - ADR-0003
+  - ADR-0004
+  - ADR-0005
+  - ADR-0006
+  - ADR-0007
+  - ADR-0008
+  - ADR-0009
+  - ADR-0010
+  - ADR-0011
+empirical_metrics:
+  acceptance_10:
+    tasks: 10
+    episodes: 40
+    success_rate: 0.7
+    grasp_rate: 0.725
+    lift_rate: 0.55
+    place_rate: 0.75
+  core_40_benchmark:
+    tasks: 40
+    episodes: 160
+    overall_success_rate: 0.4813
+    suite_success_rates:
+      libero_object: 0.5
+      libero_10: 0.275
+      libero_goal: 0.675
+      libero_spatial: 0.475
+model_promotion_gates:
+  G0_infrastructure_tests: PASSED
+  G1_basic_manipulation: PASSED
+  G2_success_rate: PASSED
+  G3_attributable_failures: PASSED
+  G4_inference_stability: PASSED
+v1_release_checklist:
+  resource_manifest: true
+  environment_manifest: true
+  model_manifest: true
+  reproducible_install: true
+  demo_replay: true
+  basic_policy_rollout: true
+  object_suite: true
+  libero_10_suite: true
+  quantitative_report: true
+  qualitative_report: true
+  failure_taxonomy: true
+  selected_frozen_baseline: true
+v2_transition:
+  memory_implemented_in_v1: false
+  baseline_locked: true
+  ready_for_v2_memory_architecture: true

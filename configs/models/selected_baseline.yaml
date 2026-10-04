@@ -1,0 +1,78 @@
+# Frozen Primary Baseline VLA Specification (Phase 14 & Phase 15)
+# Selected Model for V1 Baseline per SRS §14, §15, §40, §41
+# Pinned and Frozen for subsequent V2 Memory Evaluation
+
+model_id: "smolvla_libero"
+model_name: "SmolVLA-LIBERO"
+role: "PRIMARY_FROZEN_BASELINE_V1"
+status: "LOCKED_AND_FROZEN"
+
+provenance:
+  repository: "https://huggingface.co/lerobot/smolvla_libero"
+  revision: "31d453f7edd78c839a8bbc39744a292686daf0de"
+  backbone: "SmolVLM2-500M-Video-Instruct"
+  manifest: "resources/manifests/models/smolvla_libero.yaml"
+  execution_tier: "LIBERO-DERIVED (HOST_PY3.12)"
+  certification: "NON-COMPARABLE_OFFICIAL_PAPER"
+
+model_contract:
+  input_resolution: [256, 256]
+  camera_order:
+    - "agentview"
+    - "robot0_eye_in_hand"
+  proprioceptive_state_dim: 7
+  action_dim: 7
+  action_semantics:
+    - "delta_eef_x"
+    - "delta_eef_y"
+    - "delta_eef_z"
+    - "delta_eef_axis_angle_x"
+    - "delta_eef_axis_angle_y"
+    - "delta_eef_axis_angle_z"
+    - "gripper_closedness_action"
+  action_space: "continuous"
+  action_range: [-1.0, 1.0]
+  gripper_action_polarity: "INVERTED_RLDS_TO_ROBOSUITE"
+  chunk_size: 50
+  execution_horizon: 50
+
+simulation_contract:
+  robot: "Panda"
+  gripper: "PandaGripper"
+  controller: "OSC_POSE"
+  control_frequency_hz: 20
+  control_dt: 0.05
+  max_steps_per_episode: 1000
+  camera_resolution: [256, 256]
+  libero_pinned_commit: "8f1084e3132a39270c3a13ebe37270a43ece2a01"
+
+promotion_gate_verification:
+  G0_infrastructure_tests: "PASSED (105 passed, 0 failed, 100% pass rate)"
+  G1_basic_manipulation: "PASSED (Verified reach, grasp, lift, transport, place across all official suites)"
+  G2_success_rate: "PASSED (70.0% acceptance on 10 tasks [95% CI: 54.6%-81.9%], 48.1% on full 40 tasks)"
+  G3_attributable_failures: "PASSED (Systematic diagnostics: REACH 67.5%, LIFT 12.0%, GRASP 8.4%, TIMEOUT 6.0%, PLACEMENT 4.8%)"
+  G4_inference_stability: "PASSED (Mean 2841 ms / call, stable 50-step receding horizon execution)"
+
+benchmark_records:
+  acceptance_10_tasks:
+    source_dir: "experiments/results/raw_baseline/acpt_10_test"
+    total_episodes: 40
+    success_rate: 0.700
+    wilson_ci_95: [0.546, 0.819]
+    grasp_rate: 0.725
+    lift_rate: 0.550
+    place_rate: 0.750
+  full_40_tasks:
+    source_dir: "experiments/results/raw_baseline/full_benchmark_40"
+    total_episodes: 160
+    success_rate: 0.481
+    wilson_ci_95: [0.405, 0.558]
+    libero_object_10_tasks_sr: 0.500
+    libero_10_tasks_sr: 0.275
+    libero_goal_10_tasks_sr: 0.650
+    libero_spatial_10_tasks_sr: 0.500
+
+v2_readiness:
+  memory_module_present_in_v1: false
+  baseline_frozen: true
+  ready_for_memory_integration: true

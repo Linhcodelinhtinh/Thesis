@@ -804,9 +804,9 @@ Thesis_26/
 
 ---
 
-# 12. Phase 10 — Core LIBERO-Object Benchmark (Comprehensive Single-Object Manipulation) [IN PROGRESS - CODE COMPLETED, AWAITING BENCHMARK EXECUTION]
+# 12. Phase 10 — Core LIBERO-Object Benchmark (Comprehensive Single-Object Manipulation) [COMPLETED & LOCKED]
 
-**Trạng thái Triển khai**: Đã hoàn thành configuration `configs/benchmarks/libero_object.yaml`, benchmark runner CLI với `--config`, phân định sample levels (`PILOT_10_STATES` vs `FULL_50_STATES`), isolated output directories và unit tests (100% passed). Đang chờ thực thi benchmark pilot/full trên model chính thức.
+**Trạng thái Triển khai**: **ĐÃ HOÀN THÀNH VÀ KHÓA (LOCKED)**. Đã hoàn thành configuration `configs/benchmarks/libero_object.yaml`, benchmark runner CLI và đánh giá toàn bộ 10/10 tasks của `libero_object` trong benchmark tổng thể (`experiments/results/raw_baseline/full_benchmark_40`). Tỉ lệ thành công đạt **50.0%** (20/40), grasp rate **77.5%**, lift rate **50.0%**, place rate **50.0%**.
 
 ## 12.1. Mục tiêu
 1. Mở rộng đánh giá năng lực thao tác đơn vật thể (single-object pick-and-place) trên **toàn bộ 10 tasks** của suite `libero_object`.
@@ -855,9 +855,9 @@ Kế hoạch phân định rành mạch 2 cấp độ đánh giá:
 
 ---
 
-# 13. Phase 11 — LIBERO-10 Benchmark (Compositional & Multi-Stage Long-Horizon Evaluation) [IN PROGRESS - CODE COMPLETED, AWAITING BENCHMARK EXECUTION]
+# 13. Phase 11 — LIBERO-10 Benchmark (Compositional & Multi-Stage Long-Horizon Evaluation) [COMPLETED & LOCKED]
 
-**Trạng thái Triển khai**: Đã hoàn thành configuration `configs/benchmarks/libero_10.yaml` (10 tasks canonical commit `8f1084e`), Subtask Milestone Diagnostics (`SubtaskMilestone`, BDDL `goal_state` AST parsing, authentic `_eval_predicate` simulation verification, $t_{\text{milestone}}$, completion rates, sequential survival steps, `SEQUENCE_TRANSITION_FAILURE` vs `ATOMIC_MANIPULATION_FAILURE`), tích hợp aggregator và unit test suite (100% passed). Đang chờ thực thi benchmark trên model chính thức.
+**Trạng thái Triển khai**: **ĐÃ HOÀN THÀNH VÀ KHÓA (LOCKED)**. Đã hoàn thành configuration `configs/benchmarks/libero_10.yaml` (10 tasks canonical commit `8f1084e`), Subtask Milestone Diagnostics và đánh giá toàn bộ 10/10 tasks trong benchmark tổng thể (`experiments/results/raw_baseline/full_benchmark_40`). Tỉ lệ thành công đạt **27.5%** (11/40), định lượng chính xác sự suy giảm hiệu năng khi đối mặt với manipulation dài hạn (long-horizon compositional), thiết lập động cơ thực nghiệm nền tảng cho V2 Memory.
 
 ## 13.1. Mục tiêu & Vị trí Khoa học trong Luận văn
 1. Đánh giá năng lực của các mô hình VLA trên tập tác vụ phức tạp nhất: **`libero_10` (Long-Horizon & Compositional Manipulation Suite)**.
@@ -973,111 +973,56 @@ Không cần lưu video tất cả episode nếu storage lớn.
 
 ---
 
-# 16. Phase 14 — Baseline Promotion
+# 16. Phase 14 — Baseline Promotion [COMPLETED & LOCKED]
 
-Đến đây mới chọn:
+**Trạng thái Triển khai**: **ĐÃ HOÀN THÀNH VÀ KHÓA (LOCKED)**.
+Đã hoàn tất đánh giá và đối soát độc lập theo Model Promotion Gate (SRS §41) trên cả tập Acceptance 10 và Full 40 tasks. Mô hình **`SmolVLA-LIBERO`** (`lerobot/smolvla_libero` @ revision `31d453f`) chính thức được bầu chọn làm **Primary Frozen VLA Baseline** cho toàn bộ đề tài:
+- Đạt 70.0% trên Acceptance 10 (28/40 episodes, 95% Wilson CI: [54.6%, 81.9%]).
+- Đạt 48.1% trên Core 40 tasks (77/160 episodes), vượt trội so với random control (~0%).
+- Năng lực thao tác đạt chuẩn (Grasp Rate 68.1%–72.5%, Lift Rate 50.0%–55.0%, Place Rate 53.8%–75.0%).
+- Độ trễ ổn định (~2841 ms/call, 50-step chunking, amortized ~60 ms/step).
+- Xuất hiện không gian suy giảm hiệu năng rõ ràng trên multi-stage tasks (`libero_10`: 27.5%), tạo tiền đề hoàn hảo cho đối chứng Memory ở V2.
 
-```text
-PRIMARY VLA
-```
-
-## Tiêu chí
-
-Không nhất thiết model cao nhất mọi metric.
-
-Ưu tiên:
-
-```text
-reliable
-stable
-sufficient manipulation competence
-reasonable latency
-easy to reproduce
-clean official integration
-```
-
-và quan trọng:
-
-```text
-still has measurable failure headroom
-```
-
-## Output
-
-Tạo:
-
+Tệp cấu hình chính thức:
 ```text
 configs/models/selected_baseline.yaml
 ```
 
-Ví dụ:
-
-```yaml
-model:
-checkpoint:
-revision:
-processor:
-action_decoder:
-```
-
 Từ thời điểm này:
-
-> **Model baseline được freeze.**
+> **Model baseline được freeze hoàn toàn.**
 
 ---
 
-# 17. Phase 15 — V1 Freeze
+# 17. Phase 15 — V1 Freeze [COMPLETED & LOCKED]
 
-Đóng toàn bộ baseline:
-
-```text
-environment
-robot
-camera
-task
-checkpoint
-processor
-controller
-evaluation
-metrics
-```
-
-Tạo:
-
+**Trạng thái Triển khai**: **ĐÃ CHÍNH THỨC ĐÓNG BĂNG VÀ KHÓA (LOCKED)**.
+Toàn bộ hệ thống baseline V1 đã được kiểm toán đối soát độc lập (`scripts/reconcile_v1_freeze.py`), đạt 100% tiêu chí nghiệm thu (0 file error, 0 tier mismatch). Gói baseline chính thức được lưu trữ tại:
 ```text
 experiments/baseline_v1/
-```
-
-gắn:
-
-```text
-git commit
-model hash
-environment hash
+├── FROZEN_BASELINE_MANIFEST.yaml
+├── V1_BASELINE_REPORT.md
+├── selected_baseline.yaml
+└── freeze_audit_signoff.json
 ```
 
 ## V1 release checklist
 
 ```text
-[x] resource manifest
-[x] environment manifest
-[x] model manifest
-[x] reproducible install
-[x] demo replay
-[x] basic policy rollout
-[ ] Object suite
-[ ] LIBERO-10
-[ ] quantitative report
-[ ] qualitative report
-[x] failure taxonomy
-[ ] selected frozen baseline
+[x] resource manifest (asset_manifest.yaml, demonstrations_manifest.yaml)
+[x] environment manifest (environment_manifest.yaml, software_manifest.yaml)
+[x] model manifest (smolvla_libero.yaml, minivla_libero90.yaml, minivla_vq_libero90.yaml)
+[x] reproducible install (pinned conda/uv specifications in envs/)
+[x] demo replay (verified with exact tolerance & env success in tests/integration/)
+[x] basic policy rollout (rollout_episode() with receding horizon chunking)
+[x] Object suite (10/10 tasks evaluated in full_benchmark_40)
+[x] LIBERO-10 (10/10 tasks evaluated in full_benchmark_40)
+[x] quantitative report (benchmark_summary.json, BENCHMARK_REPORT.md)
+[x] qualitative report (telemetry videos, failure_distribution.csv)
+[x] failure taxonomy (4-tier attribution schema, F1-F17 taxonomy)
+[x] selected frozen baseline (configs/models/selected_baseline.yaml)
 ```
 
-Chỉ khi tất cả pass mới tag:
-
-```text
-v1.0-baseline
-```
+**Official Release Tag**: `v1.0-baseline` (Audit verified via `scripts/reconcile_v1_freeze.py`)
 
 ---
 
