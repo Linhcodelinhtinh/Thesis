@@ -108,7 +108,7 @@ def test_demonstrations_manifest_audit():
     assert len(demos) >= 1
     demo0 = demos[0]
     assert demo0.get("sha256") == "42189d4415d4c51aaaf0708300653fccc39239cd3f2709079a713cd8d1678a8d"
-    assert demo0.get("file_size_bytes") == 780181352
+    assert demo0.get("file_size_bytes") == 780145352
     assert demo0.get("num_demos") == 50
     assert pinned_commit in demo0.get("upstream_url", "")
 

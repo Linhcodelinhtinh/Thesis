@@ -17,7 +17,7 @@ demonstrations:
     relative_path: "resources/demonstrations/libero_object/pick_up_the_alphabet_soup_and_place_it_in_the_basket_demo.hdf5"
     upstream_url: "https://huggingface.co/datasets/yifengzhu-hf/LIBERO-datasets/resolve/f13aa24a3da8c43c7225569f28c562979fa0e35a/libero_object/pick_up_the_alphabet_soup_and_place_it_in_the_basket_demo.hdf5"
     sha256: "42189d4415d4c51aaaf0708300653fccc39239cd3f2709079a713cd8d1678a8d"
-    file_size_bytes: 780181352
+    file_size_bytes: 780145352
     num_demos: 50
     state_dim: 110
     action_dim: 7

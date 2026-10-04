@@ -1,11 +1,36 @@
 {
-  "status": "V1_BASELINE_COMPLETED_AND_FROZEN",
-  "git_commit": "12509989bd4d05ad422ad2e71bd06faef3afe3ad",
+  "status": "V1_DERIVED_BASELINE_FROZEN",
+  "release_git_commit": "c074eca2f92f42e2439097770e2c401a2c65de68",
+  "evaluation_run_commit": "12509989bd4d05ad422ad2e71bd06faef3afe3ad",
   "release_tag": "v1.0-baseline",
-  "all_criteria_met": true,
-  "gates_verified": true,
+  "criteria_checks": {
+    "g0_infrastructure_tests": true,
+    "g1_basic_manipulation": true,
+    "g2_success_rate": true,
+    "g3_failure_attribution": "CONDITIONALLY_VERIFIED",
+    "g4_inference_stability": true,
+    "model_contract_consistency": true,
+    "file_integrity_verified": true
+  },
+  "all_criteria_met_for_internal_baseline": true,
   "acceptance_10_success_rate": 0.7,
+  "acceptance_10_ci_95": [
+    0.5457,
+    0.8193
+  ],
   "full_40_success_rate": 0.4813,
+  "full_40_ci_95": [
+    0.4052,
+    0.5582
+  ],
+  "suite_success_rates": {
+    "libero_goal": 0.675,
+    "libero_object": 0.5,
+    "libero_spatial": 0.475,
+    "libero_10": 0.275
+  },
   "primary_baseline": "smolvla_libero",
-  "ready_for_memory_v2": true
+  "total_raw_artifacts_audited": 1000,
+  "ready_for_memory_v2": true,
+  "notes": "Internal derived baseline frozen for paired comparison against V2 memory models under identical host conditions. Strict official reproduction is not claimed."
 }

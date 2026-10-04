@@ -128,17 +128,18 @@ This document records the architectural and design decisions for **VLA Policy Ev
   - Progressing to V2 (Memory System) requires a completely frozen, mathematically reproducible raw-policy baseline without any memory augmentation (ADR-0003, AGENTS.md Primary Objective).
   - Two model candidates were evaluated: SmolVLA (`lerobot/smolvla_libero` @ `31d453f`) and MiniVLA (`openvla/minivla` VQ-LIBERO-90).
   - SmolVLA underwent rigorous audit across all Promotion Gates G0–G4:
-    - **G0 (Infrastructure)**: Deterministic seed reproducibility, complete test suite passing (105 passed, 0 failed).
-    - **G1 (Basic Manipulation)**: Verified capability across atomic pick, place, push, and articulation tasks.
-    - **G2 (Benchmark Significance)**: Achieved 70.0% on acceptance 10-task suite and 48.1% across full 40-task benchmark (Goal: 67.5%, Object: 50.0%, Spatial: 47.5%, LIBERO-10: 27.5%), materially above random baseline (~0%).
-    - **G3 (Failure Attribution)**: 100% of failed episodes rigorously attributed (REACH: 46.8%, MANIPULATE: 39.5%, GRASP: 13.7%, TIMEOUT: 0%).
-    - **G4 (Latency Stability)**: Real-time inference latency stable on GPU (~10.8s per episode rollout, ~12.2 ms/step chunk amortized).
+    - **G0 (Infrastructure)**: Deterministic seed reproducibility, complete test suite passing (105 passed, 0 failed), zero missing files across 200 evaluated episode runs.
+    - **G1 (Basic Manipulation)**: Verified capability across atomic pick, place, push, and articulation tasks (Grasp: 68.1%, Lift: 50.0%, Place: 53.8%).
+    - **G2 (Benchmark Significance)**: Achieved 70.0% on acceptance 10-task suite [95% CI: 54.6%–81.9%] and 48.13% across full 40-task benchmark across initial states 0..3 (Goal: 67.5% [27/40], Object: 50.0% [20/40], Spatial: 47.5% [19/40], LIBERO-10: 27.5% [11/40]), materially above random baseline (~0%).
+    - **G3 (Failure Attribution)**: Behavioral failure phase is tracked for 100% of failures (REACH: 67.5% [56/83], LIFT: 12.0% [10/83], GRASP: 8.4% [7/83], TIMEOUT: 6.0% [5/83], PLACEMENT: 4.8% [4/83], TRANSPORT: 1.2% [1/83]). Causal root-cause classification remains unisolated for 85.5% (71/83) under diagnostic code F0 due to multi-object scene geometries; accepted as an aggregate behavioral phase baseline for memory research rather than fine-grained causal diagnosis.
+    - **G4 (Latency Stability)**: Real-time inference latency stable on GPU (mean 2841 ms / chunk call, amortized ~57 ms/step, 0 OOM / runtime crashes).
   - Multi-stage compositional tasks (`LIBERO-10`) demonstrated a pronounced degradation to 27.5% SR, with 67.5% of failures terminating at the transition phase (REACH on subsequent objects). This provides an authentic empirical foundation and clear quantitative headroom for memory augmentation.
 - **Decision**:
   1. **Primary Model Lock**: Select and lock `lerobot/smolvla_libero` (commit `31d453f7edd78c839a8bbc39744a292686daf0de`) as the Primary Frozen Baseline for V1.
-  2. **Canonical Baseline Config**: Author and freeze `configs/models/selected_baseline.yaml` specifying Franka Panda, OSC_POSE controller, 20 Hz, receding horizon chunk execution ($s=50$), native 256×256 camera rendering, and inverted gripper polarity.
-  3. **Cryptographic Artifact Freeze**: Generate immutable baseline records in `experiments/baseline_v1/`, including `FROZEN_BASELINE_MANIFEST.yaml` (sha256 checksums of 334 episode files and configs), `V1_BASELINE_REPORT.md`, and `freeze_audit_signoff.json`.
-  4. **Strict Immutability**: The V1 baseline weights, adapter, and evaluation pipeline are frozen. All V2 research will evaluate memory mechanisms as an additive wrapper without modifying the underlying raw-policy baseline.
+  2. **Canonical Baseline Config**: Author and freeze `configs/models/selected_baseline.yaml` specifying Franka Panda, OSC_POSE controller, 20 Hz, receding horizon chunk execution ($s=50$), native 256×256 camera rendering, 8-dimensional proprioceptive state vector, and DIRECT gripper polarity (robosuite native convention `-1 = Open, +1 = Close` per `lerobot/libero`).
+  3. **Cryptographic Artifact Freeze**: Generate immutable baseline records in `experiments/baseline_v1/`, including `FROZEN_BASELINE_MANIFEST.yaml` (SHA-256 checksums of all 1,000 raw benchmark files), `V1_BASELINE_REPORT.md`, and `freeze_audit_signoff.json`.
+  4. **Transparent Evaluation Tier**: Mark baseline explicitly as `LIBERO-DERIVED (HOST_PY3.12)` with certification `NON-COMPARABLE_OFFICIAL_PAPER`. Its scientific role is an internal, locked control baseline for paired evaluation against V2 memory models under identical host conditions (40 tasks, initial states 0..3), not official LIBERO score reproduction.
+  5. **Strict Immutability**: The V1 baseline weights, adapter, and evaluation pipeline are frozen. All V2 research will evaluate memory mechanisms as an additive wrapper without modifying the underlying raw-policy baseline.
 - **Consequences**:
   - Provides a definitive, transparent, and reproducible foundation for the entire thesis.
   - Any memory enhancement in V2 can be measured cleanly as a differential ($\Delta \text{SR}$) against this locked baseline.

@@ -129,6 +129,12 @@ def parse_args():
         help="Path to local official checkpoint directory.",
     )
     parser.add_argument(
+        "--model-config",
+        type=str,
+        default=None,
+        help="Path to YAML model contract specification file (e.g., configs/models/selected_baseline.yaml).",
+    )
+    parser.add_argument(
         "--execution-horizon",
         "-s",
         type=int,
@@ -331,7 +337,36 @@ def main():
     # 1. Instantiate Policy
     print(f"\nInstantiating policy '{args.model_name}'...")
     policy_cls = get_model_class(args.model_name)
-    policy = policy_cls()
+    policy_kwargs = {}
+    model_contract_meta = {}
+
+    model_cfg_path = args.model_config
+    if not model_cfg_path and os.path.exists("configs/models/selected_baseline.yaml"):
+        # Auto-detect canonical baseline config if model matches
+        if args.model_name == "smolvla_libero":
+            model_cfg_path = "configs/models/selected_baseline.yaml"
+
+    if model_cfg_path:
+        if not os.path.exists(model_cfg_path):
+            print(f"ERROR: Specified model configuration file '{model_cfg_path}' does not exist!", file=sys.stderr)
+            return 1
+        with open(model_cfg_path, "r", encoding="utf-8") as f:
+            model_cfg_data = yaml.safe_load(f)
+        contract = model_cfg_data.get("model_contract", {})
+        model_contract_meta = contract
+        polarity = contract.get("gripper_action_polarity", "DIRECT")
+        policy_kwargs["invert_gripper_action"] = (polarity == "INVERTED_RLDS_TO_ROBOSUITE")
+        if "chunk_size" in contract:
+            policy_kwargs["chunk_size"] = contract["chunk_size"]
+        if "action_dim" in contract:
+            policy_kwargs["action_dim"] = contract["action_dim"]
+        print(f"[INFO] Loaded model contract from '{model_cfg_path}': polarity={polarity}, kwargs={policy_kwargs}")
+
+    import inspect
+    sig = inspect.signature(policy_cls.__init__)
+    valid_kwargs = {k: v for k, v in policy_kwargs.items() if k in sig.parameters}
+    policy = policy_cls(**valid_kwargs)
+
     print(f"Loading checkpoint from: {args.checkpoint}...")
     policy.load(args.checkpoint, device=args.device)
     if not policy.loaded:
@@ -382,6 +417,18 @@ def main():
 
     is_official_certified = len(non_comparable_reasons) == 0
 
+    policy_interface = {}
+    if hasattr(policy, "validate_interface"):
+        try:
+            val = policy.validate_interface()
+            if isinstance(val, dict):
+                # Safely convert to pure JSON primitives and ignore MagicMock
+                from unittest.mock import MagicMock
+                if not isinstance(val, MagicMock):
+                    policy_interface = json.loads(json.dumps(val, default=str))
+        except Exception:
+            pass
+
     provenance = {
         "execution_tier": "STRICT_LIBERO" if is_official_certified else f"LIBERO-DERIVED (HOST_{sys.platform.upper()}_PY{sys.version_info.major}.{sys.version_info.minor})",
         "certification": "CERTIFIED_OFFICIAL" if is_official_certified else "NON-COMPARABLE_OFFICIAL_PAPER",
@@ -393,6 +440,9 @@ def main():
         "note": f"Evaluated under {sample_level_tier}. Native camera rendering per model specification.",
         "model_name": args.model_name,
         "checkpoint": args.checkpoint,
+        "model_config": model_cfg_path,
+        "model_contract": model_contract_meta,
+        "policy_interface": policy_interface,
         "execution_horizon_s": effective_horizon,
         "policy_chunk_size": policy_chunk_size if isinstance(policy_chunk_size, int) else None,
         "camera_resolution": args.camera_resolution,

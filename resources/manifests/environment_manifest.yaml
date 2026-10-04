@@ -26,7 +26,7 @@ environments:
     name: "libero_reference"
     spec_file: "envs/libero_reference.yml"
     target_os: "Linux (Ubuntu via WSL2)"
-    python_version: "3.8.20"
+    python_version: "3.8.13"
     robosuite_version: "1.4.0"
     bddl_version: "1.0.1"
     rendering_backend: "egl"

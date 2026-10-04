@@ -20,7 +20,16 @@ model_contract:
   camera_order:
     - "agentview"
     - "robot0_eye_in_hand"
-  proprioceptive_state_dim: 7
+  proprioceptive_state_dim: 8
+  state_semantics:
+    - "eef_pos_x"
+    - "eef_pos_y"
+    - "eef_pos_z"
+    - "eef_axis_angle_x"
+    - "eef_axis_angle_y"
+    - "eef_axis_angle_z"
+    - "gripper_qpos_0"
+    - "gripper_qpos_1"
   action_dim: 7
   action_semantics:
     - "delta_eef_x"
@@ -29,10 +38,11 @@ model_contract:
     - "delta_eef_axis_angle_x"
     - "delta_eef_axis_angle_y"
     - "delta_eef_axis_angle_z"
-    - "gripper_closedness_action"
+    - "gripper_action"
   action_space: "continuous"
   action_range: [-1.0, 1.0]
-  gripper_action_polarity: "INVERTED_RLDS_TO_ROBOSUITE"
+  gripper_action_polarity: "DIRECT"
+  gripper_convention: "Robosuite native: -1 = Open, +1 = Close (matches lerobot/libero dataset)"
   chunk_size: 50
   execution_horizon: 50
 
@@ -45,17 +55,21 @@ simulation_contract:
   max_steps_per_episode: 1000
   camera_resolution: [256, 256]
   libero_pinned_commit: "8f1084e3132a39270c3a13ebe37270a43ece2a01"
+  initial_states_evaluated_per_task: 4
+  initial_state_ids: [0, 1, 2, 3]
 
 promotion_gate_verification:
   G0_infrastructure_tests: "PASSED (105 passed, 0 failed, 100% pass rate)"
   G1_basic_manipulation: "PASSED (Verified reach, grasp, lift, transport, place across all official suites)"
-  G2_success_rate: "PASSED (70.0% acceptance on 10 tasks [95% CI: 54.6%-81.9%], 48.1% on full 40 tasks)"
-  G3_attributable_failures: "PASSED (Systematic diagnostics: REACH 67.5%, LIFT 12.0%, GRASP 8.4%, TIMEOUT 6.0%, PLACEMENT 4.8%)"
+  G2_success_rate: "PASSED (70.0% acceptance on 10 tasks [95% CI: 54.6%-81.9%], 48.1% on full 40 tasks across initial states 0..3)"
+  G3_attributable_failures: "CONDITIONALLY_VERIFIED (Phase tracking complete: REACH 67.5% [56/83], LIFT 12.0% [10/83], GRASP 8.4% [7/83], TIMEOUT 6.0% [5/83], PLACEMENT 4.8% [4/83], TRANSPORT 1.2% [1/83]. Causal code UNATTRIBUTED for 85.5% [71/83] due to multi-object scene geometries; valid as behavioral phase baseline for V2)"
   G4_inference_stability: "PASSED (Mean 2841 ms / call, stable 50-step receding horizon execution)"
 
 benchmark_records:
   acceptance_10_tasks:
     source_dir: "experiments/results/raw_baseline/acpt_10_test"
+    total_tasks: 10
+    initial_states_per_task: 4
     total_episodes: 40
     success_rate: 0.700
     wilson_ci_95: [0.546, 0.819]
@@ -64,13 +78,15 @@ benchmark_records:
     place_rate: 0.750
   full_40_tasks:
     source_dir: "experiments/results/raw_baseline/full_benchmark_40"
+    total_tasks: 40
+    initial_states_per_task: 4
     total_episodes: 160
-    success_rate: 0.481
+    overall_success_rate: 0.48125
     wilson_ci_95: [0.405, 0.558]
+    libero_goal_10_tasks_sr: 0.675
     libero_object_10_tasks_sr: 0.500
+    libero_spatial_10_tasks_sr: 0.475
     libero_10_tasks_sr: 0.275
-    libero_goal_10_tasks_sr: 0.650
-    libero_spatial_10_tasks_sr: 0.500
 
 v2_readiness:
   memory_module_present_in_v1: false
