@@ -110,6 +110,7 @@ class EpisodeResult:
     video_frames: List[np.ndarray] = field(default_factory=list)
     video_path: Optional[str] = None
     diagnostics_report: Optional[Dict[str, Any]] = None
+    settling_snapshot: Optional[Dict[str, Any]] = None
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert metrics to JSON-serializable dictionary."""
@@ -128,6 +129,7 @@ class EpisodeResult:
             "state_shape": list(self.states.shape) if self.states is not None else None,
             "video_path": self.video_path,
             "diagnostics": self.diagnostics_report,
+            "settling_snapshot": self.settling_snapshot,
         }
 
     def save_model_outputs(self, path: Union[str, Path]) -> None:
@@ -483,4 +485,5 @@ def rollout_episode(
         video_frames=video_frames,
         video_path=saved_video_path,
         diagnostics_report=diag_report_dict,
+        settling_snapshot=getattr(env, "last_settling_snapshot", None),
     )

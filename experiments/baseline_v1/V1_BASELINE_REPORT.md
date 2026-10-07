@@ -1,7 +1,7 @@
 # VLA Policy Evaluation Sandbox — V1 Baseline Final Report
 
 **Release Tag**: `v1.0-baseline`  
-**Release Git Commit**: `c074eca2f92f42e2439097770e2c401a2c65de68`  
+**Release Git Commit**: `43ddd06e01d05d6ad3e70ae56c0e807db99d7fd4`  
 **Evaluation Run Commit**: `12509989bd4d05ad422ad2e71bd06faef3afe3ad`  
 **Status**: **LOCKED AND FROZEN AS INTERNAL DERIVED BASELINE FOR V2 MEMORY EVALUATION**  
 **Selected Baseline Model**: `SmolVLA-LIBERO` (`lerobot/smolvla_libero` @ commit `31d453f7edd78c839a8bbc39744a292686daf0de`)  

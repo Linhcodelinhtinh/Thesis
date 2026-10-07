@@ -1,6 +1,6 @@
 {
   "status": "V1_DERIVED_BASELINE_FROZEN",
-  "release_git_commit": "c074eca2f92f42e2439097770e2c401a2c65de68",
+  "release_git_commit": "43ddd06e01d05d6ad3e70ae56c0e807db99d7fd4",
   "evaluation_run_commit": "12509989bd4d05ad422ad2e71bd06faef3afe3ad",
   "release_tag": "v1.0-baseline",
   "criteria_checks": {

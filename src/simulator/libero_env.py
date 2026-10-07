@@ -99,6 +99,7 @@ class LiberoEnv:
         self.camera_height = camera_height
         self.camera_width = camera_width
         self.num_steps_wait = int(num_steps_wait)
+        self.last_settling_snapshot: Optional[Dict[str, Any]] = None
 
         # Enforce strict benchmark invariants if in STRICT-LIBERO mode
         if self.mode == BenchmarkMode.STRICT_LIBERO:
@@ -252,11 +253,37 @@ class LiberoEnv:
         target_state = self.init_states[initial_state_id]
         obs = self._env.set_init_state(target_state)
 
+        # Snapshot pre-settling physical state
+        pre_snapshot = {
+            "eef_pos": [float(x) for x in obs["robot0_eef_pos"]] if "robot0_eef_pos" in obs else None,
+            "eef_quat": [float(x) for x in obs["robot0_eef_quat"]] if "robot0_eef_quat" in obs else None,
+            "gripper_qpos": [float(x) for x in obs["robot0_gripper_qpos"]] if "robot0_gripper_qpos" in obs else None,
+        }
+
         # Execute settling wait steps per official LeRobot LiberoEnv protocol
         if steps_wait > 0:
             dummy_action = np.array(self.OFFICIAL_DUMMY_ACTION, dtype=np.float32)
             for _ in range(steps_wait):
                 obs, _, _, _ = self._env.step(dummy_action)
+
+        # Snapshot post-settling physical state
+        post_snapshot = {
+            "eef_pos": [float(x) for x in obs["robot0_eef_pos"]] if "robot0_eef_pos" in obs else None,
+            "eef_quat": [float(x) for x in obs["robot0_eef_quat"]] if "robot0_eef_quat" in obs else None,
+            "gripper_qpos": [float(x) for x in obs["robot0_gripper_qpos"]] if "robot0_gripper_qpos" in obs else None,
+        }
+
+        eef_drift_mm = None
+        if pre_snapshot["eef_pos"] and post_snapshot["eef_pos"]:
+            diff = np.array(post_snapshot["eef_pos"]) - np.array(pre_snapshot["eef_pos"])
+            eef_drift_mm = float(np.linalg.norm(diff) * 1000.0)
+
+        self.last_settling_snapshot = {
+            "num_steps_wait": steps_wait,
+            "pre_settling": pre_snapshot,
+            "post_settling": post_snapshot,
+            "eef_drift_mm": eef_drift_mm,
+        }
 
         self.current_step = 0
 

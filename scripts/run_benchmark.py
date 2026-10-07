@@ -117,6 +117,18 @@ def parse_args():
         help="Explicit list of initial state IDs (overrides --episodes-per-task).",
     )
     parser.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="Base random seed for reproducible benchmark evaluation. If provided, each episode is seeded deterministically.",
+    )
+    parser.add_argument(
+        "--num-steps-wait",
+        type=int,
+        default=None,
+        help="Override settling wait steps after environment reset (e.g. 0 for legacy, 10 for LeRobot default).",
+    )
+    parser.add_argument(
         "--model-name",
         type=str,
         default="smolvla_libero",
@@ -429,12 +441,29 @@ def main():
         except Exception:
             pass
 
+    git_hash = None
+    try:
+        import subprocess
+        git_hash = subprocess.check_output(["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL).decode("utf-8").strip()
+    except Exception:
+        pass
+
+    model_cfg_sha256 = None
+    if model_cfg_path and os.path.exists(model_cfg_path):
+        import hashlib
+        with open(model_cfg_path, "rb") as f:
+            model_cfg_sha256 = hashlib.sha256(f.read()).hexdigest()
+
     provenance = {
         "execution_tier": "STRICT_LIBERO" if is_official_certified else f"LIBERO-DERIVED (HOST_{sys.platform.upper()}_PY{sys.version_info.major}.{sys.version_info.minor})",
         "certification": "CERTIFIED_OFFICIAL" if is_official_certified else "NON-COMPARABLE_OFFICIAL_PAPER",
         "python_version": py_version,
         "robosuite_version": robosuite_ver,
         "bddl_version": bddl_ver,
+        "git_commit": git_hash,
+        "model_config_sha256": model_cfg_sha256,
+        "base_seed": args.seed,
+        "num_steps_wait": args.num_steps_wait if args.num_steps_wait is not None else 10,
         "sample_level": sample_level_tier,
         "benchmark_name": benchmark_name,
         "note": f"Evaluated under {sample_level_tier}. Native camera rendering per model specification.",
@@ -477,14 +506,17 @@ def main():
         )
 
         try:
-            env = LiberoEnv(
-                benchmark_name=suite,
-                task_id=tid,
-                mode=mode,
-                horizon=args.max_steps,
-                camera_height=args.camera_resolution,
-                camera_width=args.camera_resolution,
-            )
+            env_kwargs = {
+                "benchmark_name": suite,
+                "task_id": tid,
+                "mode": mode,
+                "horizon": args.max_steps,
+                "camera_height": args.camera_resolution,
+                "camera_width": args.camera_resolution,
+            }
+            if args.num_steps_wait is not None:
+                env_kwargs["num_steps_wait"] = args.num_steps_wait
+            env = LiberoEnv(**env_kwargs)
         except Exception as e:
             print(f"ERROR initializing LiberoEnv for {suite} task {tid}: {e}", file=sys.stderr)
             return 1
@@ -496,7 +528,21 @@ def main():
 
         for init_id in init_state_ids:
             global_ep_counter += 1
-            print(f"\n--> Running Episode [{global_ep_counter}/{total_episodes}]: {actual_task_name} | Init State {init_id} (s={effective_horizon})...")
+
+            # Per-episode deterministic seeding if args.seed is provided
+            ep_seed = None
+            if args.seed is not None:
+                import random
+                import torch
+                ep_seed = int(args.seed) + t_idx * 100 + int(init_id)
+                random.seed(ep_seed)
+                np.random.seed(ep_seed)
+                torch.manual_seed(ep_seed)
+                if torch.cuda.is_available():
+                    torch.cuda.manual_seed_all(ep_seed)
+                os.environ["PYTHONHASHSEED"] = str(ep_seed)
+
+            print(f"\n--> Running Episode [{global_ep_counter}/{total_episodes}]: {actual_task_name} | Init State {init_id} (s={effective_horizon}, seed={ep_seed})...")
 
             ep_dir = out_base / f"{suite}_task{tid}" / f"init_{init_id}"
             ep_dir.mkdir(parents=True, exist_ok=True)
@@ -521,6 +567,7 @@ def main():
             ep_data = result.to_dict()
             ep_data["checkpoint"] = args.checkpoint
             ep_data["initial_state_id"] = init_id
+            ep_data["seed"] = ep_seed
             ep_data["provenance"] = provenance
             with open(ep_dir / "episode.json", "w", encoding="utf-8") as f:
                 json.dump(ep_data, f, indent=2)
