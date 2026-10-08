@@ -1,0 +1,72 @@
+# V2 External Memory Baseline Contract Lock (P0)
+# Per docs/V2_MEMORY_EXECUTION_PLAN.md Section 3 & 4
+
+schema_version: 1
+baseline_id: "smolvla_libero_v1_audited"
+execution_tier: "LIBERO-DERIVED (HOST_WIN32_PY3.12)"
+certification: "NON-COMPARABLE_OFFICIAL_PAPER"
+
+git_provenance:
+  frozen_commit: "43ddd06e01d05d6ad3e70ae56c0e807db99d7fd4"
+  branch: "main"
+  clean_working_tree: false
+  note: "Locked commit representing audited Phase 8 acceptance baseline with deterministic seeding and settling telemetry."
+
+model_specification:
+  model_name: "smolvla_libero"
+  checkpoint_path: "resources/checkpoints/smolvla_libero"
+  model_config_path: "configs/models/selected_baseline.yaml"
+  model_config_sha256: "f70fa95d16eaf98b362e60e2ab839f875427185c4acdc6f015f38f96227026eb"
+  architecture: "SmolVLM2-500M + Flow-Matching Diffusion Action Head"
+  prediction_horizon_H: 50
+  execution_horizon_s: 50
+  device: "cpu"
+
+contract:
+  proprioceptive_state_dim: 8
+  state_semantics:
+    - "eef_pos_x"
+    - "eef_pos_y"
+    - "eef_pos_z"
+    - "eef_axis_angle_x"
+    - "eef_axis_angle_y"
+    - "eef_axis_angle_z"
+    - "gripper_qpos_0"
+    - "gripper_qpos_1"
+  action_dim: 7
+  action_semantics:
+    - "delta_eef_x"
+    - "delta_eef_y"
+    - "delta_eef_z"
+    - "delta_eef_axis_angle_x"
+    - "delta_eef_axis_angle_y"
+    - "delta_eef_axis_angle_z"
+    - "gripper_action"
+  action_space: "continuous"
+  action_range: [-1.0, 1.0]
+  gripper_action_polarity: "DIRECT"
+  gripper_convention: "Robosuite native: -1 = Open, +1 = Close"
+
+simulation_environment:
+  robot: "Franka Panda"
+  gripper: "Panda Gripper"
+  controller: "OSC_POSE"
+  control_frequency_hz: 20
+  camera_resolution: [256, 256]
+  camera_views:
+    - "agentview"
+    - "robot0_eye_in_hand"
+  num_steps_wait: 10
+  max_steps: 1000
+
+evaluation_protocol:
+  sample_tier: "PILOT_4_STATES"
+  initial_state_ids: [0, 1, 2, 3]
+  base_seed: 42
+  seeding_formula: "base_seed + task_index * 100 + init_id"
+
+memory_conditions:
+  supported:
+    - "off"          # V1 baseline pass-through (no memory component)
+    - "text_shadow"  # Memory computed/logged, policy receives unmodified instruction
+    - "text_only"    # Rendered factual memory context appended to instruction

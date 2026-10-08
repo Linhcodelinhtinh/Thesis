@@ -169,6 +169,18 @@ class MemoryQuery:
             _require_text("entity_id", entity_id)
 
 
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "episode_id": self.episode_id,
+            "as_of_step": self.as_of_step,
+            "entity_ids": list(self.entity_ids),
+            "minimum_confidence": self.minimum_confidence,
+            "max_age_steps": self.max_age_steps,
+            "max_events": self.max_events,
+            "max_objects": self.max_objects,
+        }
+
+
 @dataclass(frozen=True)
 class RetrievedMemory:
     """Auditable retrieval result; source data remains available to the renderer."""
@@ -177,6 +189,14 @@ class RetrievedMemory:
     as_of_step: int
     objects: Tuple[ObjectMemory, ...] = ()
     events: Tuple[MemoryEvent, ...] = ()
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "episode_id": self.episode_id,
+            "as_of_step": self.as_of_step,
+            "objects": [item.to_dict() for item in self.objects],
+            "events": [item.to_dict() for item in self.events],
+        }
 
 
 @dataclass(frozen=True)
@@ -187,6 +207,14 @@ class WorldMemorySnapshot:
     as_of_step: int
     objects: Tuple[ObjectMemory, ...]
     events: Tuple[MemoryEvent, ...]
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "episode_id": self.episode_id,
+            "as_of_step": self.as_of_step,
+            "objects": [item.to_dict() for item in self.objects],
+            "events": [item.to_dict() for item in self.events],
+        }
 
 
 def _require_text(name: str, value: str) -> None:

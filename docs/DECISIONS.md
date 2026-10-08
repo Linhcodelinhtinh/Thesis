@@ -144,5 +144,45 @@ This document records the architectural and design decisions for **VLA Policy Ev
   - Provides a definitive, transparent, and reproducible foundation for the entire thesis.
   - Any memory enhancement in V2 can be measured cleanly as a differential ($\Delta \text{SR}$) against this locked baseline.
 
+---
+
+## ADR-0013: Implementation of V2.1 Textual Episodic Memory Architecture and Empirical Pilot Findings on Frozen VLA Prompt Perturbation
+- **Status**: Accepted
+- **Context**: 
+  - Following `docs/V2_MEMORY_EXECUTION_PLAN.md`, V2.1 introduces a lightweight external episodic memory layer over the frozen SmolVLA baseline without modifying policy weights, 8D proprioceptive inputs, 7D actions (DIRECT polarity), or simulation controller gains.
+  - Three distinct operating conditions were specified:
+    1. `off`: Pure baseline pass-through (unmodified instruction byte-for-byte).
+    2. `text_shadow`: Complete event logging, state projection, and query retrieval while the policy receives the original instruction (isolating memory construction from policy response).
+    3. `text_only`: Fact rendering injected into the task language prompt.
+  - Packages P0 through P6 were implemented:
+    - P0: Contract lock (`configs/v2_baseline_lock.yaml`).
+    - P1: Versioned immutable data models (`src/memory/models.py`).
+    - P2: Episode-scoped store and updater (`src/memory/store.py`, `src/memory/updater.py`).
+    - P3: Deterministic entity-conditioned retriever and bounded renderer (`src/memory/retriever.py`, `src/interfaces/text_memory.py`).
+    - P4: Opt-in rollout lifecycle hooks and Stage A deterministic oracle writer (`src/memory/oracle_writer.py`, `src/evaluation/rollout.py`).
+    - P5: Benchmark CLI memory arguments and provenance recording (`scripts/run_benchmark.py`).
+    - P6: Paired statistical benchmark comparison tool (`scripts/compare_memory_runs.py`).
+- **Empirical Pilot Findings**:
+  - **Invariance Verification**: When evaluated in `text_shadow`, the prompt passed to `predict_action_chunk` is bitwise identical to `off`, and the policy generates identical actions for identical simulation states.
+  - **Paired Evaluation Results (`pilot_5` smoke pilot, seed 42, $s=50$, wait=10)**:
+    - **Baseline (OFF)**: 4/5 success (80.0% SR) across diverse suites (`libero_object`, `libero_spatial`, `libero_goal`).
+    - **Treatment (TEXT_ONLY with Stage A Oracle Memory)**: 0/5 success (0.0% SR).
+    - **Paired Delta ($\Delta \text{SR}$)**: -80.0% [95% CI: -115.1%, -44.9%], McNemar $\chi^2 = 2.25$.
+  - **Root-Cause Attribution**:
+    - SmolVLA (`lerobot/smolvla_libero`) was pre-trained and fine-tuned exclusively on short, canonical single-clause imperative directives (`pick up the alphabet soup and place it in the basket`).
+    - Appending structured, multi-line episodic memory facts (`[Episode memory]\n- soup (alphabet_soup) is on_table [status=confirmed, step 0, ...]`) induces severe out-of-distribution linguistic tokens.
+    - The frozen cross-attention layers attend to the structured provenance markers and metadata tags, distracting the action expert from the primary spatial objective and causing reach stalls across all evaluated tasks.
+- **Decision**:
+  1. **Architecture Formalization**: Accept the V2.1 memory schemas, episode store, updater, deterministic retriever, text interface, and paired comparison tool into the codebase.
+  2. **P7 Gate Sign-off**: In strict compliance with Section 7 and AGENTS.md Rule 10, report negative results transparently without silent fallbacks or prompt hand-tuning.
+  3. **No Automatic Promotion of Naive Prompt Concatenation**: Preclude un-tuned multi-line text prompt injection as a viable standalone memory augmentation for *frozen* SmolVLA.
+  4. **Subsequent Roadmap Prioritization**:
+     - Direct next efforts towards **V2.2 Spatial Memory** (world-frame coordinate visual projection onto camera observations), which does not rely on language parser plasticity.
+     - For textual memory, investigate parameter-efficient policy adaptation (e.g., LoRA fine-tuning on memory-augmented trajectories) or minimal single-clause state modulation rather than verbatim multi-line fact dumping.
+- **Consequences**:
+  - Establishes a scientifically rigorous, auditable baseline for external memory research.
+  - Validates that the external memory layer is functional, auditable, and decoupled, while clarifying the exact limitations of frozen vision-language-action models under prompt perturbation.
+
+
 
 

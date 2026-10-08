@@ -28,7 +28,14 @@ from src.evaluation.diagnostics import (
     DiagnosticReport,
     TerminationReason,
     FailurePhase,
+    extract_target_and_goal,
 )
+from src.memory.models import EvidenceSource, MemoryQuery
+from src.memory.oracle_writer import OracleMemoryWriter
+from src.memory.retriever import DeterministicMemoryRetriever
+from src.memory.store import EpisodeMemoryStore
+from src.memory.updater import MemoryUpdater
+from src.interfaces.text_memory import TextMemoryRenderer
 
 
 def save_video(frames: List[np.ndarray], output_path: Union[str, Path], fps: int = 20) -> bool:
@@ -111,6 +118,7 @@ class EpisodeResult:
     video_path: Optional[str] = None
     diagnostics_report: Optional[Dict[str, Any]] = None
     settling_snapshot: Optional[Dict[str, Any]] = None
+    memory: Optional[Dict[str, Any]] = None
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert metrics to JSON-serializable dictionary."""
@@ -130,6 +138,7 @@ class EpisodeResult:
             "video_path": self.video_path,
             "diagnostics": self.diagnostics_report,
             "settling_snapshot": self.settling_snapshot,
+            "memory": self.memory,
         }
 
     def save_model_outputs(self, path: Union[str, Path]) -> None:
@@ -166,6 +175,10 @@ def rollout_episode(
     diagnostics_config: Optional[DiagnosticsConfig] = None,
     record_video_policy: str = "all",  # choices: "all", "failed_and_first", "none"
     render_overlay: bool = False,
+    memory_condition: str = "off",  # choices: "off", "text_shadow", "text_only"
+    allow_oracle_memory: bool = False,
+    max_context_chars: int = 512,
+    episode_id: Optional[str] = None,
 ) -> EpisodeResult:
     """Execute a single closed-loop episode with receding-horizon action chunking.
 
@@ -190,12 +203,18 @@ def rollout_episode(
         diagnostics_config: Optional auxiliary thresholds configuration.
         record_video_policy: "all", "failed_and_first" (save if init 0 or failed), or "none".
         render_overlay: Whether to draw text diagnostics overlay on saved video frames.
+        memory_condition: V2 memory condition ("off", "text_shadow", "text_only").
+        allow_oracle_memory: Whether Stage A oracle simulator facts may be rendered.
+        max_context_chars: Character limit for rendered memory text block.
+        episode_id: Optional explicit episode identifier for memory scoping.
 
     Returns:
-        EpisodeResult containing outcome, telemetry, executed trajectory, model outputs, and diagnostics.
+        EpisodeResult containing outcome, telemetry, executed trajectory, model outputs, diagnostics, and memory.
     """
     if execution_horizon < 1:
         raise ValueError(f"execution_horizon must be >= 1, got {execution_horizon}")
+    if memory_condition not in ("off", "text_shadow", "text_only"):
+        raise ValueError(f"Invalid memory_condition: {memory_condition}. Must be one of ('off', 'text_shadow', 'text_only').")
 
     collector = None
     if enable_diagnostics:
@@ -219,6 +238,37 @@ def rollout_episode(
     # Capture pristine ground-truth object baseline at t=0 before first action
     if collector is not None:
         collector.capture_baseline(obs)
+
+    # Initialize V2 Episode Memory if active
+    store: Optional[EpisodeMemoryStore] = None
+    updater: Optional[MemoryUpdater] = None
+    retriever: Optional[DeterministicMemoryRetriever] = None
+    renderer: Optional[TextMemoryRenderer] = None
+    oracle_writer: Optional[OracleMemoryWriter] = None
+    memory_trace: List[Dict[str, Any]] = []
+    task_entities: Tuple[str, ...] = ()
+
+    if memory_condition in ("text_shadow", "text_only"):
+        ep_id = episode_id or f"{task_name}_init_{initial_state_id if initial_state_id is not None else 0}"
+        store = EpisodeMemoryStore(episode_id=ep_id)
+        updater = MemoryUpdater(store)
+        retriever = DeterministicMemoryRetriever()
+        allowed_srcs = frozenset(EvidenceSource) if allow_oracle_memory else None
+        renderer = TextMemoryRenderer(max_context_chars=max_context_chars, allowed_sources=allowed_srcs)
+
+        auto_target, auto_goal = extract_target_and_goal(env, instruction)
+        resolved_target = target_object_name or auto_target
+        resolved_goal = goal_container_name or auto_goal
+        ents = [e for e in (resolved_target, resolved_goal) if e is not None]
+        task_entities = tuple(ents) if ents else (task_name,)
+
+        oracle_writer = OracleMemoryWriter(
+            store=store,
+            updater=updater,
+            target_entity_names=task_entities,
+            goal_container_name=resolved_goal,
+        )
+        oracle_writer.on_episode_start(episode_id=ep_id, env=env, obs=obs, step=0, timestamp=0.0)
 
     recorded_actions: List[np.ndarray] = []
     recorded_states: List[np.ndarray] = []
@@ -265,9 +315,41 @@ def rollout_episode(
             effective_horizon = min(effective_horizon, len(current_chunk))
 
         if current_chunk is None or chunk_step_idx >= effective_horizon:
+            # Policy prompt resolution based on memory condition
+            current_prompt = instruction
+            if memory_condition in ("text_shadow", "text_only") and store is not None and retriever is not None and renderer is not None:
+                snap = store.snapshot(as_of_step=step_num)
+                query = MemoryQuery(
+                    episode_id=store.episode_id,
+                    as_of_step=step_num,
+                    entity_ids=task_entities,
+                    minimum_confidence=0.5,
+                )
+                retrieved = retriever.retrieve(snap, query)
+                rendered_text = renderer.render(instruction, retrieved)
+
+                trace_entry = {
+                    "step": step_num,
+                    "as_of_step": step_num,
+                    "retrieved_object_ids": [o.object_id for o in retrieved.objects],
+                    "retrieved_event_ids": [e.event_id for e in retrieved.events],
+                    "rendered_context": rendered_text[len(instruction):].strip() if len(rendered_text) > len(instruction) else None,
+                    "rendered_context_length_chars": max(0, len(rendered_text) - len(instruction)),
+                    "memory_condition": memory_condition,
+                }
+
+                if memory_condition == "text_only":
+                    current_prompt = rendered_text
+                else:
+                    # In text_shadow, policy receives unmodified instruction
+                    current_prompt = instruction
+
+                trace_entry["policy_prompt"] = current_prompt
+                memory_trace.append(trace_entry)
+
             t0_infer = time.perf_counter()
             try:
-                current_chunk = policy.predict_action_chunk(obs, instruction)
+                current_chunk = policy.predict_action_chunk(obs, current_prompt)
             except Exception as e:
                 caught_exception = e
                 termination_reason = TerminationReason.POLICY_ERROR
@@ -378,6 +460,23 @@ def rollout_episode(
                 infer_latency_ms=last_infer_latency if is_replanned else 0.0,
             )
 
+        if oracle_writer is not None:
+            c_info = collector.diagnostics.inspect_gripper_contacts() if collector else None
+            l_info = (
+                collector.diagnostics.inspect_object_lift(collector.diagnostics.initial_object_pos)
+                if collector and hasattr(collector, "diagnostics") and collector.diagnostics.initial_object_pos is not None
+                else None
+            )
+            oracle_writer.on_step(
+                step=step_num,
+                timestamp=(step_num + 1) * 0.05,
+                action=action,
+                next_obs=next_obs,
+                contact_info=c_info,
+                lift_info=l_info,
+                success=success,
+            )
+
         # Record model output telemetry (Dual-Action Observability - Phase 2)
         model_output_entry = {
             "step": step_num,
@@ -468,6 +567,18 @@ def rollout_episode(
         if success_save:
             saved_video_path = str(video_path)
 
+    memory_dict = None
+    if memory_condition != "off" and store is not None:
+        memory_dict = {
+            "condition": memory_condition,
+            "allow_oracle_memory": allow_oracle_memory,
+            "task_entities": list(task_entities),
+            "total_events": len(store._events),
+            "total_objects": len(store._objects),
+            "snapshot": store.to_dict(as_of_step=len(recorded_actions)),
+            "trace": memory_trace,
+        }
+
     return EpisodeResult(
         task_name=task_name,
         instruction=instruction,
@@ -486,4 +597,5 @@ def rollout_episode(
         video_path=saved_video_path,
         diagnostics_report=diag_report_dict,
         settling_snapshot=getattr(env, "last_settling_snapshot", None),
+        memory=memory_dict,
     )

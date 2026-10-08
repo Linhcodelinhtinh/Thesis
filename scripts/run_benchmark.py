@@ -203,6 +203,25 @@ def parse_args():
         default=False,
         help="Explicitly allow running in derived non-strict simulation configuration.",
     )
+    parser.add_argument(
+        "--memory-condition",
+        type=str,
+        default="off",
+        choices=["off", "text_shadow", "text_only"],
+        help="V2 memory condition: 'off' (baseline pass-through), 'text_shadow' (shadow log), 'text_only' (memory prompt injection).",
+    )
+    parser.add_argument(
+        "--allow-oracle-memory",
+        action="store_true",
+        default=False,
+        help="Whether Stage A oracle simulator facts may be rendered into policy prompt.",
+    )
+    parser.add_argument(
+        "--max-context-chars",
+        type=int,
+        default=512,
+        help="Maximum characters for rendered memory text block.",
+    )
     return parser.parse_args()
 
 
@@ -475,6 +494,9 @@ def main():
         "execution_horizon_s": effective_horizon,
         "policy_chunk_size": policy_chunk_size if isinstance(policy_chunk_size, int) else None,
         "camera_resolution": args.camera_resolution,
+        "memory_condition": args.memory_condition,
+        "allow_oracle_memory": args.allow_oracle_memory,
+        "max_context_chars": args.max_context_chars,
         "non_comparable_reasons": non_comparable_reasons,
     }
 
@@ -561,6 +583,10 @@ def main():
                 video_path=video_path,
                 enable_diagnostics=True,
                 render_overlay=args.render_overlay,
+                memory_condition=args.memory_condition,
+                allow_oracle_memory=args.allow_oracle_memory,
+                max_context_chars=args.max_context_chars,
+                episode_id=f"{suite}_task{tid}_init{init_id}",
             )
 
             # Save per-episode artifacts
@@ -571,6 +597,11 @@ def main():
             ep_data["provenance"] = provenance
             with open(ep_dir / "episode.json", "w", encoding="utf-8") as f:
                 json.dump(ep_data, f, indent=2)
+
+            if result.memory and "trace" in result.memory and result.memory["trace"]:
+                with open(ep_dir / "memory_trace.jsonl", "w", encoding="utf-8") as f:
+                    for t_entry in result.memory["trace"]:
+                        f.write(json.dumps(t_entry) + "\n")
 
             if result.diagnostics_report:
                 result.save_diagnostics(ep_dir / "diagnostics.json")

@@ -14,6 +14,7 @@ from src.memory.models import (
     RetrievedMemory,
     WorldMemorySnapshot,
 )
+from src.memory.oracle_writer import OracleMemoryWriter
 from src.memory.retriever import DeterministicMemoryRetriever
 from src.memory.store import EpisodeMemoryStore
 from src.memory.updater import MemoryUpdater
@@ -27,6 +28,7 @@ __all__ = [
     "MemoryStatus",
     "MemoryUpdater",
     "ObjectMemory",
+    "OracleMemoryWriter",
     "RetrievedMemory",
     "WorldMemorySnapshot",
 ]
