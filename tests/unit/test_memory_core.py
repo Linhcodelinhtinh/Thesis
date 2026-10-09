@@ -376,3 +376,29 @@ class TestRetrieverAndRenderer:
         # Context block is strictly within max_context_chars
         context_block = rendered[len(instruction):].strip()
         assert len(context_block) <= 120
+
+    def test_renderer_audit_truncation(self):
+        renderer = TextMemoryRenderer(
+            max_context_chars=140,
+            allowed_sources=frozenset(EvidenceSource),
+        )
+        instruction = "task instruction"
+        objects = tuple(
+            ObjectMemory(
+                episode_id="ep_01", object_id=f"obj_{i}", semantic_label=f"object_{i}",
+                state="on_table", first_seen_step=0, last_updated_step=1,
+                confidence=0.9, evidence_source=EvidenceSource.OBSERVATION_TRACKER
+            )
+            for i in range(10)
+        )
+        mem = RetrievedMemory(episode_id="ep_01", as_of_step=1, objects=objects)
+        res = renderer.render_with_audit(instruction, mem)
+
+        assert res.truncated is True
+        assert res.total_facts_considered == 10
+        assert res.included_facts_count < 10
+        assert res.dropped_facts_count > 0
+        assert len(res.dropped_facts) == res.dropped_facts_count
+        assert res.rendered_context_chars <= 140
+        assert res.text.startswith(instruction)
+

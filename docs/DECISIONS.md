@@ -146,42 +146,33 @@ This document records the architectural and design decisions for **VLA Policy Ev
 
 ---
 
-## ADR-0013: Implementation of V2.1 Textual Episodic Memory Architecture and Empirical Pilot Findings on Frozen VLA Prompt Perturbation
-- **Status**: Accepted
+## ADR-0013: Implementation and Audit of V2.1 Episodic Memory Architecture (Stage A Oracle & Stage B Observation Tracker)
+- **Status**: Accepted (Architecture & Audit Foundation); P7 Promotion Decision Deferred Pending Powered Paired Pilot
 - **Context**: 
-  - Following `docs/V2_MEMORY_EXECUTION_PLAN.md`, V2.1 introduces a lightweight external episodic memory layer over the frozen SmolVLA baseline without modifying policy weights, 8D proprioceptive inputs, 7D actions (DIRECT polarity), or simulation controller gains.
-  - Three distinct operating conditions were specified:
+  - Following `docs/V2_MEMORY_EXECUTION_PLAN.md`, V2 introduces an external episodic memory layer over the frozen SmolVLA baseline without modifying policy weights, 8D proprioceptive inputs, 7D actions (DIRECT polarity), or simulation controller gains.
+  - Three distinct operating conditions are established:
     1. `off`: Pure baseline pass-through (unmodified instruction byte-for-byte).
-    2. `text_shadow`: Complete event logging, state projection, and query retrieval while the policy receives the original instruction (isolating memory construction from policy response).
+    2. `text_shadow`: Complete event tracking, state projection, query retrieval, and context rendering audit while the policy receives the unmodified instruction (isolating memory construction from policy actuation).
     3. `text_only`: Fact rendering injected into the task language prompt.
-  - Packages P0 through P6 were implemented:
-    - P0: Contract lock (`configs/v2_baseline_lock.yaml`).
-    - P1: Versioned immutable data models (`src/memory/models.py`).
-    - P2: Episode-scoped store and updater (`src/memory/store.py`, `src/memory/updater.py`).
-    - P3: Deterministic entity-conditioned retriever and bounded renderer (`src/memory/retriever.py`, `src/interfaces/text_memory.py`).
-    - P4: Opt-in rollout lifecycle hooks and Stage A deterministic oracle writer (`src/memory/oracle_writer.py`, `src/evaluation/rollout.py`).
-    - P5: Benchmark CLI memory arguments and provenance recording (`scripts/run_benchmark.py`).
-    - P6: Paired statistical benchmark comparison tool (`scripts/compare_memory_runs.py`).
-- **Empirical Pilot Findings**:
-  - **Invariance Verification**: When evaluated in `text_shadow`, the prompt passed to `predict_action_chunk` is bitwise identical to `off`, and the policy generates identical actions for identical simulation states.
-  - **Paired Evaluation Results (`pilot_5` smoke pilot, seed 42, $s=50$, wait=10)**:
-    - **Baseline (OFF)**: 4/5 success (80.0% SR) across diverse suites (`libero_object`, `libero_spatial`, `libero_goal`).
-    - **Treatment (TEXT_ONLY with Stage A Oracle Memory)**: 0/5 success (0.0% SR).
-    - **Paired Delta ($\Delta \text{SR}$)**: -80.0% [95% CI: -115.1%, -44.9%], McNemar $\chi^2 = 2.25$.
-  - **Root-Cause Attribution**:
-    - SmolVLA (`lerobot/smolvla_libero`) was pre-trained and fine-tuned exclusively on short, canonical single-clause imperative directives (`pick up the alphabet soup and place it in the basket`).
-    - Appending structured, multi-line episodic memory facts (`[Episode memory]\n- soup (alphabet_soup) is on_table [status=confirmed, step 0, ...]`) induces severe out-of-distribution linguistic tokens.
-    - The frozen cross-attention layers attend to the structured provenance markers and metadata tags, distracting the action expert from the primary spatial objective and causing reach stalls across all evaluated tasks.
+  - Two decoupled memory writer tiers are implemented:
+    - **Stage A (`OracleMemoryWriter`)**: Grounded in genuine MuJoCo simulation physics (body heights, joint coordinates, collision geometry contacts, container Euclidean distance $\le 0.08$m). All facts tagged with `EvidenceSource.ORACLE_SIMULATOR` (confidence 1.0).
+    - **Stage B (`ObservationMemoryWriter`)**: Derived strictly from observable runtime signals (proprioceptive EEF height, gripper finger gap, action commands). All facts tagged with `EvidenceSource.OBSERVATION_TRACKER` with calibrated uncertainty (confidence $0.70 - 0.85$).
+  - Pre-pilot audit identified and resolved 5 critical integrity gaps:
+    1. *Initial scene grounding*: Grounded `OracleMemoryWriter` via genuine physics checks and enforced strict entity separation so target items and goal containers are not cross-registered with conflicting states.
+    2. *Paired evaluation validity*: `scripts/compare_memory_runs.py` now strictly enforces identical per-episode seeds (`base_seed + task_index * 100 + init_id`) and replaces degenerate Wald intervals with Newcombe Method 10 paired difference intervals.
+    3. *Premature conclusions from smoke runs*: Initial smoke runs ($N=1$) are classified as preliminary sensitivity signals, not definitive proof that memory inherently degrades policy execution.
+    4. *Baseline lock enforcement*: `scripts/run_benchmark.py` supports `--baseline-lock-file configs/v2_baseline_lock.yaml` validation and records git working tree cleanliness and diff SHA-256 hash.
+    5. *Truncation audit*: `TextMemoryRenderer` tracks character budget truncation, dropped facts count, and fact counts via `RenderResult`.
+- **Pre-Pilot Sensitivity Observations**:
+  - Preliminary smoke runs with naive prompt injection (`text_only`) showed sensitivity to multi-line factual blocks, warranting controlled paired investigation.
+  - Initial tests verify that `text_shadow` maintains perfect policy action invariance relative to `off`.
 - **Decision**:
-  1. **Architecture Formalization**: Accept the V2.1 memory schemas, episode store, updater, deterministic retriever, text interface, and paired comparison tool into the codebase.
-  2. **P7 Gate Sign-off**: In strict compliance with Section 7 and AGENTS.md Rule 10, report negative results transparently without silent fallbacks or prompt hand-tuning.
-  3. **No Automatic Promotion of Naive Prompt Concatenation**: Preclude un-tuned multi-line text prompt injection as a viable standalone memory augmentation for *frozen* SmolVLA.
-  4. **Subsequent Roadmap Prioritization**:
-     - Direct next efforts towards **V2.2 Spatial Memory** (world-frame coordinate visual projection onto camera observations), which does not rely on language parser plasticity.
-     - For textual memory, investigate parameter-efficient policy adaptation (e.g., LoRA fine-tuning on memory-augmented trajectories) or minimal single-clause state modulation rather than verbatim multi-line fact dumping.
+  1. **Architecture & Governance Acceptance**: Formally accept the V2 episodic memory architecture, dual writers (Oracle and Observation Tracker), audit-aware text renderer, baseline lock validator, and strict seed-matched paired comparison tool.
+  2. **P7 Gate Deferral**: Defer formal P7 (Go / No-Go decision on Text Memory) until executing the controlled, statistically powered 10-episode paired pilot with matched seeds and observation-derived memory.
+  3. **Evaluation Protocol Lock**: All subsequent memory evaluations must run with locked seeds, fail-loud JSON parsing, and Newcombe paired confidence intervals.
 - **Consequences**:
-  - Establishes a scientifically rigorous, auditable baseline for external memory research.
-  - Validates that the external memory layer is functional, auditable, and decoupled, while clarifying the exact limitations of frozen vision-language-action models under prompt perturbation.
+  - Provides a mathematically sound and scientifically honest framework for evaluating memory augmentation on frozen VLAs.
+  - Guarantees complete provenance and eliminates artifact mismatch or degenerate confidence intervals before conducting the formal pilot.
 
 
 

@@ -111,3 +111,37 @@ def test_generate_paired_report(tmp_path: Path):
     assert "# V2 Paired Memory Evaluation Report" in md_content
     assert "LIBERO-DERIVED (NON-COMPARABLE_OFFICIAL_PAPER)" in md_content
     assert "libero_spatial_pick_up" in md_content
+
+
+def test_paired_stats_small_sample_newcombe():
+    # N=1 case where baseline succeeded and treatment failed
+    stats = compute_paired_stats([(True, False)])
+    assert stats["total_pairs"] == 1
+    assert stats["delta_success_rate"] == -1.0
+    # Must NOT degenerate to [-1.0, -1.0]! Upper limit must be > 0.0 reflecting uncertainty
+    ci = stats["delta_95_ci"]
+    assert ci[0] == -1.0
+    assert ci[1] > 0.0
+    assert "small_sample_warning" in stats
+
+
+def test_generate_paired_report_seed_mismatch_fails_fast(tmp_path: Path):
+    base_dir = tmp_path / "base"
+    treat_dir = tmp_path / "treat"
+    (base_dir / "task" / "init_0").mkdir(parents=True)
+    (treat_dir / "task" / "init_0").mkdir(parents=True)
+
+    with open(base_dir / "task" / "init_0" / "episode.json", "w") as f:
+        json.dump({"task_name": "task", "initial_state_id": 0, "seed": 442, "success": True}, f)
+    with open(treat_dir / "task" / "init_0" / "episode.json", "w") as f:
+        json.dump({"task_name": "task", "initial_state_id": 0, "seed": 42, "success": False}, f)
+
+    # Must raise ValueError by default due to seed mismatch
+    with pytest.raises(ValueError, match="Seed mismatch in episode pair"):
+        generate_paired_report(base_dir, treat_dir, tmp_path / "out", allow_mismatched_seeds=False)
+
+    # When explicitly allowed, succeeds with seed_matched = False
+    md_content, stats = generate_paired_report(base_dir, treat_dir, tmp_path / "out", allow_mismatched_seeds=True)
+    assert stats["seed_matched"] is False
+    assert "SEED MISMATCH DETECTED" in md_content
+

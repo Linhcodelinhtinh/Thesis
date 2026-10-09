@@ -217,6 +217,25 @@ def parse_args():
         help="Whether Stage A oracle simulator facts may be rendered into policy prompt.",
     )
     parser.add_argument(
+        "--memory-writer",
+        type=str,
+        default="auto",
+        choices=["auto", "observation", "oracle"],
+        help="Memory writer strategy: 'auto' (oracle if allow_oracle_memory else observation), 'observation' (ObservationMemoryWriter), 'oracle' (OracleMemoryWriter).",
+    )
+    parser.add_argument(
+        "--baseline-lock-file",
+        type=str,
+        default=None,
+        help="Path to baseline lock YAML specification (e.g., configs/v2_baseline_lock.yaml) to validate execution contract.",
+    )
+    parser.add_argument(
+        "--enforce-baseline-lock",
+        action="store_true",
+        default=False,
+        help="If set, strictly aborts if execution environment or git commit deviates from the baseline lock.",
+    )
+    parser.add_argument(
         "--max-context-chars",
         type=int,
         default=512,
@@ -461,9 +480,15 @@ def main():
             pass
 
     git_hash = None
+    git_clean = None
+    git_diff_sha256 = None
     try:
         import subprocess
         git_hash = subprocess.check_output(["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL).decode("utf-8").strip()
+        status_out = subprocess.check_output(["git", "status", "--porcelain"], stderr=subprocess.DEVNULL).decode("utf-8").strip()
+        git_clean = (len(status_out) == 0)
+        diff_out = subprocess.check_output(["git", "diff", "HEAD"], stderr=subprocess.DEVNULL)
+        git_diff_sha256 = hashlib.sha256(diff_out).hexdigest()
     except Exception:
         pass
 
@@ -473,6 +498,58 @@ def main():
         with open(model_cfg_path, "rb") as f:
             model_cfg_sha256 = hashlib.sha256(f.read()).hexdigest()
 
+    lock_validation_report = None
+    if args.baseline_lock_file:
+        lock_path = Path(args.baseline_lock_file)
+        if not lock_path.exists():
+            raise FileNotFoundError(f"Baseline lock file not found: {lock_path}")
+        with open(lock_path, "r", encoding="utf-8") as f:
+            lock_spec = yaml.safe_load(f)
+
+        lock_mismatches = []
+        expected_model = lock_spec.get("model_specification", {}).get("model_name")
+        if expected_model and expected_model != args.model_name:
+            lock_mismatches.append(f"Model mismatch: expected {expected_model}, got {args.model_name}")
+
+        expected_state_dim = lock_spec.get("contract", {}).get("proprioceptive_state_dim")
+        if expected_state_dim and getattr(policy, "state_dim", None) != expected_state_dim:
+            lock_mismatches.append(f"State dim mismatch: expected {expected_state_dim}, got {getattr(policy, 'state_dim', None)}")
+
+        expected_action_dim = lock_spec.get("contract", {}).get("action_dim")
+        if expected_action_dim and getattr(policy, "action_dim", None) != expected_action_dim:
+            lock_mismatches.append(f"Action dim mismatch: expected {expected_action_dim}, got {getattr(policy, 'action_dim', None)}")
+
+        expected_wait = lock_spec.get("simulation_environment", {}).get("num_steps_wait")
+        actual_wait = args.num_steps_wait if args.num_steps_wait is not None else 10
+        if expected_wait is not None and actual_wait != expected_wait:
+            lock_mismatches.append(f"num_steps_wait mismatch: expected {expected_wait}, got {actual_wait}")
+
+        locked_commit = lock_spec.get("git_provenance", {}).get("frozen_commit")
+        commit_match = (git_hash == locked_commit) if (git_hash and locked_commit) else None
+        if locked_commit and git_hash and locked_commit != git_hash:
+            lock_mismatches.append(f"Git commit mismatch: lock specifies {locked_commit}, HEAD is {git_hash}")
+
+        if lock_spec.get("git_provenance", {}).get("clean_working_tree", False) and not git_clean:
+            lock_mismatches.append("Working tree is dirty, but lock requires clean working tree")
+
+        lock_validation_report = {
+            "lock_file": str(lock_path),
+            "locked_commit": locked_commit,
+            "current_commit": git_hash,
+            "commit_match": commit_match,
+            "working_tree_clean": git_clean,
+            "git_diff_sha256": git_diff_sha256,
+            "is_valid": len(lock_mismatches) == 0,
+            "mismatches": lock_mismatches,
+        }
+
+        if args.enforce_baseline_lock and lock_mismatches:
+            raise ValueError(f"Baseline lock validation failed:\n" + "\n".join(f"  - {m}" for m in lock_mismatches))
+        elif lock_mismatches:
+            print("[WARNING] Baseline lock mismatches detected:")
+            for m in lock_mismatches:
+                print(f"  - {m}")
+
     provenance = {
         "execution_tier": "STRICT_LIBERO" if is_official_certified else f"LIBERO-DERIVED (HOST_{sys.platform.upper()}_PY{sys.version_info.major}.{sys.version_info.minor})",
         "certification": "CERTIFIED_OFFICIAL" if is_official_certified else "NON-COMPARABLE_OFFICIAL_PAPER",
@@ -480,6 +557,9 @@ def main():
         "robosuite_version": robosuite_ver,
         "bddl_version": bddl_ver,
         "git_commit": git_hash,
+        "git_clean_working_tree": git_clean,
+        "git_diff_sha256": git_diff_sha256,
+        "baseline_lock": lock_validation_report,
         "model_config_sha256": model_cfg_sha256,
         "base_seed": args.seed,
         "num_steps_wait": args.num_steps_wait if args.num_steps_wait is not None else 10,
@@ -495,6 +575,7 @@ def main():
         "policy_chunk_size": policy_chunk_size if isinstance(policy_chunk_size, int) else None,
         "camera_resolution": args.camera_resolution,
         "memory_condition": args.memory_condition,
+        "memory_writer": args.memory_writer,
         "allow_oracle_memory": args.allow_oracle_memory,
         "max_context_chars": args.max_context_chars,
         "non_comparable_reasons": non_comparable_reasons,
@@ -585,6 +666,7 @@ def main():
                 render_overlay=args.render_overlay,
                 memory_condition=args.memory_condition,
                 allow_oracle_memory=args.allow_oracle_memory,
+                memory_writer=args.memory_writer,
                 max_context_chars=args.max_context_chars,
                 episode_id=f"{suite}_task{tid}_init{init_id}",
             )

@@ -31,11 +31,12 @@ from src.evaluation.diagnostics import (
     extract_target_and_goal,
 )
 from src.memory.models import EvidenceSource, MemoryQuery
+from src.memory.observation_writer import ObservationMemoryWriter
 from src.memory.oracle_writer import OracleMemoryWriter
 from src.memory.retriever import DeterministicMemoryRetriever
 from src.memory.store import EpisodeMemoryStore
 from src.memory.updater import MemoryUpdater
-from src.interfaces.text_memory import TextMemoryRenderer
+from src.interfaces.text_memory import TextMemoryRenderer, RenderResult
 
 
 def save_video(frames: List[np.ndarray], output_path: Union[str, Path], fps: int = 20) -> bool:
@@ -177,6 +178,7 @@ def rollout_episode(
     render_overlay: bool = False,
     memory_condition: str = "off",  # choices: "off", "text_shadow", "text_only"
     allow_oracle_memory: bool = False,
+    memory_writer: str = "auto",  # choices: "auto", "observation", "oracle"
     max_context_chars: int = 512,
     episode_id: Optional[str] = None,
 ) -> EpisodeResult:
@@ -205,6 +207,7 @@ def rollout_episode(
         render_overlay: Whether to draw text diagnostics overlay on saved video frames.
         memory_condition: V2 memory condition ("off", "text_shadow", "text_only").
         allow_oracle_memory: Whether Stage A oracle simulator facts may be rendered.
+        memory_writer: Writer mechanism ("auto", "observation", "oracle").
         max_context_chars: Character limit for rendered memory text block.
         episode_id: Optional explicit episode identifier for memory scoping.
 
@@ -215,6 +218,8 @@ def rollout_episode(
         raise ValueError(f"execution_horizon must be >= 1, got {execution_horizon}")
     if memory_condition not in ("off", "text_shadow", "text_only"):
         raise ValueError(f"Invalid memory_condition: {memory_condition}. Must be one of ('off', 'text_shadow', 'text_only').")
+    if memory_writer not in ("auto", "observation", "oracle"):
+        raise ValueError(f"Invalid memory_writer: {memory_writer}. Must be one of ('auto', 'observation', 'oracle').")
 
     collector = None
     if enable_diagnostics:
@@ -245,6 +250,7 @@ def rollout_episode(
     retriever: Optional[DeterministicMemoryRetriever] = None
     renderer: Optional[TextMemoryRenderer] = None
     oracle_writer: Optional[OracleMemoryWriter] = None
+    observation_writer: Optional[ObservationMemoryWriter] = None
     memory_trace: List[Dict[str, Any]] = []
     task_entities: Tuple[str, ...] = ()
 
@@ -259,16 +265,34 @@ def rollout_episode(
         auto_target, auto_goal = extract_target_and_goal(env, instruction)
         resolved_target = target_object_name or auto_target
         resolved_goal = goal_container_name or auto_goal
+        if resolved_goal and resolved_target and resolved_goal.lower() == resolved_target.lower():
+            resolved_goal = None
+
+        targets = (resolved_target,) if resolved_target else ()
         ents = [e for e in (resolved_target, resolved_goal) if e is not None]
         task_entities = tuple(ents) if ents else (task_name,)
 
-        oracle_writer = OracleMemoryWriter(
-            store=store,
-            updater=updater,
-            target_entity_names=task_entities,
-            goal_container_name=resolved_goal,
+        use_oracle = (
+            (memory_writer == "oracle")
+            or (memory_writer == "auto" and allow_oracle_memory)
         )
-        oracle_writer.on_episode_start(episode_id=ep_id, env=env, obs=obs, step=0, timestamp=0.0)
+        if use_oracle:
+            oracle_writer = OracleMemoryWriter(
+                store=store,
+                updater=updater,
+                target_entity_names=targets,
+                goal_container_name=resolved_goal,
+            )
+            oracle_writer.on_episode_start(episode_id=ep_id, env=env, obs=obs, step=0, timestamp=0.0)
+        else:
+            observation_writer = ObservationMemoryWriter(
+                store=store,
+                updater=updater,
+                target_entity_names=targets,
+                goal_container_name=resolved_goal,
+            )
+            observation_writer.on_episode_start(episode_id=ep_id, env=env, obs=obs, step=0, timestamp=0.0)
+
 
     recorded_actions: List[np.ndarray] = []
     recorded_states: List[np.ndarray] = []
@@ -326,7 +350,8 @@ def rollout_episode(
                     minimum_confidence=0.5,
                 )
                 retrieved = retriever.retrieve(snap, query)
-                rendered_text = renderer.render(instruction, retrieved)
+                render_res = renderer.render_with_audit(instruction, retrieved)
+                rendered_text = render_res.text
 
                 trace_entry = {
                     "step": step_num,
@@ -334,7 +359,12 @@ def rollout_episode(
                     "retrieved_object_ids": [o.object_id for o in retrieved.objects],
                     "retrieved_event_ids": [e.event_id for e in retrieved.events],
                     "rendered_context": rendered_text[len(instruction):].strip() if len(rendered_text) > len(instruction) else None,
-                    "rendered_context_length_chars": max(0, len(rendered_text) - len(instruction)),
+                    "rendered_context_length_chars": render_res.rendered_context_chars,
+                    "truncated": render_res.truncated,
+                    "total_facts_considered": render_res.total_facts_considered,
+                    "included_facts_count": render_res.included_facts_count,
+                    "dropped_facts_count": render_res.dropped_facts_count,
+                    "dropped_facts": list(render_res.dropped_facts),
                     "memory_condition": memory_condition,
                 }
 
@@ -460,6 +490,15 @@ def rollout_episode(
                 infer_latency_ms=last_infer_latency if is_replanned else 0.0,
             )
 
+        dist_to_goal = None
+        if collector and hasattr(collector, "diagnostics"):
+            diag = collector.diagnostics
+            if hasattr(diag, "get_target_object_pos") and hasattr(diag, "get_goal_container_pos"):
+                obj_pos = diag.get_target_object_pos()
+                goal_pos = diag.get_goal_container_pos()
+                if obj_pos is not None and goal_pos is not None:
+                    dist_to_goal = float(np.linalg.norm(obj_pos - goal_pos))
+
         if oracle_writer is not None:
             c_info = collector.diagnostics.inspect_gripper_contacts() if collector else None
             l_info = (
@@ -474,7 +513,15 @@ def rollout_episode(
                 next_obs=next_obs,
                 contact_info=c_info,
                 lift_info=l_info,
+                dist_to_goal=dist_to_goal,
                 success=success,
+            )
+        elif observation_writer is not None:
+            observation_writer.on_step(
+                step=step_num,
+                timestamp=(step_num + 1) * 0.05,
+                action=action,
+                next_obs=next_obs,
             )
 
         # Record model output telemetry (Dual-Action Observability - Phase 2)
@@ -571,6 +618,7 @@ def rollout_episode(
     if memory_condition != "off" and store is not None:
         memory_dict = {
             "condition": memory_condition,
+            "memory_writer": "oracle" if oracle_writer is not None else "observation",
             "allow_oracle_memory": allow_oracle_memory,
             "task_entities": list(task_entities),
             "total_events": len(store._events),

@@ -1,8 +1,23 @@
 """Deterministic text rendering for retrieved, provenance-aware memory."""
 
-from typing import FrozenSet, List, Optional
+from dataclasses import dataclass
+from typing import FrozenSet, List, Optional, Tuple
 
 from src.memory.models import EvidenceSource, MemoryStatus, RetrievedMemory
+
+
+@dataclass(frozen=True)
+class RenderResult:
+    """Detailed audit metadata for rendered memory context."""
+
+    text: str
+    truncated: bool
+    total_facts_considered: int
+    included_facts_count: int
+    dropped_facts_count: int
+    dropped_facts: Tuple[str, ...]
+    rendered_context_chars: int
+    budget_chars: int
 
 
 class TextMemoryRenderer:
@@ -30,16 +45,17 @@ class TextMemoryRenderer:
         else:
             self.allowed_sources = frozenset(allowed_sources)
 
-    def render(self, instruction: str, memory: RetrievedMemory) -> str:
+    def render_with_audit(self, instruction: str, memory: RetrievedMemory) -> RenderResult:
+        """Render memory facts into instruction prompt and return full audit metadata."""
         if not isinstance(instruction, str):
             raise TypeError("instruction must be a string")
 
-        facts: List[str] = []
+        candidate_facts: List[str] = []
         for item in memory.objects:
             if item.evidence_source not in self.allowed_sources:
                 continue
             qualifier = "Possibly " if item.validity == MemoryStatus.UNCERTAIN else ""
-            facts.append(
+            candidate_facts.append(
                 "{}{} ({}) is {} [status={}, step {}, confidence {:.2f}, source={}].".format(
                     qualifier,
                     item.semantic_label,
@@ -61,7 +77,7 @@ class TextMemoryRenderer:
                 statement += " → {}".format(item.object_state_after)
             if item.target_id:
                 statement += " → {}".format(item.target_id)
-            facts.append(
+            candidate_facts.append(
                 "{} [step {}, confidence {:.2f}, source={}].".format(
                     statement,
                     item.step,
@@ -70,16 +86,60 @@ class TextMemoryRenderer:
                 )
             )
 
-        if not facts:
-            return instruction
+        if not candidate_facts:
+            return RenderResult(
+                text=instruction,
+                truncated=False,
+                total_facts_considered=0,
+                included_facts_count=0,
+                dropped_facts_count=0,
+                dropped_facts=(),
+                rendered_context_chars=0,
+                budget_chars=self.max_context_chars,
+            )
 
         lines = ["[Episode memory]"]
-        for fact in facts:
+        included_facts: List[str] = []
+        dropped_facts: List[str] = []
+        truncated = False
+
+        for fact in candidate_facts:
             candidate = "\n".join(lines + ["- " + fact])
             if len(candidate) > self.max_context_chars:
-                break
-            lines.append("- " + fact)
+                truncated = True
+                dropped_facts.append(fact)
+            else:
+                lines.append("- " + fact)
+                included_facts.append(fact)
+
         if len(lines) == 1:
-            return instruction
+            # Memory header alone exceeds budget or no facts could fit
+            return RenderResult(
+                text=instruction,
+                truncated=truncated,
+                total_facts_considered=len(candidate_facts),
+                included_facts_count=0,
+                dropped_facts_count=len(dropped_facts),
+                dropped_facts=tuple(dropped_facts),
+                rendered_context_chars=0,
+                budget_chars=self.max_context_chars,
+            )
+
         block = "\n".join(lines)
-        return instruction + "\n\n" + block
+        rendered_text = instruction + "\n\n" + block
+        rendered_chars = len(block)
+
+        return RenderResult(
+            text=rendered_text,
+            truncated=truncated,
+            total_facts_considered=len(candidate_facts),
+            included_facts_count=len(included_facts),
+            dropped_facts_count=len(dropped_facts),
+            dropped_facts=tuple(dropped_facts),
+            rendered_context_chars=rendered_chars,
+            budget_chars=self.max_context_chars,
+        )
+
+    def render(self, instruction: str, memory: RetrievedMemory) -> str:
+        """Render facts and return string prompt (backward-compatible API)."""
+        return self.render_with_audit(instruction, memory).text
