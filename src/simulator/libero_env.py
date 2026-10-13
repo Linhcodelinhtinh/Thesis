@@ -251,6 +251,7 @@ class LiberoEnv:
 
         self.current_init_state_id = initial_state_id
         target_state = self.init_states[initial_state_id]
+        self._env.reset()
         obs = self._env.set_init_state(target_state)
 
         # Snapshot pre-settling physical state
