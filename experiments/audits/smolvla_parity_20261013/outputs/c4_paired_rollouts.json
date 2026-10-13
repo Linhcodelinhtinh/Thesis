@@ -1,0 +1,51 @@
+{
+  "total_paired_episodes": 2,
+  "cond_a_wait10_successes": 0,
+  "cond_a_wait10_rate_pct": 0.0,
+  "cond_b_wait0_successes": 0,
+  "cond_b_wait0_rate_pct": 0.0,
+  "cond_b_wins": 0,
+  "cond_a_wins": 0,
+  "ties": 2,
+  "rate_delta_pct": 0.0,
+  "episodes": [
+    {
+      "episode_id": "libero_object_task0_init0_seed42",
+      "task": "libero_object_task0",
+      "init_state": 0,
+      "seed": 42,
+      "cond_a_wait10": {
+        "success": false,
+        "steps": 280,
+        "phase": "GRASP",
+        "duration_sec": 114.44871664047241
+      },
+      "cond_b_wait0": {
+        "success": false,
+        "steps": 280,
+        "phase": "REACH",
+        "duration_sec": 97.18587875366211
+      },
+      "outcome_delta": 0
+    },
+    {
+      "episode_id": "libero_object_task0_init0_seed1042",
+      "task": "libero_object_task0",
+      "init_state": 0,
+      "seed": 1042,
+      "cond_a_wait10": {
+        "success": false,
+        "steps": 280,
+        "phase": "GRASP",
+        "duration_sec": 99.27946329116821
+      },
+      "cond_b_wait0": {
+        "success": false,
+        "steps": 280,
+        "phase": "REACH",
+        "duration_sec": 95.6055998802185
+      },
+      "outcome_delta": 0
+    }
+  ]
+}
