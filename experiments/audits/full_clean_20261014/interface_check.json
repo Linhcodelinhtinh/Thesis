@@ -1,0 +1,217 @@
+{
+  "tokenizer_snapshot": "7b375e1b73b11138ff12fe22c8f2822d8fe03467",
+  "maximum_tokens": 22,
+  "truncated": [],
+  "stats_shapes": {
+    "action.count": [
+      1
+    ],
+    "action.max": [
+      7
+    ],
+    "action.mean": [
+      7
+    ],
+    "action.min": [
+      7
+    ],
+    "action.q01": [
+      7
+    ],
+    "action.q10": [
+      7
+    ],
+    "action.q50": [
+      7
+    ],
+    "action.q90": [
+      7
+    ],
+    "action.q99": [
+      7
+    ],
+    "action.std": [
+      7
+    ],
+    "episode_index.count": [
+      1
+    ],
+    "episode_index.max": [
+      1
+    ],
+    "episode_index.mean": [
+      1
+    ],
+    "episode_index.min": [
+      1
+    ],
+    "episode_index.q01": [
+      1
+    ],
+    "episode_index.q10": [
+      1
+    ],
+    "episode_index.q50": [
+      1
+    ],
+    "episode_index.q90": [
+      1
+    ],
+    "episode_index.q99": [
+      1
+    ],
+    "episode_index.std": [
+      1
+    ],
+    "frame_index.count": [
+      1
+    ],
+    "frame_index.max": [
+      1
+    ],
+    "frame_index.mean": [
+      1
+    ],
+    "frame_index.min": [
+      1
+    ],
+    "frame_index.q01": [
+      1
+    ],
+    "frame_index.q10": [
+      1
+    ],
+    "frame_index.q50": [
+      1
+    ],
+    "frame_index.q90": [
+      1
+    ],
+    "frame_index.q99": [
+      1
+    ],
+    "frame_index.std": [
+      1
+    ],
+    "index.count": [
+      1
+    ],
+    "index.max": [
+      1
+    ],
+    "index.mean": [
+      1
+    ],
+    "index.min": [
+      1
+    ],
+    "index.q01": [
+      1
+    ],
+    "index.q10": [
+      1
+    ],
+    "index.q50": [
+      1
+    ],
+    "index.q90": [
+      1
+    ],
+    "index.q99": [
+      1
+    ],
+    "index.std": [
+      1
+    ],
+    "observation.state.count": [
+      1
+    ],
+    "observation.state.max": [
+      8
+    ],
+    "observation.state.mean": [
+      8
+    ],
+    "observation.state.min": [
+      8
+    ],
+    "observation.state.q01": [
+      8
+    ],
+    "observation.state.q10": [
+      8
+    ],
+    "observation.state.q50": [
+      8
+    ],
+    "observation.state.q90": [
+      8
+    ],
+    "observation.state.q99": [
+      8
+    ],
+    "observation.state.std": [
+      8
+    ],
+    "task_index.count": [
+      1
+    ],
+    "task_index.max": [
+      1
+    ],
+    "task_index.mean": [
+      1
+    ],
+    "task_index.min": [
+      1
+    ],
+    "task_index.q01": [
+      1
+    ],
+    "task_index.q10": [
+      1
+    ],
+    "task_index.q50": [
+      1
+    ],
+    "task_index.q90": [
+      1
+    ],
+    "task_index.q99": [
+      1
+    ],
+    "task_index.std": [
+      1
+    ],
+    "timestamp.count": [
+      1
+    ],
+    "timestamp.max": [
+      1
+    ],
+    "timestamp.mean": [
+      1
+    ],
+    "timestamp.min": [
+      1
+    ],
+    "timestamp.q01": [
+      1
+    ],
+    "timestamp.q10": [
+      1
+    ],
+    "timestamp.q50": [
+      1
+    ],
+    "timestamp.q90": [
+      1
+    ],
+    "timestamp.q99": [
+      1
+    ],
+    "timestamp.std": [
+      1
+    ]
+  }
+}

@@ -1,0 +1,456 @@
+{
+  "episodes": 200,
+  "successes": 92,
+  "task_count": 40,
+  "episode_wilson_95": [
+    0.39233051799971463,
+    0.5291771081104667
+  ],
+  "consistency_issues": [],
+  "suites": {
+    "libero_10": {
+      "episodes": 50,
+      "successes": 11,
+      "ci95": [
+        0.1275391597021442,
+        0.3524154958125367
+      ],
+      "phases": {
+        "GRASP": 8,
+        "REACH": 26,
+        "TIMEOUT": 3,
+        "PLACEMENT": 1,
+        "LIFT": 1
+      },
+      "reached": 19,
+      "grasped": 17,
+      "lifted": 16,
+      "placed": 14,
+      "missing_object_episodes": 10,
+      "mean_sim_ms": 154.04629953244245,
+      "mean_infer_ms": 732.3767683042773,
+      "mean_success_steps": 394.72727272727275,
+      "posthoc_limit": 520,
+      "successes_by_limit": 8
+    },
+    "libero_goal": {
+      "episodes": 50,
+      "successes": 36,
+      "ci95": [
+        0.5833487630404344,
+        0.8252582933408878
+      ],
+      "phases": {
+        "LIFT": 3,
+        "REACH": 6,
+        "TRANSPORT": 1,
+        "GRASP": 3,
+        "PLACEMENT": 1
+      },
+      "reached": 22,
+      "grasped": 30,
+      "lifted": 27,
+      "placed": 36,
+      "missing_object_episodes": 10,
+      "mean_sim_ms": 184.64746381856688,
+      "mean_infer_ms": 642.0976112042188,
+      "mean_success_steps": 119.55555555555556,
+      "posthoc_limit": 300,
+      "successes_by_limit": 35
+    },
+    "libero_object": {
+      "episodes": 50,
+      "successes": 13,
+      "ci95": [
+        0.15871527493552393,
+        0.39553157264848837
+      ],
+      "phases": {
+        "GRASP": 14,
+        "REACH": 12,
+        "PLACEMENT": 7,
+        "TRANSPORT": 1,
+        "LIFT": 3
+      },
+      "reached": 38,
+      "grasped": 24,
+      "lifted": 21,
+      "placed": 13,
+      "missing_object_episodes": 0,
+      "mean_sim_ms": 113.22049794622035,
+      "mean_infer_ms": 587.7681256227859,
+      "mean_success_steps": 180.3846153846154,
+      "posthoc_limit": 280,
+      "successes_by_limit": 11
+    },
+    "libero_spatial": {
+      "episodes": 50,
+      "successes": 32,
+      "ci95": [
+        0.501410168761127,
+        0.7586125034815325
+      ],
+      "phases": {
+        "TRANSPORT": 1,
+        "TIMEOUT": 6,
+        "GRASP": 2,
+        "REACH": 8,
+        "LIFT": 1
+      },
+      "reached": 24,
+      "grasped": 44,
+      "lifted": 41,
+      "placed": 42,
+      "missing_object_episodes": 0,
+      "mean_sim_ms": 212.9632995939297,
+      "mean_infer_ms": 742.3917770980075,
+      "mean_success_steps": 108.40625,
+      "posthoc_limit": 280,
+      "successes_by_limit": 31
+    }
+  },
+  "termination": {
+    "MAX_STEPS": 108,
+    "SUCCESS": 92
+  },
+  "phases": {
+    "GRASP": 27,
+    "REACH": 52,
+    "TIMEOUT": 9,
+    "PLACEMENT": 9,
+    "LIFT": 8,
+    "TRANSPORT": 3
+  },
+  "attribution": {
+    "F5 \u2014 grasp acquisition": 27,
+    "UNATTRIBUTED": 69,
+    "F8 \u2014 placement": 9,
+    "F6 \u2014 grasp retention": 3
+  },
+  "success_by_init": {
+    "0": 17,
+    "1": 22,
+    "2": 19,
+    "3": 18,
+    "4": 16
+  },
+  "protocol_fields": {
+    "git_commit": {
+      "dc959c4203fd903c7c1c4f5677c73273e73f92a4": 200
+    },
+    "git_clean_working_tree": {
+      "False": 200
+    },
+    "git_diff_sha256": {
+      "None": 200
+    },
+    "baseline_lock": {
+      "None": 200
+    },
+    "model_config_sha256": {
+      "f70fa95d16eaf98b362e60e2ab839f875427185c4acdc6f015f38f96227026eb": 200
+    },
+    "python_version": {
+      "3.10.21": 200
+    },
+    "robosuite_version": {
+      "1.4.0": 200
+    },
+    "bddl_version": {
+      "None": 200
+    },
+    "execution_horizon_s": {
+      "10": 200
+    },
+    "policy_chunk_size": {
+      "50": 200
+    },
+    "num_steps_wait": {
+      "10": 200
+    },
+    "base_seed": {
+      "42": 200
+    },
+    "camera_resolution": {
+      "256": 200
+    },
+    "memory_condition": {
+      "off": 200
+    }
+  },
+  "missing_object_episodes": [
+    "libero_10_task4\\init_0",
+    "libero_10_task4\\init_1",
+    "libero_10_task4\\init_2",
+    "libero_10_task4\\init_3",
+    "libero_10_task4\\init_4",
+    "libero_10_task9\\init_0",
+    "libero_10_task9\\init_1",
+    "libero_10_task9\\init_2",
+    "libero_10_task9\\init_3",
+    "libero_10_task9\\init_4",
+    "libero_goal_task0\\init_0",
+    "libero_goal_task0\\init_1",
+    "libero_goal_task0\\init_2",
+    "libero_goal_task0\\init_3",
+    "libero_goal_task0\\init_4",
+    "libero_goal_task7\\init_0",
+    "libero_goal_task7\\init_1",
+    "libero_goal_task7\\init_2",
+    "libero_goal_task7\\init_3",
+    "libero_goal_task7\\init_4"
+  ],
+  "all_milestones_but_failure": [
+    "libero_spatial_task0\\init_3",
+    "libero_spatial_task0\\init_4",
+    "libero_spatial_task2\\init_3",
+    "libero_spatial_task2\\init_4",
+    "libero_spatial_task3\\init_1",
+    "libero_spatial_task3\\init_4",
+    "libero_spatial_task6\\init_3",
+    "libero_spatial_task8\\init_0",
+    "libero_spatial_task8\\init_3",
+    "libero_spatial_task9\\init_0"
+  ],
+  "milestones_at_step_zero": [
+    {
+      "id": "libero_10_task2\\init_0",
+      "predicates": [
+        "turnon(flat_stove_1)"
+      ]
+    },
+    {
+      "id": "libero_10_task2\\init_1",
+      "predicates": [
+        "turnon(flat_stove_1)"
+      ]
+    },
+    {
+      "id": "libero_10_task2\\init_2",
+      "predicates": [
+        "turnon(flat_stove_1)"
+      ]
+    },
+    {
+      "id": "libero_10_task2\\init_3",
+      "predicates": [
+        "turnon(flat_stove_1)"
+      ]
+    },
+    {
+      "id": "libero_10_task2\\init_4",
+      "predicates": [
+        "turnon(flat_stove_1)"
+      ]
+    },
+    {
+      "id": "libero_10_task8\\init_0",
+      "predicates": [
+        "turnon(flat_stove_1)"
+      ]
+    },
+    {
+      "id": "libero_10_task8\\init_1",
+      "predicates": [
+        "turnon(flat_stove_1)"
+      ]
+    },
+    {
+      "id": "libero_10_task8\\init_2",
+      "predicates": [
+        "turnon(flat_stove_1)"
+      ]
+    },
+    {
+      "id": "libero_10_task8\\init_3",
+      "predicates": [
+        "turnon(flat_stove_1)"
+      ]
+    },
+    {
+      "id": "libero_10_task8\\init_4",
+      "predicates": [
+        "turnon(flat_stove_1)"
+      ]
+    },
+    {
+      "id": "libero_10_task9\\init_0",
+      "predicates": [
+        "close(microwave_1)"
+      ]
+    },
+    {
+      "id": "libero_10_task9\\init_1",
+      "predicates": [
+        "close(microwave_1)"
+      ]
+    },
+    {
+      "id": "libero_10_task9\\init_2",
+      "predicates": [
+        "close(microwave_1)"
+      ]
+    },
+    {
+      "id": "libero_10_task9\\init_3",
+      "predicates": [
+        "close(microwave_1)"
+      ]
+    },
+    {
+      "id": "libero_10_task9\\init_4",
+      "predicates": [
+        "close(microwave_1)"
+      ]
+    },
+    {
+      "id": "libero_goal_task5\\init_0",
+      "predicates": [
+        "on(plate_1,main_table_stove_front_region)"
+      ]
+    },
+    {
+      "id": "libero_goal_task5\\init_1",
+      "predicates": [
+        "on(plate_1,main_table_stove_front_region)"
+      ]
+    },
+    {
+      "id": "libero_goal_task5\\init_2",
+      "predicates": [
+        "on(plate_1,main_table_stove_front_region)"
+      ]
+    },
+    {
+      "id": "libero_goal_task5\\init_3",
+      "predicates": [
+        "on(plate_1,main_table_stove_front_region)"
+      ]
+    },
+    {
+      "id": "libero_goal_task5\\init_4",
+      "predicates": [
+        "on(plate_1,main_table_stove_front_region)"
+      ]
+    },
+    {
+      "id": "libero_goal_task7\\init_0",
+      "predicates": [
+        "turnon(flat_stove_1)"
+      ]
+    },
+    {
+      "id": "libero_goal_task7\\init_1",
+      "predicates": [
+        "turnon(flat_stove_1)"
+      ]
+    },
+    {
+      "id": "libero_goal_task7\\init_2",
+      "predicates": [
+        "turnon(flat_stove_1)"
+      ]
+    },
+    {
+      "id": "libero_goal_task7\\init_3",
+      "predicates": [
+        "turnon(flat_stove_1)"
+      ]
+    },
+    {
+      "id": "libero_goal_task7\\init_4",
+      "predicates": [
+        "turnon(flat_stove_1)"
+      ]
+    }
+  ],
+  "video_claimed": 125,
+  "video_exists": 125,
+  "timing": {
+    "calls": 12292,
+    "steps": 122460,
+    "mean_infer_ms": 674.2055895346459,
+    "p95_infer_ms": 910.8193691492029,
+    "mean_sim_ms": 155.8323653662117,
+    "infer_hours": 2.3020375295999633,
+    "sim_hours": 5.300897628540635,
+    "episode_mean_of_call_means": 692.0362595455922,
+    "first_infer_p95": 1333.617656145725
+  },
+  "actions": {
+    "min": [
+      -1.0182340145111084,
+      -0.8766605257987976,
+      -1.0650849342346191,
+      -0.15590408444404602,
+      -0.19032874703407288,
+      -0.29568222165107727,
+      -1.091811180114746
+    ],
+    "max": [
+      1.017884612083435,
+      0.9344803094863892,
+      1.0225059986114502,
+      0.2632240355014801,
+      0.3146364390850067,
+      0.3901057541370392,
+      1.1276943683624268
+    ],
+    "outside_per_dim": [
+      4,
+      0,
+      44,
+      0,
+      0,
+      0,
+      57544
+    ],
+    "nonfinite": 0,
+    "passthrough_episodes": 200,
+    "near_zero_arm_steps": 9
+  },
+  "all_steps_failed": 108000,
+  "late_successes": [
+    {
+      "id": "libero_10_task2\\init_4",
+      "steps": 533
+    },
+    {
+      "id": "libero_10_task3\\init_3",
+      "steps": 755
+    },
+    {
+      "id": "libero_10_task6\\init_1",
+      "steps": 763
+    },
+    {
+      "id": "libero_goal_task0\\init_3",
+      "steps": 337
+    },
+    {
+      "id": "libero_object_task2\\init_0",
+      "steps": 333
+    },
+    {
+      "id": "libero_object_task9\\init_1",
+      "steps": 312
+    },
+    {
+      "id": "libero_spatial_task6\\init_1",
+      "steps": 331
+    }
+  ],
+  "tasks_zero_success": [
+    "libero_10_task0",
+    "libero_10_task1",
+    "libero_10_task4",
+    "libero_10_task5",
+    "libero_10_task8",
+    "libero_10_task9",
+    "libero_goal_task6",
+    "libero_object_task0",
+    "libero_object_task3",
+    "libero_object_task5",
+    "libero_object_task6"
+  ]
+}

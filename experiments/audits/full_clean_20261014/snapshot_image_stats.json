@@ -1,0 +1,50 @@
+{
+  "Windows audit snapshot/agentview_image": {
+    "shape": [
+      256,
+      256,
+      3
+    ],
+    "mean_rgb": [
+      111.51022338867188,
+      102.02450561523438,
+      93.40510559082031
+    ]
+  },
+  "Windows audit snapshot/robot0_eye_in_hand_image": {
+    "shape": [
+      256,
+      256,
+      3
+    ],
+    "mean_rgb": [
+      110.49906921386719,
+      100.31990051269531,
+      91.50225830078125
+    ]
+  },
+  "WSL audit snapshot/agentview_image": {
+    "shape": [
+      256,
+      256,
+      3
+    ],
+    "mean_rgb": [
+      139.1380615234375,
+      134.55882263183594,
+      128.14881896972656
+    ]
+  },
+  "WSL audit snapshot/robot0_eye_in_hand_image": {
+    "shape": [
+      256,
+      256,
+      3
+    ],
+    "mean_rgb": [
+      134.94036865234375,
+      128.45240783691406,
+      125.37918090820312
+    ]
+  }
+}
