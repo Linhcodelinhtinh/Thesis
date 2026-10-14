@@ -56,6 +56,8 @@ Stride 0 khiến các index trỏ vào cùng byte đầu. Lệnh bật visual l�
 
 **Cải thiện cụ thể:** tạo environment candidate cô lập; trước tiên giữ MuJoCo 2.3.7, Robosuite 1.4.0, model/runtime policy cố định và kiểm tra một NumPy 1.x tương thích, chẳng hạn 1.26.4 cho Python 3.10, sau khi resolver xác minh dependency. Đây là ứng viên cần test, không phải bản sửa đã xác nhận. NumPy 2 support ở tầng pybind11 là thay đổi có phiên bản riêng; không thể suy rằng import được thì bindings hoạt động đúng. [pybind11 2.12 changelog](https://pybind11.readthedocs.io/en/stable/changelog.html#version-2-12-0-march-27-2024).
 
+**Ràng buộc dependency đã kiểm tra:** environment hiện có `opencv-python==5.0.0.93`; file METADATA của package yêu cầu `numpy>=2` trên Python ≥3.9. Vì vậy chỉ hạ NumPy sẽ tạo environment xung đột. Candidate NumPy 1.x phải đồng thời chọn/pin phiên bản OpenCV chấp nhận NumPy 1.x, kiểm tra toàn bộ dependency bằng resolver và `pip check`, rồi xác minh image preprocessing parity. Nếu không giữ được policy runtime hợp lệ, tách simulator vào environment riêng qua IPC và giữ nguyên preprocessing/action contract. Không coi một lệnh downgrade NumPy là bản sửa hoàn chỉnh.
+
 Điều kiện đạt trước khi rollout:
 
 1. Array view có stride hợp lệ, hai phép gán cho raw flags đúng `[0,1,...]`.

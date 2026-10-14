@@ -1,0 +1,52 @@
+{
+  "bddl": {
+    "version": "1.0.1",
+    "metadata_path": ".venv_smolvla\\lib\\python3.10\\site-packages\\bddl-1.0.1.dist-info\\METADATA",
+    "sha256": "5f32c57285d496f5910593fb1a94e3ffa4a282804ef08a39f1562053320f65ef"
+  },
+  "lerobot": {
+    "version": "0.4.4",
+    "metadata_path": ".venv_smolvla\\lib\\python3.10\\site-packages\\lerobot-0.4.4.dist-info\\METADATA",
+    "sha256": "ad580fb6d2ecf379a98ad700e9dde5541184fbf7779d4c3e5cdd9519d06f9e4f"
+  },
+  "mujoco": {
+    "version": "2.3.7",
+    "metadata_path": ".venv_smolvla\\lib\\python3.10\\site-packages\\mujoco-2.3.7.dist-info\\METADATA",
+    "sha256": "eeb2d456b8c334f93f35047c68dd48325fd259c2785206737be1d53eaa5b9e1b"
+  },
+  "numpy": {
+    "version": "2.2.6",
+    "metadata_path": ".venv_smolvla\\lib\\python3.10\\site-packages\\numpy-2.2.6.dist-info\\METADATA",
+    "sha256": "22d648f53848429464ca643b40d73b49a920d47876fc77c395d4dca4e834904a"
+  },
+  "opencv-python": {
+    "version": "5.0.0.93",
+    "metadata_path": ".venv_smolvla\\lib\\python3.10\\site-packages\\opencv_python-5.0.0.93.dist-info\\METADATA",
+    "sha256": "20749df4e7500c53075dee344cd02f63d4df0dce93526e49e7e1c90fbc094e3e"
+  },
+  "pillow": {
+    "version": "12.3.0",
+    "metadata_path": ".venv_smolvla\\lib\\python3.10\\site-packages\\pillow-12.3.0.dist-info\\METADATA",
+    "sha256": "8fc07146cab33ef7582361dab6eac596d340b03ec648f18217da7894f73838c8"
+  },
+  "robosuite": {
+    "version": "1.4.0",
+    "metadata_path": ".venv_smolvla\\lib\\python3.10\\site-packages\\robosuite-1.4.0.dist-info\\METADATA",
+    "sha256": "27c88b3b74446f49e8d16611c48ce7c04ddce971ebc299bddbc15da95019c6f3"
+  },
+  "torch": {
+    "version": "2.5.1+cu121",
+    "metadata_path": ".venv_smolvla\\lib\\python3.10\\site-packages\\torch-2.5.1+cu121.dist-info\\METADATA",
+    "sha256": "fa88b1f913d9e569d3fb57432cf9d49b127e8107dc1ad7202de38af2a7b4a756"
+  },
+  "torchvision": {
+    "version": "0.20.1+cu121",
+    "metadata_path": ".venv_smolvla\\lib\\python3.10\\site-packages\\torchvision-0.20.1+cu121.dist-info\\METADATA",
+    "sha256": "d8eec8b7cc4b59edad69e8ca3e64db4222fac3991da83e0f4f90163c578dfc2b"
+  },
+  "transformers": {
+    "version": "4.57.6",
+    "metadata_path": ".venv_smolvla\\lib\\python3.10\\site-packages\\transformers-4.57.6.dist-info\\METADATA",
+    "sha256": "91601044a74fe02571a825356754dbbaa9e1d3e3dd3c2237254c15e903e421e3"
+  }
+}

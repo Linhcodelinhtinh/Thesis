@@ -183,12 +183,19 @@ def generate_paired_report(
     base_eps = load_episodes(base_dir)
     treat_eps = load_episodes(treat_dir)
 
-    common_keys = sorted(set(base_eps.keys()) & set(treat_eps.keys()))
+    base_keys = set(base_eps.keys())
+    treat_keys = set(treat_eps.keys())
+    common_keys = sorted(base_keys & treat_keys)
     if not common_keys:
         raise ValueError(f"No matching episodes found between {base_dir} and {treat_dir}")
 
+    missing_in_treatment = sorted(base_keys - treat_keys)
+    missing_in_baseline = sorted(treat_keys - base_keys)
+    coverage_complete = (len(missing_in_treatment) == 0 and len(missing_in_baseline) == 0)
+
     # Seed verification & provenance validation
     mismatched_seed_pairs: List[Dict[str, Any]] = []
+    horizon_mismatches: List[Dict[str, Any]] = []
     paired_outcomes = []
     task_breakdown: Dict[str, Dict[str, Any]] = {}
     context_lengths: List[int] = []
@@ -202,12 +209,25 @@ def generate_paired_report(
 
         b_seed = ep_base.get("seed")
         t_seed = ep_treat.get("seed")
+        b_horizon = ep_base.get("execution_horizon_s")
+        t_horizon = ep_treat.get("execution_horizon_s")
 
-        if b_seed is not None and t_seed is not None and b_seed != t_seed:
+        if b_horizon is not None and t_horizon is not None and b_horizon != t_horizon:
+            horizon_mismatches.append({"key": key, "base_horizon": b_horizon, "treat_horizon": t_horizon})
+
+        if b_seed is None or t_seed is None:
             mismatched_seed_pairs.append({
                 "key": key,
                 "baseline_seed": b_seed,
                 "treatment_seed": t_seed,
+                "reason": "missing_seed",
+            })
+        elif b_seed != t_seed:
+            mismatched_seed_pairs.append({
+                "key": key,
+                "baseline_seed": b_seed,
+                "treatment_seed": t_seed,
+                "reason": "seed_mismatch",
             })
             if not allow_mismatched_seeds:
                 raise ValueError(
@@ -240,7 +260,7 @@ def generate_paired_report(
             for t_entry in mem_info["trace"]:
                 ctx_len = t_entry.get("rendered_context_length_chars", 0)
                 context_lengths.append(ctx_len)
-                if t_entry.get("truncated", False):
+                if t_entry.get("truncated", False) or t_entry.get("token_truncated", False):
                     total_truncations += 1
                 total_dropped_facts += t_entry.get("dropped_facts_count", 0)
                 total_facts_considered += t_entry.get("total_facts_considered", 0)
@@ -261,8 +281,16 @@ def generate_paired_report(
     }
     stats["task_breakdown"] = list(task_breakdown.values())
     stats["seed_matched"] = len(mismatched_seed_pairs) == 0
+    stats["coverage_complete"] = coverage_complete
+    stats["total_baseline_episodes"] = len(base_eps)
+    stats["total_treatment_episodes"] = len(treat_eps)
+    if not coverage_complete:
+        stats["missing_in_treatment"] = missing_in_treatment
+        stats["missing_in_baseline"] = missing_in_baseline
     if mismatched_seed_pairs:
         stats["mismatched_seed_pairs"] = mismatched_seed_pairs
+    if horizon_mismatches:
+        stats["horizon_mismatches"] = horizon_mismatches
 
     # Build Markdown report
     md_lines = [
@@ -271,15 +299,32 @@ def generate_paired_report(
         f"- **Baseline Dir (OFF):** `{base_dir}`",
         f"- **Treatment Dir (ON):** `{treat_dir}`",
         f"- **Reconciled Pairs ($N$):** {stats['total_pairs']}",
+        f"- **Coverage Complete:** `{'YES' if coverage_complete else f'NO (Baseline: {len(base_eps)}, Treatment: {len(treat_eps)})'}`",
         "- **Evaluation Tier:** `LIBERO-DERIVED (NON-COMPARABLE_OFFICIAL_PAPER)`",
-        f"- **Seed Matched:** `{'YES' if stats['seed_matched'] else 'NO (NON-EQUIVALENT)'}`",
+        f"- **Seed Matched:** `{'YES' if stats['seed_matched'] else 'NO (NON-EQUIVALENT / MISSING SEEDS)'}`",
     ]
+
+    if not coverage_complete:
+        md_lines.extend([
+            "",
+            "> [!WARNING]",
+            f"> **INCOMPLETE COVERAGE DETECTED**: Baseline has {len(base_eps)} episodes, Treatment has {len(treat_eps)} episodes.",
+            f"> Evaluated intersection is only {stats['total_pairs']} pairs. Non-overlapping episodes were omitted from paired delta.",
+        ])
+
+    if horizon_mismatches:
+        md_lines.extend([
+            "",
+            "> [!WARNING]",
+            f"> **EXECUTION HORIZON MISMATCH**: Baseline and treatment runs use different execution horizons $s$.",
+            f"> First mismatch: {horizon_mismatches[0]}. Comparing different horizons invalidates direct attribution.",
+        ])
 
     if not stats["seed_matched"]:
         md_lines.extend([
             "",
             "> [!WARNING]",
-            "> **SEED MISMATCH DETECTED**: One or more episode pairs use different random seeds.",
+            "> **SEED MISMATCH DETECTED**: One or more episode pairs use different random seeds or lack seed metadata.",
             "> This comparison is non-equivalent and statistically invalid as a true paired test.",
         ])
 

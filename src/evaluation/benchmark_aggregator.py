@@ -163,7 +163,7 @@ class BenchmarkAggregator:
                     survival_step_records.append(int(s_metrics["sequential_survival_steps"]))
 
                 if subtasks:
-                    comp_count = sum(1 for m in subtasks if m.get("achieved", False))
+                    comp_count = sum(1 for m in subtasks if m.get("achieved", False) and not m.get("initially_satisfied", False))
                     if comp_count == len(subtasks) or e.get("success", False):
                         pass
                     elif comp_count > 0:

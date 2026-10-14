@@ -15,6 +15,10 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 # Ensure Windows OpenGL uses WGL backend before importing mujoco/robosuite
 if sys.platform == "win32" and "MUJOCO_GL" not in os.environ:
     os.environ["MUJOCO_GL"] = "wgl"
@@ -176,6 +180,36 @@ class LiberoEnv:
 
         self.current_step = 0
         self.current_init_state_id: Optional[int] = None
+        self._enforce_clean_visual_geomgroups()
+
+    def _enforce_clean_visual_geomgroups(self) -> None:
+        """Enforce clean visual rendering by disabling collision geoms (group 0)
+        and enabling visual geoms (group 1).
+
+        Guards against MuJoCo / NumPy pybind11 buffer view stride bug where
+        `vopt.geomgroup.strides` is (0,), causing Robosuite's scalar assignments
+        `geomgroup[0]=0; geomgroup[1]=1` in reset_internal() to overwrite byte 0 back to 1.
+        Full-slice assignment `geomgroup[:] = [0, 1, 1, 0, 0, 0]` correctly writes
+        all 6 bytes directly to the underlying MuJoCo option structure.
+        """
+        underlying = getattr(self._env, "env", self._env)
+        sim = getattr(underlying, "sim", None)
+        if sim is None:
+            return
+        ctx = getattr(sim, "_render_context_offscreen", None)
+        if ctx is not None and hasattr(ctx, "vopt") and hasattr(ctx.vopt, "geomgroup"):
+            ctx.vopt.geomgroup[:] = np.array([0, 1, 1, 0, 0, 0], dtype=np.uint8)
+            try:
+                import ctypes
+                addr = ctx.vopt.geomgroup.ctypes.data
+                raw = list(ctypes.string_at(addr, 6))
+                if raw[0] != 0 or raw[1] != 1:
+                    logger.warning(
+                        "MuJoCo geomgroup assertion failed: raw_bytes=%s (expected group 0=0, group 1=1)",
+                        raw,
+                    )
+            except Exception:
+                pass
 
     def _enforce_strict_invariants(self) -> None:
         """Lock and validate strict invariants required by STRICT-LIBERO mode."""
@@ -223,6 +257,18 @@ class LiberoEnv:
     def num_initial_states(self) -> int:
         return len(self.init_states)
 
+    def seed(self, seed_val: Optional[int] = None) -> List[int]:
+        """Set RNG seed for the underlying simulation environment if supported."""
+        if seed_val is None:
+            return []
+        underlying = getattr(self._env, "env", self._env)
+        if hasattr(underlying, "seed"):
+            try:
+                underlying.seed(seed_val)
+            except Exception:
+                pass
+        return [int(seed_val)]
+
     def reset(
         self,
         initial_state_id: int = 0,
@@ -252,7 +298,9 @@ class LiberoEnv:
         self.current_init_state_id = initial_state_id
         target_state = self.init_states[initial_state_id]
         self._env.reset()
+        self._enforce_clean_visual_geomgroups()
         obs = self._env.set_init_state(target_state)
+        self._enforce_clean_visual_geomgroups()
 
         # Snapshot pre-settling physical state
         pre_snapshot = {

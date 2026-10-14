@@ -139,21 +139,29 @@ class ObservationMemoryWriter:
 
         # Gripper finger joint separation (Panda fingers qpos)
         gripper_qpos = next_obs.get("robot0_gripper_qpos")
-        finger_gap = 0.0
-        if gripper_qpos is not None:
-            q_arr = np.asarray(gripper_qpos).flatten()
-            if len(q_arr) >= 2:
-                finger_gap = float(abs(q_arr[0]) + abs(q_arr[1]))
+        eef_pos = next_obs.get("robot0_eef_pos")
+        if gripper_qpos is None or eef_pos is None:
+            # Cannot infer physical manipulation events without observable proprioception
+            return []
+
+        q_arr = np.asarray(gripper_qpos).flatten()
+        if len(q_arr) < 2:
+            return []
+        finger_gap = float(abs(q_arr[0]) + abs(q_arr[1]))
 
         # EEF height
-        eef_pos = next_obs.get("robot0_eef_pos")
-        curr_eef_z = float(eef_pos[2]) if eef_pos is not None and len(eef_pos) >= 3 else 0.0
+        if len(eef_pos) < 3:
+            return []
+        curr_eef_z = float(eef_pos[2])
 
         # Heuristic 1: ESTIMATED GRASP
-        # Closing command active, but fingers are blocked (gap > 0.02m) rather than fully snapped shut
-        fingers_blocked = finger_gap > 0.02
-        if not self._is_grasped and gripper_closing and fingers_blocked:
+        # Closing command active near tabletop (z <= 0.95), with fingers partially obstructed (0.015 <= gap <= 0.065)
+        # rather than fully snapped shut (< 0.015) or still wide open (> 0.065)
+        fingers_blocked = 0.015 <= finger_gap <= 0.065
+        eef_near_table = curr_eef_z <= 0.95
+        if not self._is_grasped and gripper_closing and fingers_blocked and eef_near_table:
             self._is_grasped = True
+            self._is_released = False  # Enable multi-cycle manipulation
             self._target_state = "grasped"
             self._eef_z_at_grasp = curr_eef_z
             self._event_counter += 1
@@ -200,10 +208,12 @@ class ObservationMemoryWriter:
                 recorded_events.append(evt)
 
         # Heuristic 3: ESTIMATED CONTACT LOSS / SLIP
-        # Fingers snap shut (gap collapsed) despite closing command while holding/lifted
+        # Fingers snap shut (gap collapsed < 0.015m) despite closing command while holding/lifted
         if (self._is_grasped or self._is_lifted) and gripper_closing and (finger_gap < 0.015):
             prev_state = self._target_state
             self._is_grasped = False
+            self._is_lifted = False  # Reset lifted flag to eliminate repetitive slip loop
+            self._eef_z_at_grasp = None
             self._target_state = "contact_lost"
             self._event_counter += 1
             evt = MemoryEvent(
@@ -224,9 +234,12 @@ class ObservationMemoryWriter:
             recorded_events.append(evt)
 
         # Heuristic 4: ESTIMATED RELEASE / PLACEMENT ATTEMPT
-        # Previously lifted, and gripper opening command is issued
-        if self._is_lifted and gripper_opening and not self._is_released:
+        # Previously lifted or grasped, and gripper opening command is issued
+        if (self._is_lifted or self._is_grasped) and gripper_opening and not self._is_released:
             self._is_released = True
+            self._is_grasped = False  # Reset grasped flag
+            self._is_lifted = False   # Reset lifted flag
+            self._eef_z_at_grasp = None
             prev_state = self._target_state
             self._target_state = "released"
             self._event_counter += 1

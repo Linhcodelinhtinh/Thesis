@@ -1,16 +1,16 @@
 # V2 External Memory Baseline Contract Lock (P0)
 # Per docs/V2_MEMORY_EXECUTION_PLAN.md Section 3 & 4
 
-schema_version: 1
-baseline_id: "smolvla_libero_v1_audited"
-execution_tier: "LIBERO-DERIVED (HOST_WIN32_PY3.12)"
+schema_version: 2
+baseline_id: "smolvla_libero_clean_baseline"
+execution_tier: "LIBERO-DERIVED (HOST_LINUX_PY3.10)"
 certification: "NON-COMPARABLE_OFFICIAL_PAPER"
 
 git_provenance:
-  frozen_commit: "43ddd06e01d05d6ad3e70ae56c0e807db99d7fd4"
+  frozen_commit: "dc959c4203fd903c7c1c4f5677c73273e73f92a4"
   branch: "main"
   clean_working_tree: false
-  note: "Locked commit representing audited Phase 8 acceptance baseline with deterministic seeding and settling telemetry."
+  note: "Locked commit representing audited full-clean 40-task baseline under WSL Linux Python 3.10 and robosuite 1.4.0."
 
 model_specification:
   model_name: "smolvla_libero"
@@ -19,7 +19,7 @@ model_specification:
   model_config_sha256: "f70fa95d16eaf98b362e60e2ab839f875427185c4acdc6f015f38f96227026eb"
   architecture: "SmolVLM2-500M + Flow-Matching Diffusion Action Head"
   prediction_horizon_H: 50
-  execution_horizon_s: 50
+  execution_horizon_s: 10
   device: "cpu"
 
 contract:
@@ -60,8 +60,8 @@ simulation_environment:
   max_steps: 1000
 
 evaluation_protocol:
-  sample_tier: "PILOT_4_STATES"
-  initial_state_ids: [0, 1, 2, 3]
+  sample_tier: "PILOT_5_STATES"
+  initial_state_ids: [0, 1, 2, 3, 4]
   base_seed: 42
   seeding_formula: "base_seed + task_index * 100 + init_id"
 

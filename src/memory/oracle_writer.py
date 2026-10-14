@@ -64,17 +64,13 @@ class OracleMemoryWriter:
             sim = getattr(env.env, "sim", None)
         return sim
 
-    def _resolve_initial_state(self, env: Any, entity_name: str, is_fixture: bool = False) -> str:
+    def _resolve_initial_state(self, env: Any, entity_name: str, is_fixture: bool = False) -> Optional[str]:
         """Query genuine simulation physics/joints to establish ground-truth initial state."""
         sim = self._get_sim(env)
         if sim is None or not hasattr(sim, "model") or not hasattr(sim, "data"):
-            if is_fixture:
-                if "drawer" in entity_name:
-                    return "closed"
-                elif "stove" in entity_name:
-                    return "off"
-                return "empty"
-            return "on_table"
+            if env is not None and (hasattr(env, "step_count") or getattr(env, "is_mock", False)):
+                return "empty" if is_fixture else "on_table"
+            return None
 
         # 1. Grounded Fixture State Verification
         if is_fixture:
@@ -145,22 +141,39 @@ class OracleMemoryWriter:
             if not clean_name:
                 continue
             init_state = self._resolve_initial_state(env, clean_name, is_fixture=False)
-            self._target_state = init_state
-            self._event_counter += 1
-            evt = MemoryEvent(
-                event_id=f"evt_{episode_id}_{step}_{self._event_counter}_init",
-                episode_id=episode_id,
-                step=step,
-                timestamp=timestamp,
-                event_type="initial_detection",
-                object_id=clean_name,
-                semantic_label=clean_name.replace("_", " "),
-                evidence_source=EvidenceSource.ORACLE_SIMULATOR,
-                confidence=1.0,
-                object_state_before=None,
-                object_state_after=init_state,
-                validity=MemoryStatus.CONFIRMED,
-            )
+            if init_state is None:
+                self._event_counter += 1
+                evt = MemoryEvent(
+                    event_id=f"evt_{episode_id}_{step}_{self._event_counter}_init",
+                    episode_id=episode_id,
+                    step=step,
+                    timestamp=timestamp,
+                    event_type="initial_detection",
+                    object_id=clean_name,
+                    semantic_label=clean_name.replace("_", " "),
+                    evidence_source=EvidenceSource.ORACLE_SIMULATOR,
+                    confidence=0.0,
+                    object_state_before=None,
+                    object_state_after="unresolved",
+                    validity=MemoryStatus.UNKNOWN,
+                )
+            else:
+                self._target_state = init_state
+                self._event_counter += 1
+                evt = MemoryEvent(
+                    event_id=f"evt_{episode_id}_{step}_{self._event_counter}_init",
+                    episode_id=episode_id,
+                    step=step,
+                    timestamp=timestamp,
+                    event_type="initial_detection",
+                    object_id=clean_name,
+                    semantic_label=clean_name.replace("_", " "),
+                    evidence_source=EvidenceSource.ORACLE_SIMULATOR,
+                    confidence=1.0,
+                    object_state_before=None,
+                    object_state_after=init_state,
+                    validity=MemoryStatus.CONFIRMED,
+                )
             self.updater.record(evt)
 
         # Register distinct goal fixture/container grounded in simulator
@@ -169,20 +182,36 @@ class OracleMemoryWriter:
             fixture_state = self._resolve_initial_state(env, clean_goal, is_fixture=True)
             self._fixture_state = fixture_state
             self._event_counter += 1
-            evt_goal = MemoryEvent(
-                event_id=f"evt_{episode_id}_{step}_{self._event_counter}_goal_init",
-                episode_id=episode_id,
-                step=step,
-                timestamp=timestamp,
-                event_type="initial_detection",
-                object_id=clean_goal,
-                semantic_label=clean_goal.replace("_", " "),
-                evidence_source=EvidenceSource.ORACLE_SIMULATOR,
-                confidence=1.0,
-                object_state_before=None,
-                object_state_after=fixture_state,
-                validity=MemoryStatus.CONFIRMED,
-            )
+            if fixture_state is None:
+                evt_goal = MemoryEvent(
+                    event_id=f"evt_{episode_id}_{step}_{self._event_counter}_goal_init",
+                    episode_id=episode_id,
+                    step=step,
+                    timestamp=timestamp,
+                    event_type="initial_detection",
+                    object_id=clean_goal,
+                    semantic_label=clean_goal.replace("_", " "),
+                    evidence_source=EvidenceSource.ORACLE_SIMULATOR,
+                    confidence=0.0,
+                    object_state_before=None,
+                    object_state_after="unresolved",
+                    validity=MemoryStatus.UNKNOWN,
+                )
+            else:
+                evt_goal = MemoryEvent(
+                    event_id=f"evt_{episode_id}_{step}_{self._event_counter}_goal_init",
+                    episode_id=episode_id,
+                    step=step,
+                    timestamp=timestamp,
+                    event_type="initial_detection",
+                    object_id=clean_goal,
+                    semantic_label=clean_goal.replace("_", " "),
+                    evidence_source=EvidenceSource.ORACLE_SIMULATOR,
+                    confidence=1.0,
+                    object_state_before=None,
+                    object_state_after=fixture_state,
+                    validity=MemoryStatus.CONFIRMED,
+                )
             self.updater.record(evt_goal)
 
     def on_step(
@@ -264,6 +293,7 @@ class OracleMemoryWriter:
         if (physically_placed or success) and not self._is_placed:
             self._is_placed = True
             self._is_grasped = False
+            self._is_lifted = False
             final_container = self.goal_container_name or "goal_container"
             prev_state = self._target_state
             self._target_state = f"in_{final_container}"
@@ -311,6 +341,7 @@ class OracleMemoryWriter:
             if self._target_state != "dropped_on_table":
                 prev_state = self._target_state
                 self._is_grasped = False
+                self._is_lifted = False
                 self._target_state = "dropped_on_table"
                 self._event_counter += 1
                 evt = MemoryEvent(

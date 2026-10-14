@@ -17,6 +17,11 @@ class DeterministicMemoryRetriever:
 
     _HIDDEN_STATUSES = {MemoryStatus.STALE, MemoryStatus.INVALIDATED, MemoryStatus.UNKNOWN}
 
+    _DURABLE_STATES = frozenset({
+        "opened", "closed", "turned_on", "off", "empty",
+        "target_destination", "placed", "in_container", "resting", "on_table"
+    })
+
     def retrieve(
         self, snapshot: WorldMemorySnapshot, query: MemoryQuery
     ) -> RetrievedMemory:
@@ -36,7 +41,7 @@ class DeterministicMemoryRetriever:
             and item.last_updated_step <= query.as_of_step
             and item.validity not in self._HIDDEN_STATUSES
             and item.confidence >= query.minimum_confidence
-            and self._is_fresh(item.last_updated_step, query)
+            and self._is_object_fresh(item, query)
         ]
         objects.sort(
             key=lambda item: (
@@ -65,6 +70,15 @@ class DeterministicMemoryRetriever:
             objects=tuple(objects[: query.max_objects]),
             events=tuple(events[: query.max_events]),
         )
+
+    def _is_object_fresh(self, item: ObjectMemory, query: MemoryQuery) -> bool:
+        if query.max_age_steps is None:
+            return True
+        st = item.state.lower()
+        if st in self._DURABLE_STATES or st.startswith("in_") or st.startswith("contains_"):
+            return True
+        age = query.as_of_step - item.last_updated_step
+        return 0 <= age <= query.max_age_steps
 
     @staticmethod
     def _is_fresh(step: int, query: MemoryQuery) -> bool:

@@ -29,6 +29,7 @@ from src.evaluation.diagnostics import (
     TerminationReason,
     FailurePhase,
     extract_target_and_goal,
+    extract_all_targets_and_goal,
 )
 from src.memory.models import EvidenceSource, MemoryQuery
 from src.memory.observation_writer import ObservationMemoryWriter
@@ -260,16 +261,39 @@ def rollout_episode(
         updater = MemoryUpdater(store)
         retriever = DeterministicMemoryRetriever()
         allowed_srcs = frozenset(EvidenceSource) if allow_oracle_memory else None
-        renderer = TextMemoryRenderer(max_context_chars=max_context_chars, allowed_sources=allowed_srcs)
+        tok = getattr(policy, "tokenizer", None)
+        if tok is None and hasattr(policy, "preprocessor"):
+            prep = getattr(policy, "preprocessor", None)
+            if hasattr(prep, "steps"):
+                for s in prep.steps:
+                    if hasattr(s, "tokenizer"):
+                        tok = s.tokenizer
+                        break
 
-        auto_target, auto_goal = extract_target_and_goal(env, instruction)
-        resolved_target = target_object_name or auto_target
+        use_compact = (not allow_oracle_memory)
+        use_max_tokens = 48 if use_compact else None
+        renderer = TextMemoryRenderer(
+            max_context_chars=max_context_chars,
+            allowed_sources=allowed_srcs,
+            max_total_tokens=use_max_tokens,
+            compact_mode=use_compact,
+            tokenizer=tok,
+        )
+
+        auto_targets, auto_goal = extract_all_targets_and_goal(env, instruction)
         resolved_goal = goal_container_name or auto_goal
-        if resolved_goal and resolved_target and resolved_goal.lower() == resolved_target.lower():
-            resolved_goal = None
+        if target_object_name:
+            resolved_targets = (target_object_name,)
+        else:
+            resolved_targets = auto_targets
 
-        targets = (resolved_target,) if resolved_target else ()
-        ents = [e for e in (resolved_target, resolved_goal) if e is not None]
+        targets = tuple(
+            t for t in resolved_targets
+            if t and (not resolved_goal or t.lower() != resolved_goal.lower())
+        )
+        ents = list(targets)
+        if resolved_goal and resolved_goal not in ents:
+            ents.append(resolved_goal)
         task_entities = tuple(ents) if ents else (task_name,)
 
         use_oracle = (
@@ -360,7 +384,11 @@ def rollout_episode(
                     "retrieved_event_ids": [e.event_id for e in retrieved.events],
                     "rendered_context": rendered_text[len(instruction):].strip() if len(rendered_text) > len(instruction) else None,
                     "rendered_context_length_chars": render_res.rendered_context_chars,
+                    "rendered_context_tokens": render_res.rendered_context_tokens,
+                    "total_tokens_with_instruction": render_res.total_tokens_with_instruction,
+                    "budget_tokens": render_res.budget_tokens,
                     "truncated": render_res.truncated,
+                    "token_truncated": render_res.token_truncated,
                     "total_facts_considered": render_res.total_facts_considered,
                     "included_facts_count": render_res.included_facts_count,
                     "dropped_facts_count": render_res.dropped_facts_count,

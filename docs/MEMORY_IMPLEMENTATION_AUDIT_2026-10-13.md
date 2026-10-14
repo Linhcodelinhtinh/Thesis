@@ -139,3 +139,58 @@ AGENTS.md/SRS vẫn tập trung V1, execution plan nói “Ready to execute”, 
 6. Chỉ khi dữ liệu, input và provenance đối soát được mới mở rộng 40 task × 50 official states = 2.000 episode/condition, tổng 4.000 cho OFF + một treatment. Chọn trước seed/protocol và cách tính bất định; không tối ưu prompt trên tập đánh giá cuối.
 
 Chưa ưu tiên spatial/combined memory trước các bước trên. Nếu text memory vẫn giảm điểm sau khi các gate kỹ thuật đạt, đó là negative result có giá trị và cần báo trung thực.
+
+---
+
+## Trạng thái hoàn thiện và khắc phục (Addendum 2026-10-14)
+
+Đã hoàn thiện khắc phục toàn diện tất cả 6 vấn đề kỹ thuật được nêu trong đợt kiểm tra 2026-10-13, tuân thủ nguyên tắc không silent fallback và fail-fast (AGENTS.md):
+
+### 1. Token Budget & Truncation Handling
+- **Tệp sửa đổi**: `src/interfaces/text_memory.py`, `src/evaluation/rollout.py`.
+- **Giải pháp**:
+  - `TextMemoryRenderer` bổ sung tham số `max_total_tokens` và chế độ định dạng ngắn gọn `compact_mode=True` (chuyển fact thành câu tự nhiên ngắn gọn dạng `soup is on table.` thay vì in toàn bộ metadata verbose).
+  - Thêm phương thức `_count_tokens()` sử dụng official tokenizer hoặc từ điển ước tính từ chuẩn.
+  - Bảo đảm **tuyệt đối không bao giờ cắt instruction gốc** của task. Nếu ngân sách không đủ cho context memory, context sẽ được cắt giảm theo thứ tự ưu tiên hoặc bỏ qua an toàn.
+  - `RenderResult` trả về đầy đủ telemetry: `rendered_context_tokens`, `budget_tokens`, `token_truncated`, `total_tokens_with_instruction`.
+  - `rollout.py` ghi nhận toàn bộ token audit telemetry vào `memory_trace.json`.
+
+### 2. Observation Writer Lifecycle & Physics Sanity
+- **Tệp sửa đổi**: `src/memory/observation_writer.py`.
+- **Giải pháp**:
+  - Sửa ngưỡng phát hiện grasp: siết chặt khoảng cách ngón gắp `0.015 <= finger_gap <= 0.065` và độ cao `eef_z <= 0.95` để loại bỏ false grasp khi kẹp đang mở rộng (`gap > 0.02`).
+  - Đặt lại trạng thái `_is_lifted = False` và `_is_grasped = False` ngay khi phát hiện `slip` hoặc `release`.
+  - Cho phép regrasp / chu kỳ gắp-nhả nhiều lần trong cùng một episode mà không bị cờ `_is_released` chặn.
+  - Kiểm tra và từ chối an toàn khi observation rỗng (`next_obs={}`) thay vì tự ý giả định fact confirmed.
+
+### 3. Entity Grounding & Oracle Subpart Resolution
+- **Tệp sửa đổi**: `src/evaluation/diagnostics.py`, `src/memory/oracle_writer.py`, `src/evaluation/rollout.py`.
+- **Giải pháp**:
+  - `extract_all_targets_and_goal`: Phân tích và trích xuất toàn bộ các vật thể mục tiêu (ví dụ cả `alphabet_soup` và `tomato_sauce` trong multi-object task) thay vì chỉ lấy vật thể đầu tiên.
+  - Phân giải fixture chi tiết theo thứ tự ưu tiên (ưu tiên subpart như `middle_drawer`, `top_drawer`, `bottom_drawer` trước khi fallback về generic `cabinet`).
+  - Trong `oracle_writer.py`, loại bỏ hoàn toàn nhánh code tự gán `CONFIRMED 1.0` khi `env=None` hoặc không tìm thấy telemetry; trả về `None` (`validity=UNKNOWN`, `confidence=0.0`).
+  - Reset `_is_lifted = False` khi vật thể được đặt thành công vào container (`is_placed`) hoặc trượt (`slip`).
+
+### 4. Baseline Lock & Paired Comparator Verification
+- **Tệp sửa đổi**: `scripts/run_benchmark.py`, `scripts/compare_memory_runs.py`, `configs/v2_baseline_lock.yaml`.
+- **Giải pháp**:
+  - `run_benchmark.py`: Di chuyển `import hashlib` lên đầu module, sửa lỗi NameError khi tính `git_diff_sha256`. Bổ sung kiểm tra interface policy linh hoạt cho SmolVLA adapter (thay vì cố đọc `policy.state_dim` vốn không tồn tại trực tiếp).
+  - `configs/v2_baseline_lock.yaml`: Cập nhật khóa baseline chuẩn sang bộ `full-clean` đã được nghiệm thu (commit `dc959c4`, Linux Python 3.10.21, robosuite 1.4.0, horizon `s=10`, 5 states/task).
+  - `scripts/compare_memory_runs.py`: Bổ sung cờ `coverage_complete` kiểm tra đối soát đầy đủ 100% số episode giữa baseline và treatment; cảnh báo rõ ràng khi thiếu episode (`missing_baseline_episodes`, `missing_treatment_episodes`), lệch horizon `s`, hoặc episode thiếu seed.
+
+### 5. OFF/Shadow Invariance & Environment Determinism
+- **Tệp sửa đổi**: `src/simulator/libero_env.py`, `scripts/run_benchmark.py`.
+- **Giải pháp**:
+  - Thêm phương thức `seed(self, seed_val)` vào lớp bọc `LiberoEnv`, ủy thác trực tiếp xuống môi trường robosuite bên dưới.
+  - Trong `run_benchmark.py`, gọi tường minh `env.seed(ep_seed)` trước mỗi episode, triệt tiêu phân kỳ vật lý do settling steps ngẫu nhiên trong MuJoCo/Robosuite giữa hai lần chạy độc lập.
+
+### 6. Retrieval Fact Longevity (Durable vs Transient State)
+- **Tệp sửa đổi**: `src/memory/retriever.py`.
+- **Giải pháp**:
+  - Phân loại rõ ràng giữa trạng thái tức thời (transient) và trạng thái bền vững (durable).
+  - Các trạng thái hoàn thành bền vững (`_DURABLE_STATES = {"in_container", "opened", "closed", "placed", "turned_on", "turned_off"}`) không bị loại bỏ bởi `max_age_steps`, giúp lưu giữ tiến trình hoàn thành của subtask xuyên suốt các horizon dài.
+
+### Bộ kiểm thử hồi quy (Regression Suite)
+- Tệp kiểm thử: `tests/unit/test_memory_audit_regression.py` (9/9 tests pass).
+- Toàn bộ 36 tests thuộc bộ unit test memory (`test_memory_core.py`, `test_memory_writers.py`, `test_rollout_memory.py`, `test_compare_memory_runs.py`, `test_memory_audit_regression.py`) đã chạy thành công 100% trên cả Windows và Linux (WSL).
+

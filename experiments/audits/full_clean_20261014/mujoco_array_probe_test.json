@@ -1,0 +1,86 @@
+{
+  "mujoco": "2.3.7",
+  "numpy": "2.2.6",
+  "python": "3.10.21 (main, Sep  1 2026, 14:16:49) [Clang 22.1.3 ]",
+  "executable": "/mnt/d/Thesis_26/.venv_smolvla/bin/python",
+  "before": {
+    "view": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "shape": [
+      6
+    ],
+    "strides": [
+      0
+    ],
+    "dtype": "uint8",
+    "raw_six_bytes": [
+      1,
+      1,
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  "after_geomgroup_0_equals_0": {
+    "view": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "shape": [
+      6
+    ],
+    "strides": [
+      0
+    ],
+    "dtype": "uint8",
+    "raw_six_bytes": [
+      0,
+      1,
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  "after_geomgroup_1_equals_1": {
+    "view": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "shape": [
+      6
+    ],
+    "strides": [
+      0
+    ],
+    "dtype": "uint8",
+    "raw_six_bytes": [
+      1,
+      1,
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  "expected_visual_only_prefix": [
+    0,
+    1
+  ],
+  "index_assignments_match_expected": false
+}

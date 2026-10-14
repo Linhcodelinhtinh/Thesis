@@ -9,6 +9,7 @@ Outputs standardized evaluation artifacts:
 """
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -512,12 +513,14 @@ def main():
             lock_mismatches.append(f"Model mismatch: expected {expected_model}, got {args.model_name}")
 
         expected_state_dim = lock_spec.get("contract", {}).get("proprioceptive_state_dim")
-        if expected_state_dim and getattr(policy, "state_dim", None) != expected_state_dim:
-            lock_mismatches.append(f"State dim mismatch: expected {expected_state_dim}, got {getattr(policy, 'state_dim', None)}")
+        actual_state_dim = getattr(policy, "state_dim", None) or policy_interface.get("proprioceptive_state_dim")
+        if expected_state_dim and actual_state_dim != expected_state_dim:
+            lock_mismatches.append(f"State dim mismatch: expected {expected_state_dim}, got {actual_state_dim}")
 
         expected_action_dim = lock_spec.get("contract", {}).get("action_dim")
-        if expected_action_dim and getattr(policy, "action_dim", None) != expected_action_dim:
-            lock_mismatches.append(f"Action dim mismatch: expected {expected_action_dim}, got {getattr(policy, 'action_dim', None)}")
+        actual_action_dim = getattr(policy, "action_dim", None) or policy_interface.get("action_dim")
+        if expected_action_dim and actual_action_dim != expected_action_dim:
+            lock_mismatches.append(f"Action dim mismatch: expected {expected_action_dim}, got {actual_action_dim}")
 
         expected_wait = lock_spec.get("simulation_environment", {}).get("num_steps_wait")
         actual_wait = args.num_steps_wait if args.num_steps_wait is not None else 10
@@ -589,6 +592,11 @@ def main():
 
     out_base = Path(args.output_dir)
     out_base.mkdir(parents=True, exist_ok=True)
+    if diff_out:
+        try:
+            (out_base / "git_diff.patch").write_bytes(diff_out)
+        except Exception:
+            pass
 
     # 3. Main Benchmark Execution Loop
     total_episodes = len(tasks_to_run) * len(init_state_ids)
@@ -637,13 +645,26 @@ def main():
             if args.seed is not None:
                 import random
                 import torch
-                ep_seed = int(args.seed) + t_idx * 100 + int(init_id)
+                suite_offsets = {
+                    "libero_spatial": 0,
+                    "libero_object": 10,
+                    "libero_goal": 20,
+                    "libero_10": 30,
+                    "libero_90": 40,
+                }
+                canonical_t_idx = suite_offsets.get(suite, 0) + int(tid)
+                ep_seed = int(args.seed) + canonical_t_idx * 100 + int(init_id)
                 random.seed(ep_seed)
                 np.random.seed(ep_seed)
                 torch.manual_seed(ep_seed)
                 if torch.cuda.is_available():
                     torch.cuda.manual_seed_all(ep_seed)
                 os.environ["PYTHONHASHSEED"] = str(ep_seed)
+                if hasattr(env, "seed"):
+                    try:
+                        env.seed(ep_seed)
+                    except Exception:
+                        pass
 
             print(f"\n--> Running Episode [{global_ep_counter}/{total_episodes}]: {actual_task_name} | Init State {init_id} (s={effective_horizon}, seed={ep_seed})...")
 

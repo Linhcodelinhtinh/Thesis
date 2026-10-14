@@ -84,9 +84,29 @@ class SubtaskMilestone:
     achieved: bool = False
     first_achieved_step: Optional[int] = None
     clause: Optional[List[str]] = None
+    initially_satisfied: bool = False
+    current_satisfied: bool = False
+    evidence_source: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
+
+
+# Canonical mapping from natural language / instruction names to simulation BDDL & XML body IDs
+OBJECT_CANONICAL_ALIASES: Dict[str, List[str]] = {
+    "white_mug": ["porcelain_mug", "white_mug"],
+    "yellow_and_white_mug": ["white_yellow_mug", "yellow_and_white_mug"],
+    "black_bowl": ["akita_black_bowl", "black_bowl"],
+    "white_bowl": ["white_bowl"],
+    "bowl": ["akita_black_bowl", "white_bowl", "bowl"],
+    "book": ["black_book", "yellow_book", "book"],
+    "ramekin": ["glazed_rim_porcelain_ramekin", "ramekin"],
+    "salad_dressing": ["new_salad_dressing", "salad_dressing"],
+    "frying_pan": ["chefmate_8_frypan", "frypan"],
+    "cookies": ["cookies", "cookie_box"],
+    "cookie_box": ["cookies", "cookie_box"],
+    "plate": ["plate", "porcelain_plate"],
+}
 
 
 @dataclass
@@ -106,44 +126,69 @@ class DiagnosticReport:
         return asdict(self)
 
 
-def extract_target_and_goal(env: Any, instruction: Optional[str] = None) -> Tuple[Optional[str], Optional[str]]:
-    """Resolve target object and goal fixture names from env metadata or instruction.
+def extract_all_targets_and_goal(env: Any, instruction: Optional[str] = None) -> Tuple[Tuple[str, ...], Optional[str]]:
+    """Resolve all target objects and goal fixture names from env metadata or instruction.
 
     Args:
         env: LiberoEnv or gym environment.
         instruction: Optional natural language instruction string.
 
     Returns:
-        (target_object_substr, goal_container_substr)
+        (tuple_of_target_objects, goal_container_substr)
     """
     text = (instruction or getattr(env, "language_instruction", "") or getattr(env, "task_description", "") or "").lower()
 
-    # 1. Target objects in LIBERO suites
+    # 1. Target objects in LIBERO suites (compounds ordered before substrings)
     known_objects = [
+        "yellow_and_white_mug", "white_mug", "chocolate_pudding", "orange_juice",
         "alphabet_soup", "cream_cheese", "salad_dressing", "bbq_sauce", "ketchup",
-        "tomato_sauce", "butter", "milk", "chocolate_pudding", "orange_juice",
-        "black_bowl", "bowl", "wine_bottle", "moka_pot", "white_mug",
-        "yellow_and_white_mug", "book", "plate"
+        "tomato_sauce", "black_bowl", "wine_bottle", "moka_pot", "butter", "milk",
+        "bowl", "book", "plate"
     ]
-    target_obj = None
+    matched_targets: List[str] = []
     for obj in known_objects:
         obj_words = obj.replace("_", " ")
         if obj_words in text or obj in text:
-            target_obj = obj
-            break
+            # Prevent substring redundancy (e.g., matching "bowl" if "black_bowl" was already added)
+            if not any(obj in prev for prev in matched_targets):
+                matched_targets.append(obj)
 
-    # 2. Goal containers / fixtures in LIBERO suites
+    # 2. Goal containers / fixtures in LIBERO suites (subparts before parent cabinets)
     known_goals = [
-        "basket", "plate", "stove", "cabinet", "drawer", "microwave",
-        "caddy", "rack", "ramekin", "cookie_box"
+        "middle_drawer", "top_drawer", "bottom_drawer", "drawer",
+        "basket", "plate", "stove", "microwave",
+        "caddy", "rack", "ramekin", "cookie_box", "cabinet"
     ]
     goal_container = None
     for goal in known_goals:
-        if f"in the {goal}" in text or f"on the {goal}" in text or f"to the {goal}" in text or goal in text:
+        goal_words = goal.replace("_", " ")
+        if (
+            f"in the {goal_words}" in text
+            or f"on the {goal_words}" in text
+            or f"to the {goal_words}" in text
+            or f"of the {goal_words}" in text
+            or goal_words in text
+            or goal in text
+        ):
             goal_container = goal
             break
 
-    return target_obj, goal_container
+    return tuple(matched_targets), goal_container
+
+
+def extract_target_and_goal(env: Any, instruction: Optional[str] = None) -> Tuple[Optional[str], Optional[str]]:
+    """Resolve target object and goal fixture names (backward-compatible 2-tuple API).
+
+    Args:
+        env: LiberoEnv or gym environment.
+        instruction: Optional natural language instruction string.
+
+    Returns:
+        (first_target_object_substr, goal_container_substr)
+    """
+    targets, goal = extract_all_targets_and_goal(env, instruction)
+    target_obj = targets[0] if targets else None
+    return target_obj, goal
 
 
 class ContactDiagnostics:
@@ -192,15 +237,18 @@ class ContactDiagnostics:
         sim = self.get_sim()
         if sim is None or not hasattr(sim, "model") or not hasattr(sim, "data"):
             return None
-        target = (object_substr or self.target_object_name or "").lower()
+        target = (object_substr or self.target_object_name or "").lower().strip()
         if not target:
             return None
+        candidates = OBJECT_CANONICAL_ALIASES.get(target, [target])
         try:
             nbody = getattr(sim.model, "nbody", 0)
             for i in range(nbody):
                 name = sim.model.body_id2name(i)
-                if name and target in name.lower():
-                    return np.array(sim.data.body_xpos[i], copy=True)
+                if name:
+                    name_lower = name.lower()
+                    if any(c in name_lower for c in candidates):
+                        return np.array(sim.data.body_xpos[i], copy=True)
         except Exception:
             pass
         return None
@@ -210,15 +258,18 @@ class ContactDiagnostics:
         sim = self.get_sim()
         if sim is None or not hasattr(sim, "model") or not hasattr(sim, "data"):
             return None
-        target = (container_substr or self.goal_container_name or "").lower()
+        target = (container_substr or self.goal_container_name or "").lower().strip()
         if not target:
             return None
+        candidates = OBJECT_CANONICAL_ALIASES.get(target, [target])
         try:
             nbody = getattr(sim.model, "nbody", 0)
             for i in range(nbody):
                 name = sim.model.body_id2name(i)
-                if name and target in name.lower():
-                    return np.array(sim.data.body_xpos[i], copy=True)
+                if name:
+                    name_lower = name.lower()
+                    if any(c in name_lower for c in candidates):
+                        return np.array(sim.data.body_xpos[i], copy=True)
         except Exception:
             pass
         return None
@@ -529,6 +580,32 @@ class EpisodeDiagnosticsCollector:
     def capture_baseline(self, obs: Optional[Dict[str, Any]] = None) -> None:
         """Capture t=0 baseline before first step."""
         self.diagnostics.capture_baseline(obs)
+        # Check initial state of subtask milestones before policy takes any action
+        eval_env = self._find_eval_env()
+        if eval_env is not None:
+            goal_state = getattr(eval_env, "parsed_problem", {}).get("goal_state", [])
+            for m in self.subtask_milestones:
+                clause = m.clause
+                if clause is None and m.target_object:
+                    tgt_clean = m.target_object.lower().replace(" ", "_")
+                    aliases = OBJECT_CANONICAL_ALIASES.get(tgt_clean, [tgt_clean])
+                    for cand_clause in goal_state:
+                        if isinstance(cand_clause, (list, tuple)):
+                            clause_str = " ".join(str(x).lower() for x in cand_clause)
+                            if any(alias in clause_str for alias in aliases):
+                                clause = cand_clause
+                                m.clause = clause
+                                break
+                if clause is not None:
+                    try:
+                        if eval_env._eval_predicate(clause):
+                            m.initially_satisfied = True
+                            m.current_satisfied = True
+                            m.achieved = True
+                            m.first_achieved_step = 0
+                            m.evidence_source = "bddl_predicate_initial"
+                    except Exception:
+                        pass
 
     def record_step(
         self,
@@ -569,8 +646,8 @@ class EpisodeDiagnosticsCollector:
             self.max_lift_delta_z = delta_z
 
         # 3. Update progression milestones
-        # Reach: EEF within auxiliary threshold
-        if d_eef_obj <= self.config.reach_distance_threshold:
+        # Reach: EEF within auxiliary threshold OR finger contact established with target object
+        if d_eef_obj <= self.config.reach_distance_threshold or contact_info.get("both_fingers_contact", False):
             self.ever_reached = True
             if self.reach_step is None:
                 self.reach_step = step_num
@@ -653,29 +730,33 @@ class EpisodeDiagnosticsCollector:
         eval_env = self._find_eval_env()
 
         for m in self.subtask_milestones:
-            if m.achieved:
-                continue
-
             achieved = False
+            evidence_source = None
 
             # Strategy 1: Evaluate genuine simulation predicate via LIBERO problem environment
             if eval_env is not None:
                 clause = m.clause
                 if clause is None and m.target_object:
                     goal_state = getattr(eval_env, "parsed_problem", {}).get("goal_state", [])
+                    tgt_clean = m.target_object.lower().replace(" ", "_")
+                    aliases = OBJECT_CANONICAL_ALIASES.get(tgt_clean, [tgt_clean])
                     for cand_clause in goal_state:
-                        if isinstance(cand_clause, (list, tuple)) and m.target_object in [str(x) for x in cand_clause]:
-                            clause = cand_clause
-                            break
+                        if isinstance(cand_clause, (list, tuple)):
+                            clause_str = " ".join(str(x).lower() for x in cand_clause)
+                            if any(alias in clause_str for alias in aliases):
+                                clause = cand_clause
+                                m.clause = clause
+                                break
                 if clause is not None:
                     try:
-                        if eval_env._eval_predicate(clause):
-                            achieved = True
+                        predicate_val = bool(eval_env._eval_predicate(clause))
+                        achieved = predicate_val
+                        evidence_source = "bddl_predicate"
                     except Exception:
-                        pass
+                        evidence_source = "diagnostic_error"
 
-            # Strategy 2: Kinematic distance check for placement (when eval_env is absent)
-            if not achieved and m.target_object:
+            # Strategy 2: Kinematic distance check ONLY when genuine eval_env or clause is unavailable
+            elif m.target_object:
                 tgt = m.target_object.lower().replace(" ", "_")
                 tgt_pos = self.diagnostics.get_target_object_pos(tgt)
                 goal_pos = self.diagnostics.get_goal_container_pos()
@@ -683,8 +764,12 @@ class EpisodeDiagnosticsCollector:
                     dist = float(np.linalg.norm(tgt_pos - goal_pos))
                     if dist <= self.config.placement_distance_threshold:
                         achieved = True
+                        evidence_source = "distance_heuristic"
 
-            if achieved:
+            m.current_satisfied = achieved
+            if evidence_source is not None:
+                m.evidence_source = evidence_source
+            if achieved and not m.achieved:
                 m.achieved = True
                 m.first_achieved_step = step_num
 
@@ -698,17 +783,21 @@ class EpisodeDiagnosticsCollector:
         """Produce an evidence-based DiagnosticReport per SRS Section 22 rules."""
         # If ground-truth environment predicate confirmed success, placement was physically achieved
         if final_success:
-            self.ever_placed = True
-            if self.placement_step is None:
-                self.placement_step = len(self.step_records) - 1
+            if self.diagnostics.goal_container_name:
+                self.ever_placed = True
+                if self.placement_step is None:
+                    self.placement_step = len(self.step_records) - 1
 
             # Mark all subtask milestones achieved
             for m in self.subtask_milestones:
                 if not m.achieved:
                     m.achieved = True
+                    m.current_satisfied = True
                     m.first_achieved_step = len(self.step_records) - 1
+                    m.evidence_source = "ground_truth_success"
 
         completed_subtasks = sum(1 for m in self.subtask_milestones if m.achieved)
+        policy_completed_subtasks = sum(1 for m in self.subtask_milestones if m.achieved and not m.initially_satisfied)
         total_subtasks = len(self.subtask_milestones)
         subtask_comp_rate = completed_subtasks / total_subtasks if total_subtasks > 0 else (1.0 if final_success else 0.0)
 
@@ -763,6 +852,7 @@ class EpisodeDiagnosticsCollector:
             "sequential_survival_steps": survival_steps,
             "total_subtasks": total_subtasks,
             "completed_subtasks": completed_subtasks,
+            "policy_completed_subtasks": policy_completed_subtasks,
         }
 
         # Case 1: Task completed successfully
@@ -781,7 +871,7 @@ class EpisodeDiagnosticsCollector:
 
         # Case 2: Explicit abnormal exceptions / invalid actions
         secondary_tags: List[str] = []
-        if completed_subtasks > 0:
+        if policy_completed_subtasks > 0:
             secondary_tags.append("SEQUENCE_TRANSITION_FAILURE")
         else:
             secondary_tags.append("ATOMIC_MANIPULATION_FAILURE")
