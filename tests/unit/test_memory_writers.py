@@ -37,19 +37,11 @@ def test_observation_writer_initialization_and_entity_separation():
 
     writer.on_episode_start(episode_id="ep_test", env=None, obs={}, step=0, timestamp=0.0)
 
+    # Grounded contract: do NOT fabricate visual detections at episode start
     snap = store.snapshot(as_of_step=0)
-    assert len(snap.objects) == 2
-    bowl = store.get_object("black_bowl")
-    plate = store.get_object("plate")
-
-    assert bowl is not None
-    assert bowl.state == "detected"
-    assert bowl.evidence_source == EvidenceSource.OBSERVATION_TRACKER
-    assert bowl.confidence == 0.80
-
-    assert plate is not None
-    assert plate.state == "target_destination"
-    assert plate.evidence_source == EvidenceSource.OBSERVATION_TRACKER
+    assert len(snap.objects) == 0
+    assert store.get_object("black_bowl") is None
+    assert store.get_object("plate") is None
 
 
 def test_observation_writer_step_heuristics():
@@ -63,11 +55,19 @@ def test_observation_writer_step_heuristics():
     )
     writer.on_episode_start(episode_id="ep_test", env=None, obs={}, step=0, timestamp=0.0)
 
-    # 1. Grasp: action closing (+1.0) and fingers blocked (gap = 0.04m > 0.02m)
+    # 1. Grasp: action closing (+1.0) and fingers persistently blocked (stalled gap in graspable range)
     obs_grasp = {
         "robot0_eef_pos": np.array([0.0, 0.0, 0.85]),
         "robot0_gripper_qpos": np.array([0.02, 0.02]),
     }
+    # Initial contact step
+    writer.on_step(
+        step=9,
+        timestamp=0.45,
+        action=np.array([0, 0, 0, 0, 0, 0, 1.0]),
+        next_obs=obs_grasp,
+    )
+    # Stalled step confirming obstruction
     events = writer.on_step(
         step=10,
         timestamp=0.5,

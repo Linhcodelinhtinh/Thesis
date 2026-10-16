@@ -46,9 +46,10 @@ class PromptTrackingMockPolicy(VLAPolicy):
 class MockMemoryEnv:
     """Mock environment with object state metadata for memory extraction."""
 
-    def __init__(self, max_steps: int = 25) -> None:
+    def __init__(self, max_steps: int = 25, completed_subtask: bool = False) -> None:
         self.step_count = 0
         self.max_steps = max_steps
+        self.completed_subtask = completed_subtask
         self.language_instruction = "pick up the black bowl and place it on the plate"
 
     def _get_obs(self) -> Dict[str, Any]:
@@ -132,15 +133,16 @@ def test_rollout_memory_shadow_invariance():
     assert res_shadow.memory["condition"] == "text_shadow"
     assert len(res_shadow.memory["trace"]) == 3
     assert res_shadow.memory["total_objects"] > 0
-    # Shadow trace records what rendered context would have been
+    # Under grounded contract: initial decision has no historical progress,
+    # so rendered_context is None and policy prompt matches original instruction
     first_trace = res_shadow.memory["trace"][0]
-    assert first_trace["rendered_context"] is not None
-    assert "[Episode memory]" in first_trace["rendered_context"]
+    assert first_trace["rendered_context"] is None
+    assert first_trace["tokenizer_truncation_detected"] is False
 
 
 def test_rollout_memory_text_only_prompt_injection():
-    """Verify that text_only mode injects rendered memory into policy prompt."""
-    env = MockMemoryEnv(max_steps=15)
+    """Verify that text_only mode injects rendered memory into policy prompt when subtask is completed."""
+    env = MockMemoryEnv(max_steps=15, completed_subtask=True)
     policy = PromptTrackingMockPolicy(chunk_size=5)
     instruction = "pick up the black bowl and place it on the plate"
 
@@ -159,12 +161,52 @@ def test_rollout_memory_text_only_prompt_injection():
     assert result.memory["condition"] == "text_only"
     assert len(policy.prompts_received) == 3
 
-    # Policy prompt contains memory block
+    # Policy prompt contains concise memory block without leaking verbose metadata
     for p in policy.prompts_received:
         assert p.startswith(instruction)
-        assert "[Episode memory]" in p
-        assert "black bowl" in p
-        assert "source=oracle_simulator" in p
+        assert "Memory:" in p
+        assert "black bowl" in p.lower()
+        assert "source=oracle_simulator" not in p
+        assert "[status=" not in p
+
+    # Verify audit telemetry fields in trace
+    first_trace = result.memory["trace"][0]
+    assert first_trace["tokenizer_truncation_detected"] is False
+    assert len(first_trace["facts_included"]) > 0
+
+
+def test_rollout_memory_text_static_suffix():
+    """Verify that text_static_suffix injects static initial detections at every step."""
+    env = MockMemoryEnv(max_steps=15)
+    policy = PromptTrackingMockPolicy(chunk_size=5)
+    instruction = "put both the alphabet soup and the tomato sauce in the basket"
+
+    result = rollout_episode(
+        env=env,
+        policy=policy,
+        instruction=instruction,
+        execution_horizon=5,
+        max_steps=15,
+        task_name="put_both_alphabet_soup_and_tomato_sauce_in_basket",
+        memory_condition="text_static_suffix",
+        target_object_name=None,
+        goal_container_name="basket",
+    )
+
+    assert result.memory is not None
+    assert result.memory["condition"] == "text_static_suffix"
+    assert len(policy.prompts_received) == 3
+
+    expected_suffix = "Memory: Alphabet soup is detected. Basket is target destination. Tomato sauce is detected."
+    for p in policy.prompts_received:
+        assert p.startswith(instruction)
+        assert expected_suffix in p
+
+    first_trace = result.memory["trace"][0]
+    assert first_trace["memory_condition"] == "text_static_suffix"
+    assert "Alphabet soup is detected." in first_trace["facts_included"]
+    assert "Basket is target destination." in first_trace["facts_included"]
+    assert "Tomato sauce is detected." in first_trace["facts_included"]
 
 
 def test_rollout_memory_invalid_condition_fails_fast():
@@ -178,3 +220,62 @@ def test_rollout_memory_invalid_condition_fails_fast():
             instruction="task",
             memory_condition="invalid_mode",
         )
+
+
+def test_rollout_memory_fails_when_tokenizer_missing_on_non_mock_policy():
+    """A real policy without an official tokenizer must fail loudly per AGENTS.md."""
+    class FakeRealPolicy(PromptTrackingMockPolicy):
+        def validate_interface(self) -> Dict[str, Any]:
+            return {"mock": False}
+
+    env = MockMemoryEnv(max_steps=5)
+    policy = FakeRealPolicy()
+
+    with pytest.raises(RuntimeError, match="Could not resolve official tokenizer"):
+        rollout_episode(
+            env=env,
+            policy=policy,
+            instruction="task",
+            memory_condition="text_only",
+        )
+
+
+def test_rollout_memory_resolves_input_tokenizer_from_pipeline():
+    """Verify rollout successfully resolves input_tokenizer and max_length from preprocessor step."""
+    class MockTokenizerStep:
+        def __init__(self):
+            class DummyTokenizer:
+                def encode(self, text, add_special_tokens=True):
+                    return [1] * len(text.split())
+            self.input_tokenizer = DummyTokenizer()
+            self.tokenizer = None  # None like LeRobot TokenizerProcessorStep
+            self.max_length = 48
+
+    class MockPreprocessor:
+        def __init__(self):
+            self.steps = [MockTokenizerStep()]
+
+    class MockPolicyWithPreprocessor(PromptTrackingMockPolicy):
+        def __init__(self):
+            super().__init__()
+            self.preprocessor = MockPreprocessor()
+        def validate_interface(self) -> Dict[str, Any]:
+            return {"mock": False}
+
+    env = MockMemoryEnv(max_steps=10, completed_subtask=True)
+    policy = MockPolicyWithPreprocessor()
+
+    res = rollout_episode(
+        env=env,
+        policy=policy,
+        instruction="pick up bowl",
+        execution_horizon=5,
+        max_steps=10,
+        task_name="pick_up_bowl",
+        memory_condition="text_only",
+        allow_oracle_memory=True,
+    )
+    assert res.memory is not None
+    assert len(policy.prompts_received) > 0
+    assert "Memory:" in policy.prompts_received[0]
+

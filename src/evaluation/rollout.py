@@ -177,7 +177,7 @@ def rollout_episode(
     diagnostics_config: Optional[DiagnosticsConfig] = None,
     record_video_policy: str = "all",  # choices: "all", "failed_and_first", "none"
     render_overlay: bool = False,
-    memory_condition: str = "off",  # choices: "off", "text_shadow", "text_only"
+    memory_condition: str = "off",  # choices: "off", "text_shadow", "text_only", "text_static_suffix"
     allow_oracle_memory: bool = False,
     memory_writer: str = "auto",  # choices: "auto", "observation", "oracle"
     max_context_chars: int = 512,
@@ -206,7 +206,7 @@ def rollout_episode(
         diagnostics_config: Optional auxiliary thresholds configuration.
         record_video_policy: "all", "failed_and_first" (save if init 0 or failed), or "none".
         render_overlay: Whether to draw text diagnostics overlay on saved video frames.
-        memory_condition: V2 memory condition ("off", "text_shadow", "text_only").
+        memory_condition: V2 memory condition ("off", "text_shadow", "text_only", "text_static_suffix").
         allow_oracle_memory: Whether Stage A oracle simulator facts may be rendered.
         memory_writer: Writer mechanism ("auto", "observation", "oracle").
         max_context_chars: Character limit for rendered memory text block.
@@ -217,8 +217,8 @@ def rollout_episode(
     """
     if execution_horizon < 1:
         raise ValueError(f"execution_horizon must be >= 1, got {execution_horizon}")
-    if memory_condition not in ("off", "text_shadow", "text_only"):
-        raise ValueError(f"Invalid memory_condition: {memory_condition}. Must be one of ('off', 'text_shadow', 'text_only').")
+    if memory_condition not in ("off", "text_shadow", "text_only", "text_static_suffix"):
+        raise ValueError(f"Invalid memory_condition: {memory_condition}. Must be one of ('off', 'text_shadow', 'text_only', 'text_static_suffix').")
     if memory_writer not in ("auto", "observation", "oracle"):
         raise ValueError(f"Invalid memory_writer: {memory_writer}. Must be one of ('auto', 'observation', 'oracle').")
 
@@ -255,29 +255,57 @@ def rollout_episode(
     memory_trace: List[Dict[str, Any]] = []
     task_entities: Tuple[str, ...] = ()
 
-    if memory_condition in ("text_shadow", "text_only"):
+    if memory_condition in ("text_shadow", "text_only", "text_static_suffix"):
         ep_id = episode_id or f"{task_name}_init_{initial_state_id if initial_state_id is not None else 0}"
         store = EpisodeMemoryStore(episode_id=ep_id)
         updater = MemoryUpdater(store)
         retriever = DeterministicMemoryRetriever()
         allowed_srcs = frozenset(EvidenceSource) if allow_oracle_memory else None
+        # Resolve official tokenizer and max_length from policy or preprocessor pipeline
         tok = getattr(policy, "tokenizer", None)
+        max_length = getattr(policy, "max_length", None)
         if tok is None and hasattr(policy, "preprocessor"):
             prep = getattr(policy, "preprocessor", None)
             if hasattr(prep, "steps"):
                 for s in prep.steps:
-                    if hasattr(s, "tokenizer"):
-                        tok = s.tokenizer
+                    # In LeRobot TokenizerProcessorStep: input_tokenizer is the actual AutoTokenizer instance!
+                    candidate = getattr(s, "input_tokenizer", None)
+                    if candidate is None:
+                        candidate = getattr(s, "tokenizer", None)
+                    if candidate is not None:
+                        tok = candidate
+                        if hasattr(s, "max_length") and s.max_length is not None:
+                            max_length = s.max_length
                         break
 
-        use_compact = (not allow_oracle_memory)
-        use_max_tokens = 48 if use_compact else None
+        # Check if policy is mock (for unit tests)
+        is_mock = False
+        if hasattr(policy, "validate_interface"):
+            try:
+                iface = policy.validate_interface()
+                if isinstance(iface, dict) and iface.get("mock", False):
+                    is_mock = True
+            except Exception:
+                pass
+        if getattr(policy, "is_mock", False):
+            is_mock = True
+
+        if tok is None and not is_mock:
+            raise RuntimeError(
+                "Could not resolve official tokenizer from policy or policy.preprocessor. "
+                "Token estimation fallback is strictly forbidden in benchmark evaluation per AGENTS.md. "
+                "Ensure the policy preprocessor contains an initialized TokenizerProcessorStep with input_tokenizer."
+            )
+
+        # Enforce strict token budget (48 tokens) for BOTH observation and oracle
+        use_max_tokens = max_length if max_length is not None else 48
         renderer = TextMemoryRenderer(
             max_context_chars=max_context_chars,
             allowed_sources=allowed_srcs,
             max_total_tokens=use_max_tokens,
-            compact_mode=use_compact,
+            compact_mode=True,
             tokenizer=tok,
+            strict_tokenizer=(not is_mock),
         )
 
         auto_targets, auto_goal = extract_all_targets_and_goal(env, instruction)
@@ -316,6 +344,22 @@ def rollout_episode(
                 goal_container_name=resolved_goal,
             )
             observation_writer.on_episode_start(episode_id=ep_id, env=env, obs=obs, step=0, timestamp=0.0)
+
+        # Build static initial suffix for text_static_suffix ablation
+        static_suffix_prompt = instruction
+        static_suffix_facts: List[str] = []
+        if memory_condition == "text_static_suffix":
+            clean_inst = instruction.rstrip(".")
+            s_facts = []
+            for t in targets:
+                s_facts.append(f"{t.replace('_', ' ').capitalize()} is detected.")
+            if resolved_goal:
+                s_facts.append(f"{resolved_goal.replace('_', ' ').capitalize()} is target destination.")
+            s_facts.sort()
+            static_suffix_facts = s_facts
+            if s_facts:
+                static_suffix_str = " ".join(s_facts)
+                static_suffix_prompt = f"{clean_inst}. Memory: {static_suffix_str}"
 
 
     recorded_actions: List[np.ndarray] = []
@@ -365,7 +409,7 @@ def rollout_episode(
         if current_chunk is None or chunk_step_idx >= effective_horizon:
             # Policy prompt resolution based on memory condition
             current_prompt = instruction
-            if memory_condition in ("text_shadow", "text_only") and store is not None and retriever is not None and renderer is not None:
+            if memory_condition in ("text_shadow", "text_only", "text_static_suffix") and store is not None and retriever is not None and renderer is not None:
                 snap = store.snapshot(as_of_step=step_num)
                 query = MemoryQuery(
                     episode_id=store.episode_id,
@@ -393,11 +437,26 @@ def rollout_episode(
                     "included_facts_count": render_res.included_facts_count,
                     "dropped_facts_count": render_res.dropped_facts_count,
                     "dropped_facts": list(render_res.dropped_facts),
+                    "facts_included": list(render_res.facts_included),
+                    "memory_skipped_reason": render_res.memory_skipped_reason,
+                    "tokenizer_truncation_detected": (
+                        render_res.total_tokens_with_instruction > render_res.budget_tokens
+                        if render_res.budget_tokens > 0
+                        else False
+                    ),
                     "memory_condition": memory_condition,
                 }
 
                 if memory_condition == "text_only":
                     current_prompt = rendered_text
+                elif memory_condition == "text_static_suffix":
+                    current_prompt = static_suffix_prompt
+                    rendered_ctx = static_suffix_prompt[len(instruction):].strip()
+                    total_tokens = renderer.count_tokens(static_suffix_prompt)
+                    trace_entry["rendered_context"] = rendered_ctx
+                    trace_entry["rendered_context_length_chars"] = len(rendered_ctx)
+                    trace_entry["total_tokens_with_instruction"] = total_tokens
+                    trace_entry["facts_included"] = list(static_suffix_facts)
                 else:
                     # In text_shadow, policy receives unmodified instruction
                     current_prompt = instruction

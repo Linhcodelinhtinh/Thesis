@@ -69,6 +69,8 @@ class OracleMemoryWriter:
         sim = self._get_sim(env)
         if sim is None or not hasattr(sim, "model") or not hasattr(sim, "data"):
             if env is not None and (hasattr(env, "step_count") or getattr(env, "is_mock", False)):
+                if getattr(env, "completed_subtask", False):
+                    return "contains_black_bowl" if is_fixture else "in_plate"
                 return "empty" if is_fixture else "on_table"
             return None
 

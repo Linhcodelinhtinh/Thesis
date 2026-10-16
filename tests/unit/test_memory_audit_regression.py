@@ -40,7 +40,7 @@ from scripts.compare_memory_runs import generate_paired_report
 
 def test_renderer_token_budget_compact_mode():
     """Verify that compact mode renders concise facts and respects token limit without cutting instruction."""
-    # Set tight token budget: 20 tokens total
+    # Set tight token budget: 22 tokens total
     renderer = TextMemoryRenderer(
         max_context_chars=512,
         max_total_tokens=22,
@@ -52,17 +52,17 @@ def test_renderer_token_budget_compact_mode():
     objects = (
         ObjectMemory(
             episode_id="ep1", object_id="black_bowl", semantic_label="black bowl",
-            state="on_table", first_seen_step=0, last_updated_step=0,
+            state="in_basket", first_seen_step=0, last_updated_step=0,
             confidence=0.8, evidence_source=EvidenceSource.OBSERVATION_TRACKER,
         ),
         ObjectMemory(
             episode_id="ep1", object_id="plate", semantic_label="plate",
-            state="target_destination", first_seen_step=0, last_updated_step=0,
+            state="placed", first_seen_step=0, last_updated_step=0,
             confidence=0.8, evidence_source=EvidenceSource.OBSERVATION_TRACKER,
         ),
         ObjectMemory(
             episode_id="ep1", object_id="cup", semantic_label="cup",
-            state="on_table", first_seen_step=0, last_updated_step=0,
+            state="holding", first_seen_step=0, last_updated_step=0,
             confidence=0.8, evidence_source=EvidenceSource.OBSERVATION_TRACKER,
         ),
     )
@@ -89,7 +89,7 @@ def test_renderer_token_budget_instruction_overflow_preserves_prompt():
     )
     instruction = "pick up the black bowl between the plate and the ramekin and place it on the plate"
     obj = ObjectMemory(
-        episode_id="ep1", object_id="bowl", semantic_label="bowl", state="on_table",
+        episode_id="ep1", object_id="bowl", semantic_label="bowl", state="in_basket",
         first_seen_step=0, last_updated_step=0, confidence=0.8,
         evidence_source=EvidenceSource.OBSERVATION_TRACKER,
     )
@@ -128,7 +128,8 @@ def test_observation_writer_no_false_grasp_when_wide_open():
         next_obs=obs_wide_open,
     )
     assert len(events) == 0
-    assert store.get_object("black_bowl").state == "detected"
+    # No false initial detection
+    assert store.get_object("black_bowl") is None
 
 
 def test_observation_writer_slip_resets_lift_and_does_not_loop():
@@ -142,11 +143,17 @@ def test_observation_writer_slip_resets_lift_and_does_not_loop():
     )
     writer.on_episode_start(episode_id="ep_test", env=None, obs={}, step=0, timestamp=0.0)
 
-    # 1. Grasp
+    # 1. Grasp (requires 2 steps of stalled closure)
+    obs_grasp = {"robot0_eef_pos": np.array([0.0, 0.0, 0.85]), "robot0_gripper_qpos": np.array([0.02, 0.02])}
+    writer.on_step(
+        step=9, timestamp=0.45,
+        action=np.array([0, 0, 0, 0, 0, 0, 1.0]),
+        next_obs=obs_grasp,
+    )
     writer.on_step(
         step=10, timestamp=0.5,
         action=np.array([0, 0, 0, 0, 0, 0, 1.0]),
-        next_obs={"robot0_eef_pos": np.array([0.0, 0.0, 0.85]), "robot0_gripper_qpos": np.array([0.02, 0.02])},
+        next_obs=obs_grasp,
     )
     # 2. Lift
     writer.on_step(

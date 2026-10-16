@@ -52,11 +52,15 @@ class ObservationMemoryWriter:
         self.target_entity_names = tuple(filtered_targets)
 
         self._episode_id: Optional[str] = None
-        self._target_state: str = "detected"
+        self._target_state: str = "idle"
         self._is_grasped: bool = False
         self._is_lifted: bool = False
         self._is_released: bool = False
         self._eef_z_at_grasp: Optional[float] = None
+        self._prev_finger_gap: Optional[float] = None
+        self._blocked_counter: int = 0
+        self._grasped_object_id: Optional[str] = None
+        self._grasped_label: Optional[str] = None
         self._event_counter: int = 0
 
     def on_episode_start(
@@ -67,56 +71,18 @@ class ObservationMemoryWriter:
         step: int = 0,
         timestamp: float = 0.0,
     ) -> None:
-        """Register initial observed entities from task specification."""
+        """Initialize trackers without fabricating synthetic visual detections."""
         self._episode_id = episode_id
-        self._target_state = "detected"
+        self._target_state = "idle"
         self._is_grasped = False
         self._is_lifted = False
         self._is_released = False
         self._eef_z_at_grasp = None
+        self._prev_finger_gap = None
+        self._blocked_counter = 0
+        self._grasped_object_id = None
+        self._grasped_label = None
         self._event_counter = 0
-
-        # Register target objects as visually detected
-        for entity in self.target_entity_names:
-            clean_name = entity.strip().lower()
-            if not clean_name:
-                continue
-            self._event_counter += 1
-            evt = MemoryEvent(
-                event_id=f"evt_{episode_id}_{step}_{self._event_counter}_obs_init",
-                episode_id=episode_id,
-                step=step,
-                timestamp=timestamp,
-                event_type="initial_observation",
-                object_id=clean_name,
-                semantic_label=clean_name.replace("_", " "),
-                evidence_source=EvidenceSource.OBSERVATION_TRACKER,
-                confidence=0.80,
-                object_state_before=None,
-                object_state_after="detected",
-                validity=MemoryStatus.CONFIRMED,
-            )
-            self.updater.record(evt)
-
-        # Register goal container if distinct
-        if self.goal_container_name:
-            clean_goal = self.goal_container_name.strip().lower()
-            self._event_counter += 1
-            evt_goal = MemoryEvent(
-                event_id=f"evt_{episode_id}_{step}_{self._event_counter}_goal_obs_init",
-                episode_id=episode_id,
-                step=step,
-                timestamp=timestamp,
-                event_type="initial_observation",
-                object_id=clean_goal,
-                semantic_label=clean_goal.replace("_", " "),
-                evidence_source=EvidenceSource.OBSERVATION_TRACKER,
-                confidence=0.80,
-                object_state_before=None,
-                object_state_after="target_destination",
-                validity=MemoryStatus.CONFIRMED,
-            )
-            self.updater.record(evt_goal)
 
     def on_step(
         self,
@@ -130,8 +96,6 @@ class ObservationMemoryWriter:
             return []
 
         recorded_events: List[MemoryEvent] = []
-        target_name = self.target_entity_names[0] if self.target_entity_names else "target_object"
-        clean_target = target_name.strip().lower()
 
         # Observable signals
         gripper_closing = bool(len(action) > 0 and action[-1] >= 0.0)
@@ -154,16 +118,49 @@ class ObservationMemoryWriter:
             return []
         curr_eef_z = float(eef_pos[2])
 
-        # Heuristic 1: ESTIMATED GRASP
-        # Closing command active near tabletop (z <= 0.95), with fingers partially obstructed (0.015 <= gap <= 0.065)
-        # rather than fully snapped shut (< 0.015) or still wide open (> 0.065)
-        fingers_blocked = 0.015 <= finger_gap <= 0.065
+        # Track persistent obstruction:
+        # Fingers are in graspable width (15mm to 65mm), closing command is active,
+        # AND finger motion has stalled (gap not changing rapidly).
+        # In free-air closure, Panda fingers move at ~15-25 mm/step.
+        gap_stalled = False
+        if self._prev_finger_gap is not None:
+            gap_velocity = abs(finger_gap - self._prev_finger_gap)
+            if gap_velocity < 0.003:  # Stalled against obstruction
+                gap_stalled = True
+
+        fingers_in_range = 0.015 <= finger_gap <= 0.065
         eef_near_table = curr_eef_z <= 0.95
-        if not self._is_grasped and gripper_closing and fingers_blocked and eef_near_table:
+
+        if gripper_closing and fingers_in_range and gap_stalled and eef_near_table:
+            self._blocked_counter += 1
+        elif not gripper_closing or not fingers_in_range:
+            self._blocked_counter = 0
+
+        # Require stalled gap across consecutive steps under close command to confirm obstruction
+        is_obstructed = (self._blocked_counter >= 1)
+
+        # Heuristic 1: ESTIMATED GRASP
+        if not self._is_grasped and is_obstructed and eef_near_table:
+            # Identity determination:
+            # If multiple targets exist, proprioception alone cannot resolve identity!
+            if len(self.target_entity_names) == 1:
+                clean_target = self.target_entity_names[0]
+                label = clean_target.replace("_", " ")
+                conf = 0.70
+                val = MemoryStatus.CONFIRMED
+            else:
+                # Multi-target task: Do NOT blindly assign to the first target entity!
+                clean_target = "unidentified_object"
+                label = "an object"
+                conf = 0.50
+                val = MemoryStatus.UNCERTAIN
+
             self._is_grasped = True
-            self._is_released = False  # Enable multi-cycle manipulation
+            self._is_released = False
             self._target_state = "grasped"
             self._eef_z_at_grasp = curr_eef_z
+            self._grasped_object_id = clean_target
+            self._grasped_label = label
             self._event_counter += 1
             evt = MemoryEvent(
                 event_id=f"evt_{self._episode_id}_{step}_{self._event_counter}_obs_grasp",
@@ -172,12 +169,12 @@ class ObservationMemoryWriter:
                 timestamp=timestamp,
                 event_type="observed_grasp",
                 object_id=clean_target,
-                semantic_label=clean_target.replace("_", " "),
+                semantic_label=label,
                 evidence_source=EvidenceSource.OBSERVATION_TRACKER,
-                confidence=0.75,
-                object_state_before="detected",
+                confidence=conf,
+                object_state_before="idle",
                 object_state_after="grasped",
-                validity=MemoryStatus.CONFIRMED,
+                validity=val,
             )
             self.updater.record(evt)
             recorded_events.append(evt)
@@ -186,23 +183,27 @@ class ObservationMemoryWriter:
         # Was grasped, and EEF height has risen by at least 0.04m while fingers remain blocked
         if self._is_grasped and not self._is_lifted and self._eef_z_at_grasp is not None:
             delta_z = curr_eef_z - self._eef_z_at_grasp
-            if delta_z >= 0.04 and fingers_blocked:
+            if delta_z >= 0.04 and fingers_in_range:
                 self._is_lifted = True
                 self._target_state = "lifted"
                 self._event_counter += 1
+                target_id = self._grasped_object_id or "unidentified_object"
+                label = self._grasped_label or "an object"
+                conf = 0.70 if target_id != "unidentified_object" else 0.50
+                val = MemoryStatus.CONFIRMED if target_id != "unidentified_object" else MemoryStatus.UNCERTAIN
                 evt = MemoryEvent(
                     event_id=f"evt_{self._episode_id}_{step}_{self._event_counter}_obs_lift",
                     episode_id=self._episode_id,
                     step=step,
                     timestamp=timestamp,
                     event_type="observed_lift",
-                    object_id=clean_target,
-                    semantic_label=clean_target.replace("_", " "),
+                    object_id=target_id,
+                    semantic_label=label,
                     evidence_source=EvidenceSource.OBSERVATION_TRACKER,
-                    confidence=0.70,
+                    confidence=conf,
                     object_state_before="grasped",
                     object_state_after="lifted",
-                    validity=MemoryStatus.CONFIRMED,
+                    validity=val,
                 )
                 self.updater.record(evt)
                 recorded_events.append(evt)
@@ -212,9 +213,14 @@ class ObservationMemoryWriter:
         if (self._is_grasped or self._is_lifted) and gripper_closing and (finger_gap < 0.015):
             prev_state = self._target_state
             self._is_grasped = False
-            self._is_lifted = False  # Reset lifted flag to eliminate repetitive slip loop
+            self._is_lifted = False
             self._eef_z_at_grasp = None
+            self._blocked_counter = 0
             self._target_state = "contact_lost"
+            target_id = self._grasped_object_id or "unidentified_object"
+            label = self._grasped_label or "an object"
+            conf = 0.70 if target_id != "unidentified_object" else 0.50
+            val = MemoryStatus.CONFIRMED if target_id != "unidentified_object" else MemoryStatus.UNCERTAIN
             self._event_counter += 1
             evt = MemoryEvent(
                 event_id=f"evt_{self._episode_id}_{step}_{self._event_counter}_obs_slip",
@@ -222,13 +228,13 @@ class ObservationMemoryWriter:
                 step=step,
                 timestamp=timestamp,
                 event_type="observed_slip",
-                object_id=clean_target,
-                semantic_label=clean_target.replace("_", " "),
+                object_id=target_id,
+                semantic_label=label,
                 evidence_source=EvidenceSource.OBSERVATION_TRACKER,
-                confidence=0.75,
+                confidence=conf,
                 object_state_before=prev_state,
                 object_state_after="contact_lost",
-                validity=MemoryStatus.CONFIRMED,
+                validity=val,
             )
             self.updater.record(evt)
             recorded_events.append(evt)
@@ -237,11 +243,16 @@ class ObservationMemoryWriter:
         # Previously lifted or grasped, and gripper opening command is issued
         if (self._is_lifted or self._is_grasped) and gripper_opening and not self._is_released:
             self._is_released = True
-            self._is_grasped = False  # Reset grasped flag
-            self._is_lifted = False   # Reset lifted flag
+            self._is_grasped = False
+            self._is_lifted = False
             self._eef_z_at_grasp = None
+            self._blocked_counter = 0
             prev_state = self._target_state
             self._target_state = "released"
+            target_id = self._grasped_object_id or "unidentified_object"
+            label = self._grasped_label or "an object"
+            conf = 0.70 if target_id != "unidentified_object" else 0.50
+            val = MemoryStatus.CONFIRMED if target_id != "unidentified_object" else MemoryStatus.UNCERTAIN
             self._event_counter += 1
             evt = MemoryEvent(
                 event_id=f"evt_{self._episode_id}_{step}_{self._event_counter}_obs_release",
@@ -249,15 +260,16 @@ class ObservationMemoryWriter:
                 step=step,
                 timestamp=timestamp,
                 event_type="observed_release",
-                object_id=clean_target,
-                semantic_label=clean_target.replace("_", " "),
+                object_id=target_id,
+                semantic_label=label,
                 evidence_source=EvidenceSource.OBSERVATION_TRACKER,
-                confidence=0.70,
+                confidence=conf,
                 object_state_before=prev_state,
                 object_state_after="released",
-                validity=MemoryStatus.CONFIRMED,
+                validity=val,
             )
             self.updater.record(evt)
             recorded_events.append(evt)
 
+        self._prev_finger_gap = finger_gap
         return recorded_events

@@ -170,7 +170,7 @@ def parse_args():
     parser.add_argument(
         "--record-video",
         action="store_true",
-        default=False,
+        default=True,
         help="Record video rollouts.",
     )
     parser.add_argument(
@@ -189,7 +189,7 @@ def parse_args():
     parser.add_argument(
         "--output-dir",
         type=str,
-        default="experiments/results/raw_baseline/phase8_acceptance",
+        default="experiments/results/raw_baseline",
         help="Directory to save episode metrics, trajectories, and summary reports.",
     )
     parser.add_argument(
@@ -208,8 +208,8 @@ def parse_args():
         "--memory-condition",
         type=str,
         default="off",
-        choices=["off", "text_shadow", "text_only"],
-        help="V2 memory condition: 'off' (baseline pass-through), 'text_shadow' (shadow log), 'text_only' (memory prompt injection).",
+        choices=["off", "text_shadow", "text_only", "text_static_suffix"],
+        help="V2 memory condition: 'off' (baseline pass-through), 'text_shadow' (shadow log), 'text_only' (memory prompt injection), 'text_static_suffix' (static suffix ablation).",
     )
     parser.add_argument(
         "--allow-oracle-memory",
