@@ -26,6 +26,7 @@ resources/demonstrations/.cache/
 # Experiment artifacts and videos
 experiments/results/
 experiments/training/
+experiments/audits/
 *.mp4
 *.avi
 *.webm
