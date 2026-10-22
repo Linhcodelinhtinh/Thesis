@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "purpose": "Source provenance for V2_LIBERO_MEM_IMPLEMENTATION_PLAN.md; not a runtime readiness certificate",
+  "review_date_local": "2026-10-22",
+  "timezone": "Asia/Saigon",
+  "local_repository_head": "79777de39befd8d426389ea636bd59d4ece7e17c",
+  "working_tree_was_clean": false,
+  "review_scope": "Read-only review of public author source, paper, dataset schema and Hub metadata. No simulation, training, HDF5 download or local data verification.",
+  "libero_mem_code": {
+    "repository": "https://github.com/libero-mem/libero-mem",
+    "revision": "0eee0defa4024e51511b6e15a79f30e9620209de",
+    "classification": "author-released",
+    "resolution_source": "https://api.github.com/repos/libero-mem/libero-mem/commits/main",
+    "source_files_reviewed": [
+      "libero/libero/benchmark/__init__.py",
+      "libero/libero/benchmark/libero_suite_task_map.py",
+      "libero/libero/envs/bddl_base_domain.py",
+      "libero/libero/envs/problems/libero_kitchen_tabletop_manipulation.py",
+      "libero/libero/envs/predicates/base_predicates.py",
+      "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_3_lift_the_bowl_and_place_it_back_on_the_plate_3_times.bddl",
+      "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_10_put_the_cream_cheese_in_the_nearest_basket_and_place_the_empty_basket_in_the_center.bddl",
+      "scripts/mem_3_refine_demonstration.py",
+      "scripts/__rlds_builder/LIBERO_Mem/LIBERO_Mem_dataset_builder.py",
+      "experiments/robot/libero/run_libero_eval.py"
+    ],
+    "inspection_note": "Selected relevant sections, not a full repository audit. Benchmark registration/task map were also rechecked at the immutable revision. Runtime conformance is pending.",
+    "registration_source_text_sha256": "68def3ecfaa75f08571fe7840247c065c8d388adc197d8b4d52882c5ab9a99eb",
+    "task_map_source_text_sha256": "1d81c748f8e2940adf3753f7bf38e64955704ca8edf9ba96d003dcb85935d21e",
+    "source_text_hash_method": "SHA256 of UTF-8 encoded response text at the immutable raw.githubusercontent.com URL"
+  },
+  "annotated_dataset": {
+    "repository": "https://huggingface.co/datasets/libero-mem/LIBERO-Mem",
+    "revision": "6df130c05b82e09294fa9534e84a069687b72d33",
+    "classification": "author-released",
+    "metadata_source": "https://huggingface.co/api/datasets/libero-mem/LIBERO-Mem/tree/6df130c05b82e09294fa9534e84a069687b72d33?recursive=false&expand=false",
+    "checksum_provenance": "Upstream LFS SHA256 OIDs; local file bytes have NOT been verified",
+    "selected_pilot_files": [
+      {
+        "path": "KITCHEN_SCENE1_1_pick_up_the_bowl_and_place_it_back_on_the_plate_demo.hdf5",
+        "size_bytes": 9668822790,
+        "upstream_sha256": "1737ddd2f460fc2f9f2fef735cb0f373c2ac86b5d4e9ed7a6ebe9a2f00742b22",
+        "downloaded_and_verified": false
+      },
+      {
+        "path": "KITCHEN_SCENE1_3_lift_the_bowl_and_place_it_back_on_the_plate_3_times_demo.hdf5",
+        "size_bytes": 18431683248,
+        "upstream_sha256": "bffe4eff3a7648ede07d04b4f573367ad34d30200390826f7c072bdd1603cb9f",
+        "downloaded_and_verified": false
+      },
+      {
+        "path": "metainfo.json",
+        "size_bytes": 713618260,
+        "upstream_sha256": "2afe9bc01f9579d4adeec63a6cf012f8560de3b5a4b7d5a96c0643c94777ad0c",
+        "downloaded_and_verified": false
+      }
+    ],
+    "pilot_total_size_bytes": 28814124298,
+    "official_split_ids_verified": false,
+    "hdf5_contract_verified": false
+  },
+  "raw_dataset": {
+    "repository": "https://huggingface.co/datasets/libero-mem/LIBERO-Mem-Raw",
+    "revision": "61917674055e8b1cbbfd22c1b54c28d20c1a1584",
+    "inspection_scope": "Revision metadata only; not the default proposed input"
+  },
+  "paper": {
+    "url": "https://arxiv.org/html/2511.11478v1",
+    "version": "2511.11478v1",
+    "note": "Naive E-SlotSSM uses oracle subgoal representations; distinguish this from autonomous memory."
+  },
+  "runtime_readiness": {
+    "simulation_verified": false,
+    "evaluator_conformance_verified": false,
+    "controller_contract_verified": false,
+    "camera_state_action_alignment_verified": false,
+    "writer_validated": false,
+    "training_executed": false,
+    "rollout_success_measured": false
+  }
+}

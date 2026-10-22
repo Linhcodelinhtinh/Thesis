@@ -23,9 +23,10 @@ python3 scripts/run_benchmark.py \
   --preset libero_10 \
   --model-name smolvla_libero \
   --checkpoint resources/checkpoints/smolvla_libero \
-  --execution-horizon 10 \
-  --memory-condition text_only \
+  --execution-horizon 5 \
+  --memory-condition off \
   --memory-writer observation \
-  --output-dir experiments/results/v2_memory/prompt_shoren_obs_text \
+  --output-dir experiments/results/test-libero-10 \
   --seed 42 \
+  --max-steps 500
   "$@"

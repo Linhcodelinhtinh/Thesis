@@ -2,6 +2,10 @@
 
 ## VLA Policy Evaluation Sandbox V1
 
+> Kế hoạch V2 cho memory trên LIBERO-Mem và giữ hiệu năng LIBERO base được tách tại
+> [V2_LIBERO_MEM_IMPLEMENTATION_PLAN.md](V2_LIBERO_MEM_IMPLEMENTATION_PLAN.md).
+> Đây là kế hoạch bổ sung; phạm vi baseline V1 bên dưới vẫn giữ nguyên.
+
 ## 0. Mục tiêu triển khai
 
 Mục tiêu của V1 là đạt được pipeline hoàn chỉnh:

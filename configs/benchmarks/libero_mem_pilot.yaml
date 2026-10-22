@@ -1,0 +1,84 @@
+# Benchmark Configuration: LIBERO-Mem Pilot (Phase V2)
+# Reference: docs/V2_LIBERO_MEM_IMPLEMENTATION_PLAN.md
+# Provenance Tag: CUSTOM_V2_LIBERO_MEM
+# Author Repository: https://github.com/libero-mem/libero-mem
+# Pinned Commit: 0eee0defa4024e51511b6e15a79f30e9620209de
+
+benchmark_name: "LIBERO-Mem Pilot Evaluation (V2 Memory Benchmark)"
+task_suite: "libero_mem_pilot"
+provenance_tag: "CUSTOM_V2_LIBERO_MEM"
+official_paper_comparable: false
+comparability_note: "NON-COMPARABLE_OFFICIAL_PAPER: Pilot evaluation subset evaluated with custom frozen or fine-tuned VLA policies"
+
+tasks:
+  - task_id: 0
+    name: "KITCHEN_SCENE1_1_pick_up_the_bowl_and_place_it_back_on_the_plate"
+    alias: "T1"
+    category: "Object Motion (OM)"
+    target_cycles: 1
+    target_object: "bowl"
+    support_object: "plate"
+    bddl_file: "libero_mem/KITCHEN_SCENE1_1_pick_up_the_bowl_and_place_it_back_on_the_plate.bddl"
+    description: "Lift the bowl and place it back on the plate once"
+    subtasks:
+      - "lift the bowl from the plate"
+      - "place the bowl back on the plate"
+
+  - task_id: 1
+    name: "KITCHEN_SCENE1_3_lift_the_bowl_and_place_it_back_on_the_plate_3_times"
+    alias: "T3"
+    category: "Object Sequence (OS)"
+    target_cycles: 3
+    target_object: "bowl"
+    support_object: "plate"
+    bddl_file: "libero_mem/KITCHEN_SCENE1_3_lift_the_bowl_and_place_it_back_on_the_plate_3_times.bddl"
+    description: "Lift the bowl and place it back on the plate 3 times"
+    subtasks:
+      - "cycle 1: lift bowl from plate"
+      - "cycle 1: return bowl to plate"
+      - "cycle 2: lift bowl from plate"
+      - "cycle 2: return bowl to plate"
+      - "cycle 3: lift bowl from plate"
+      - "cycle 3: return bowl to plate"
+
+  - task_id: 2
+    name: "KITCHEN_SCENE1_10_put_the_cream_cheese_in_the_nearest_basket_and_place_the_empty_basket_in_the_center"
+    alias: "T10"
+    category: "Object Occlusion & Containment (OO)"
+    target_cycles: 1
+    target_object: "cream_cheese"
+    support_object: "basket"
+    bddl_file: "libero_mem/KITCHEN_SCENE1_10_put_the_cream_cheese_in_the_nearest_basket_and_place_the_empty_basket_in_the_center.bddl"
+    description: "Put cream cheese in the nearest basket and place the empty basket in the center"
+    subtasks:
+      - "put cream cheese into basket"
+      - "move remaining basket to center"
+
+simulation:
+  robot: "Panda"
+  gripper: "PandaGripper"
+  controller: "OSC_POSE"
+  control_frequency_hz: 20
+  max_steps_per_episode: 1000
+  camera_resolution: [128, 128]
+  camera_names:
+    - "agentview"
+    - "robot0_eye_in_hand"
+
+memory_contract:
+  schema_version: 2
+  max_total_tokens: 48
+  chunk_size: 50
+  execution_horizon: 10
+  hysteresis_dwell_steps: 3
+  observation_action_offset: 0
+  allow_oracle_in_system: false
+
+sample_levels:
+  pilot:
+    tier: "PILOT_10_STATES"
+    episodes_per_task: 10
+    initial_state_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  full:
+    tier: "FULL_HELD_OUT_STATES"
+    episodes_per_task: 20

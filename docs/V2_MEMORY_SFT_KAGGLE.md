@@ -1,5 +1,11 @@
 # V2 memory SFT trên Kaggle 2×T4
 
+> **Hướng phát triển LIBERO-Mem (22/10/2026):** xem
+> [implementation plan mới](V2_LIBERO_MEM_IMPLEMENTATION_PLAN.md) cho writer dựa trên
+> object/events, causal memory, mixed base replay và retention gates. Các lệnh bên dưới
+> vẫn là pipeline base/interface smoke hiện có, chưa hỗ trợ LIBERO-Mem. Không kế thừa
+> observation/action offset hoặc memory dropout 0.2 sang Mem mà chưa audit.
+
 Đây là supervised adaptation dùng **loss flow matching chính thức của SmolVLA**,
 không phải RL và không phải một kết quả LIBERO official. Checkpoint baseline không bị sửa.
 
