@@ -42,7 +42,21 @@ class SubgoalEvaluationResult:
 
 
 class LiberoMemEvaluator:
-    """Evaluates task execution progress and conformance for LIBERO-Mem."""
+    """Evaluates task execution progress and conformance for LIBERO-Mem.
+
+    Adheres strictly to docs/V2_LIBERO_MEM_IMPLEMENTATION_PLAN.md and upstream BDDL:
+    - BDDL for repeated manipulation (e.g. T3) specifies a Sequence of On predicates:
+      (Sequence (On bowl plate) (On bowl plate) (On bowl plate))
+      Therefore, official sequence subgoals correspond to the target cycle milestones (e.g. 3 for T3, 1 for T1).
+    - Requires sustained dwell steps (consecutive steps satisfying condition)
+      to avoid accepting single-frame instantaneous sensor noise or transient triggers.
+    - Strict interval semantics: between two consecutive On milestones, the object
+      must depart / be lifted for at least dwell_steps, followed by resting on support
+      for at least dwell_steps.
+    - Overshoot detection: if after satisfying all target cycles the agent continues
+      and lifts the object again for dwell_steps, overshot is flagged and full_success
+      is invalidated.
+    """
 
     def __init__(
         self,
@@ -50,42 +64,31 @@ class LiberoMemEvaluator:
         target_cycles: int = 1,
         target_object: str = "bowl",
         support_object: str = "plate",
+        dwell_steps: int = 2,
     ) -> None:
         self.task_name = task_name
         self.target_cycles = target_cycles
         self.target_object = target_object
         self.support_object = support_object
+        self.dwell_steps = max(1, dwell_steps)
 
         self.subgoals = self._build_subgoal_definitions()
         self.reset()
 
     def _build_subgoal_definitions(self) -> List[SubgoalDefinition]:
-        """Construct ordered subgoal list matching BDDL sequence."""
+        """Construct ordered subgoal list matching official BDDL Sequence goals."""
         subgoals: List[SubgoalDefinition] = []
-        idx = 0
         for cycle in range(1, self.target_cycles + 1):
             subgoals.append(
                 SubgoalDefinition(
-                    index=idx,
-                    name=f"cycle_{cycle}_lift",
-                    target_predicate="lifted",
-                    subject=self.target_object,
-                    target_object=self.support_object,
-                    cycle_index=cycle,
-                )
-            )
-            idx += 1
-            subgoals.append(
-                SubgoalDefinition(
-                    index=idx,
-                    name=f"cycle_{cycle}_return",
+                    index=cycle - 1,
+                    name=f"cycle_{cycle}_on_support",
                     target_predicate="on",
                     subject=self.target_object,
                     target_object=self.support_object,
                     cycle_index=cycle,
                 )
             )
-            idx += 1
         return subgoals
 
     def reset(self) -> None:
@@ -94,8 +97,9 @@ class LiberoMemEvaluator:
         self._subgoal_timestamps: Dict[int, int] = {}
         self._completed_cycles = 0
         self._overshot = False
-        self._is_currently_on_support = True
-        self._is_currently_lifted = False
+        self._consecutive_lifted = 0
+        self._consecutive_on_support = 0
+        self._cycle_departure_confirmed = False
         self._step_count = 0
 
     def evaluate_step(
@@ -106,33 +110,42 @@ class LiberoMemEvaluator:
     ) -> SubgoalEvaluationResult:
         """Process physical predicates at step t and advance sequence progress.
 
-        Strict interval semantics:
-        - To satisfy 'lifted': object must have been on support, then lift is confirmed.
-        - To satisfy 'on' (return): object must have been lifted, then return is confirmed.
+        Strict interval and dwell semantics:
+        - To confirm departure/lift: object must be lifted and not on support for >= dwell_steps consecutive steps.
+        - To confirm return on support: object must have confirmed departure, then be on support and not lifted for >= dwell_steps consecutive steps.
+        - Overshoot: if all cycles are completed, another confirmed departure/lift triggers overshoot.
         """
         self._step_count = step
 
+        # Track consecutive dwell counts
+        if is_lifted and not is_on_support:
+            self._consecutive_lifted += 1
+            self._consecutive_on_support = 0
+        elif is_on_support and not is_lifted:
+            self._consecutive_on_support += 1
+            self._consecutive_lifted = 0
+        else:
+            self._consecutive_lifted = 0
+            self._consecutive_on_support = 0
+
+        # Subgoal progression
         if self._current_subgoal_idx < len(self.subgoals):
-            target_sg = self.subgoals[self._current_subgoal_idx]
+            # Phase 1: Wait for confirmed departure / lift
+            if not self._cycle_departure_confirmed:
+                if self._consecutive_lifted >= self.dwell_steps:
+                    self._cycle_departure_confirmed = True
 
-            if target_sg.target_predicate == "lifted":
-                if is_lifted and not is_on_support:
-                    self._subgoal_timestamps[target_sg.index] = step
-                    self._current_subgoal_idx += 1
-                    self._is_currently_lifted = True
-                    self._is_currently_on_support = False
-
-            elif target_sg.target_predicate == "on":
-                if is_on_support and not is_lifted and self._is_currently_lifted:
+            # Phase 2: If departure is confirmed, wait for confirmed return on support
+            else:
+                if self._consecutive_on_support >= self.dwell_steps:
+                    target_sg = self.subgoals[self._current_subgoal_idx]
                     self._subgoal_timestamps[target_sg.index] = step
                     self._current_subgoal_idx += 1
                     self._completed_cycles += 1
-                    self._is_currently_lifted = False
-                    self._is_currently_on_support = True
-
+                    self._cycle_departure_confirmed = False  # Reset for next cycle
         else:
-            # All subgoals satisfied; check for overshoot
-            if is_lifted and not is_on_support:
+            # All target cycles completed; check for overshoot
+            if self._consecutive_lifted >= self.dwell_steps:
                 self._overshot = True
 
         full_success = (self._current_subgoal_idx == len(self.subgoals)) and not self._overshot
@@ -148,5 +161,5 @@ class LiberoMemEvaluator:
             confirmed_cycles=self._completed_cycles,
             target_cycles=self.target_cycles,
             subgoal_timestamps=dict(self._subgoal_timestamps),
-            termination_reason="success" if full_success else "in_progress",
+            termination_reason="success" if full_success else ("overshot" if self._overshot else "in_progress"),
         )

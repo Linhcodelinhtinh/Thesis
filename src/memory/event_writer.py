@@ -90,17 +90,6 @@ class LiberoMemEventWriter:
         self._current_step = 0
         self._last_consumed_action = -1
 
-        # Register initial relation at step 0
-        self._add_relation(
-            subject=self.target_object_id,
-            predicate="on",
-            obj=self.support_id,
-            status=RelationStatus.CONFIRMED_BY_WRITER,
-            occurred_at=0,
-            available_at=0,
-            evidence_ids=(f"obs_0_{self.support_id}",),
-        )
-
     def _add_relation(
         self,
         subject: str,
@@ -131,6 +120,7 @@ class LiberoMemEventWriter:
         available_at: int,
         source: EvidenceSource = EvidenceSource.PREDICTED_RGB_TRACKER,
         details: Optional[Dict[str, Any]] = None,
+        evidence_ids: Tuple[str, ...] = (),
     ) -> str:
         event_id = f"evt_{len(self._events) + 1}_{event_type}"
         event = V2MemoryEvent(
@@ -140,6 +130,7 @@ class LiberoMemEventWriter:
             available_at=available_at,
             source=source,
             details=details,
+            evidence_ids=evidence_ids,
         )
         self._events.append(event)
         return event_id
@@ -155,6 +146,24 @@ class LiberoMemEventWriter:
         self._last_consumed_action = step - 1 if step > 0 else -1
 
         signals = self.tracker.update(step, observation, last_action)
+        has_grounding = signals.get("has_grounding_evidence", True)
+        evidence_id = signals.get("evidence_id") or f"obs_{step}_{self.target_object_id}"
+
+        # Ingest initial relation at step 0 only if supported by evidence
+        if step == 0 and has_grounding and signals.get("raw_on_support"):
+            self._add_relation(
+                subject=self.target_object_id,
+                predicate="on",
+                obj=self.support_id,
+                status=RelationStatus.CONFIRMED_BY_WRITER,
+                occurred_at=0,
+                available_at=0,
+                evidence_ids=(evidence_id,),
+            )
+
+        if not has_grounding:
+            # Without observation grounding, do not confirm transitions or cycles
+            return self.get_snapshot()
 
         is_departed = signals["is_departed_candidate"]
         is_return = signals["is_return_candidate"]
@@ -175,6 +184,7 @@ class LiberoMemEventWriter:
                     occurred_at=occ,
                     available_at=step,
                     details={"cycle_index": self.confirmed_cycles + 1},
+                    evidence_ids=(evidence_id,),
                 )
                 self._add_relation(
                     subject=self.target_object_id,
@@ -183,7 +193,7 @@ class LiberoMemEventWriter:
                     status=RelationStatus.RETRACTED,
                     occurred_at=occ,
                     available_at=step,
-                    evidence_ids=(evt_id,),
+                    evidence_ids=(evt_id, evidence_id),
                 )
             elif signals["raw_on_support"]:
                 # Transient jitter; return to resting
@@ -207,6 +217,7 @@ class LiberoMemEventWriter:
                     occurred_at=occ,
                     available_at=step,
                     details={"cycle_count": self.confirmed_cycles},
+                    evidence_ids=(evidence_id,),
                 )
                 self._cycle_event_ids.append(evt_id)
 
@@ -217,7 +228,7 @@ class LiberoMemEventWriter:
                     status=RelationStatus.CONFIRMED_BY_WRITER,
                     occurred_at=occ,
                     available_at=step,
-                    evidence_ids=(evt_id,),
+                    evidence_ids=(evt_id, evidence_id),
                 )
                 # Rearm for next potential cycle
                 self.fsm_state = FSMState.SUPPORT_OBSERVED

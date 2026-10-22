@@ -41,7 +41,7 @@ def test_renderer_cycle_rendering():
     )
 
     res = renderer.render(instr, mem1, enabled=True)
-    assert "bowl returned to its original support once; no cycle in progress." in res.text
+    assert "bowl A returned to its original support once; no cycle in progress." in res.text
     assert res.text.startswith(instr)
     assert len(res.facts_included) == 1
     assert not res.truncated
@@ -70,7 +70,7 @@ def test_renderer_in_progress_rendering():
     )
 
     res = renderer.render(instr, mem2, enabled=True)
-    assert "bowl returned to its original support twice; one cycle in progress." in res.text
+    assert "bowl A returned to its original support twice; one cycle in progress." in res.text
     assert not res.truncated
 
 

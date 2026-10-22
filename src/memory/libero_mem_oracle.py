@@ -55,6 +55,8 @@ class LiberoMemOracleWriter:
         self._departure_step: Optional[int] = None
         self._current_step = 0
         self._last_consumed_action = -1
+        self._container_id: Optional[str] = None
+        self._is_occluded: bool = False
 
     def step(
         self,
@@ -70,13 +72,19 @@ class LiberoMemOracleWriter:
         - `container_id`: Optional[str]
         - `is_occluded`: bool
         """
+        if not isinstance(oracle_signals, dict):
+            raise TypeError("oracle_signals must be a dictionary")
+
         self._current_step = step
         self._last_consumed_action = step - 1 if step > 0 else -1
 
         is_on_support = bool(oracle_signals.get("is_on_support", True))
         is_held = bool(oracle_signals.get("is_held", False))
-        container_id = oracle_signals.get("container_id")
-        is_occluded = bool(oracle_signals.get("is_occluded", False))
+        
+        if "container_id" in oracle_signals:
+            self._container_id = oracle_signals["container_id"]
+        if "is_occluded" in oracle_signals:
+            self._is_occluded = bool(oracle_signals["is_occluded"])
 
         # Departure detection
         if self._was_on_support and not is_on_support:
@@ -137,21 +145,24 @@ class LiberoMemOracleWriter:
                 )
             )
 
-        return self.get_snapshot(is_occluded=is_occluded, container_id=container_id)
+        return self.get_snapshot()
 
     def get_snapshot(
         self,
-        is_occluded: bool = False,
+        is_occluded: Optional[bool] = None,
         container_id: Optional[str] = None,
     ) -> SchemaV2EpisodeMemory:
         """Produce immutable privileged Schema V2 episodic memory snapshot."""
+        effective_occluded = self._is_occluded if is_occluded is None else is_occluded
+        effective_container = self._container_id if container_id is None else container_id
+
         obj_identity = ObjectIdentity(
             object_id=self.target_object_id,
             origin_anchor=self.origin_anchor,
             identity_status=IdentityStatus.TRACKED,
-            visibility=VisibilityStatus.OCCLUDED if is_occluded else VisibilityStatus.VISIBLE,
+            visibility=VisibilityStatus.OCCLUDED if effective_occluded else VisibilityStatus.VISIBLE,
             current_location_desc=f"on {self.support_semantic_name}" if self._was_on_support else "displaced",
-            last_confirmed_in=container_id,
+            last_confirmed_in=effective_container,
         )
 
         cycle_counter = CycleCounter(

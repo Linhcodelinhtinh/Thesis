@@ -58,6 +58,7 @@ def audit_evaluator_conformance() -> Dict[str, Any]:
         target_cycles=3,
         target_object="bowl",
         support_object="plate",
+        dwell_steps=2,
     )
 
     # Initially at rest
@@ -66,33 +67,42 @@ def audit_evaluator_conformance() -> Dict[str, Any]:
     assert not res0.full_success
     assert res0.confirmed_cycles == 0
 
-    # Cycle 1: Lift
-    res1 = evaluator.evaluate_step(step=10, is_on_support=False, is_lifted=True)
-    assert res1.completed_subgoals == 1
-    assert abs(res1.scr - (1.0 / 6.0)) < 1e-4
+    # Cycle 1: Lift (2 dwell steps)
+    evaluator.evaluate_step(step=10, is_on_support=False, is_lifted=True)
+    res1 = evaluator.evaluate_step(step=11, is_on_support=False, is_lifted=True)
+    assert res1.completed_subgoals == 0  # Lifted is departure phase
+    assert res1.scr == 0.0
 
-    # Cycle 1: Return
-    res2 = evaluator.evaluate_step(step=20, is_on_support=True, is_lifted=False)
-    assert res2.completed_subgoals == 2
+    # Cycle 1: Return (2 dwell steps)
+    evaluator.evaluate_step(step=20, is_on_support=True, is_lifted=False)
+    res2 = evaluator.evaluate_step(step=21, is_on_support=True, is_lifted=False)
+    assert res2.completed_subgoals == 1
     assert res2.confirmed_cycles == 1
-    assert abs(res2.scr - (2.0 / 6.0)) < 1e-4
+    assert abs(res2.scr - (1.0 / 3.0)) < 1e-4
 
-    # Cycle 2: Lift & Return
+    # Cycle 2: Lift & Return (2 dwell steps each)
     evaluator.evaluate_step(step=30, is_on_support=False, is_lifted=True)
-    res3 = evaluator.evaluate_step(step=40, is_on_support=True, is_lifted=False)
+    evaluator.evaluate_step(step=31, is_on_support=False, is_lifted=True)
+    evaluator.evaluate_step(step=40, is_on_support=True, is_lifted=False)
+    res3 = evaluator.evaluate_step(step=41, is_on_support=True, is_lifted=False)
     assert res3.confirmed_cycles == 2
-    assert abs(res3.scr - (4.0 / 6.0)) < 1e-4
+    assert res3.completed_subgoals == 2
+    assert abs(res3.scr - (2.0 / 3.0)) < 1e-4
 
     # Cycle 3: Lift & Return -> Full success!
     evaluator.evaluate_step(step=50, is_on_support=False, is_lifted=True)
-    res4 = evaluator.evaluate_step(step=60, is_on_support=True, is_lifted=False)
+    evaluator.evaluate_step(step=51, is_on_support=False, is_lifted=True)
+    evaluator.evaluate_step(step=60, is_on_support=True, is_lifted=False)
+    res4 = evaluator.evaluate_step(step=61, is_on_support=True, is_lifted=False)
     assert res4.confirmed_cycles == 3
+    assert res4.completed_subgoals == 3
     assert res4.scr == 1.0
     assert res4.full_success
     assert not res4.overshot
 
-    # Overshoot test: 4th lift!
-    res5 = evaluator.evaluate_step(step=70, is_on_support=False, is_lifted=True)
+    # Overshoot test: 4th lift with dwell!
+    evaluator.evaluate_step(step=70, is_on_support=False, is_lifted=True)
+    res5 = evaluator.evaluate_step(step=71, is_on_support=False, is_lifted=True)
     assert res5.overshot
     assert not res5.full_success  # Overshot voids full success
 
@@ -108,6 +118,7 @@ def audit_evaluator_conformance() -> Dict[str, Any]:
         "scr_calculation": "verified",
         "ordered_sequence": "verified",
         "repeated_predicate_intervals": "verified",
+        "dwell_validation": "verified",
         "overshoot_detection": "verified",
         "reset_isolation": "verified",
     }
@@ -120,12 +131,12 @@ def audit_writer_fsm() -> Dict[str, Any]:
         dwell_steps=2,
     )
 
-    # Initial resting state
+    # Initial resting state: no unobserved relation
     snap0 = writer.get_snapshot()
     assert snap0.cycles["bowl_A_plate_A"].confirmed == 0
     assert not snap0.cycles["bowl_A_plate_A"].in_progress
 
-    # Step 1: Displaced observation
+    # Step 1-2: Displaced observation with visual detection evidence
     obs_displaced = {
         "robot0_eef_pos": np.array([0.0, 0.0, 1.2], dtype=np.float32),
         "robot0_gripper_qpos": np.array([0.01, 0.01], dtype=np.float32),
@@ -138,7 +149,7 @@ def audit_writer_fsm() -> Dict[str, Any]:
     snap1 = writer.get_snapshot()
     assert snap1.cycles["bowl_A_plate_A"].in_progress
 
-    # Return steps
+    # Step 3-4: Return steps with visual detection evidence
     obs_return = {
         "robot0_eef_pos": np.array([-0.05, 0.20, 0.85], dtype=np.float32),
         "robot0_gripper_qpos": np.array([0.05, 0.05], dtype=np.float32),
@@ -160,18 +171,38 @@ def audit_writer_fsm() -> Dict[str, Any]:
     }
 
 
+def audit_upstream_environment() -> Dict[str, Any]:
+    """Check whether upstream LIBERO-Mem repository and assets are linked."""
+    upstream_dir = Path(__file__).resolve().parent.parent / "external" / "libero-mem"
+    if not upstream_dir.exists():
+        return {
+            "status": "NOT_RUN",
+            "reason": "MISSING_UPSTREAM_CHECKOUT",
+            "details": "external/libero-mem not yet cloned. Upstream BDDL/MuJoCo integration pending.",
+        }
+    return {"status": "PASS", "path": str(upstream_dir)}
+
+
 def main():
     report = {
         "benchmark_config": audit_config(),
         "evaluator_conformance": audit_evaluator_conformance(),
         "writer_fsm_conformance": audit_writer_fsm(),
+        "upstream_environment_conformance": audit_upstream_environment(),
     }
 
-    all_pass = all(item.get("status") == "PASS" for item in report.values())
-    report["overall_conformance"] = "PASS" if all_pass else "FAIL"
+    unit_pass = (
+        report["benchmark_config"].get("status") == "PASS"
+        and report["evaluator_conformance"].get("status") == "PASS"
+        and report["writer_fsm_conformance"].get("status") == "PASS"
+    )
+    report["unit_contract_conformance"] = "PASS" if unit_pass else "FAIL"
+
+    upstream_ready = report["upstream_environment_conformance"].get("status") == "PASS"
+    report["overall_runtime_readiness"] = "READY" if (unit_pass and upstream_ready) else "NOT_READY"
 
     print(json.dumps(report, indent=2))
-    if not all_pass:
+    if not unit_pass:
         sys.exit(1)
 
 

@@ -71,13 +71,21 @@ class LiberoMemEnv:
         self._is_held = False
 
     def reset(self, initial_state_id: int = 0) -> Dict[str, Any]:
-        """Reset environment to initial state."""
+        """Reset environment to initial state based on initial_state_id."""
         self._step_count = 0
         self._is_done = False
-        self._current_eef_pos = np.array([0.0, 0.0, 1.0], dtype=np.float32)
+        
+        # Derive reproducible initial variation from initial_state_id
+        rng = np.random.RandomState(initial_state_id)
+        delta_eef = rng.uniform(-0.02, 0.02, size=(3,)).astype(np.float32)
+        delta_obj = rng.uniform(-0.01, 0.01, size=(2,)).astype(np.float32)
+
+        self._current_eef_pos = np.array([0.0, 0.0, 1.0], dtype=np.float32) + delta_eef
         self._current_gripper_qpos = np.array([0.04, 0.04], dtype=np.float32)
         self._current_eef_quat = np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float32)
+        
         self._obj_pos = self._support_pos.copy()
+        self._obj_pos[:2] += delta_obj
         self._is_held = False
 
         self.evaluator.reset()
@@ -161,10 +169,9 @@ class LiberoMemEnv:
         return self._get_observation(), reward, self._is_done, info
 
     def _get_observation(self) -> Dict[str, Any]:
-        """Construct standard multi-modal observation dictionary."""
-        # Simulated camera frames
-        agentview = np.zeros((self.camera_height, self.camera_width, 3), dtype=np.uint8)
-        wrist = np.zeros((self.camera_height, self.camera_width, 3), dtype=np.uint8)
+        """Construct standard multi-modal observation dictionary with non-zero workspace pixels."""
+        agentview = np.full((self.camera_height, self.camera_width, 3), 128, dtype=np.uint8)
+        wrist = np.full((self.camera_height, self.camera_width, 3), 64, dtype=np.uint8)
 
         return {
             "agentview_image": agentview,

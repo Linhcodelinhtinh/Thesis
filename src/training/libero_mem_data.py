@@ -20,6 +20,7 @@ import numpy as np
 
 from src.interfaces.libero_mem_text import LiberoMemTextRenderer
 from src.memory.event_writer import LiberoMemEventWriter
+from src.memory.libero_mem_oracle import LiberoMemOracleWriter
 from src.memory.models import SchemaV2EpisodeMemory
 
 
@@ -65,6 +66,7 @@ class LiberoMemDataProcessor:
         self.action_dim = action_dim
         self.obs_action_offset = obs_action_offset
         self.renderer = renderer if renderer is not None else LiberoMemTextRenderer(max_total_tokens=48)
+        self.oracle_renderer = LiberoMemTextRenderer(max_total_tokens=48, allow_oracle=True)
 
     def process_episode(
         self,
@@ -85,23 +87,48 @@ class LiberoMemDataProcessor:
         n_obs = len(observations)
         n_act = len(actions)
 
-        writer = LiberoMemEventWriter(
-            episode_id=episode_id,
-            target_object_id=target_object_id,
-            target_semantic_name=target_semantic_name,
-            origin_anchor=origin_anchor,
-            support_id=support_id,
-            support_semantic_name=support_semantic_name,
-        )
+        writer: Optional[LiberoMemEventWriter] = None
+        oracle_writer: Optional[LiberoMemOracleWriter] = None
+
+        if stream == MemoryStream.PREDICTED_MEMORY:
+            writer = LiberoMemEventWriter(
+                episode_id=episode_id,
+                target_object_id=target_object_id,
+                target_semantic_name=target_semantic_name,
+                origin_anchor=origin_anchor,
+                support_id=support_id,
+                support_semantic_name=support_semantic_name,
+            )
+        elif stream == MemoryStream.ORACLE_MEMORY:
+            oracle_writer = LiberoMemOracleWriter(
+                episode_id=episode_id,
+                target_object_id=target_object_id,
+                target_semantic_name=target_semantic_name,
+                origin_anchor=origin_anchor,
+                support_id=support_id,
+                support_semantic_name=support_semantic_name,
+            )
 
         samples: List[AlignedSample] = []
 
         for t in range(n_obs):
             obs_t = observations[t]
+            if not isinstance(obs_t, dict) or not obs_t:
+                raise ValueError(f"Observation at step {t} is empty or not a dictionary. Missing observation fabrication is strictly forbidden.")
+            if "robot0_eef_pos" not in obs_t or "robot0_gripper_qpos" not in obs_t:
+                raise ValueError(f"Observation at step {t} missing required robot state keys ('robot0_eef_pos', 'robot0_gripper_qpos').")
+
             last_action = actions[t - 1] if t > 0 and (t - 1) < n_act else None
 
-            # Step causal writer
-            memory_snapshot = writer.step(step=t, observation=obs_t, last_action=last_action)
+            # Step causal writer based on stream
+            memory_snapshot = None
+            if stream == MemoryStream.PREDICTED_MEMORY and writer is not None:
+                memory_snapshot = writer.step(step=t, observation=obs_t, last_action=last_action)
+            elif stream == MemoryStream.ORACLE_MEMORY and oracle_writer is not None:
+                oracle_signals = obs_t.get("oracle_signals")
+                if oracle_signals is None:
+                    raise ValueError(f"Step {t} lacks required 'oracle_signals' for MemoryStream.ORACLE_MEMORY")
+                memory_snapshot = oracle_writer.step(step=t, oracle_signals=oracle_signals)
 
             # Determine action slice
             act_start = t + self.obs_action_offset
@@ -128,7 +155,7 @@ class LiberoMemDataProcessor:
                 render_res = self.renderer.render(instruction, memory_snapshot, enabled=True)
                 has_mem = len(render_res.facts_included) > 0
             else:  # ORACLE_MEMORY
-                render_res = self.renderer.render(instruction, memory_snapshot, enabled=True)
+                render_res = self.oracle_renderer.render(instruction, memory_snapshot, enabled=True)
                 has_mem = len(render_res.facts_included) > 0
 
             # Robot state vector [gripper(2), eef_pos(3), eef_quat(4)]

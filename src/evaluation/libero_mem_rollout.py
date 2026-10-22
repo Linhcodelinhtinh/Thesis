@@ -117,14 +117,19 @@ class LiberoMemRolloutRunner:
             active_prompt = render_res.text
             prompt_history.append(active_prompt)
 
-            # 3. Query policy
+            # 3. Query policy (fail-fast: mock/fallback execution strictly forbidden)
             t_policy_start = time.perf_counter()
-            if hasattr(self.policy, "predict_action_chunk"):
-                chunk = self.policy.predict_action_chunk(obs, active_prompt)
-            else:
-                # Fallback for dummy/mock policy during test
-                chunk = np.zeros((50, 7), dtype=np.float32)
-                chunk[:, -1] = -1.0  # open gripper by default
+            if not hasattr(self.policy, "predict_action_chunk") or not callable(self.policy.predict_action_chunk):
+                raise TypeError(
+                    f"Policy adapter {type(self.policy).__name__} does not implement callable 'predict_action_chunk'. "
+                    "Mock or fallback execution is strictly forbidden in benchmark runs per AGENTS.md Rule 2."
+                )
+            chunk = self.policy.predict_action_chunk(obs, active_prompt)
+            if not isinstance(chunk, np.ndarray) or chunk.shape != (50, 7) or not np.isfinite(chunk).all():
+                raise ValueError(
+                    f"Invalid action chunk returned by policy: shape={getattr(chunk, 'shape', None)}, "
+                    f"finite={np.isfinite(chunk).all() if isinstance(chunk, np.ndarray) else False}"
+                )
             t_policy_end = time.perf_counter()
             latencies_ms.append((t_policy_end - t_policy_start) * 1000.0)
 

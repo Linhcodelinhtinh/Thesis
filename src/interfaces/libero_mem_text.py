@@ -2,18 +2,20 @@
 
 Adheres strictly to docs/V2_LIBERO_MEM_IMPLEMENTATION_PLAN.md Section 7:
 - Deterministic English phrasing for cycle counts, in-progress cycles, and relations.
-- Strict 48-token total budget (instruction + memory).
-- Instruction is NEVER truncated; if budget exceeded, memory facts are dropped cleanly.
-- Exact pass-through when memory is empty, disabled, or no facts are confirmed.
+- Strict token budgeting with exact pass-through when disabled or no-memory.
+- Qualifies incomplete history (never falsely claims zero times when history is unknown).
+- Preserves object and container identities across instances (e.g. basket A vs basket B).
+- Enforces causal filtering: facts available after snapshot.as_of_observation are ignored.
+- Enforces privilege gate: oracle-sourced events are excluded unless allow_oracle=True.
 - Returns comprehensive RenderResult audit metadata.
 """
 
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from src.interfaces.text_memory import RenderResult
 from src.memory.models import (
     CycleCounter,
+    EvidenceSource,
     ObjectIdentity,
     RelationFact,
     RelationStatus,
@@ -34,6 +36,11 @@ def _number_to_word(n: int) -> str:
     return words.get(n, f"{n} times")
 
 
+def _format_entity_name(raw_name: str) -> str:
+    """Format entity identifier cleanly preserving identity (e.g. basket_A -> basket A)."""
+    return raw_name.replace("_", " ").strip()
+
+
 class LiberoMemTextRenderer:
     """Renders Schema V2 memory into grounded, token-budgeted prompt additions."""
 
@@ -42,15 +49,17 @@ class LiberoMemTextRenderer:
         max_total_tokens: int = 48,
         tokenizer: Optional[Any] = None,
         strict_tokenizer: bool = False,
+        allow_oracle: bool = False,
     ) -> None:
         if max_total_tokens < 1:
             raise ValueError("max_total_tokens must be positive")
         self.max_total_tokens = max_total_tokens
         self.tokenizer = tokenizer
         self.strict_tokenizer = strict_tokenizer
+        self.allow_oracle = allow_oracle
 
     def count_tokens(self, text: str) -> int:
-        """Count tokens using tokenizer if provided, else accurate whitespace/subword estimate."""
+        """Count tokens using tokenizer if provided, else accurate estimate."""
         if self.tokenizer is not None:
             if hasattr(self.tokenizer, "encode"):
                 return len(self.tokenizer.encode(text, add_special_tokens=False))
@@ -62,7 +71,6 @@ class LiberoMemTextRenderer:
                     return len(res)
         if self.strict_tokenizer:
             raise ValueError("strict_tokenizer requires a valid Hugging Face tokenizer instance")
-        # Approximate tokenizer token count (~1.3 tokens per word)
         words = text.strip().split()
         if not words:
             return 0
@@ -75,20 +83,23 @@ class LiberoMemTextRenderer:
         enabled: bool = True,
     ) -> RenderResult:
         """Render memory string appended to instruction within max_total_tokens."""
-        clean_instruction = instruction.strip()
-        instr_tokens = self.count_tokens(clean_instruction)
+        instr_tokens = self.count_tokens(instruction)
+        if instr_tokens > self.max_total_tokens:
+            raise ValueError(
+                f"Instruction length ({instr_tokens} tokens) exceeds total token budget ({self.max_total_tokens})"
+            )
 
-        # Exact pass-through if disabled or no memory
+        # Exact pass-through if disabled or no memory (do NOT modify instruction string)
         if not enabled or memory is None:
             return RenderResult(
-                text=clean_instruction,
+                text=instruction,
                 truncated=False,
                 total_facts_considered=0,
                 included_facts_count=0,
                 dropped_facts_count=0,
                 dropped_facts=(),
                 rendered_context_chars=0,
-                budget_chars=len(clean_instruction),
+                budget_chars=len(instruction),
                 rendered_context_tokens=0,
                 budget_tokens=self.max_total_tokens,
                 token_truncated=False,
@@ -97,25 +108,51 @@ class LiberoMemTextRenderer:
                 facts_included=(),
             )
 
+        as_of = memory.as_of_observation
+
+        # Build map of allowed event IDs
+        allowed_event_ids: Set[str] = set()
+        for ev in memory.events:
+            # Causal check: event must be available at or before as_of
+            if ev.available_at > as_of:
+                continue
+            # Privilege check: exclude oracle events unless allow_oracle is set
+            if ev.source == EvidenceSource.ORACLE_SIMULATOR and not self.allow_oracle:
+                continue
+            allowed_event_ids.add(ev.id)
+
         facts_considered: List[str] = []
 
         # 1. Cycle facts
         for cycle_key, cycle in memory.cycles.items():
+            # Check history completeness
+            if not memory.history_complete or not cycle.history_complete:
+                facts_considered.append("cycle history incomplete; completed count unknown.")
+                continue
+
+            # Check if cycle event is allowed
+            has_valid_event = True
+            if cycle.event_ids:
+                has_valid_event = any(eid in allowed_event_ids for eid in cycle.event_ids)
+
+            if not has_valid_event and cycle.confirmed > 0:
+                # Cycle references future or disallowed oracle event
+                continue
+
             if cycle.uncertain_count > 0:
-                confirmed_str = _number_to_word(cycle.confirmed)
                 fact = f"{cycle.confirmed} returns confirmed; {cycle.uncertain_count} later return uncertain."
             else:
                 n_str = _number_to_word(cycle.confirmed)
                 progress_str = "one cycle in progress" if cycle.in_progress else "no cycle in progress"
-                obj_name = cycle.object_id.split("_")[0]
+                obj_name = _format_entity_name(cycle.object_id)
                 fact = f"{obj_name} returned to its original support {n_str}; {progress_str}."
             facts_considered.append(fact)
 
         # 2. Containment / Occlusion facts
         for obj_id, obj in memory.objects.items():
             if obj.last_confirmed_in is not None:
-                short_name = obj_id.split("_")[0]
-                container = obj.last_confirmed_in.split("_")[0]
+                short_name = _format_entity_name(obj_id)
+                container = _format_entity_name(obj.last_confirmed_in)
                 if obj.visibility == VisibilityStatus.OCCLUDED:
                     facts_considered.append(f"{short_name} was placed in {container}; {short_name} is now hidden.")
                 else:
@@ -124,14 +161,14 @@ class LiberoMemTextRenderer:
         # If no facts considered, return exact pass-through
         if not facts_considered:
             return RenderResult(
-                text=clean_instruction,
+                text=instruction,
                 truncated=False,
                 total_facts_considered=0,
                 included_facts_count=0,
                 dropped_facts_count=0,
                 dropped_facts=(),
                 rendered_context_chars=0,
-                budget_chars=len(clean_instruction),
+                budget_chars=len(instruction),
                 rendered_context_tokens=0,
                 budget_tokens=self.max_total_tokens,
                 token_truncated=False,
@@ -143,11 +180,12 @@ class LiberoMemTextRenderer:
         # Build candidate memory strings with budget checking
         included_facts: List[str] = []
         dropped_facts: List[str] = []
+        base_text = instruction.rstrip()
 
         for fact in facts_considered:
             test_facts = list(included_facts) + [fact]
             test_memory_str = " Memory: " + " ".join(test_facts)
-            candidate_text = clean_instruction + test_memory_str
+            candidate_text = base_text + test_memory_str
             total_toks = self.count_tokens(candidate_text)
 
             if total_toks <= self.max_total_tokens:
@@ -156,16 +194,15 @@ class LiberoMemTextRenderer:
                 dropped_facts.append(fact)
 
         if not included_facts:
-            # Memory could not fit within budget; preserve instruction untouched
             return RenderResult(
-                text=clean_instruction,
+                text=instruction,
                 truncated=True,
                 total_facts_considered=len(facts_considered),
                 included_facts_count=0,
                 dropped_facts_count=len(dropped_facts),
                 dropped_facts=tuple(dropped_facts),
                 rendered_context_chars=0,
-                budget_chars=len(clean_instruction),
+                budget_chars=len(instruction),
                 rendered_context_tokens=0,
                 budget_tokens=self.max_total_tokens,
                 token_truncated=True,
@@ -175,7 +212,7 @@ class LiberoMemTextRenderer:
             )
 
         final_memory_text = " Memory: " + " ".join(included_facts)
-        final_full_text = clean_instruction + final_memory_text
+        final_full_text = base_text + final_memory_text
         final_total_tokens = self.count_tokens(final_full_text)
         final_memory_tokens = self.count_tokens(final_memory_text.strip())
 

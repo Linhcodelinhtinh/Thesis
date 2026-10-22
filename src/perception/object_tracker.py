@@ -141,21 +141,55 @@ class CausalObjectTracker:
         else:
             gripper_command_close = gripper_closed
 
-        # Estimate object location:
-        # If object is explicitly detected in observation (e.g. from vision/perceptor), use it.
-        # Otherwise, estimate via kinematics: if held, moves with EEF; if resting, remains on support.
+        # Grounding evidence check:
+        # Object location must be supported by detection/segmentation or verified grasp
         detected_pos = observation.get("detected_objects", {}).get(self.target_object_id)
-        if detected_pos is not None:
+        has_grounding_evidence = detected_pos is not None
+
+        if has_grounding_evidence:
             current_obj_pos = np.asarray(detected_pos, dtype=np.float32)
             self.target.visibility = VisibilityStatus.VISIBLE
+            self.target.identity_status = IdentityStatus.TRACKED
+            evidence_id = f"obs_{step}_{self.target_object_id}_detected"
         elif self.target.is_held:
+            # If held, object position updates with gripper only if held was previously confirmed
             current_obj_pos = eef_pos.copy()
             self.target.visibility = VisibilityStatus.VISIBLE
+            has_grounding_evidence = True
+            evidence_id = f"obs_{step}_{self.target_object_id}_kinematic_held"
         else:
-            current_obj_pos = self.target.last_known_pos.copy() if self.target.last_known_pos is not None else self.support_pos.copy()
+            # No visual or kinematic evidence: object cannot be confirmed
+            current_obj_pos = self.support_pos.copy()
+            self.target.visibility = VisibilityStatus.UNKNOWN
+            self.target.identity_status = IdentityStatus.UNKNOWN
+            evidence_id = None
 
         self.target.last_known_pos = current_obj_pos.copy()
         self.target.last_observed_step = step
+
+        if not has_grounding_evidence:
+            self.target.consecutive_on_support_steps = 0
+            self.target.consecutive_departed_steps = 0
+            self.target.consecutive_held_steps = 0
+            return {
+                "step": step,
+                "eef_pos": eef_pos,
+                "gripper_gap": gripper_gap,
+                "gripper_closed": gripper_closed,
+                "object_pos": current_obj_pos,
+                "support_pos": self.support_pos,
+                "dist_xy": 0.0,
+                "dist_z": 0.0,
+                "has_grounding_evidence": False,
+                "evidence_id": None,
+                "raw_on_support": False,
+                "raw_held": False,
+                "is_held": False,
+                "is_departed_candidate": False,
+                "is_return_candidate": False,
+                "consecutive_on_support": 0,
+                "consecutive_departed": 0,
+            }
 
         # Compute distance to support
         d_xy = float(np.linalg.norm(current_obj_pos[:2] - self.support_pos[:2]))

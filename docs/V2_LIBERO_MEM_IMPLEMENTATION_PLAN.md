@@ -4,6 +4,9 @@ Ngày: **22/10/2026**. Trạng thái: **implementation plan đề xuất; chưa 
 Rà soát working tree tại commit `79777de39befd8d426389ea636bd59d4ece7e17c` cùng nguồn tác giả đã pin ở §2.
 Các ngưỡng nghiệm thu và cấu hình training bên dưới là lựa chọn nghiên cứu ban đầu, không phải kết quả đo hoặc cấu hình mặc định của benchmark.
 
+> Trạng thái code tại `ac584d2`: xem [audit non-training ngày 22/10/2026](V2_LIBERO_MEM_COMPLETENESS_AUDIT_2026-10-22.md).
+> Việc các file dự kiến đã tồn tại chưa đồng nghĩa các gate của plan đã hoàn tất.
+
 ## 1. Quyết định và phạm vi thesis
 
 **Hướng chính: fine-tune cùng checkpoint SmolVLA-LIBERO trên dữ liệu trộn LIBERO base + subset LIBERO-Mem, với memory causal được tạo bởi writer có thể chạy online.** Huấn luyện một đối chứng no-memory trên chính các demonstration đó. Bắt đầu bằng T1 và T3; chỉ mở rộng sang identity/occlusion sau khi writer đếm chu kỳ đạt yêu cầu.

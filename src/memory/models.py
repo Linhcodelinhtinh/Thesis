@@ -3,7 +3,8 @@
 from dataclasses import dataclass
 from enum import Enum
 import math
-from typing import Any, Dict, Optional, Tuple
+from types import MappingProxyType
+from typing import Any, Dict, Mapping, Optional, Tuple
 
 
 class EvidenceSource(str, Enum):
@@ -406,6 +407,7 @@ class V2MemoryEvent:
             "probability": self.probability,
             "supersedes": self.supersedes,
             "evidence_ids": list(self.evidence_ids),
+            "details": self.details,
         }
 
 
@@ -417,9 +419,9 @@ class SchemaV2EpisodeMemory:
     as_of_observation: int
     last_consumed_action: int
     history_complete: bool
-    objects: Dict[str, ObjectIdentity]
+    objects: Mapping[str, ObjectIdentity]
     relations: Tuple[RelationFact, ...]
-    cycles: Dict[str, CycleCounter]
+    cycles: Mapping[str, CycleCounter]
     events: Tuple[V2MemoryEvent, ...]
     schema_version: int = 2
 
@@ -430,6 +432,22 @@ class SchemaV2EpisodeMemory:
             raise ValueError("last_consumed_action cannot be less than -1")
         if self.last_consumed_action > self.as_of_observation:
             raise ValueError("last_consumed_action cannot exceed as_of_observation")
+
+        # Causal temporal guard: no facts or events may be available after as_of_observation
+        for ev in self.events:
+            if ev.available_at > self.as_of_observation:
+                raise ValueError(
+                    f"Causal violation: event {ev.id} available_at ({ev.available_at}) exceeds snapshot as_of_observation ({self.as_of_observation})"
+                )
+        for rel in self.relations:
+            if rel.available_at > self.as_of_observation:
+                raise ValueError(
+                    f"Causal violation: relation {rel.subject}-{rel.predicate} available_at ({rel.available_at}) exceeds snapshot as_of_observation ({self.as_of_observation})"
+                )
+
+        # Enforce snapshot immutability
+        object.__setattr__(self, "objects", MappingProxyType(dict(self.objects)))
+        object.__setattr__(self, "cycles", MappingProxyType(dict(self.cycles)))
 
     def to_dict(self) -> Dict[str, Any]:
         return {
