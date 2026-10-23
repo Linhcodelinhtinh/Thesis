@@ -13,7 +13,7 @@ def main():
     args = p.parse_args()
     files = list((ROOT / "src").rglob("*.py"))
     files += [ROOT / "scripts" / name for name in (
-        "prepare_memory_sft.py", "train_memory_sft.py", "memory_sft_assets.py",
+        "prepare_memory_sft.py", "prepare_libero_mem_sft.py", "train_memory_sft.py", "memory_sft_assets.py",
         "kaggle_memory_sft.sh", "package_memory_sft.py", "validate_memory_sft_export.py")]
     files += [ROOT / name for name in (
         "envs/kaggle_memory_sft.txt", "resources/manifests/models/smolvla_libero.yaml",
@@ -21,7 +21,7 @@ def main():
         "notebooks/kaggle_memory_sft.ipynb")]
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(out, "x", compression=zipfile.ZIP_DEFLATED) as z:
+    with zipfile.ZipFile(out, "w", compression=zipfile.ZIP_DEFLATED) as z:
         for path in sorted(files):
             z.write(path, path.relative_to(ROOT))
     print(out.resolve())

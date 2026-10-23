@@ -15,8 +15,18 @@ export HF_HUB_DISABLE_XET=1
 
 case "${1:-help}" in
   install)
-    python -c 'import sys; assert (3,10) <= sys.version_info[:2] < (3,13), "Use Python 3.10-3.12 for the pinned training stack"'
-    python -m venv "$TRAIN_ENV"
+    python -c 'import sys; assert (3,10) <= sys.version_info[:2] < (3,14), "Use Python 3.10-3.14 for the pinned training stack"'
+    rm -rf "$TRAIN_ENV"
+    if command -v virtualenv >/dev/null 2>&1; then
+      virtualenv "$TRAIN_ENV"
+    elif python -m virtualenv --version >/dev/null 2>&1; then
+      python -m virtualenv "$TRAIN_ENV"
+    else
+      python -m venv --without-pip "$TRAIN_ENV"
+      curl -sSL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
+      "$TRAIN_ENV/bin/python" /tmp/get-pip.py --no-warn-script-location
+      rm -f /tmp/get-pip.py
+    fi
     "$TRAIN_ENV/bin/python" -m pip install --upgrade 'pip==25.2'
     "$TRAIN_ENV/bin/python" -m pip install 'torch==2.7.1' 'torchvision==0.22.1' --index-url https://download.pytorch.org/whl/cu118
     "$TRAIN_ENV/bin/python" -m pip install -r envs/kaggle_memory_sft.txt
