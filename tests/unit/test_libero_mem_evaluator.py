@@ -12,6 +12,8 @@ def test_evaluator_subgoal_completion_rate():
         task_name="T1",
         target_cycles=1,
         dwell_steps=2,
+        live_time_threshold=1,
+        nonlive_time_threshold=1,
     )
     assert len(evaluator.subgoals) == 1  # 1 sequential On goal for T1
 
@@ -45,6 +47,9 @@ def test_evaluator_multi_cycle_and_overshoot():
         task_name="T3",
         target_cycles=3,
         dwell_steps=2,
+        live_time_threshold=0,
+        nonlive_time_threshold=0,
+        overshoot_threshold=0,
     )
     assert len(evaluator.subgoals) == 3  # 3 sequential On goals for T3
 

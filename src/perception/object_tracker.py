@@ -151,17 +151,13 @@ class CausalObjectTracker:
             self.target.visibility = VisibilityStatus.VISIBLE
             self.target.identity_status = IdentityStatus.TRACKED
             evidence_id = f"obs_{step}_{self.target_object_id}_detected"
-        elif self.target.is_held:
-            # If held, object position updates with gripper only if held was previously confirmed
-            current_obj_pos = eef_pos.copy()
-            self.target.visibility = VisibilityStatus.VISIBLE
-            has_grounding_evidence = True
-            evidence_id = f"obs_{step}_{self.target_object_id}_kinematic_held"
         else:
-            # No visual or kinematic evidence: object cannot be confirmed
-            current_obj_pos = self.support_pos.copy()
+            # Missing detection cannot confirm physical presence or return.
+            # Kinematic extrapolation via EEF is strictly forbidden from acting as grounding evidence.
+            has_grounding_evidence = False
             self.target.visibility = VisibilityStatus.UNKNOWN
             self.target.identity_status = IdentityStatus.UNKNOWN
+            current_obj_pos = eef_pos.copy() if self.target.is_held else self.support_pos.copy()
             evidence_id = None
 
         self.target.last_known_pos = current_obj_pos.copy()
@@ -235,6 +231,8 @@ class CausalObjectTracker:
             "support_pos": self.support_pos,
             "dist_xy": d_xy,
             "dist_z": d_z,
+            "has_grounding_evidence": has_grounding_evidence,
+            "evidence_id": evidence_id,
             "raw_on_support": raw_on_support,
             "raw_held": raw_held,
             "is_held": self.target.is_held,

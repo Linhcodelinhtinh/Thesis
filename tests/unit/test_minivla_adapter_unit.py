@@ -10,6 +10,14 @@ import numpy as np
 import pytest
 import torch
 
+try:
+    import transformers
+except (ImportError, Exception) as exc:
+    pytest.skip(
+        f"MiniVLA tests require compatible transformers (run in envs/minivla.yml): {exc}",
+        allow_module_level=True,
+    )
+
 from src.models.minivla.action_tokenizer import ExtraActionTokenizer
 from src.models.minivla.adapter import MiniVLAAdapter, MiniVLAVQAdapter
 from src.models.minivla.config import MiniVLAConfig

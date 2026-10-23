@@ -22,6 +22,7 @@ from src.interfaces.libero_mem_text import LiberoMemTextRenderer
 from src.memory.event_writer import LiberoMemEventWriter
 from src.memory.libero_mem_oracle import LiberoMemOracleWriter
 from src.memory.models import SchemaV2EpisodeMemory
+from src.training.libero_mem_hdf5_loader import DemonstrationEpisode, LiberoMemHDF5Parser
 
 
 class MemoryStream(str, Enum):
@@ -117,6 +118,11 @@ class LiberoMemDataProcessor:
                 raise ValueError(f"Observation at step {t} is empty or not a dictionary. Missing observation fabrication is strictly forbidden.")
             if "robot0_eef_pos" not in obs_t or "robot0_gripper_qpos" not in obs_t:
                 raise ValueError(f"Observation at step {t} missing required robot state keys ('robot0_eef_pos', 'robot0_gripper_qpos').")
+            if "agentview_image" not in obs_t or "robot0_eef_quat" not in obs_t:
+                raise ValueError(
+                    f"Observation at step {t} missing required keys ('agentview_image', 'robot0_eef_quat'). "
+                    "Fabricating dummy zero camera frames or default quaternions is strictly forbidden per AGENTS.md Rule 1."
+                )
 
             last_action = actions[t - 1] if t > 0 and (t - 1) < n_act else None
 

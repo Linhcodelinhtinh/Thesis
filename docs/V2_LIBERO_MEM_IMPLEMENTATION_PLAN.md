@@ -5,6 +5,7 @@ Rà soát working tree tại commit `79777de39befd8d426389ea636bd59d4ece7e17c` c
 Các ngưỡng nghiệm thu và cấu hình training bên dưới là lựa chọn nghiên cứu ban đầu, không phải kết quả đo hoặc cấu hình mặc định của benchmark.
 
 > Trạng thái code tại `ac584d2`: xem [audit non-training ngày 22/10/2026](V2_LIBERO_MEM_COMPLETENESS_AUDIT_2026-10-22.md).
+> Kiểm tra mới nhất: [re-audit 23/10/2026](V2_LIBERO_MEM_COMPLETENESS_AUDIT_2026-10-23.md), áp dụng cho `f9f5779` cùng working tree. Phần ngoài training vẫn chưa ready; đã có loader/data nhưng còn blocker writer, evaluator và runtime.
 > Việc các file dự kiến đã tồn tại chưa đồng nghĩa các gate của plan đã hoàn tất.
 
 ## 1. Quyết định và phạm vi thesis

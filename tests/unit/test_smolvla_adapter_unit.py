@@ -12,6 +12,20 @@ import torch
 from src.models.smolvla.adapter import SmolVLAAdapter
 
 
+def _transformers_available():
+    try:
+        import transformers
+        return True
+    except (ImportError, Exception):
+        return False
+
+
+requires_transformers = pytest.mark.skipif(
+    not _transformers_available(),
+    reason="Requires compatible transformers/huggingface-hub (run in envs/smolvla.yml)",
+)
+
+
 def test_smolvla_adapter_init_and_specs():
     adapter = SmolVLAAdapter(chunk_size=50, action_dim=7)
     assert adapter.chunk_size == 50
@@ -51,6 +65,7 @@ def test_smolvla_adapter_fails_fast_when_not_loaded():
         adapter.select_action(sample_obs, instruction="pick up can")
 
 
+@requires_transformers
 def test_smolvla_adapter_raw_feature_mapping():
     """Verify mapping of LIBERO obs to LeRobot format with 8D state and (3, 256, 256) images."""
     adapter = SmolVLAAdapter()
@@ -106,6 +121,7 @@ def test_smolvla_adapter_postprocess():
     assert info["is_loaded"] is False
 
 
+@requires_transformers
 def test_smolvla_adapter_mock_pipeline_execution():
     """Verify execution when official policy and processors are injected."""
     adapter = SmolVLAAdapter(chunk_size=5, action_dim=7)
@@ -146,6 +162,7 @@ def test_smolvla_adapter_mock_pipeline_execution():
     assert adapter.queue_size == 4
 
 
+@requires_transformers
 def test_smolvla_adapter_image_180_rotation():
     """Verify that agentview and wrist images are rotated 180 degrees ([::-1, ::-1])."""
     adapter = SmolVLAAdapter()

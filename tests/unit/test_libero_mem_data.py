@@ -15,6 +15,7 @@ def test_data_processor_offset_and_chunking():
     n_steps = 15
     observations = [
         {
+            "agentview_image": np.zeros((128, 128, 3), dtype=np.uint8),
             "robot0_eef_pos": np.array([0.0, 0.0, 0.85], dtype=np.float32),
             "robot0_gripper_qpos": np.array([0.04, 0.04], dtype=np.float32),
             "robot0_eef_quat": np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float32),
@@ -56,7 +57,9 @@ def test_data_processor_predicted_memory_stream():
     for step in range(10):
         z = 1.2 if 2 <= step <= 6 else 0.85
         obs = {
+            "agentview_image": np.zeros((128, 128, 3), dtype=np.uint8),
             "robot0_eef_pos": np.array([-0.05, 0.20, z], dtype=np.float32),
+            "robot0_eef_quat": np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float32),
             "robot0_gripper_qpos": np.array([0.01, 0.01] if 2 <= step <= 6 else [0.04, 0.04], dtype=np.float32),
             "detected_objects": {"bowl_A": np.array([-0.05, 0.20, z], dtype=np.float32)},
         }

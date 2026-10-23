@@ -1,0 +1,5 @@
+benchmark_root: D:/Thesis_26/external/libero-mem/libero/libero
+bddl_files: D:/Thesis_26/external/libero-mem/libero/libero/bddl_files
+init_states: D:/Thesis_26/external/libero-mem/libero/libero/init_files
+datasets: D:/Thesis_26/data/libero_mem
+assets: D:/Thesis_26/external/libero-mem/libero/libero/assets

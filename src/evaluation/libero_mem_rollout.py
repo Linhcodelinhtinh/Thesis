@@ -61,7 +61,13 @@ class LiberoMemRolloutRunner:
         self.condition = condition
         self.execution_horizon = execution_horizon
         self.max_steps = max_steps
-        self.renderer = renderer if renderer is not None else LiberoMemTextRenderer(max_total_tokens=48)
+        if renderer is not None:
+            self.renderer = renderer
+        else:
+            self.renderer = LiberoMemTextRenderer(
+                max_total_tokens=48,
+                allow_oracle=(condition == "O1"),
+            )
 
     def run_episode(
         self,
@@ -70,6 +76,9 @@ class LiberoMemRolloutRunner:
         initial_state_id: int = 0,
     ) -> RolloutResult:
         """Run a single closed-loop episode."""
+        if hasattr(self.policy, "reset") and callable(self.policy.reset):
+            self.policy.reset()
+
         obs = self.env.reset(initial_state_id=initial_state_id)
         start_time = time.perf_counter()
 
@@ -154,24 +163,20 @@ class LiberoMemRolloutRunner:
         avg_latency = float(np.mean(latencies_ms)) if latencies_ms else 0.0
 
         eval_res = info.get("eval_result")
-        if eval_res is not None:
-            success = eval_res.full_success
-            scr = eval_res.scr
-            completed_sg = eval_res.completed_subgoals
-            total_sg = eval_res.total_subgoals
-            overshot = eval_res.overshot
-            confirmed_cycles = eval_res.confirmed_cycles
-            target_cycles = eval_res.target_cycles
-            term_reason = eval_res.termination_reason
-        else:
-            success = False
-            scr = 0.0
-            completed_sg = 0
-            total_sg = 2
-            overshot = False
-            confirmed_cycles = 0
-            target_cycles = 1
-            term_reason = "timeout"
+        if eval_res is None:
+            raise RuntimeError(
+                f"Missing required 'eval_result' in environment step info for episode {episode_id}. "
+                "Synthesizing dummy timeout or falling back is strictly forbidden per AGENTS.md Rule 10."
+            )
+
+        success = eval_res.full_success
+        scr = eval_res.scr
+        completed_sg = eval_res.completed_subgoals
+        total_sg = eval_res.total_subgoals
+        overshot = eval_res.overshot
+        confirmed_cycles = eval_res.confirmed_cycles
+        target_cycles = eval_res.target_cycles
+        term_reason = eval_res.termination_reason
 
         return RolloutResult(
             episode_id=episode_id,

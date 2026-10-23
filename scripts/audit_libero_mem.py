@@ -59,6 +59,9 @@ def audit_evaluator_conformance() -> Dict[str, Any]:
         target_object="bowl",
         support_object="plate",
         dwell_steps=2,
+        live_time_threshold=0,
+        nonlive_time_threshold=0,
+        overshoot_threshold=0,
     )
 
     # Initially at rest
@@ -172,15 +175,46 @@ def audit_writer_fsm() -> Dict[str, Any]:
 
 
 def audit_upstream_environment() -> Dict[str, Any]:
-    """Check whether upstream LIBERO-Mem repository and assets are linked."""
+    """Check whether upstream LIBERO-Mem repository and assets are linked and validated."""
     upstream_dir = Path(__file__).resolve().parent.parent / "external" / "libero-mem"
     if not upstream_dir.exists():
         return {
-            "status": "NOT_RUN",
+            "status": "FAIL",
             "reason": "MISSING_UPSTREAM_CHECKOUT",
-            "details": "external/libero-mem not yet cloned. Upstream BDDL/MuJoCo integration pending.",
+            "details": "external/libero-mem not found. Upstream BDDL/MuJoCo integration pending.",
         }
-    return {"status": "PASS", "path": str(upstream_dir)}
+
+    # Verify canonical dataset assets
+    data_dir = Path(__file__).resolve().parent.parent / "data" / "libero_mem"
+    meta_path = data_dir / "metainfo.json"
+    t1_path = data_dir / "KITCHEN_SCENE1_1_pick_up_the_bowl_and_place_it_back_on_the_plate_demo.hdf5"
+    t3_path = data_dir / "KITCHEN_SCENE1_3_lift_the_bowl_and_place_it_back_on_the_plate_3_times_demo.hdf5"
+    if not (meta_path.exists() and t1_path.exists() and t3_path.exists()):
+        return {
+            "status": "FAIL",
+            "reason": "MISSING_PILOT_DATASETS",
+            "details": f"Missing required dataset files in {data_dir}.",
+        }
+
+    # Verify contract probes report
+    probe_results_path = Path(__file__).resolve().parent.parent / "experiments" / "audits" / "libero_mem_completeness_20261023" / "contract_results.json"
+    probes_passed = False
+    failed_count = 0
+    if probe_results_path.exists():
+        try:
+            results = json.loads(probe_results_path.read_text(encoding="utf-8"))
+            failed_count = results.get("failed", 0)
+            probes_passed = (failed_count == 0)
+        except Exception:
+            pass
+
+    return {
+        "status": "PASS" if probes_passed else "FAIL",
+        "path": str(upstream_dir),
+        "dataset_files": "verified",
+        "contract_probes_passed": probes_passed,
+        "failed_contract_probes": failed_count,
+    }
 
 
 def main():

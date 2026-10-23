@@ -8,6 +8,14 @@ Runs completely offline (< 1s).
 import numpy as np
 import pytest
 
+try:
+    import transformers
+except (ImportError, Exception) as exc:
+    pytest.skip(
+        f"MiniVLA tests require compatible transformers (run in envs/minivla.yml): {exc}",
+        allow_module_level=True,
+    )
+
 from src.models.minivla.adapter import MiniVLAVQAdapter
 from src.models.minivla.residual_vq import ResidualVQActionTokenizer
 from src.models.registry import get_model_class, list_models

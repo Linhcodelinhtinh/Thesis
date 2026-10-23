@@ -78,7 +78,10 @@ class LiberoMemOracleWriter:
         self._current_step = step
         self._last_consumed_action = step - 1 if step > 0 else -1
 
-        is_on_support = bool(oracle_signals.get("is_on_support", True))
+        if "is_on_support" not in oracle_signals:
+            raise KeyError("oracle_signals missing required ground truth key 'is_on_support'")
+
+        is_on_support = bool(oracle_signals["is_on_support"])
         is_held = bool(oracle_signals.get("is_held", False))
         
         if "container_id" in oracle_signals:
@@ -103,6 +106,7 @@ class LiberoMemOracleWriter:
                     details={"cycle_index": self.confirmed_cycles + 1},
                 )
             )
+            self._cycle_event_ids.append(evt_id)
             self._relations.append(
                 RelationFact(
                     subject=self.target_object_id,
@@ -163,6 +167,7 @@ class LiberoMemOracleWriter:
             visibility=VisibilityStatus.OCCLUDED if effective_occluded else VisibilityStatus.VISIBLE,
             current_location_desc=f"on {self.support_semantic_name}" if self._was_on_support else "displaced",
             last_confirmed_in=effective_container,
+            metadata={"source": EvidenceSource.ORACLE_SIMULATOR},
         )
 
         cycle_counter = CycleCounter(

@@ -293,6 +293,8 @@ class ObjectIdentity:
             raise TypeError("identity_status must be an IdentityStatus")
         if not isinstance(self.visibility, VisibilityStatus):
             raise TypeError("visibility must be a VisibilityStatus")
+        if self.metadata is not None:
+            object.__setattr__(self, "metadata", MappingProxyType(dict(self.metadata)))
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -396,6 +398,14 @@ class V2MemoryEvent:
             raise TypeError("source must be an EvidenceSource")
         if self.probability is not None:
             _require_confidence(self.probability)
+        if self.details is not None:
+            def _freeze(val: Any) -> Any:
+                if isinstance(val, dict):
+                    return MappingProxyType({k: _freeze(v) for k, v in val.items()})
+                if isinstance(val, (list, tuple)):
+                    return tuple(_freeze(v) for v in val)
+                return val
+            object.__setattr__(self, "details", _freeze(self.details))
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -407,7 +417,7 @@ class V2MemoryEvent:
             "probability": self.probability,
             "supersedes": self.supersedes,
             "evidence_ids": list(self.evidence_ids),
-            "details": self.details,
+            "details": dict(self.details) if self.details is not None else None,
         }
 
 

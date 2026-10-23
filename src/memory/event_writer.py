@@ -141,7 +141,9 @@ class LiberoMemEventWriter:
         observation: Dict[str, Any],
         last_action: Optional[np.ndarray] = None,
     ) -> SchemaV2EpisodeMemory:
-        """Process observation at step t, with executed action a_{t-1}."""
+        if step > 0 and (step - self._current_step > 1):
+            self.history_complete = False
+
         self._current_step = step
         self._last_consumed_action = step - 1 if step > 0 else -1
 
@@ -162,7 +164,8 @@ class LiberoMemEventWriter:
             )
 
         if not has_grounding:
-            # Without observation grounding, do not confirm transitions or cycles
+            # Without observation grounding, mark history incomplete and do not confirm transitions or cycles
+            self.history_complete = False
             return self.get_snapshot()
 
         is_departed = signals["is_departed_candidate"]

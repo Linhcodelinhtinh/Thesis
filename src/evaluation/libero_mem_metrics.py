@@ -65,12 +65,18 @@ class LiberoMemEvaluator:
         target_object: str = "bowl",
         support_object: str = "plate",
         dwell_steps: int = 2,
+        live_time_threshold: int = 5,
+        nonlive_time_threshold: int = 15,
+        overshoot_threshold: int = 5,
     ) -> None:
         self.task_name = task_name
         self.target_cycles = target_cycles
         self.target_object = target_object
         self.support_object = support_object
         self.dwell_steps = max(1, dwell_steps)
+        self.live_time_threshold = live_time_threshold
+        self.nonlive_time_threshold = nonlive_time_threshold
+        self.overshoot_threshold = overshoot_threshold
 
         self.subgoals = self._build_subgoal_definitions()
         self.reset()
@@ -93,13 +99,11 @@ class LiberoMemEvaluator:
 
     def reset(self) -> None:
         """Reset evaluation state for a new episode."""
-        self._current_subgoal_idx = 0
+        self._satisfied_subgoals: List[int] = []
         self._subgoal_timestamps: Dict[int, int] = {}
-        self._completed_cycles = 0
         self._overshot = False
-        self._consecutive_lifted = 0
-        self._consecutive_on_support = 0
-        self._cycle_departure_confirmed = False
+        self._sub_goal_live_time = 0
+        self._sub_goal_nonlive_time = 0
         self._step_count = 0
 
     def evaluate_step(
@@ -108,58 +112,55 @@ class LiberoMemEvaluator:
         is_on_support: bool,
         is_lifted: bool,
     ) -> SubgoalEvaluationResult:
-        """Process physical predicates at step t and advance sequence progress.
+        """Process physical predicates at step t matching official upstream _eval_goal semantics.
 
-        Strict interval and dwell semantics:
-        - To confirm departure/lift: object must be lifted and not on support for >= dwell_steps consecutive steps.
-        - To confirm return on support: object must have confirmed departure, then be on support and not lifted for >= dwell_steps consecutive steps.
-        - Overshoot: if all cycles are completed, another confirmed departure/lift triggers overshoot.
+        Upstream Sequence Goal Semantics:
+        - Subgoal completion requires predicate to hold for > live_time_threshold steps,
+          preceded by > nonlive_time_threshold steps off support (confirming genuine physical departure).
+        - If all subgoals are completed and the object remains off support for > overshoot_threshold steps,
+          overshoot is triggered (invalidating full success).
         """
         self._step_count = step
+        success = bool(is_on_support)
 
-        # Track consecutive dwell counts
-        if is_lifted and not is_on_support:
-            self._consecutive_lifted += 1
-            self._consecutive_on_support = 0
-        elif is_on_support and not is_lifted:
-            self._consecutive_on_support += 1
-            self._consecutive_lifted = 0
-        else:
-            self._consecutive_lifted = 0
-            self._consecutive_on_support = 0
-
-        # Subgoal progression
-        if self._current_subgoal_idx < len(self.subgoals):
-            # Phase 1: Wait for confirmed departure / lift
-            if not self._cycle_departure_confirmed:
-                if self._consecutive_lifted >= self.dwell_steps:
-                    self._cycle_departure_confirmed = True
-
-            # Phase 2: If departure is confirmed, wait for confirmed return on support
+        if self._overshot:
+            full_success = False
+        elif success:
+            if len(self._satisfied_subgoals) >= self.target_cycles:
+                # All subgoals in sequence already satisfied; reset nonlive counter
+                self._sub_goal_nonlive_time = 0
+                full_success = True
+            elif self._sub_goal_live_time > self.live_time_threshold and self._sub_goal_nonlive_time > self.nonlive_time_threshold:
+                # Upstream transition: reset counters and append satisfied subgoal
+                self._sub_goal_live_time = 0
+                self._sub_goal_nonlive_time = 0
+                sg_idx = len(self._satisfied_subgoals)
+                self._satisfied_subgoals.append(sg_idx)
+                self._subgoal_timestamps[sg_idx] = step
+                full_success = (len(self._satisfied_subgoals) >= self.target_cycles)
             else:
-                if self._consecutive_on_support >= self.dwell_steps:
-                    target_sg = self.subgoals[self._current_subgoal_idx]
-                    self._subgoal_timestamps[target_sg.index] = step
-                    self._current_subgoal_idx += 1
-                    self._completed_cycles += 1
-                    self._cycle_departure_confirmed = False  # Reset for next cycle
+                self._sub_goal_live_time += 1
+                full_success = False
         else:
-            # All target cycles completed; check for overshoot
-            if self._consecutive_lifted >= self.dwell_steps:
-                self._overshot = True
+            # Condition does not hold (e.g. object off support / lifted)
+            if len(self._satisfied_subgoals) >= self.target_cycles:
+                if self._sub_goal_nonlive_time > self.overshoot_threshold:
+                    self._overshot = True
+            self._sub_goal_nonlive_time += 1
+            full_success = False
 
-        full_success = (self._current_subgoal_idx == len(self.subgoals)) and not self._overshot
-        scr = self._current_subgoal_idx / len(self.subgoals) if self.subgoals else 0.0
+        completed_count = len(self._satisfied_subgoals)
+        scr = completed_count / len(self.subgoals) if self.subgoals else 0.0
 
         return SubgoalEvaluationResult(
             task_name=self.task_name,
             total_subgoals=len(self.subgoals),
-            completed_subgoals=self._current_subgoal_idx,
+            completed_subgoals=completed_count,
             scr=scr,
-            full_success=full_success,
+            full_success=full_success and not self._overshot,
             overshot=self._overshot,
-            confirmed_cycles=self._completed_cycles,
+            confirmed_cycles=completed_count,
             target_cycles=self.target_cycles,
             subgoal_timestamps=dict(self._subgoal_timestamps),
-            termination_reason="success" if full_success else ("overshot" if self._overshot else "in_progress"),
+            termination_reason="success" if (full_success and not self._overshot) else ("overshot" if self._overshot else "in_progress"),
         )

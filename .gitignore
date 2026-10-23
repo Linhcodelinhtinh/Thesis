@@ -22,11 +22,14 @@ ENV/
 # Datasets and demonstrations (downloaded on demand)
 resources/demonstrations/**/*.hdf5
 resources/demonstrations/.cache/
+data/
+external/
 
 # Experiment artifacts and videos
 experiments/results/
 experiments/training/
 experiments/audits/
+experiments/pilot_sft_test*/
 *.mp4
 *.avi
 *.webm

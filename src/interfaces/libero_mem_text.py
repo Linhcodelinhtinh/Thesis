@@ -134,8 +134,10 @@ class LiberoMemTextRenderer:
             has_valid_event = True
             if cycle.event_ids:
                 has_valid_event = any(eid in allowed_event_ids for eid in cycle.event_ids)
+            elif not self.allow_oracle and any(ev.source == EvidenceSource.ORACLE_SIMULATOR for ev in memory.events):
+                has_valid_event = False
 
-            if not has_valid_event and cycle.confirmed > 0:
+            if not has_valid_event and (cycle.confirmed > 0 or cycle.in_progress or not self.allow_oracle):
                 # Cycle references future or disallowed oracle event
                 continue
 
@@ -151,6 +153,9 @@ class LiberoMemTextRenderer:
         # 2. Containment / Occlusion facts
         for obj_id, obj in memory.objects.items():
             if obj.last_confirmed_in is not None:
+                is_oracle_obj = obj.metadata is not None and obj.metadata.get("source") == EvidenceSource.ORACLE_SIMULATOR
+                if is_oracle_obj and not self.allow_oracle:
+                    continue
                 short_name = _format_entity_name(obj_id)
                 container = _format_entity_name(obj.last_confirmed_in)
                 if obj.visibility == VisibilityStatus.OCCLUDED:
