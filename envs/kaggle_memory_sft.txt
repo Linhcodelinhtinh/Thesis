@@ -1,15 +1,11 @@
-# Dedicated Python 3.10-3.12 environment. Install CUDA torch/torchvision first (see launcher).
-# These are explicit training dependencies, not changes to the LIBERO simulation env.
-torch==2.7.1
-torchvision==0.22.1
-torchcodec==0.5
-lerobot[smolvla,peft]==0.4.4
-transformers==4.57.6
-accelerate==1.15.0
-peft==0.18.0
-huggingface-hub==0.35.3
-numpy==1.26.4
-h5py==3.16.0
-Pillow==11.3.0
-PyYAML==6.0.2
-pytest==8.4.2
+# Simplified Kaggle training dependencies.
+# Uses pre-installed PyTorch & CUDA in Kaggle environment directly.
+lerobot[smolvla,peft]>=0.4.0
+peft>=0.12.0
+accelerate>=0.34.0
+transformers>=4.48.0
+huggingface-hub>=0.25.0
+h5py>=3.10.0
+Pillow>=10.0.0
+PyYAML>=6.0
+pytest>=8.0.0
