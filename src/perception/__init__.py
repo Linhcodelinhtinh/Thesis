@@ -3,11 +3,11 @@
 from src.perception.object_tracker import (
     CausalObjectTracker,
     TrackedInstance,
-    TrackingObservation,
+    TrackerConfig,
 )
 
 __all__ = [
     "CausalObjectTracker",
     "TrackedInstance",
-    "TrackingObservation",
+    "TrackerConfig",
 ]

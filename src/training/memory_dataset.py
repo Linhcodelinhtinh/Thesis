@@ -48,7 +48,8 @@ class MemoryDataset(Dataset):
         actions, padding = action_window(segment, 0, self.horizon)
         return {"agentview": data["agentview_rgb"][t], "wrist": data["eye_in_hand_rgb"][t],
                 "robot": data["robot_states"][t], "task": prompt,
-                "action": torch.from_numpy(actions), "actions_id_pad": torch.from_numpy(padding)}
+                "action": torch.from_numpy(actions), "actions_id_pad": torch.from_numpy(padding),
+                "action_is_pad": torch.from_numpy(padding)}
 
 
 def collate_memory(samples):
@@ -62,6 +63,7 @@ def collate_memory(samples):
     for source, key in (("agentview", "observation.images.image"), ("wrist", "observation.images.image2")):
         raw[key] = torch.from_numpy(np.stack([_resize_rgb_image(s[source]) for s in samples])).permute(0, 3, 1, 2)
     batch = LiberoProcessorStep()._process_observation(raw)
+    pad_tensor = torch.stack([s["actions_id_pad"] for s in samples])
     batch.update(task=[s["task"] for s in samples], action=torch.stack([s["action"] for s in samples]),
-                 actions_id_pad=torch.stack([s["actions_id_pad"] for s in samples]))
+                 actions_id_pad=pad_tensor, action_is_pad=pad_tensor)
     return batch

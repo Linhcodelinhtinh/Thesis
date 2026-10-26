@@ -1,0 +1,14 @@
+# Dedicated perception environment; do not install into the simulator/model env.
+# Install torch/torchvision first from https://download.pytorch.org/whl/cu126
+torch==2.7.1
+torchvision==0.22.1
+transformers==4.51.3
+huggingface-hub==0.30.2
+tokenizers==0.21.1
+safetensors==0.5.3
+numpy==2.2.6
+scipy==1.15.2
+Pillow==11.2.1
+h5py==3.13.0
+ijson==3.3.0
+pytest==8.3.5

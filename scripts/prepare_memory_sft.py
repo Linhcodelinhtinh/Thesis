@@ -18,7 +18,10 @@ from src.training.memory_data import (
 def source_inventory(args):
     if args.source_lock:
         import yaml
-        lock = yaml.safe_load(Path(args.source_lock).read_text(encoding="utf-8"))
+        lock_path = Path(args.source_lock)
+        if not lock_path.is_file() and (ROOT / args.source_lock).is_file():
+            lock_path = ROOT / args.source_lock
+        lock = yaml.safe_load(lock_path.read_text(encoding="utf-8"))
         if lock["benchmark_provenance"]["pinned_commit"] != DATA_REVISION:
             raise ValueError("Source lock revision differs from audited author dataset")
         files = {f'{r["task_suite"]}/{r["task_name"]}_demo.hdf5': r["sha256"]
@@ -65,7 +68,7 @@ def prepare(args):
     manifest = {
         "schema_version": 1, "classification": "CUSTOM_V2_SFT_NOT_OFFICIAL_LIBERO_SCORE",
         "source_repository": DATA_REPO, "source_revision": DATA_REVISION,
-        "libero_revision": LIBERO_REVISION, "writer": "observation",
+        "libero_revision": LIBERO_REVISION, "writer": "observation_legacy_v1",
         "memory_code_sha256": code_hashes(ROOT), "tokenizer_repository": BACKBONE_REPO,
         "tokenizer_revision": BACKBONE_REVISION, "tokenizer_files_sha256": tokenizer_files,
         "alignment": "source obs[i] is post-action[i]; target starts at action[i+1]",
@@ -143,6 +146,8 @@ def prepare(args):
 
 
 def main():
+    print("NOTE: this base-LIBERO converter uses the legacy proprioception writer. "
+          "For the new T1/T3 RGB writer use prepare_libero_mem_sft.py; legacy memory is not validated training evidence.")
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--source-root", required=True)
     p.add_argument("--output-dir", required=True)

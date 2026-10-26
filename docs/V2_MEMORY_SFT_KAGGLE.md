@@ -1,5 +1,7 @@
 # V2 memory SFT trên Kaggle 2×T4
 
+> **Audit writer 26/10/2026:** [chẩn đoán book/caddy và bowl/drawer](MEMORY_WRITER_DIAGNOSIS_2026-10-26.md) tái hiện đúng 0/9.420 và 237/12.384 memory frames. Bowl chỉ có memory ở 2/50 demo, toàn bộ thuộc train; val/test không có memory. Writer hiện tại cần thiết kế lại evidence/event logic trước khi dùng dataset này để kết luận đóng góp của memory.
+
 > **Hướng phát triển LIBERO-Mem (22/10/2026):** xem
 > [implementation plan mới](V2_LIBERO_MEM_IMPLEMENTATION_PLAN.md) cho writer dựa trên
 > object/events, causal memory, mixed base replay và retention gates. Các lệnh bên dưới
@@ -219,3 +221,6 @@ Test fixture nhân tạo chỉ dùng trong unit tests, không phải benchmark d
 
 **Chưa chạy trên Kaggle 2×T4 hoặc toàn bộ dependency stack CUDA 11.8 đã pin; chưa đo success rate sau training.**
 Notebook yêu cầu chạy smoke trên đúng máy Kaggle trước long run. Checkpoint smoke chỉ dùng kiểm chứng pipeline.
+# Writer T1/T3 mới
+
+Writer RGB v3 và kết quả kiểm định nằm trong [MEMORY_WRITER_V3_T1_T3.md](MEMORY_WRITER_V3_T1_T3.md). Converter base `prepare_memory_sft.py` vẫn dùng `observation_legacy_v1`; không coi dataset cũ là output của writer mới. `prepare_libero_mem_sft.py` hiện xuất causal prompt index, chưa phải training shards cho notebook này.

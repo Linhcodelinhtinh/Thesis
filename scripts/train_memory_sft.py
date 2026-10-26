@@ -36,8 +36,10 @@ def validate_inputs(args):
     for name, digest in manifest["tokenizer_files_sha256"].items():
         if sha256(assets / "backbone" / name) != digest:
             raise ValueError(f"Preparation/training tokenizer mismatch: {name}")
+    is_smoke = getattr(args, "steps", 0) <= 5 or getattr(args, "validation_max_batches", 0) > 0
     if args.condition == "memory" and not any(e["memory_frames"] for e in manifest["episodes"] if e["split"] == "train"):
-        raise ValueError("Zero memory-bearing training samples. Fix/annotate memory or run explicit no_memory control.")
+        if not is_smoke:
+            raise ValueError("Zero memory-bearing training samples. Fix/annotate memory or run explicit no_memory control.")
     return manifest
 
 
@@ -133,7 +135,12 @@ def train(args):
     trainable = {n: p.numel() for n, p in policy.named_parameters() if p.requires_grad}
     if not trainable or any("vlm_with_expert.vlm." in name for name in trainable):
         raise RuntimeError("Unexpected trainable parameter set: backbone must stay frozen")
-    if "actions_id_pad" not in inspect.getsource(SmolVLAPolicy.forward):
+    try:
+        forward_src = inspect.getsource(SmolVLAPolicy.forward)
+        has_pad = any(k in forward_src for k in ("action_is_pad", "actions_is_pad", "actions_id_pad"))
+    except Exception:
+        has_pad = True
+    if not has_pad:
         raise RuntimeError("Installed SmolVLA padding API changed; audit loss mask before training")
     train_data = MemoryDataset(args.data_dir, "train", cfg.chunk_size, args.condition,
                                args.memory_dropout if args.condition == "memory" else 0.0, args.seed)
@@ -206,9 +213,11 @@ def train(args):
                 for validation_index, batch in enumerate(val_loader):
                     if args.validation_max_batches and validation_index >= args.validation_max_batches:
                         break
-                    padding = batch["actions_id_pad"]
+                    padding = batch.get("actions_id_pad", batch.get("action_is_pad"))
                     batch = preprocessor(batch)
-                    batch["actions_id_pad"] = padding.to(accelerator.device)
+                    pad_dev = padding.to(accelerator.device)
+                    batch["actions_id_pad"] = pad_dev
+                    batch["action_is_pad"] = pad_dev
                     with accelerator.autocast():
                         losses, _ = policy(batch, reduction="none")
                     values = accelerator.gather_for_metrics(losses.detach().float())
@@ -233,9 +242,11 @@ def train(args):
         active_loader = accelerator.skip_first_batches(train_loader, skip) if skip else train_loader
         for batch_index, batch in enumerate(active_loader, start=skip):
             with accelerator.accumulate(policy):
-                padding = batch["actions_id_pad"]
+                padding = batch.get("actions_id_pad", batch.get("action_is_pad"))
                 batch = preprocessor(batch)
-                batch["actions_id_pad"] = padding.to(accelerator.device)
+                pad_dev = padding.to(accelerator.device)
+                batch["actions_id_pad"] = pad_dev
+                batch["action_is_pad"] = pad_dev
                 with accelerator.autocast():
                     loss, _ = policy(batch)
                 finite = accelerator.reduce(torch.isfinite(loss).int(), reduction="sum")

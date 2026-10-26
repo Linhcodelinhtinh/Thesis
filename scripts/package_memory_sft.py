@@ -14,10 +14,15 @@ def main():
     files = list((ROOT / "src").rglob("*.py"))
     files += [ROOT / "scripts" / name for name in (
         "prepare_memory_sft.py", "prepare_libero_mem_sft.py", "train_memory_sft.py", "memory_sft_assets.py",
+        "replay_libero_mem_writer.py", "download_memory_detector.py", "audit_libero_mem_writer.py",
+        "memory_detector_worker.py",
         "kaggle_memory_sft.sh", "package_memory_sft.py", "validate_memory_sft_export.py")]
     files += [ROOT / name for name in (
         "envs/kaggle_memory_sft.txt", "resources/manifests/models/smolvla_libero.yaml",
+        "envs/memory_perception.txt", "resources/manifests/memory_perception_source.json",
+        "resources/manifests/libero_mem_planning_sources.json",
         "resources/manifests/libero_10_sft_sources.json", "docs/V2_MEMORY_SFT_KAGGLE.md",
+        "docs/MEMORY_WRITER_V3_T1_T3.md",
         "notebooks/kaggle_memory_sft.ipynb")]
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)

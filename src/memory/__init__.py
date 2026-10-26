@@ -22,12 +22,20 @@ from src.memory.models import (
     V2MemoryEvent,
     VisibilityStatus,
 )
-from src.memory.event_writer import LiberoMemEventWriter
 from src.memory.libero_mem_oracle import LiberoMemOracleWriter
 from src.memory.oracle_writer import OracleMemoryWriter
 from src.memory.retriever import DeterministicMemoryRetriever
 from src.memory.store import EpisodeMemoryStore
 from src.memory.updater import MemoryUpdater
+
+
+def __getattr__(name):
+    # Perception imports the schemas; avoid importing perception back while the
+    # package is still being initialized.
+    if name == "LiberoMemEventWriter":
+        from src.memory.event_writer import LiberoMemEventWriter
+        return LiberoMemEventWriter
+    raise AttributeError(name)
 
 __all__ = [
     "CycleCounter",

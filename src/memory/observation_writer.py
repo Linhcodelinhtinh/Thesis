@@ -1,4 +1,8 @@
-"""Stage B Observation-Derived Memory Writer.
+"""Legacy Stage B proprioception heuristic (observation_legacy_v1).
+
+Retained only for reproducing earlier experiments. This is NOT the RGB v3
+T1/T3 writer and its grasp/placement facts are not validated training evidence.
+See docs/MEMORY_WRITER_V3_T1_T3.md and src/memory/event_writer.py.
 
 Extracts physical events and object state estimates purely from runtime
 observations (proprioception, EEF kinematics, gripper states, actions)

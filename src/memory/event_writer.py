@@ -1,35 +1,16 @@
-"""FSM Cycle Counter and Schema V2 Event Writer.
+"""Causal, evidence-backed T1/T3 lift/return counter, independent of the goal.
 
-Adheres strictly to docs/V2_LIBERO_MEM_IMPLEMENTATION_PLAN.md Section 6.4:
-- FSM transitions:
-  support_observed -> departure_candidate -> departure_confirmed ->
-  return_candidate -> return_confirmed (count += 1) -> support_observed.
-- Confirmation hysteresis to reject debounce and sensor noise.
-- Strict causal timing: occurred_at (physical onset) vs available_at (confirmation step).
-- Isolated from simulator internals, oracle rewards, and evaluator subgoals.
+Counts are writer-confirmed visual estimates, not official contact truth.
 """
-
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
-
-from src.memory.models import (
-    CycleCounter,
-    EvidenceSource,
-    IdentityStatus,
-    ObjectIdentity,
-    RelationFact,
-    RelationStatus,
-    SchemaV2EpisodeMemory,
-    V2MemoryEvent,
-    VisibilityStatus,
-)
+from src.memory.models import (CycleCounter, EvidenceSource, ObjectIdentity,
+                               RelationFact, RelationStatus, SchemaV2EpisodeMemory, V2MemoryEvent)
 from src.perception.object_tracker import CausalObjectTracker
 
 
 class FSMState(str, Enum):
-    """Cycle FSM progression states."""
-
+    UNINITIALIZED = "uninitialized"
     SUPPORT_OBSERVED = "support_observed"
     DEPARTURE_CANDIDATE = "departure_candidate"
     DEPARTURE_CONFIRMED = "departure_confirmed"
@@ -38,241 +19,162 @@ class FSMState(str, Enum):
 
 
 class LiberoMemEventWriter:
-    """Online event writer and cycle counter tracking manipulation episodes."""
+    VERSION = "rgb_cycle_v3"
 
-    def __init__(
-        self,
-        episode_id: str,
-        target_object_id: str = "bowl_A",
-        target_semantic_name: str = "bowl",
-        origin_anchor: str = "bowl initially on the left plate",
-        support_id: str = "plate_A",
-        support_semantic_name: str = "plate",
-        tracker: Optional[CausalObjectTracker] = None,
-        dwell_steps: int = 3,
-    ) -> None:
+    def __init__(self, episode_id, target_object_id="bowl_A", target_semantic_name="bowl",
+                 origin_anchor="bowl on its initially observed plate", support_id="plate_A",
+                 support_semantic_name="plate", tracker=None, dwell_steps=3):
+        if dwell_steps < 2:
+            raise ValueError("dwell_steps must be at least 2")
         self.episode_id = episode_id
         self.target_object_id = target_object_id
-        self.target_semantic_name = target_semantic_name
         self.origin_anchor = origin_anchor
         self.support_id = support_id
-        self.support_semantic_name = support_semantic_name
+        self.cycle_key = f"{target_object_id}_{support_id}"
+        self.tracker = tracker if tracker is not None else CausalObjectTracker(
+            target_object_id, target_semantic_name, origin_anchor, support_id,
+            support_semantic_name, dwell_steps=dwell_steps)
         self.dwell_steps = dwell_steps
-
-        self.cycle_key = f"{self.target_object_id}_{self.support_id}"
-
-        self.tracker = (
-            tracker
-            if tracker is not None
-            else CausalObjectTracker(
-                target_object_id=self.target_object_id,
-                target_semantic_name=self.target_semantic_name,
-                origin_anchor=self.origin_anchor,
-                support_id=self.support_id,
-                support_semantic_name=self.support_semantic_name,
-                dwell_steps=self.dwell_steps,
-            )
-        )
-
-        self.fsm_state = FSMState.SUPPORT_OBSERVED
+        self.fsm_state = FSMState.UNINITIALIZED
         self.confirmed_cycles = 0
         self.in_progress = False
         self.history_complete = True
-        self.uncertain_count = 0
-
-        self._candidate_departure_step: Optional[int] = None
-        self._candidate_return_step: Optional[int] = None
-
-        self._events: List[V2MemoryEvent] = []
-        self._relations: List[RelationFact] = []
-        self._cycle_event_ids: List[str] = []
-
-        self._current_step = 0
+        self.uncertain_count = 0  # unobserved intervals, NOT inferred missed cycles
+        self._events = []
+        self._relations = []
+        self._cycle_event_ids = []
+        self._current_step = -1
         self._last_consumed_action = -1
+        self._candidate_kind = None
+        self._candidate_frames = []
+        self._in_gap = False
+        self._initialized = False
+        self.last_signals = None
 
-    def _add_relation(
-        self,
-        subject: str,
-        predicate: str,
-        obj: str,
-        status: RelationStatus,
-        occurred_at: int,
-        available_at: int,
-        evidence_ids: Tuple[str, ...],
-        supersedes: Optional[str] = None,
-    ) -> None:
-        fact = RelationFact(
-            subject=subject,
-            predicate=predicate,
-            object=obj,
-            status=status,
-            occurred_at=occurred_at,
-            available_at=available_at,
-            evidence_ids=evidence_ids,
-            supersedes=supersedes,
-        )
-        self._relations.append(fact)
-
-    def _add_event(
-        self,
-        event_type: str,
-        occurred_at: int,
-        available_at: int,
-        source: EvidenceSource = EvidenceSource.PREDICTED_RGB_TRACKER,
-        details: Optional[Dict[str, Any]] = None,
-        evidence_ids: Tuple[str, ...] = (),
-    ) -> str:
-        event_id = f"evt_{len(self._events) + 1}_{event_type}"
+    def _event(self, kind, frames, details=None):
+        evidence = tuple(dict.fromkeys(eid for _, ids in frames for eid in ids))
+        if not evidence:
+            raise ValueError("Confirmed event requires RGB evidence")
         event = V2MemoryEvent(
-            id=event_id,
-            type=event_type,
-            occurred_at=occurred_at,
-            available_at=available_at,
-            source=source,
-            details=details,
-            evidence_ids=evidence_ids,
+            id=f"{self.episode_id}:evt:{len(self._events)}:{kind}", type=kind,
+            occurred_at=frames[0][0], available_at=self._current_step,
+            source=EvidenceSource.PREDICTED_RGB_TRACKER, evidence_ids=evidence,
+            details=dict(details or {}, object_id=self.target_object_id, support_id=self.support_id,
+                         writer_version=self.VERSION, confirmation="visual_estimate"),
         )
         self._events.append(event)
-        return event_id
+        return event
 
-    def step(
-        self,
-        step: int,
-        observation: Dict[str, Any],
-        last_action: Optional[np.ndarray] = None,
-    ) -> SchemaV2EpisodeMemory:
-        if step > 0 and (step - self._current_step > 1):
-            self.history_complete = False
+    def _relation(self, event, status):
+        self._relations.append(RelationFact(
+            subject=self.target_object_id, predicate="on", object=self.support_id, status=status,
+            occurred_at=event.occurred_at, available_at=event.available_at,
+            evidence_ids=(event.id,) + event.evidence_ids,
+        ))
 
-        self._current_step = step
-        self._last_consumed_action = step - 1 if step > 0 else -1
+    def _clear_candidate(self):
+        self._candidate_kind = None
+        self._candidate_frames = []
 
+    def _dwell(self, kind, signals):
+        if self._candidate_kind != kind:
+            self._candidate_kind = kind
+            self._candidate_frames = []
+        self._candidate_frames.append((self._current_step, tuple(signals["evidence_ids"])))
+        return len(self._candidate_frames) >= self.dwell_steps
+
+    def step(self, step, observation, last_action=None, last_action_index=None):
+        if step < 0 or step <= self._current_step:
+            raise ValueError(f"Step out of order: {step} <= {self._current_step}")
+        if last_action is not None:
+            action = np.asarray(last_action)
+            if step == 0 or action.shape != (7,) or not np.isfinite(action).all():
+                raise ValueError("Only a finite, already executed 7D action may accompany a transition")
+            consumed = step - 1 if last_action_index is None else last_action_index
+            if not isinstance(consumed, (int, np.integer)) or not 0 <= consumed <= step:
+                raise ValueError("Invalid consumed action index")
+        else:
+            if last_action_index is not None:
+                raise ValueError("Action index supplied without an action")
+            consumed = -1
+        skipped = step != self._current_step + 1
         signals = self.tracker.update(step, observation, last_action)
-        has_grounding = signals.get("has_grounding_evidence", True)
-        evidence_id = signals.get("evidence_id") or f"obs_{step}_{self.target_object_id}"
-
-        # Ingest initial relation at step 0 only if supported by evidence
-        if step == 0 and has_grounding and signals.get("raw_on_support"):
-            self._add_relation(
-                subject=self.target_object_id,
-                predicate="on",
-                obj=self.support_id,
-                status=RelationStatus.CONFIRMED_BY_WRITER,
-                occurred_at=0,
-                available_at=0,
-                evidence_ids=(evidence_id,),
-            )
-
-        if not has_grounding:
-            # Without observation grounding, mark history incomplete and do not confirm transitions or cycles
+        self._current_step = step
+        self._last_consumed_action = int(consumed)
+        self.last_signals = signals
+        unknown = not signals["has_grounding_evidence"]
+        if skipped or unknown:
             self.history_complete = False
-            return self.get_snapshot()
-
-        is_departed = signals["is_departed_candidate"]
-        is_return = signals["is_return_candidate"]
-
-        # FSM Transition Logic
-        if self.fsm_state == FSMState.SUPPORT_OBSERVED:
+            if not self._in_gap:
+                self.uncertain_count += 1
+            self._in_gap = True
+            self._clear_candidate()
+            self.fsm_state = (FSMState.DEPARTURE_CONFIRMED if self.in_progress else
+                              FSMState.SUPPORT_OBSERVED if self._initialized else FSMState.UNINITIALIZED)
+            if unknown:
+                return self.get_snapshot()
+        self._in_gap = False
+        rest = signals["raw_on_support"] and signals["stable"] and signals["gripper_released"]
+        if not self._initialized:
             if not signals["raw_on_support"]:
+                # An unverified departure during initialization may contain a
+                # missed cycle; later acquisition cannot establish exact zero.
+                self.history_complete = False
+            if rest and self._dwell("initial_support", signals):
+                event = self._event("initial_support_observed", self._candidate_frames)
+                self._relation(event, RelationStatus.CONFIRMED_BY_WRITER)
+                self._initialized = True
+                self.fsm_state = FSMState.SUPPORT_OBSERVED
+                self._clear_candidate()
+            elif not rest:
+                self._clear_candidate()
+        elif not self.in_progress:
+            if signals["raw_lifted"]:
                 self.fsm_state = FSMState.DEPARTURE_CANDIDATE
-                self._candidate_departure_step = step
-
-        elif self.fsm_state == FSMState.DEPARTURE_CANDIDATE:
-            if is_departed:
-                self.fsm_state = FSMState.DEPARTURE_CONFIRMED
-                self.in_progress = True
-                occ = self._candidate_departure_step if self._candidate_departure_step is not None else step
-                evt_id = self._add_event(
-                    event_type="departed_support",
-                    occurred_at=occ,
-                    available_at=step,
-                    details={"cycle_index": self.confirmed_cycles + 1},
-                    evidence_ids=(evidence_id,),
-                )
-                self._add_relation(
-                    subject=self.target_object_id,
-                    predicate="on",
-                    obj=self.support_id,
-                    status=RelationStatus.RETRACTED,
-                    occurred_at=occ,
-                    available_at=step,
-                    evidence_ids=(evt_id, evidence_id),
-                )
-            elif signals["raw_on_support"]:
-                # Transient jitter; return to resting
+                if self._dwell("departure", signals):
+                    event = self._event("departed_support", self._candidate_frames)
+                    self._relation(event, RelationStatus.RETRACTED)
+                    self.in_progress = True
+                    self.fsm_state = FSMState.DEPARTURE_CONFIRMED
+                    self._clear_candidate()
+            else:
+                self._clear_candidate()
                 self.fsm_state = FSMState.SUPPORT_OBSERVED
-                self._candidate_departure_step = None
-
-        elif self.fsm_state == FSMState.DEPARTURE_CONFIRMED:
-            if signals["raw_on_support"]:
+        else:
+            if rest:
                 self.fsm_state = FSMState.RETURN_CANDIDATE
-                self._candidate_return_step = step
-
-        elif self.fsm_state == FSMState.RETURN_CANDIDATE:
-            if is_return:
-                self.fsm_state = FSMState.RETURN_CONFIRMED
-                self.confirmed_cycles += 1
-                self.in_progress = False
-
-                occ = self._candidate_return_step if self._candidate_return_step is not None else step
-                evt_id = self._add_event(
-                    event_type="returned_to_support",
-                    occurred_at=occ,
-                    available_at=step,
-                    details={"cycle_count": self.confirmed_cycles},
-                    evidence_ids=(evidence_id,),
-                )
-                self._cycle_event_ids.append(evt_id)
-
-                self._add_relation(
-                    subject=self.target_object_id,
-                    predicate="on",
-                    obj=self.support_id,
-                    status=RelationStatus.CONFIRMED_BY_WRITER,
-                    occurred_at=occ,
-                    available_at=step,
-                    evidence_ids=(evt_id, evidence_id),
-                )
-                # Rearm for next potential cycle
-                self.fsm_state = FSMState.SUPPORT_OBSERVED
-                self._candidate_departure_step = None
-                self._candidate_return_step = None
-            elif not signals["raw_on_support"]:
-                # Object left support again before dwell confirmed
+                if self._dwell("return", signals):
+                    self.confirmed_cycles += 1
+                    event = self._event("returned_to_support", self._candidate_frames,
+                                        {"cycle_count": self.confirmed_cycles})
+                    self._cycle_event_ids.append(event.id)
+                    self._relation(event, RelationStatus.CONFIRMED_BY_WRITER)
+                    self.in_progress = False
+                    self.fsm_state = FSMState.SUPPORT_OBSERVED
+                    self._clear_candidate()
+            else:
+                self._clear_candidate()
                 self.fsm_state = FSMState.DEPARTURE_CONFIRMED
-                self._candidate_return_step = None
-
         return self.get_snapshot()
 
-    def get_snapshot(self) -> SchemaV2EpisodeMemory:
-        """Produce immutable Schema V2 episodic memory snapshot as of current step."""
-        obj_identity = ObjectIdentity(
-            object_id=self.target_object_id,
-            origin_anchor=self.origin_anchor,
-            identity_status=self.tracker.target.identity_status,
-            visibility=self.tracker.target.visibility,
-            current_location_desc=f"on {self.support_semantic_name}" if self.fsm_state in (FSMState.SUPPORT_OBSERVED, FSMState.DEPARTURE_CANDIDATE) else "displaced",
-            last_confirmed_in=self.tracker.target.container_id,
+    def get_snapshot(self):
+        signals = self.last_signals or {}
+        location = None
+        if signals.get("has_grounding_evidence"):
+            location = "near original plate" if signals["raw_on_support"] else "away from original plate"
+        identity = ObjectIdentity(
+            self.target_object_id, self.origin_anchor, self.tracker.target.identity_status,
+            self.tracker.target.visibility, current_location_desc=location,
+            metadata={"source": EvidenceSource.PREDICTED_RGB_TRACKER.value, "writer_version": self.VERSION},
         )
-
-        cycle_counter = CycleCounter(
-            cycle_key=self.cycle_key,
-            object_id=self.target_object_id,
-            support_id=self.support_id,
-            confirmed=self.confirmed_cycles,
-            in_progress=self.in_progress,
-            history_complete=self.history_complete,
-            event_ids=tuple(self._cycle_event_ids),
-            uncertain_count=self.uncertain_count,
-        )
-
+        cycles = {}
+        if self._initialized:
+            cycles[self.cycle_key] = CycleCounter(
+                self.cycle_key, self.target_object_id, self.support_id, self.confirmed_cycles,
+                self.in_progress, self.history_complete, tuple(self._cycle_event_ids), self.uncertain_count,
+            )
         return SchemaV2EpisodeMemory(
-            episode_id=self.episode_id,
-            as_of_observation=self._current_step,
-            last_consumed_action=self._last_consumed_action,
-            history_complete=self.history_complete,
-            objects={self.target_object_id: obj_identity},
-            relations=tuple(self._relations),
-            cycles={self.cycle_key: cycle_counter},
-            events=tuple(self._events),
+            self.episode_id, max(0, self._current_step), self._last_consumed_action,
+            self.history_complete and self._current_step >= 0, {self.target_object_id: identity},
+            tuple(self._relations), cycles, tuple(self._events),
         )

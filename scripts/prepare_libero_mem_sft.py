@@ -1,157 +1,94 @@
 #!/usr/bin/env python
-"""CLI tool to prepare, align, and shard LIBERO-Mem demonstration data.
+"""Prepare a verified causal PROMPT INDEX for T1/T3; not model-training shards.
 
-Adheres strictly to docs/V2_LIBERO_MEM_IMPLEMENTATION_PLAN.md Section 8:
-- Applies exact observation-action offset (offset 0 for refined Mem data).
-- Generates causal memory streams: predicted_memory, oracle_memory, no_memory.
-- Enforces strict 48-token prompt ceiling without instruction truncation.
-- Splits trajectories deterministically by initial-state/episode hash.
-- Writes manifest.json and samples.jsonl.
+Runs the same RGB writer as online evaluation. The output retains HDF5 pointers,
+strict token counts, predictions and event traces. Fine-tuning/model image
+adaptation is deliberately separate. No mock episodes or heuristic oracle.
 """
-
 import argparse
+from dataclasses import asdict
 import json
-import logging
 from pathlib import Path
 import sys
-import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-
-from src.training.libero_mem_data import LiberoMemDataProcessor, LiberoMemHDF5Parser, MemoryStream
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-logger = logging.getLogger(__name__)
-
-
-def parse_args():
-    p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--output-dir", required=True, help="Directory to save shards and manifest")
-    p.add_argument("--data-dir", default=str(ROOT / "data" / "libero_mem"), help="Path to raw HDF5 directory")
-    p.add_argument("--task-name", default="KITCHEN_SCENE1_1_pick_up_the_bowl_and_place_it_back_on_the_plate", help="Task name or pattern")
-    p.add_argument("--stream", default="predicted_memory", choices=["predicted_memory", "oracle_memory", "no_memory"])
-    p.add_argument("--obs-action-offset", type=int, default=0, help="0 for Mem refined, 1 for Base raw")
-    p.add_argument("--chunk-size", type=int, default=50)
-    p.add_argument("--action-dim", type=int, default=7)
-    p.add_argument("--max-episodes", type=int, default=None, help="Max real episodes to process")
-    p.add_argument("--split", choices=["train", "val"], default=None, help="Filter by train or val split")
-    p.add_argument("--mock-episodes", type=int, default=0, help="Generate mock episodes for testing")
-    return p.parse_args()
+from scripts.replay_libero_mem_writer import TASKS, sha256, write_json
+from src.interfaces.libero_mem_text import LiberoMemTextRenderer
+from src.memory.visual_pipeline import load_prompt_tokenizer, visual_writer_factory, TOKENIZER_REVISION
+from src.perception.grounding_dino import GroundingDinoDetector
+from src.perception.object_tracker import TrackerConfig
+from src.training.libero_mem_hdf5_loader import LiberoMemHDF5Parser
 
 
 def main():
-    args = parse_args()
-    out_dir = Path(args.output_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    processor = LiberoMemDataProcessor(
-        chunk_size=args.chunk_size,
-        action_dim=args.action_dim,
-        obs_action_offset=args.obs_action_offset,
-    )
-
-    all_samples = []
-    task_name = args.task_name
-    episodes_count = 0
-    raw_hdf5_file = None
-
-    if args.mock_episodes > 0:
-        instruction = "pick up the bowl and place it back on the plate"
-        logger.info("Generating %d synthetic mock episodes for verification...", args.mock_episodes)
-        for ep_idx in range(args.mock_episodes):
-            ep_id = f"mock_{ep_idx:03d}"
-            observations = []
-            actions = np.zeros((20, args.action_dim), dtype=np.float32)
-
-            for step in range(20):
-                z_pos = 0.85 + (0.3 if 5 <= step <= 15 else 0.0)
-                obs = {
-                    "robot0_eef_pos": np.array([-0.05, 0.20, z_pos], dtype=np.float32),
-                    "robot0_gripper_qpos": np.array([0.01, 0.01] if 5 <= step <= 15 else [0.04, 0.04], dtype=np.float32),
-                    "robot0_eef_quat": np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float32),
-                    "detected_objects": {"bowl_A": np.array([-0.05, 0.20, z_pos], dtype=np.float32)},
-                    "oracle_signals": {
-                        "is_on_support": not (5 <= step <= 15),
-                        "is_held": (5 <= step <= 15),
-                        "container_id": "plate_A" if not (5 <= step <= 15) else None,
-                        "is_occluded": False,
-                    },
-                }
-                observations.append(obs)
-                actions[step, -1] = 1.0 if 5 <= step <= 15 else -1.0
-
-            ep_samples = processor.process_episode(
-                episode_id=ep_id,
-                instruction=instruction,
-                observations=observations,
-                actions=actions,
-                stream=args.stream,
-            )
-            all_samples.extend(ep_samples)
-        episodes_count = args.mock_episodes
-    else:
-        # Load from real HDF5 dataset
-        data_dir = Path(args.data_dir)
-        logger.info("Loading real HDF5 demonstrations from %s for task '%s'...", data_dir, task_name)
-        parser = LiberoMemHDF5Parser(data_dir=data_dir)
-        hdf5_path = parser.resolve_hdf5_path(task_name)
-        raw_hdf5_file = hdf5_path.name
-
-        episodes = parser.parse_task(
-            task_name=task_name,
-            max_episodes=args.max_episodes,
-            split_filter=args.split,
-        )
-        episodes_count = len(episodes)
-        logger.info("Parsing %d real demonstration episodes into aligned samples...", episodes_count)
-
-        for ep in episodes:
-            ep_samples = processor.process_episode(
-                episode_id=ep.episode_id,
-                instruction=ep.instruction,
-                observations=ep.observations,
-                actions=ep.actions,
-                stream=args.stream,
-            )
-            all_samples.extend(ep_samples)
-
-    # Save samples.jsonl
-    jsonl_path = out_dir / "samples.jsonl"
-    with open(jsonl_path, "w", encoding="utf-8") as f:
-        for s in all_samples:
-            row = {
-                "sample_id": s.sample_id,
-                "episode_id": s.episode_id,
-                "step": s.step,
-                "instruction": s.instruction,
-                "rendered_prompt": s.rendered_prompt,
-                "has_memory": s.has_memory,
-                "source_obs_idx": s.source_obs_idx,
-                "source_action_start_idx": s.source_action_start_idx,
-            }
-            f.write(json.dumps(row) + "\n")
-
-    # Save manifest.json
-    manifest = {
-        "suite": "libero_mem_pilot",
-        "task_name": task_name,
-        "raw_hdf5_file": raw_hdf5_file,
-        "memory_stream": args.stream,
-        "obs_action_offset": args.obs_action_offset,
-        "chunk_size": args.chunk_size,
-        "total_episodes": episodes_count,
-        "total_samples": len(all_samples),
-        "samples_with_memory": sum(1 for s in all_samples if s.has_memory),
-        "jsonl_file": str(jsonl_path.name),
-    }
-    with open(out_dir / "manifest.json", "w", encoding="utf-8") as f:
-        json.dump(manifest, f, indent=2)
-
-    logger.info("Wrote %d aligned samples to %s", len(all_samples), jsonl_path)
-    print(json.dumps(manifest, indent=2))
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--output-dir", type=Path, required=True)
+    p.add_argument("--data-dir", type=Path, default=ROOT / "data/libero_mem")
+    p.add_argument("--task-name", choices=list(TASKS.values()), required=True)
+    p.add_argument("--stream", choices=["predicted_memory", "no_memory"], default="predicted_memory")
+    p.add_argument("--tokenizer-path", type=Path, required=True)
+    p.add_argument("--model-dir", type=Path, default=ROOT / "resources/models/grounding-dino-tiny")
+    p.add_argument("--device", default="cuda")
+    p.add_argument("--max-episodes", type=int)
+    p.add_argument("--split", choices=["train", "val"])
+    args = p.parse_args()
+    out = args.output_dir
+    if out.exists():
+        raise FileExistsError(f"Refusing to overwrite prompt index: {out}")
+    lock = json.loads((ROOT / "resources/manifests/libero_mem_planning_sources.json").read_text(encoding="utf-8"))
+    inventory = {item["path"]: item["upstream_sha256"] for item in lock["annotated_dataset"]["selected_pilot_files"]}
+    filenames = [args.task_name + "_demo.hdf5", "metainfo.json"]
+    sources = {name: sha256(args.data_dir / name) for name in filenames}
+    for name, actual in sources.items():
+        if actual != inventory[name]:
+            raise ValueError(f"Unverified/corrupt source: {name}")
+    renderer = LiberoMemTextRenderer(tokenizer=load_prompt_tokenizer(args.tokenizer_path), strict_tokenizer=True)
+    detector = GroundingDinoDetector(args.model_dir, args.device) if args.stream == "predicted_memory" else None
+    config = TrackerConfig()
+    factory = visual_writer_factory(detector, "libero_mem_refined", config)
+    loader = LiberoMemHDF5Parser(args.data_dir)
+    out.mkdir(parents=True)
+    episodes, total, with_memory = [], 0, 0
+    with (out / "samples.jsonl").open("w", encoding="utf-8") as samples, \
+            (out / "memory_trace.jsonl").open("w", encoding="utf-8") as trace, \
+            (out / "detections.jsonl").open("w", encoding="utf-8") as predictions:
+        for episode in loader.iter_task(args.task_name, args.max_episodes, args.split):
+            writer = factory(episode.episode_id) if detector else None
+            count = 0
+            for t, observation in enumerate(episode.observations):
+                snapshot = writer.step(t, observation, episode.actions[t-1] if t else None) if writer else None
+                result = renderer.render(episode.instruction, snapshot, enabled=writer is not None)
+                has_memory = bool(result.facts_included)
+                count += has_memory
+                total += 1
+                samples.write(json.dumps(dict(episode_id=episode.episode_id, split=episode.split, step=t,
+                    source_hdf5=filenames[0], source_demo="demo_" + episode.episode_id.rsplit("_demo_", 1)[-1],
+                    source_obs_idx=t, source_action_start_idx=t, instruction=episode.instruction,
+                    rendered_prompt=result.text, has_memory=has_memory, tokens=result.total_tokens_with_instruction,
+                    skipped_reason=result.memory_skipped_reason)) + "\n")
+                if writer:
+                    trace.write(json.dumps(dict(episode_id=episode.episode_id, step=t, signals=writer.last_signals,
+                                               snapshot=snapshot.to_dict())) + "\n")
+                    predictions.write(json.dumps(dict(episode_id=episode.episode_id,
+                                                       evidence=writer.tracker.last_evidence.to_dict())) + "\n")
+            with_memory += count
+            episodes.append(dict(id=episode.episode_id, split=episode.split, frames=len(episode.actions),
+                                 memory_frames=count, confirmed_returns=writer.confirmed_cycles if writer else None,
+                                 history_complete=writer.history_complete if writer else None))
+            print(json.dumps(episodes[-1]), flush=True)
+    if not total:
+        raise ValueError("No episodes selected; no completed manifest was written")
+    write_json(out / "manifest.json", dict(artifact="causal_prompt_index_not_training_shards", status="complete",
+        writer="rgb_cycle_v3" if detector else "none", writer_config=asdict(config), stream=args.stream,
+        sources=sources, source_revision=lock["annotated_dataset"]["revision"],
+        detector=detector.provenance if detector else None, tokenizer_revision=TOKENIZER_REVISION,
+        obs_action_offset=0, image_convention="libero_mem_refined", max_total_tokens=48,
+        split_contract="same canonical initial state grouped across T1/T3; not official benchmark split",
+        episodes=episodes, total_samples=total, memory_frames=with_memory,
+        artifacts_sha256={name: sha256(out / name) for name in ("samples.jsonl", "memory_trace.jsonl", "detections.jsonl")}))
+    print(f"Indexed {total} samples; {with_memory} with memory. Coverage is not event accuracy.")
 
 
 if __name__ == "__main__":
     main()
-

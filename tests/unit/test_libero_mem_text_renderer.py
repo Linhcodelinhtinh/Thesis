@@ -1,105 +1,47 @@
-"""Unit tests for LiberoMemTextRenderer."""
-
+"""Renderer tests require actual event provenance, not unsupported counters."""
+from dataclasses import replace
 from src.interfaces.libero_mem_text import LiberoMemTextRenderer
-from src.memory.models import (
-    CycleCounter,
-    ObjectIdentity,
-    SchemaV2EpisodeMemory,
-)
+from src.memory.event_writer import LiberoMemEventWriter
+from test_rgb_cycle_writer import rest, cycle
+
+
+def snapshot(cycles=1, in_progress=False):
+    writer = LiberoMemEventWriter("text")
+    step = rest(writer, 0)
+    for _ in range(cycles):
+        step = cycle(writer, step)
+    if in_progress:
+        rest(writer, step, lift=.15, gap=.005)
+    return writer.get_snapshot()
 
 
 def test_renderer_exact_pass_through_when_disabled():
-    renderer = LiberoMemTextRenderer(max_total_tokens=48)
-    instr = "lift the bowl and place it back on the plate 3 times"
-
-    res_disabled = renderer.render(instr, None, enabled=False)
-    assert res_disabled.text == instr
-    assert res_disabled.rendered_context_chars == 0
-    assert not res_disabled.truncated
+    renderer = LiberoMemTextRenderer()
+    instruction = "  lift the bowl and place it back on the plate 3 times\n"
+    assert renderer.render(instruction, snapshot(), enabled=False).text == instruction
 
 
 def test_renderer_cycle_rendering():
-    renderer = LiberoMemTextRenderer(max_total_tokens=48)
-    instr = "lift the bowl and place it back on the plate"
-
-    counter1 = CycleCounter(
-        cycle_key="bowl_A_plate_A",
-        object_id="bowl_A",
-        support_id="plate_A",
-        confirmed=1,
-        in_progress=False,
-    )
-    mem1 = SchemaV2EpisodeMemory(
-        episode_id="ep1",
-        as_of_observation=50,
-        last_consumed_action=49,
-        history_complete=True,
-        objects={"bowl_A": ObjectIdentity("bowl_A", "origin")},
-        relations=(),
-        cycles={"bowl_A_plate_A": counter1},
-        events=(),
-    )
-
-    res = renderer.render(instr, mem1, enabled=True)
-    assert "bowl A returned to its original support once; no cycle in progress." in res.text
-    assert res.text.startswith(instr)
-    assert len(res.facts_included) == 1
-    assert not res.truncated
+    result = LiberoMemTextRenderer().render("lift the bowl", snapshot())
+    assert "bowl A: 1 returns to original plate." in result.text
+    assert result.included_facts_count == 1
+    assert not result.truncated
 
 
 def test_renderer_in_progress_rendering():
-    renderer = LiberoMemTextRenderer(max_total_tokens=48)
-    instr = "lift the bowl and place it back on the plate 3 times"
-
-    counter2 = CycleCounter(
-        cycle_key="bowl_A_plate_A",
-        object_id="bowl_A",
-        support_id="plate_A",
-        confirmed=2,
-        in_progress=True,
-    )
-    mem2 = SchemaV2EpisodeMemory(
-        episode_id="ep2",
-        as_of_observation=100,
-        last_consumed_action=99,
-        history_complete=True,
-        objects={"bowl_A": ObjectIdentity("bowl_A", "origin")},
-        relations=(),
-        cycles={"bowl_A_plate_A": counter2},
-        events=(),
-    )
-
-    res = renderer.render(instr, mem2, enabled=True)
-    assert "bowl A returned to its original support twice; one cycle in progress." in res.text
-    assert not res.truncated
+    result = LiberoMemTextRenderer().render("lift the bowl", snapshot(2, True))
+    assert "2 returns to original plate. Cycle underway." in result.text
 
 
 def test_renderer_strict_budget_never_truncates_instruction():
-    # Very small budget where memory cannot fit
-    renderer = LiberoMemTextRenderer(max_total_tokens=15)
-    instr = "lift the bowl and place it back on the plate 3 times"
+    instruction = "lift the bowl and place it back on the plate 3 times"
+    result = LiberoMemTextRenderer(max_total_tokens=18).render(instruction, snapshot())
+    assert result.text == instruction
+    assert result.truncated
+    assert result.memory_skipped_reason == "budget_exceeded"
 
-    counter = CycleCounter(
-        cycle_key="bowl_A_plate_A",
-        object_id="bowl_A",
-        support_id="plate_A",
-        confirmed=1,
-        in_progress=False,
-    )
-    mem = SchemaV2EpisodeMemory(
-        episode_id="ep3",
-        as_of_observation=50,
-        last_consumed_action=49,
-        history_complete=True,
-        objects={"bowl_A": ObjectIdentity("bowl_A", "origin")},
-        relations=(),
-        cycles={"bowl_A_plate_A": counter},
-        events=(),
-    )
 
-    res = renderer.render(instr, mem, enabled=True)
-    # Instruction is preserved completely!
-    assert res.text == instr
-    assert res.truncated
-    assert res.memory_skipped_reason == "budget_exceeded"
-    assert len(res.facts_included) == 0
+def test_one_allowed_event_cannot_authorize_an_entire_counter():
+    memory = snapshot(2)
+    memory = replace(memory, events=memory.events[:-1])
+    assert LiberoMemTextRenderer().render("lift bowl", memory).text == "lift bowl"

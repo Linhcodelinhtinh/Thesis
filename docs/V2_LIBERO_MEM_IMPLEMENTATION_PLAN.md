@@ -7,6 +7,7 @@ Các ngưỡng nghiệm thu và cấu hình training bên dưới là lựa ch�
 > Trạng thái code tại `ac584d2`: xem [audit non-training ngày 22/10/2026](V2_LIBERO_MEM_COMPLETENESS_AUDIT_2026-10-22.md).
 > Kiểm tra mới nhất: [re-audit 23/10/2026](V2_LIBERO_MEM_COMPLETENESS_AUDIT_2026-10-23.md), áp dụng cho `f9f5779` cùng working tree. Phần ngoài training vẫn chưa ready; đã có loader/data nhưng còn blocker writer, evaluator và runtime.
 > Việc các file dự kiến đã tồn tại chưa đồng nghĩa các gate của plan đã hoàn tất.
+> Cập nhật 26/10/2026: [writer RGB v3 cho T1/T3, implementation và kết quả replay](MEMORY_WRITER_V3_T1_T3.md). Writer đã được làm lại, kiểm trên 6 demonstration / 3 initial state; chưa hoàn tất các gate tổng quát hóa, latency, simulator/evaluator hoặc policy retention. Các bảng hiện trạng ngày 22/10 bên dưới là mốc lịch sử.
 
 ## 1. Quyết định và phạm vi thesis
 

@@ -1,6 +1,7 @@
 # Simplified Kaggle training dependencies.
 # Uses pre-installed PyTorch & CUDA in Kaggle environment directly.
-lerobot[smolvla,peft]>=0.4.0
+lerobot[smolvla,peft,dataset]>=0.4.0
+av>=12.0.0
 peft>=0.12.0
 accelerate>=0.34.0
 transformers>=4.48.0

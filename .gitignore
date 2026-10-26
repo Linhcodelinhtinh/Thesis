@@ -22,6 +22,7 @@ ENV/
 # Datasets and demonstrations (downloaded on demand)
 resources/demonstrations/**/*.hdf5
 resources/demonstrations/.cache/
+resources/models/
 data/
 external/
 

@@ -23,6 +23,7 @@ from src.memory.event_writer import LiberoMemEventWriter
 from src.memory.libero_mem_oracle import LiberoMemOracleWriter
 from src.memory.models import SchemaV2EpisodeMemory
 from src.training.libero_mem_hdf5_loader import DemonstrationEpisode, LiberoMemHDF5Parser
+from src.perception.visual_evidence import rgb_views
 
 
 class MemoryStream(str, Enum):
@@ -62,12 +63,19 @@ class LiberoMemDataProcessor:
         action_dim: int = 7,
         obs_action_offset: int = 0,
         renderer: Optional[LiberoMemTextRenderer] = None,
+        writer_factory=None,
     ) -> None:
         self.chunk_size = chunk_size
         self.action_dim = action_dim
         self.obs_action_offset = obs_action_offset
         self.renderer = renderer if renderer is not None else LiberoMemTextRenderer(max_total_tokens=48)
-        self.oracle_renderer = LiberoMemTextRenderer(max_total_tokens=48, allow_oracle=True)
+        self.oracle_renderer = LiberoMemTextRenderer(max_total_tokens=self.renderer.max_total_tokens,
+            tokenizer=self.renderer.tokenizer, strict_tokenizer=self.renderer.strict_tokenizer, allow_oracle=True)
+        self.writer_factory = writer_factory
+        if chunk_size < 1 or action_dim != 7:
+            raise ValueError("This data contract requires positive chunks and native Panda 7D actions")
+        if obs_action_offset not in (0, 1):
+            raise ValueError("Observation/action offset must be explicitly 0 (Mem) or 1 (base)")
 
     def process_episode(
         self,
@@ -78,7 +86,7 @@ class LiberoMemDataProcessor:
         stream: Union[MemoryStream, str] = MemoryStream.PREDICTED_MEMORY,
         target_object_id: str = "bowl_A",
         target_semantic_name: str = "bowl",
-        origin_anchor: str = "bowl initially on the left plate",
+        origin_anchor: str = "bowl on its initially observed plate",
         support_id: str = "plate_A",
         support_semantic_name: str = "plate",
     ) -> List[AlignedSample]:
@@ -87,12 +95,19 @@ class LiberoMemDataProcessor:
         actions = np.asarray(actions, dtype=np.float32)
         n_obs = len(observations)
         n_act = len(actions)
+        if not n_act:
+            raise ValueError("Empty demonstration")
+        if actions.shape != (n_act, self.action_dim) or not np.isfinite(actions).all():
+            raise ValueError("Actions must have the declared finite dimensions")
+        if n_obs != n_act:
+            raise ValueError("Demonstration observation/action lengths must match")
 
         writer: Optional[LiberoMemEventWriter] = None
         oracle_writer: Optional[LiberoMemOracleWriter] = None
 
         if stream == MemoryStream.PREDICTED_MEMORY:
-            writer = LiberoMemEventWriter(
+            writer_builder = self.writer_factory or LiberoMemEventWriter
+            writer = writer_builder(
                 episode_id=episode_id,
                 target_object_id=target_object_id,
                 target_semantic_name=target_semantic_name,
@@ -118,18 +133,22 @@ class LiberoMemDataProcessor:
                 raise ValueError(f"Observation at step {t} is empty or not a dictionary. Missing observation fabrication is strictly forbidden.")
             if "robot0_eef_pos" not in obs_t or "robot0_gripper_qpos" not in obs_t:
                 raise ValueError(f"Observation at step {t} missing required robot state keys ('robot0_eef_pos', 'robot0_gripper_qpos').")
-            if "agentview_image" not in obs_t or "robot0_eef_quat" not in obs_t:
+            if "agentview_image" not in obs_t or "robot0_eye_in_hand_image" not in obs_t or "robot0_eef_quat" not in obs_t:
                 raise ValueError(
                     f"Observation at step {t} missing required keys ('agentview_image', 'robot0_eef_quat'). "
                     "Fabricating dummy zero camera frames or default quaternions is strictly forbidden per AGENTS.md Rule 1."
                 )
 
-            last_action = actions[t - 1] if t > 0 and (t - 1) < n_act else None
+            consumed_idx = t + self.obs_action_offset - 1
+            last_action = actions[consumed_idx] if t > 0 and 0 <= consumed_idx < n_act else None
 
             # Step causal writer based on stream
             memory_snapshot = None
             if stream == MemoryStream.PREDICTED_MEMORY and writer is not None:
-                memory_snapshot = writer.step(step=t, observation=obs_t, last_action=last_action)
+                if t == 0 and self.obs_action_offset != 0:
+                    writer.history_complete = False
+                memory_snapshot = writer.step(step=t, observation=obs_t, last_action=last_action,
+                                              last_action_index=consumed_idx if last_action is not None else None)
             elif stream == MemoryStream.ORACLE_MEMORY and oracle_writer is not None:
                 oracle_signals = obs_t.get("oracle_signals")
                 if oracle_signals is None:
@@ -165,13 +184,18 @@ class LiberoMemDataProcessor:
                 has_mem = len(render_res.facts_included) > 0
 
             # Robot state vector [gripper(2), eef_pos(3), eef_quat(4)]
-            eef_pos = np.asarray(obs_t.get("robot0_eef_pos", [0.0, 0.0, 0.0]), dtype=np.float32)
-            gripper = np.asarray(obs_t.get("robot0_gripper_qpos", [0.0, 0.0]), dtype=np.float32)
-            quat = np.asarray(obs_t.get("robot0_eef_quat", [1.0, 0.0, 0.0, 0.0]), dtype=np.float32)
+            eef_pos = np.asarray(obs_t["robot0_eef_pos"], dtype=np.float32)
+            gripper = np.asarray(obs_t["robot0_gripper_qpos"], dtype=np.float32)
+            quat = np.asarray(obs_t["robot0_eef_quat"], dtype=np.float32)
+            if eef_pos.shape != (3,) or gripper.shape != (2,) or quat.shape != (4,):
+                raise ValueError("Invalid robot state dimensions; no slicing or fallback allowed")
+            if not all(np.isfinite(value).all() for value in (eef_pos, gripper, quat)) or not np.isclose(np.linalg.norm(quat), 1, atol=1e-4):
+                raise ValueError("Invalid/non-finite robot state or non-unit quaternion")
+            rgb_views(obs_t, "libero_mem_refined")  # validation only; policy images below remain unchanged
             robot_state = np.concatenate([gripper[:2], eef_pos[:3], quat[:4]], dtype=np.float32)
 
-            agentview = obs_t.get("agentview_image", np.zeros((128, 128, 3), dtype=np.uint8))
-            wrist = obs_t.get("robot0_eye_in_hand_image", np.zeros((128, 128, 3), dtype=np.uint8))
+            agentview = obs_t["agentview_image"]
+            wrist = obs_t["robot0_eye_in_hand_image"]
 
             sample = AlignedSample(
                 sample_id=f"{episode_id}_s{t}",

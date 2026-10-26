@@ -1,80 +1,56 @@
-"""Unit tests for LiberoMemDataProcessor."""
-
+"""Matched memory/no-memory samples and causal observation/action alignment."""
 import numpy as np
-
+import pytest
 from src.training.libero_mem_data import LiberoMemDataProcessor, MemoryStream
+from test_rgb_cycle_writer import frame
+
+
+def observations(n=16):
+    return [frame(step, lift=.15 if 4 <= step < 8 else 0., gap=.005 if 4 <= step < 8 else .08) for step in range(n)]
 
 
 def test_data_processor_offset_and_chunking():
-    processor = LiberoMemDataProcessor(
-        chunk_size=10,
-        action_dim=7,
-        obs_action_offset=0,
-    )
-
-    n_steps = 15
-    observations = [
-        {
-            "agentview_image": np.zeros((128, 128, 3), dtype=np.uint8),
-            "robot0_eef_pos": np.array([0.0, 0.0, 0.85], dtype=np.float32),
-            "robot0_gripper_qpos": np.array([0.04, 0.04], dtype=np.float32),
-            "robot0_eef_quat": np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float32),
-        }
-        for _ in range(n_steps)
-    ]
-    actions = np.ones((n_steps, 7), dtype=np.float32)
-
-    samples = processor.process_episode(
-        episode_id="ep_01",
-        instruction="lift bowl",
-        observations=observations,
-        actions=actions,
-        stream=MemoryStream.NO_MEMORY,
-    )
-
-    assert len(samples) == n_steps
-    for s in samples:
-        assert s.action_chunk.shape == (10, 7)
-        assert s.action_mask.shape == (10,)
-        assert not s.has_memory
-        assert s.rendered_prompt == "lift bowl"
-
-    # Terminal samples have padded action masks
-    last_sample = samples[-1]
-    assert last_sample.action_mask[0] is True or last_sample.action_mask[0] == 1
-    assert last_sample.action_mask[1:].sum() == 0  # Only 1 action remaining
+    processor = LiberoMemDataProcessor(chunk_size=10)
+    obs = observations()
+    actions = np.arange(16*7, dtype=np.float32).reshape(16, 7) / 200
+    samples = processor.process_episode("ep_01", "lift bowl", obs, actions, MemoryStream.NO_MEMORY)
+    assert len(samples) == 16
+    for t, sample in enumerate(samples):
+        assert sample.rendered_prompt == "lift bowl" and not sample.has_memory
+        assert sample.source_action_start_idx == t
+        np.testing.assert_equal(sample.action_chunk[0], actions[t])
+        assert sample.agentview_image is obs[t]["agentview_image"]
+    assert samples[-1].action_mask.sum() == 1
 
 
-def test_data_processor_predicted_memory_stream():
-    processor = LiberoMemDataProcessor(
-        chunk_size=5,
-        action_dim=7,
-        obs_action_offset=0,
-    )
+def test_data_processor_predicted_memory_stream_matches_control():
+    processor = LiberoMemDataProcessor(chunk_size=5)
+    obs = observations()
+    actions = np.zeros((len(obs), 7), dtype=np.float32)
+    predicted = processor.process_episode("ep", "lift bowl", obs, actions)
+    control = processor.process_episode("ep", "lift bowl", obs, actions, MemoryStream.NO_MEMORY)
+    assert "1 returns" in predicted[-1].rendered_prompt
+    for p, c in zip(predicted, control):
+        np.testing.assert_equal(p.robot_states, c.robot_states)
+        np.testing.assert_equal(p.action_chunk, c.action_chunk)
+        assert p.agentview_image is c.agentview_image
+        assert p.wrist_image is c.wrist_image
 
-    observations = []
-    actions = np.zeros((10, 7), dtype=np.float32)
-    for step in range(10):
-        z = 1.2 if 2 <= step <= 6 else 0.85
-        obs = {
-            "agentview_image": np.zeros((128, 128, 3), dtype=np.uint8),
-            "robot0_eef_pos": np.array([-0.05, 0.20, z], dtype=np.float32),
-            "robot0_eef_quat": np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float32),
-            "robot0_gripper_qpos": np.array([0.01, 0.01] if 2 <= step <= 6 else [0.04, 0.04], dtype=np.float32),
-            "detected_objects": {"bowl_A": np.array([-0.05, 0.20, z], dtype=np.float32)},
-        }
-        observations.append(obs)
 
-    samples = processor.process_episode(
-        episode_id="ep_02",
-        instruction="lift bowl",
-        observations=observations,
-        actions=actions,
-        stream=MemoryStream.PREDICTED_MEMORY,
-    )
+def test_missing_camera_is_not_fabricated():
+    obs = observations()
+    obs[0].pop("robot0_eye_in_hand_image")
+    with pytest.raises(ValueError, match="missing required"):
+        LiberoMemDataProcessor().process_episode("ep", "lift bowl", obs, np.zeros((len(obs), 7)), MemoryStream.NO_MEMORY)
 
-    assert len(samples) == 10
-    # Steps after return should have confirmed cycle memory
-    late_sample = samples[-1]
-    assert "Memory:" in late_sample.rendered_prompt
-    assert late_sample.has_memory
+
+def test_future_action_targets_do_not_change_memory():
+    obs = observations()
+    actions = np.zeros((len(obs), 7), dtype=np.float32)
+    changed = actions.copy()
+    changed[8:] = .75
+    processor = LiberoMemDataProcessor()
+    a = processor.process_episode("ep", "lift bowl", obs, actions)
+    b = processor.process_episode("ep", "lift bowl", obs, changed)
+    assert [s.rendered_prompt for s in a[:9]] == [s.rendered_prompt for s in b[:9]]
+    assert not np.array_equal(a[8].action_chunk, b[8].action_chunk)

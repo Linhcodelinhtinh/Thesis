@@ -42,6 +42,7 @@ class RolloutResult:
     total_wall_time_s: float
     termination_reason: str
     prompt_history: List[str] = field(default_factory=list)
+    memory_trace: List[Dict[str, Any]] = field(default_factory=list)
 
 
 class LiberoMemRolloutRunner:
@@ -55,18 +56,26 @@ class LiberoMemRolloutRunner:
         execution_horizon: int = 10,
         max_steps: int = 1000,
         renderer: Optional[LiberoMemTextRenderer] = None,
+        writer_factory=None,
     ) -> None:
         self.env = env
         self.policy = policy_adapter
         self.condition = condition
         self.execution_horizon = execution_horizon
         self.max_steps = max_steps
+        self.writer_factory = writer_factory
+        if condition not in ("B0", "F0", "F1", "O1"):
+            raise ValueError("Unknown memory condition")
+        if not 1 <= execution_horizon <= 50 or max_steps < 1:
+            raise ValueError("Invalid execution horizon/step budget")
         if renderer is not None:
             self.renderer = renderer
         else:
             self.renderer = LiberoMemTextRenderer(
                 max_total_tokens=48,
                 allow_oracle=(condition == "O1"),
+                tokenizer=getattr(policy_adapter, "tokenizer", None),
+                strict_tokenizer=condition in ("F1", "O1"),
             )
 
     def run_episode(
@@ -76,6 +85,10 @@ class LiberoMemRolloutRunner:
         initial_state_id: int = 0,
     ) -> RolloutResult:
         """Run a single closed-loop episode."""
+        if self.condition == "F1" and self.writer_factory is None:
+            raise ValueError("F1 requires an explicit RGB writer_factory with the online camera convention")
+        if getattr(self.env, "use_real_sim", None) is False:
+            raise RuntimeError("Benchmark runner refuses the simulator's kinematic fixture/fallback mode")
         if hasattr(self.policy, "reset") and callable(self.policy.reset):
             self.policy.reset()
 
@@ -87,7 +100,7 @@ class LiberoMemRolloutRunner:
         oracle_writer: Optional[LiberoMemOracleWriter] = None
 
         if self.condition == "F1":
-            writer = LiberoMemEventWriter(
+            writer = self.writer_factory(
                 episode_id=episode_id,
                 target_object_id="bowl_A",
                 support_id="plate_A",
@@ -105,12 +118,22 @@ class LiberoMemRolloutRunner:
         info: Dict[str, Any] = {}
         prompt_history: List[str] = []
         latencies_ms: List[float] = []
+        memory_trace: List[Dict[str, Any]] = []
+
+        def update_writer(index, frame, executed):
+            started = time.perf_counter()
+            snapshot = writer.step(index, frame, executed)
+            memory_trace.append({"step": index, "snapshot": snapshot.to_dict(),
+                                 "signals": writer.last_signals,
+                                 "writer_ms": (time.perf_counter() - started) * 1000.0})
 
         # Initial step 0 observation ingestion
         if self.condition == "F1" and writer is not None:
-            writer.step(0, obs, None)
+            update_writer(0, obs, None)
         elif self.condition == "O1" and oracle_writer is not None:
-            oracle_writer.step(0, {"is_on_support": True, "is_held": False})
+            if "oracle_signals" not in obs:
+                raise ValueError("O1 requires measured reset oracle_signals; initial support cannot be fabricated")
+            oracle_writer.step(0, obs["oracle_signals"])
 
         while step < self.max_steps and not done:
             # 1. Retrieve current memory snapshot
@@ -154,7 +177,7 @@ class LiberoMemRolloutRunner:
 
                 # Update writer between chunk steps
                 if self.condition == "F1" and writer is not None:
-                    writer.step(step, obs, last_action)
+                    update_writer(step, obs, last_action)
                 elif self.condition == "O1" and oracle_writer is not None:
                     oracle_signals = info.get("oracle_signals", {})
                     oracle_writer.step(step, oracle_signals)
@@ -194,4 +217,5 @@ class LiberoMemRolloutRunner:
             total_wall_time_s=total_wall_time,
             termination_reason=term_reason,
             prompt_history=prompt_history,
+            memory_trace=memory_trace,
         )

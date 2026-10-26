@@ -7,6 +7,24 @@ from types import MappingProxyType
 from typing import Any, Dict, Mapping, Optional, Tuple
 
 
+def _freeze_value(value):
+    if isinstance(value, Mapping):
+        return MappingProxyType({key: _freeze_value(item) for key, item in value.items()})
+    if isinstance(value, (list, tuple)):
+        return tuple(_freeze_value(item) for item in value)
+    return value
+
+
+def _json_value(value):
+    if isinstance(value, Enum):
+        return value.value
+    if isinstance(value, Mapping):
+        return {key: _json_value(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_value(item) for item in value]
+    return value
+
+
 class EvidenceSource(str, Enum):
     """Where a memory fact came from; oracle evidence is always explicit."""
 
@@ -294,11 +312,13 @@ class ObjectIdentity:
         if not isinstance(self.visibility, VisibilityStatus):
             raise TypeError("visibility must be a VisibilityStatus")
         if self.metadata is not None:
-            object.__setattr__(self, "metadata", MappingProxyType(dict(self.metadata)))
+            object.__setattr__(self, "metadata", _freeze_value(self.metadata))
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "origin_anchor": self.origin_anchor,
+            "object_id": self.object_id,
+            "metadata": _json_value(self.metadata),
             "identity_status": self.identity_status.value,
             "visibility": self.visibility.value,
             "current_location_desc": self.current_location_desc,
@@ -417,7 +437,7 @@ class V2MemoryEvent:
             "probability": self.probability,
             "supersedes": self.supersedes,
             "evidence_ids": list(self.evidence_ids),
-            "details": dict(self.details) if self.details is not None else None,
+            "details": _json_value(self.details),
         }
 
 
