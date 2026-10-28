@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from src.training.memory_data import sha256, write_json, code_hashes, MODEL_REVISION, BACKBONE_REVISION
 from src.training.export_utils import preserve_policy_type
+from src.evaluation.libero_mem_protocol import source_digest
 
 
 def validate_inputs(args):
@@ -28,11 +29,19 @@ def validate_inputs(args):
             raise ValueError(f"Asset corrupted: {name}")
     root = Path(args.data_dir)
     manifest = json.loads((root / "manifest.json").read_text())
-    if manifest["memory_code_sha256"] != code_hashes(ROOT):
-        raise ValueError("Memory pipeline changed since preparation; regenerate dataset")
-    for name, digest in manifest["shards"].items():
-        if sha256(root / name) != digest:
-            raise ValueError(f"Dataset shard corrupted: {name}")
+    if manifest.get("schema_version") == 2:
+        from src.training.mixed_sft import validate_mixed_dataset
+        manifest = validate_mixed_dataset(root)
+        if args.condition == "memory" and manifest["memory_source"] != "predicted_rgb_v3":
+            raise ValueError("F1 requires predicted-memory shards; this dataset is ready for no_memory only")
+        if args.condition == "memory" and args.memory_dropout:
+            raise ValueError("Use --memory-dropout 0 for the locked Mem experiment")
+    else:
+        if manifest["memory_code_sha256"] != code_hashes(ROOT):
+            raise ValueError("Memory pipeline changed since preparation; regenerate dataset")
+        for name, digest in manifest["shards"].items():
+            if sha256(root / name) != digest:
+                raise ValueError(f"Dataset shard corrupted: {name}")
     for name, digest in manifest["tokenizer_files_sha256"].items():
         if sha256(assets / "backbone" / name) != digest:
             raise ValueError(f"Preparation/training tokenizer mismatch: {name}")
@@ -135,20 +144,26 @@ def train(args):
     trainable = {n: p.numel() for n, p in policy.named_parameters() if p.requires_grad}
     if not trainable or any("vlm_with_expert.vlm." in name for name in trainable):
         raise RuntimeError("Unexpected trainable parameter set: backbone must stay frozen")
-    try:
-        forward_src = inspect.getsource(SmolVLAPolicy.forward)
-        has_pad = any(k in forward_src for k in ("action_is_pad", "actions_is_pad", "actions_id_pad"))
-    except Exception:
-        has_pad = True
-    if not has_pad:
+    forward_src = inspect.getsource(SmolVLAPolicy.forward)
+    padding_keys = [k for k in ("action_is_pad", "actions_is_pad", "actions_id_pad") if k in forward_src]
+    if not padding_keys:
         raise RuntimeError("Installed SmolVLA padding API changed; audit loss mask before training")
     train_data = MemoryDataset(args.data_dir, "train", cfg.chunk_size, args.condition,
                                args.memory_dropout if args.condition == "memory" else 0.0, args.seed)
     val_data = MemoryDataset(args.data_dir, "val", cfg.chunk_size, args.condition)
     loader_args = dict(batch_size=args.batch_size, num_workers=args.workers, collate_fn=collate_memory,
                        pin_memory=True, persistent_workers=False)
-    train_loader = DataLoader(train_data, shuffle=True, **loader_args)
-    val_loader = DataLoader(val_data, shuffle=False, **loader_args)
+    replay_sampler = None
+    if manifest.get("schema_version") == 2:
+        from src.training.replay_sampler import BalancedReplaySampler
+        replay_sampler = BalancedReplaySampler(train_data,
+            args.batch_size * args.accumulation * accelerator.num_processes, args.base_fraction, args.seed)
+    # Iterator/worker seeding must not consume the policy's flow-noise RNG,
+    # especially when recreating an iterator after resuming mid-epoch.
+    train_loader = DataLoader(train_data, shuffle=replay_sampler is None, sampler=replay_sampler,
+        generator=torch.Generator().manual_seed(args.seed), **loader_args)
+    val_loader = DataLoader(val_data, shuffle=False,
+        generator=torch.Generator().manual_seed(args.seed + 1), **loader_args)
     optimizer = torch.optim.AdamW([p for p in policy.parameters() if p.requires_grad], lr=args.lr,
                                   betas=(0.9, 0.95), eps=1e-8, weight_decay=1e-10)
 
@@ -171,9 +186,17 @@ def train(args):
                 "hardware": [torch.cuda.get_device_name(i) for i in range(torch.cuda.device_count())],
                 "implementation_sha256": {name: sha256(ROOT / name) for name in
                     ["scripts/train_memory_sft.py", "scripts/prepare_memory_sft.py",
-                     "src/training/memory_dataset.py", "src/models/smolvla/adapter.py"]},
+                     "src/training/memory_dataset.py", "src/training/replay_sampler.py",
+                     "src/training/mixed_sft.py", "src/models/smolvla/adapter.py"]},
                 "official_policy_source_sha256": sha256(inspect.getfile(SmolVLAPolicy)),
                 "normalization": "unchanged original checkpoint", "precision": "FP32 weights, FP16 AMP + GradScaler"}
+    run_info["padding_keys_read_by_policy"] = padding_keys
+    if replay_sampler is not None:
+        run_info["mixed_replay"] = dict(base_fraction=replay_sampler.actual_base_fraction,
+            balancing="domain per optimizer batch; shuffled task round-robin; uniform episode then frame",
+            epoch0_schedule_sha256=replay_sampler.schedule_sha256(),
+            sample_selection_sha256=manifest["sample_selection_sha256"],
+            split_lock_sha256=manifest["split_lock_sha256"], protocol_sha256=source_digest(Path(args.data_dir)/"protocol.json"))
     if accelerator.is_main_process:
         write_json(out / "run_config.json", run_info)
         (out / "environment_packages.txt").write_text("\n".join(sorted(
@@ -184,6 +207,10 @@ def train(args):
         for key in ("data_manifest_sha256", "assets_lock_sha256"):
             if saved[key] != run_info[key]:
                 raise ValueError(f"Resume mismatch: {key}")
+        if manifest.get("schema_version") == 2:
+            for key in ("implementation_sha256", "official_policy_source_sha256"):
+                if saved.get(key) != run_info[key]:
+                    raise ValueError("Resume implementation differs: " + key)
         expected = {k: v for k, v in vars(args).items() if k not in {"resume", "output_dir", "data_dir", "assets_dir"}}
         if saved["training_arguments"] != expected:
             raise ValueError("Resume training arguments differ; use the original schedule and batch configuration")
@@ -196,6 +223,8 @@ def train(args):
         if accelerator.is_main_process:
             write_json(directory / "progress.json", {"epoch": epoch, "step": step, "next_batch": next_batch,
                 "data_manifest_sha256": run_info["data_manifest_sha256"], "assets_lock_sha256": run_info["assets_lock_sha256"],
+                "implementation_sha256": run_info["implementation_sha256"],
+                "official_policy_source_sha256": run_info["official_policy_source_sha256"],
                 "training_arguments": {k: v for k, v in vars(args).items()
                                        if k not in {"resume", "output_dir", "data_dir", "assets_dir"}}})
         accelerator.wait_for_everyone()
@@ -207,6 +236,7 @@ def train(args):
         for condition in ("memory", "no_memory"):
             val_data.condition = condition
             total, count = 0.0, 0
+            domain_totals = {"base": [0.0, 0], "mem": [0.0, 0]}
             with torch.random.fork_rng(devices=[torch.cuda.current_device()]), torch.no_grad():
                 torch.manual_seed(args.seed + 123)
                 torch.cuda.manual_seed(args.seed + 123)
@@ -214,18 +244,30 @@ def train(args):
                     if args.validation_max_batches and validation_index >= args.validation_max_batches:
                         break
                     padding = batch.get("actions_id_pad", batch.get("action_is_pad"))
+                    domains = torch.tensor([d == "mem" for d in batch.pop("sample_domain")], device=accelerator.device)
                     batch = preprocessor(batch)
                     pad_dev = padding.to(accelerator.device)
                     batch["actions_id_pad"] = pad_dev
                     batch["action_is_pad"] = pad_dev
+                    batch["actions_is_pad"] = pad_dev
                     with accelerator.autocast():
                         losses, _ = policy(batch, reduction="none")
-                    values = accelerator.gather_for_metrics(losses.detach().float())
+                    values, domain_ids = accelerator.gather_for_metrics((losses.detach().float(), domains))
+                    if values.ndim != 1 or len(values) != len(domain_ids):
+                        raise ValueError("Expected per-sample validation loss from the installed policy")
                     if not torch.isfinite(values).all():
                         raise FloatingPointError("Non-finite validation loss")
                     total += values.sum().item()
                     count += values.numel()
-            totals[condition] = total / count
+                    for name, domain_id in (("base", False), ("mem", True)):
+                        selected = values[domain_ids == domain_id]
+                        domain_totals[name][0] += selected.sum().item()
+                        domain_totals[name][1] += selected.numel()
+            if not count:
+                raise ValueError("No validation samples")
+            totals[condition] = {"overall": total / count,
+                "by_domain": {name: {"loss": value/n if n else None, "samples": n}
+                              for name, (value, n) in domain_totals.items()}}
         policy.train()
         if accelerator.is_main_process:
             with (out / "metrics.jsonl").open("a") as f:
@@ -238,15 +280,19 @@ def train(args):
     consecutive_overflows = 0
     while step < args.steps:
         train_data.epoch = epoch
+        if replay_sampler is not None:
+            replay_sampler.set_epoch(epoch)
         train_loader.set_epoch(epoch)
         active_loader = accelerator.skip_first_batches(train_loader, skip) if skip else train_loader
         for batch_index, batch in enumerate(active_loader, start=skip):
             with accelerator.accumulate(policy):
                 padding = batch.get("actions_id_pad", batch.get("action_is_pad"))
+                batch.pop("sample_domain")
                 batch = preprocessor(batch)
                 pad_dev = padding.to(accelerator.device)
                 batch["actions_id_pad"] = pad_dev
                 batch["action_is_pad"] = pad_dev
+                batch["actions_is_pad"] = pad_dev
                 with accelerator.autocast():
                     loss, _ = policy(batch)
                 finite = accelerator.reduce(torch.isfinite(loss).int(), reduction="sum")
@@ -305,7 +351,8 @@ def main():
     p.add_argument("--steps", type=int, default=3000)
     p.add_argument("--warmup-steps", type=int, default=100)
     p.add_argument("--grad-clip", type=float, default=1.0)
-    p.add_argument("--memory-dropout", type=float, default=0.2)
+    p.add_argument("--memory-dropout", type=float, default=0.0)
+    p.add_argument("--base-fraction", type=float, default=0.5, help="Base replay fraction for schema-v2 mixed data")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--log-every", type=int, default=10)
     p.add_argument("--save-every", type=int, default=500)
@@ -317,6 +364,8 @@ def main():
         p.error("GPU/batch/step/interval values must be positive")
     if not 0 <= args.memory_dropout < 1 or args.lr <= 0 or args.warmup_steps < 0 or args.validation_max_batches < 0:
         p.error("Invalid learning rate, dropout or warmup")
+    if not 0 < args.base_fraction < 1:
+        p.error("Mixed replay needs both base and Mem")
     train(args)
 
 

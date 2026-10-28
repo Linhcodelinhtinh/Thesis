@@ -1,0 +1,138 @@
+{
+  "protocol_id": "libero_mem_t1_t3_v1",
+  "classification": "CUSTOM_V2_LIBERO_MEM",
+  "official_paper_comparable": false,
+  "upstream_repository": "https://github.com/libero-mem/libero-mem",
+  "upstream_revision": "0eee0defa4024e51511b6e15a79f30e9620209de",
+  "source_text_sha256": {
+    "libero/libero/envs/problems/libero_kitchen_tabletop_manipulation.py": "55c40b80775adb6d6d84b0af2f37376dab68ab5f0182f4eb2201e5c6145c2c90",
+    "libero/libero/envs/bddl_base_domain.py": "cc8a9a060a507bd139b9351f75a71d4e95396fa07ccf4d3250a07fc977d9b3d3",
+    "libero/libero/envs/env_wrapper.py": "c2f5631a0bd1c7d8890949512ddcaf8afffe3ec314813b2d67d10c8820c0d6d1",
+    "libero/libero/envs/predicates/base_predicates.py": "319137e95330dbb22a266a8dceb8110f18413c2bf17461550222228c4bc310a1",
+    "libero/libero/envs/object_states/base_object_states.py": "ca6f53123336b6487bdb4feb02534ddb3a0627a4b847fe89da4460520ef01366",
+    "scripts/mem_3_refine_demonstration.py": "40f408d8dbfc28b24d7a857166ddeda08bfee9e40976599c79226f6b6b57b66a",
+    "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_1_pick_up_the_bowl_and_place_it_back_on_the_plate.bddl": "6548e9c3b65ccad256766eb75faa0a0117391dd2b7260eb2088d40a324c6146c",
+    "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_3_lift_the_bowl_and_place_it_back_on_the_plate_3_times.bddl": "ac165850c39856f128a9ae28cf3e6fc6bada99aa015348362137ed4307359dc8"
+  },
+  "tasks": [
+    {
+      "alias": "T1",
+      "name": "KITCHEN_SCENE1_1_pick_up_the_bowl_and_place_it_back_on_the_plate",
+      "target_cycles": 1,
+      "bddl": "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_1_pick_up_the_bowl_and_place_it_back_on_the_plate.bddl",
+      "predicate": [
+        "on",
+        "akita_black_bowl_1",
+        "plate_1"
+      ]
+    },
+    {
+      "alias": "T3",
+      "name": "KITCHEN_SCENE1_3_lift_the_bowl_and_place_it_back_on_the_plate_3_times",
+      "target_cycles": 3,
+      "bddl": "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_3_lift_the_bowl_and_place_it_back_on_the_plate_3_times.bddl",
+      "predicate": [
+        "on",
+        "akita_black_bowl_1",
+        "plate_1"
+      ]
+    }
+  ],
+  "runtime": {
+    "robosuite": "1.4.0",
+    "numpy": "1.22.4",
+    "bddl": "1.0.1",
+    "mujoco": "3.2.3",
+    "robomimic": "0.2.0",
+    "python": "3.8.x",
+    "note": "Local pinned simulator stack; MuJoCo/Python patch versions are not a claim of author runtime equivalence"
+  },
+  "simulation": {
+    "robot_argument": "Panda",
+    "actual_robot_class": "MountedPanda",
+    "controller": {
+      "type": "OSC_POSE",
+      "input_max": 1,
+      "input_min": -1,
+      "output_max": [
+        0.05,
+        0.05,
+        0.05,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "output_min": [
+        -0.05,
+        -0.05,
+        -0.05,
+        -0.5,
+        -0.5,
+        -0.5
+      ],
+      "kp": 150,
+      "damping_ratio": 1,
+      "impedance_mode": "fixed",
+      "kp_limits": [
+        0,
+        300
+      ],
+      "damping_ratio_limits": [
+        0,
+        10
+      ],
+      "position_limits": null,
+      "orientation_limits": null,
+      "uncouple_pos_ori": true,
+      "control_delta": true,
+      "interpolation": null,
+      "ramp_ratio": 0.2
+    },
+    "control_freq": 20,
+    "cameras": [
+      "agentview",
+      "robot0_eye_in_hand"
+    ],
+    "camera_size": [
+      256,
+      256
+    ],
+    "render_convention": "raw_opengl"
+  },
+  "reset": {
+    "initial_states": "exact vector from split lock; no random reset fallback",
+    "seed": 0,
+    "warmup_steps": 20,
+    "warmup_action": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -1
+    ],
+    "progress": "clear satisfied/live/nonlive AND overshot at episode reset; clear again after warmup"
+  },
+  "evaluation": {
+    "predicate": "upstream _eval_predicate only; never writer geometry",
+    "increment": "one _check_success(inc=True) per policy-visible observation, including reset observation, before its next action",
+    "internal_reads": "preserve upstream reward and step inc=False calls; never call check_success for logging",
+    "progress": "read _satisfied_subgoals and _overshot after increment; intermediate True is not full success",
+    "thresholds": {
+      "live_strictly_greater_than": 5,
+      "nonlive_strictly_greater_than": 15,
+      "overshoot_nonlive_strictly_greater_than": 5
+    },
+    "counter_note": "Upstream counters are cumulative between milestones, not consecutive dwell; preserve unchanged"
+  },
+  "rollout": {
+    "horizon_policy_actions": 1000,
+    "action_chunk": 50,
+    "execution_horizon": 10,
+    "termination": "fixed horizon, no early stop on intermediate or full success; stop early on irreversible upstream overshot",
+    "success": "at horizon: all milestones completed AND current upstream final predicate true AND not overshot",
+    "scope_note": "Fixed horizon and terminal reporting are explicit custom choices; author public eval runner has no libero_mem horizon branch",
+    "writer_timing": "synchronous simulator pause during inference; memory only available after writer finishes; no real-time 20Hz claim"
+  }
+}

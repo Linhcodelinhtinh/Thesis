@@ -46,11 +46,13 @@ def read_episode_metadata(path, task_name, demo_keys):
 
 
 class LiberoMemHDF5Parser:
-    def __init__(self, data_dir=None, val_ratio=.1, seed=42):
+    def __init__(self, data_dir=None, val_ratio=.1, seed=42, split_lock=None):
         self.data_dir = Path(data_dir) if data_dir is not None else DEFAULT_DATA_DIR
         if not 0 < val_ratio < 1:
             raise ValueError("val_ratio must lie between zero and one")
         self.val_ratio, self.seed = val_ratio, seed
+        from src.training.split_lock import load_split_lock
+        self.split_lock = load_split_lock(split_lock) if split_lock is not None else None
 
     def resolve_hdf5_path(self, task_name):
         clean = task_name.removesuffix(".hdf5").removesuffix(".bddl").removesuffix("_demo")
@@ -75,7 +77,7 @@ class LiberoMemHDF5Parser:
         task = path.name.removesuffix("_demo.hdf5")
         if max_episodes is not None and max_episodes < 1:
             raise ValueError("max_episodes must be positive")
-        if split_filter not in (None, "train", "val"):
+        if split_filter not in (None, "train", "val", "test"):
             raise ValueError("Unknown split")
         with h5py.File(path, "r") as file:
             demos = sorted(file["data"], key=lambda key: int(key.removeprefix("demo_")))
@@ -93,7 +95,11 @@ class LiberoMemHDF5Parser:
                     raise ValueError(f"{task}/{demo} missing author instruction or initial state")
                 initial = np.asarray(meta["initial_state"], dtype=np.float64)
                 episode_id = f"{task}_{demo}"
-                split = "val" if self.is_val_episode(episode_id, initial) else "train"
+                if self.split_lock is not None:
+                    from src.training.split_lock import locked_episode
+                    split = locked_episode(self.split_lock, "mem", task, demo, initial)["split"]
+                else:
+                    split = "val" if self.is_val_episode(episode_id, initial) else "train"
                 if split_filter is not None and split_filter != split:
                     continue
                 group = file[f"data/{demo}"]

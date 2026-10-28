@@ -29,14 +29,14 @@ def test_libero_mem_pilot_tasks_specification():
     assert t1["target_cycles"] == 1
     assert t1["target_object"] == "bowl"
     assert t1["support_object"] == "plate"
-    assert len(t1["subtasks"]) == 2
+    assert len(t1["subtasks"]) == 1
 
     # Check T3
     t3 = next(t for t in tasks if t["alias"] == "T3")
     assert t3["target_cycles"] == 3
     assert t3["target_object"] == "bowl"
     assert t3["support_object"] == "plate"
-    assert len(t3["subtasks"]) == 6
+    assert len(t3["subtasks"]) == 3
 
 
 def test_libero_mem_simulation_invariants():

@@ -30,6 +30,7 @@ external/
 experiments/results/
 experiments/training/
 experiments/audits/
+experiments/runtime/
 experiments/pilot_sft_test*/
 *.mp4
 *.avi

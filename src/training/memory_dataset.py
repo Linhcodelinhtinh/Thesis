@@ -48,8 +48,14 @@ class MemoryDataset(Dataset):
         actions, padding = action_window(segment, 0, self.horizon)
         return {"agentview": data["agentview_rgb"][t], "wrist": data["eye_in_hand_rgb"][t],
                 "robot": data["robot_states"][t], "task": prompt,
+                "domain": episode.get("domain", "base"),
                 "action": torch.from_numpy(actions), "actions_id_pad": torch.from_numpy(padding),
-                "action_is_pad": torch.from_numpy(padding)}
+                "action_is_pad": torch.from_numpy(padding), "actions_is_pad": torch.from_numpy(padding)}
+
+    def close(self):
+        for file in self._files.values():
+            file.close()
+        self._files.clear()
 
 
 def collate_memory(samples):
@@ -65,5 +71,6 @@ def collate_memory(samples):
     batch = LiberoProcessorStep()._process_observation(raw)
     pad_tensor = torch.stack([s["actions_id_pad"] for s in samples])
     batch.update(task=[s["task"] for s in samples], action=torch.stack([s["action"] for s in samples]),
-                 actions_id_pad=pad_tensor, action_is_pad=pad_tensor)
+                 actions_id_pad=pad_tensor, action_is_pad=pad_tensor, actions_is_pad=pad_tensor,
+                 sample_domain=[s.get("domain", "base") for s in samples])
     return batch

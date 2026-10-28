@@ -1,5 +1,7 @@
 # V2 — SmolVLA với memory cho LIBERO-Mem và giữ năng lực LIBERO base
 
+> **Triển khai split/data/evaluator ngày 26/10/2026:** [contract và cách chạy mixed fine-tuning](LIBERO_MEM_FINETUNE_DATA_PROTOCOL.md). Protocol mới dùng evaluator upstream và split initial-state bất biến; phạm vi retention pilot là LIBERO-10. Các mô tả hiện trạng bên dưới là lịch sử; hiệu năng policy và khả năng tổng quát hóa của writer vẫn cần rollout thực nghiệm.
+
 Ngày: **22/10/2026**. Trạng thái: **implementation plan đề xuất; chưa triển khai hoặc xác nhận hiệu năng**.
 Rà soát working tree tại commit `79777de39befd8d426389ea636bd59d4ece7e17c` cùng nguồn tác giả đã pin ở §2.
 Các ngưỡng nghiệm thu và cấu hình training bên dưới là lựa chọn nghiên cứu ban đầu, không phải kết quả đo hoặc cấu hình mặc định của benchmark.

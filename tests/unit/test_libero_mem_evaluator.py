@@ -1,107 +1,87 @@
-"""Unit tests for LiberoMemEvaluator and LiberoMemEnv."""
-
-import numpy as np
+"""Execute pinned upstream goal code on Boolean unit traces, not benchmark data."""
+import ast
+from pathlib import Path
+from types import SimpleNamespace
 import pytest
-
 from src.evaluation.libero_mem_metrics import LiberoMemEvaluator
-from src.simulator.libero_mem_env import LiberoMemEnv
+from src.evaluation.libero_mem_protocol import load_protocol, task_spec
+
+ROOT=Path(__file__).resolve().parents[2]
 
 
-def test_evaluator_subgoal_completion_rate():
-    evaluator = LiberoMemEvaluator(
-        task_name="T1",
-        target_cycles=1,
-        dwell_steps=2,
-        live_time_threshold=1,
-        nonlive_time_threshold=1,
-    )
-    assert len(evaluator.subgoals) == 1  # 1 sequential On goal for T1
-
-    # Step 0: at rest
-    r0 = evaluator.evaluate_step(0, is_on_support=True, is_lifted=False)
-    assert r0.scr == 0.0
-    assert not r0.full_success
-
-    # Step 5-6: lift with 2 dwell steps
-    evaluator.evaluate_step(5, is_on_support=False, is_lifted=True)
-    r1 = evaluator.evaluate_step(6, is_on_support=False, is_lifted=True)
-    assert r1.scr == 0.0  # Lifted is departure phase, not yet completed cycle
-    assert not r1.full_success
-    assert r1.completed_subgoals == 0
-
-    # Step 10: single return frame (dwell not yet met)
-    r2 = evaluator.evaluate_step(10, is_on_support=True, is_lifted=False)
-    assert not r2.full_success
-    assert r2.completed_subgoals == 0
-
-    # Step 11: 2nd return frame (dwell satisfied -> completed!)
-    r3 = evaluator.evaluate_step(11, is_on_support=True, is_lifted=False)
-    assert r3.scr == 1.0
-    assert r3.full_success
-    assert r3.completed_subgoals == 1
-    assert not r3.overshot
+def upstream_fixture(target=3):
+    root=ROOT/'external/libero-mem'
+    protocol=load_protocol(source_root=root)
+    source=root/'libero/libero/envs/problems/libero_kitchen_tabletop_manipulation.py'
+    tree=ast.parse(source.read_text(encoding='utf-8'))
+    cls=next(n for n in tree.body if isinstance(n,ast.ClassDef))
+    functions=[n for n in cls.body if isinstance(n,ast.FunctionDef) and n.name in ('_check_success','_eval_goal')]
+    scope={}
+    exec(compile(ast.Module(body=functions,type_ignores=[]),str(source),'exec'),scope)
+    e=SimpleNamespace(_satisfied_subgoals=[],_sub_goal_live_time=0,_sub_goal_nonlive_time=0,_overshot=False,predicate=True)
+    e.parsed_problem={'goal_state':[['sequence']+[['and',['on','bowl','plate']] for _ in range(target)]]}
+    e._eval_predicate=lambda _:e.predicate
+    for name,fn in scope.items():
+        if name in ('_check_success','_eval_goal'):setattr(e,name,fn.__get__(e))
+    return e
 
 
-def test_evaluator_multi_cycle_and_overshoot():
-    evaluator = LiberoMemEvaluator(
-        task_name="T3",
-        target_cycles=3,
-        dwell_steps=2,
-        live_time_threshold=0,
-        nonlive_time_threshold=0,
-        overshoot_threshold=0,
-    )
-    assert len(evaluator.subgoals) == 3  # 3 sequential On goals for T3
-
-    # Cycle 1: 2 steps lift, 2 steps return
-    evaluator.evaluate_step(1, is_on_support=False, is_lifted=True)
-    evaluator.evaluate_step(2, is_on_support=False, is_lifted=True)
-    evaluator.evaluate_step(3, is_on_support=True, is_lifted=False)
-    r1 = evaluator.evaluate_step(4, is_on_support=True, is_lifted=False)
-    assert r1.confirmed_cycles == 1
-    assert r1.completed_subgoals == 1
-    assert abs(r1.scr - (1.0 / 3.0)) < 1e-4
-
-    # Cycle 2: 2 steps lift, 2 steps return
-    evaluator.evaluate_step(5, is_on_support=False, is_lifted=True)
-    evaluator.evaluate_step(6, is_on_support=False, is_lifted=True)
-    evaluator.evaluate_step(7, is_on_support=True, is_lifted=False)
-    r2 = evaluator.evaluate_step(8, is_on_support=True, is_lifted=False)
-    assert r2.confirmed_cycles == 2
-    assert r2.completed_subgoals == 2
-    assert abs(r2.scr - (2.0 / 3.0)) < 1e-4
-
-    # Cycle 3: 2 steps lift, 2 steps return -> Full success!
-    evaluator.evaluate_step(9, is_on_support=False, is_lifted=True)
-    evaluator.evaluate_step(10, is_on_support=False, is_lifted=True)
-    evaluator.evaluate_step(11, is_on_support=True, is_lifted=False)
-    r3 = evaluator.evaluate_step(12, is_on_support=True, is_lifted=False)
-    assert r3.full_success
-    assert r3.scr == 1.0
-    assert not r3.overshot
-    assert r3.confirmed_cycles == 3
-
-    # Extra lift with dwell causes overshoot!
-    evaluator.evaluate_step(13, is_on_support=False, is_lifted=True)
-    r_over = evaluator.evaluate_step(14, is_on_support=False, is_lifted=True)
-    assert r_over.overshot
-    assert not r_over.full_success
+def tick(e,predicate):
+    e.predicate=predicate
+    e._check_success()  # upstream reward call
+    e._check_success()  # upstream step call
+    return e._check_success(inc=True)
 
 
-def test_libero_mem_env_step_and_observation():
-    env = LiberoMemEnv(
-        task_name="KITCHEN_SCENE1_1_pick_up_the_bowl_and_place_it_back_on_the_plate",
-        target_cycles=1,
-        privileged_oracle=True,
-    )
-    obs = env.reset()
-    assert "agentview_image" in obs
-    assert "robot0_eye_in_hand_image" in obs
-    assert obs["robot0_eef_pos"].shape == (3,)
-    assert obs["robot0_gripper_qpos"].shape == (2,)
+def test_intermediate_true_is_not_full_sequence_or_terminal_success():
+    e=upstream_fixture();metric=LiberoMemEvaluator('T3',3)
+    for i in range(7):tick(e,True)
+    for i in range(16):tick(e,False)
+    e.predicate=True
+    assert e._check_success()  # the reward read can commit the intermediate milestone
+    e._check_success()
+    e._check_success(inc=True)
+    r=metric.observe(24,e,True)
+    assert r.completed_subgoals==1 and r.scr==pytest.approx(1/3) and not r.full_success
 
-    action = np.zeros(7, dtype=np.float32)
-    next_obs, reward, done, info = env.step(action)
-    assert "eval_result" in info
-    assert "scr" in info
-    assert "oracle_signals" in info
+
+def test_terminal_requires_complete_final_predicate_and_no_overshoot():
+    e=upstream_fixture(1);metric=LiberoMemEvaluator('T1',1)
+    for _ in range(7):tick(e,True)
+    for _ in range(16):tick(e,False)
+    tick(e,True)
+    assert metric.observe(24,e,True).full_success is False
+    assert metric.observe(25,e,True,terminal=True).full_success
+    e._overshot=True
+    assert not metric.observe(26,e,True,terminal=True).full_success
+
+
+def test_upstream_counter_is_cumulative_and_inc_false_can_commit():
+    e=upstream_fixture(1)
+    for _ in range(6):e._check_success(inc=True)
+    e.predicate=False
+    for _ in range(16):e._check_success(inc=True)
+    # Source does not reset live counter on False; inc=False may append a goal.
+    assert e._sub_goal_live_time==6
+    e.predicate=True
+    assert e._check_success(inc=False)
+    assert len(e._satisfied_subgoals)==1
+    for _ in range(7):tick(e,False)
+    assert e._overshot
+    assert not tick(e,True)
+
+
+def test_metric_observation_is_read_only_and_ordered():
+    e=upstream_fixture();metric=LiberoMemEvaluator('T3',3)
+    before=(list(e._satisfied_subgoals),e._sub_goal_live_time,e._sub_goal_nonlive_time,e._overshot)
+    metric.observe(0,e,True)
+    assert before==(e._satisfied_subgoals,e._sub_goal_live_time,e._sub_goal_nonlive_time,e._overshot)
+    with pytest.raises(ValueError):metric.observe(0,e,True)
+
+
+def test_protocol_is_explicitly_custom_and_excludes_unsupported_tasks():
+    p=load_protocol()
+    assert not p['official_paper_comparable']
+    assert task_spec(p,'T1')['target_cycles']==1
+    assert task_spec(p,'T3')['target_cycles']==3
+    with pytest.raises(ValueError):task_spec(p,'T10')

@@ -31,7 +31,8 @@ def main():
     p.add_argument("--model-dir", type=Path, default=ROOT / "resources/models/grounding-dino-tiny")
     p.add_argument("--device", default="cuda")
     p.add_argument("--max-episodes", type=int)
-    p.add_argument("--split", choices=["train", "val"])
+    p.add_argument("--split", choices=["train", "val", "test"])
+    p.add_argument("--split-lock", type=Path, help="Required when producing memory for the mixed training dataset")
     args = p.parse_args()
     out = args.output_dir
     if out.exists():
@@ -47,7 +48,7 @@ def main():
     detector = GroundingDinoDetector(args.model_dir, args.device) if args.stream == "predicted_memory" else None
     config = TrackerConfig()
     factory = visual_writer_factory(detector, "libero_mem_refined", config)
-    loader = LiberoMemHDF5Parser(args.data_dir)
+    loader = LiberoMemHDF5Parser(args.data_dir, split_lock=args.split_lock)
     out.mkdir(parents=True)
     episodes, total, with_memory = [], 0, 0
     with (out / "samples.jsonl").open("w", encoding="utf-8") as samples, \
@@ -81,6 +82,10 @@ def main():
         raise ValueError("No episodes selected; no completed manifest was written")
     write_json(out / "manifest.json", dict(artifact="causal_prompt_index_not_training_shards", status="complete",
         writer="rgb_cycle_v3" if detector else "none", writer_config=asdict(config), stream=args.stream,
+        split_lock_sha256=loader.split_lock["lock_sha256"] if loader.split_lock else None,
+        writer_code_sha256={str(p.relative_to(ROOT)).replace("\\", "/"): sha256(p)
+                            for directory in ("src/perception", "src/memory", "src/interfaces")
+                            for p in sorted((ROOT / directory).glob("*.py"))},
         sources=sources, source_revision=lock["annotated_dataset"]["revision"],
         detector=detector.provenance if detector else None, tokenizer_revision=TOKENIZER_REVISION,
         obs_action_offset=0, image_convention="libero_mem_refined", max_total_tokens=48,

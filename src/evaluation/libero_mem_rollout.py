@@ -43,6 +43,7 @@ class RolloutResult:
     termination_reason: str
     prompt_history: List[str] = field(default_factory=list)
     memory_trace: List[Dict[str, Any]] = field(default_factory=list)
+    evaluator_provenance: Dict[str, Any] = field(default_factory=dict)
 
 
 class LiberoMemRolloutRunner:
@@ -89,6 +90,10 @@ class LiberoMemRolloutRunner:
             raise ValueError("F1 requires an explicit RGB writer_factory with the online camera convention")
         if getattr(self.env, "use_real_sim", None) is False:
             raise RuntimeError("Benchmark runner refuses the simulator's kinematic fixture/fallback mode")
+        if hasattr(self.env, "protocol"):
+            protocol = self.env.protocol["rollout"]
+            if self.max_steps != protocol["horizon_policy_actions"] or self.execution_horizon != protocol["execution_horizon"]:
+                raise ValueError("Rollout horizon differs from the locked protocol; create a separate protocol for an ablation")
         if hasattr(self.policy, "reset") and callable(self.policy.reset):
             self.policy.reset()
 
@@ -218,4 +223,6 @@ class LiberoMemRolloutRunner:
             termination_reason=term_reason,
             prompt_history=prompt_history,
             memory_trace=memory_trace,
+            evaluator_provenance={key: info[key] for key in
+                ("protocol_id", "split_lock_sha256", "source_demo", "initial_state_sha256") if key in info},
         )

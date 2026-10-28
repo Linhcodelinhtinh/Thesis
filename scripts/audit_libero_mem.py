@@ -1,244 +1,91 @@
 #!/usr/bin/env python
-"""Conformance and conformance gate audit for LIBERO-Mem.
-
-Adheres strictly to docs/V2_LIBERO_MEM_IMPLEMENTATION_PLAN.md Section 12:
-- Audits benchmark configuration and task specifications.
-- Validates evaluator conformance (SCR, sequence progress, overshoot).
-- Validates repeated predicate intervals for multi-cycle tasks (T3).
-- Validates isolation and clean reset lifecycle.
-- Outputs an auditable JSON conformance report.
-"""
-
+"""Real T1/T3 demo replay against locked upstream evaluator; no policy/fixture score."""
+import argparse
+from dataclasses import asdict
+import importlib.metadata
 import json
 from pathlib import Path
 import sys
-from typing import Any, Dict
+import time
+ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT))
+import h5py
 import numpy as np
-import yaml
-
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
-
-from src.evaluation.libero_mem_metrics import LiberoMemEvaluator
-from src.memory.event_writer import LiberoMemEventWriter
 from src.simulator.libero_mem_env import LiberoMemEnv
-
-
-def audit_config() -> Dict[str, Any]:
-    config_path = ROOT / "configs/benchmarks/libero_mem_pilot.yaml"
-    if not config_path.is_file():
-        return {"status": "FAIL", "reason": "Config file missing"}
-
-    data = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-    tasks = data.get("tasks", [])
-    if len(tasks) < 2:
-        return {"status": "FAIL", "reason": "Expected at least 2 pilot tasks"}
-
-    t1 = next((t for t in tasks if t.get("alias") == "T1"), None)
-    t3 = next((t for t in tasks if t.get("alias") == "T3"), None)
-
-    if not t1 or t1.get("target_cycles") != 1:
-        return {"status": "FAIL", "reason": "T1 target_cycles != 1"}
-    if not t3 or t3.get("target_cycles") != 3:
-        return {"status": "FAIL", "reason": "T3 target_cycles != 3"}
-
-    return {
-        "status": "PASS",
-        "benchmark_name": data.get("benchmark_name"),
-        "provenance_tag": data.get("provenance_tag"),
-        "num_tasks": len(tasks),
-        "t1_task": t1.get("name"),
-        "t3_task": t3.get("name"),
-    }
-
-
-def audit_evaluator_conformance() -> Dict[str, Any]:
-    evaluator = LiberoMemEvaluator(
-        task_name="KITCHEN_SCENE1_3_lift_the_bowl_and_place_it_back_on_the_plate_3_times",
-        target_cycles=3,
-        target_object="bowl",
-        support_object="plate",
-        dwell_steps=2,
-        live_time_threshold=0,
-        nonlive_time_threshold=0,
-        overshoot_threshold=0,
-    )
-
-    # Initially at rest
-    res0 = evaluator.evaluate_step(step=0, is_on_support=True, is_lifted=False)
-    assert res0.scr == 0.0
-    assert not res0.full_success
-    assert res0.confirmed_cycles == 0
-
-    # Cycle 1: Lift (2 dwell steps)
-    evaluator.evaluate_step(step=10, is_on_support=False, is_lifted=True)
-    res1 = evaluator.evaluate_step(step=11, is_on_support=False, is_lifted=True)
-    assert res1.completed_subgoals == 0  # Lifted is departure phase
-    assert res1.scr == 0.0
-
-    # Cycle 1: Return (2 dwell steps)
-    evaluator.evaluate_step(step=20, is_on_support=True, is_lifted=False)
-    res2 = evaluator.evaluate_step(step=21, is_on_support=True, is_lifted=False)
-    assert res2.completed_subgoals == 1
-    assert res2.confirmed_cycles == 1
-    assert abs(res2.scr - (1.0 / 3.0)) < 1e-4
-
-    # Cycle 2: Lift & Return (2 dwell steps each)
-    evaluator.evaluate_step(step=30, is_on_support=False, is_lifted=True)
-    evaluator.evaluate_step(step=31, is_on_support=False, is_lifted=True)
-    evaluator.evaluate_step(step=40, is_on_support=True, is_lifted=False)
-    res3 = evaluator.evaluate_step(step=41, is_on_support=True, is_lifted=False)
-    assert res3.confirmed_cycles == 2
-    assert res3.completed_subgoals == 2
-    assert abs(res3.scr - (2.0 / 3.0)) < 1e-4
-
-    # Cycle 3: Lift & Return -> Full success!
-    evaluator.evaluate_step(step=50, is_on_support=False, is_lifted=True)
-    evaluator.evaluate_step(step=51, is_on_support=False, is_lifted=True)
-    evaluator.evaluate_step(step=60, is_on_support=True, is_lifted=False)
-    res4 = evaluator.evaluate_step(step=61, is_on_support=True, is_lifted=False)
-    assert res4.confirmed_cycles == 3
-    assert res4.completed_subgoals == 3
-    assert res4.scr == 1.0
-    assert res4.full_success
-    assert not res4.overshot
-
-    # Overshoot test: 4th lift with dwell!
-    evaluator.evaluate_step(step=70, is_on_support=False, is_lifted=True)
-    res5 = evaluator.evaluate_step(step=71, is_on_support=False, is_lifted=True)
-    assert res5.overshot
-    assert not res5.full_success  # Overshot voids full success
-
-    # Clean reset test
-    evaluator.reset()
-    res_reset = evaluator.evaluate_step(step=0, is_on_support=True, is_lifted=False)
-    assert res_reset.scr == 0.0
-    assert not res_reset.overshot
-    assert res_reset.confirmed_cycles == 0
-
-    return {
-        "status": "PASS",
-        "scr_calculation": "verified",
-        "ordered_sequence": "verified",
-        "repeated_predicate_intervals": "verified",
-        "dwell_validation": "verified",
-        "overshoot_detection": "verified",
-        "reset_isolation": "verified",
-    }
-
-
-def audit_writer_fsm() -> Dict[str, Any]:
-    writer = LiberoMemEventWriter(
-        episode_id="audit_ep_1",
-        target_object_id="bowl_A",
-        dwell_steps=2,
-    )
-
-    # Initial resting state: no unobserved relation
-    snap0 = writer.get_snapshot()
-    assert snap0.cycles["bowl_A_plate_A"].confirmed == 0
-    assert not snap0.cycles["bowl_A_plate_A"].in_progress
-
-    # Step 1-2: Displaced observation with visual detection evidence
-    obs_displaced = {
-        "robot0_eef_pos": np.array([0.0, 0.0, 1.2], dtype=np.float32),
-        "robot0_gripper_qpos": np.array([0.01, 0.01], dtype=np.float32),
-        "detected_objects": {"bowl_A": np.array([0.0, 0.0, 1.2], dtype=np.float32)},
-    }
-    writer.step(1, obs_displaced, None)
-    writer.step(2, obs_displaced, None)
-
-    # Departure confirmed after 2 dwell steps
-    snap1 = writer.get_snapshot()
-    assert snap1.cycles["bowl_A_plate_A"].in_progress
-
-    # Step 3-4: Return steps with visual detection evidence
-    obs_return = {
-        "robot0_eef_pos": np.array([-0.05, 0.20, 0.85], dtype=np.float32),
-        "robot0_gripper_qpos": np.array([0.05, 0.05], dtype=np.float32),
-        "detected_objects": {"bowl_A": np.array([-0.05, 0.20, 0.85], dtype=np.float32)},
-    }
-    writer.step(3, obs_return, None)
-    writer.step(4, obs_return, None)
-
-    # Return confirmed after 2 dwell steps!
-    snap2 = writer.get_snapshot()
-    assert snap2.cycles["bowl_A_plate_A"].confirmed == 1
-    assert not snap2.cycles["bowl_A_plate_A"].in_progress
-
-    return {
-        "status": "PASS",
-        "fsm_departure_hysteresis": "verified",
-        "fsm_return_hysteresis": "verified",
-        "cycle_counter_accuracy": "verified",
-    }
-
-
-def audit_upstream_environment() -> Dict[str, Any]:
-    """Check whether upstream LIBERO-Mem repository and assets are linked and validated."""
-    upstream_dir = Path(__file__).resolve().parent.parent / "external" / "libero-mem"
-    if not upstream_dir.exists():
-        return {
-            "status": "FAIL",
-            "reason": "MISSING_UPSTREAM_CHECKOUT",
-            "details": "external/libero-mem not found. Upstream BDDL/MuJoCo integration pending.",
-        }
-
-    # Verify canonical dataset assets
-    data_dir = Path(__file__).resolve().parent.parent / "data" / "libero_mem"
-    meta_path = data_dir / "metainfo.json"
-    t1_path = data_dir / "KITCHEN_SCENE1_1_pick_up_the_bowl_and_place_it_back_on_the_plate_demo.hdf5"
-    t3_path = data_dir / "KITCHEN_SCENE1_3_lift_the_bowl_and_place_it_back_on_the_plate_3_times_demo.hdf5"
-    if not (meta_path.exists() and t1_path.exists() and t3_path.exists()):
-        return {
-            "status": "FAIL",
-            "reason": "MISSING_PILOT_DATASETS",
-            "details": f"Missing required dataset files in {data_dir}.",
-        }
-
-    # Verify contract probes report
-    probe_results_path = Path(__file__).resolve().parent.parent / "experiments" / "audits" / "libero_mem_completeness_20261023" / "contract_results.json"
-    probes_passed = False
-    failed_count = 0
-    if probe_results_path.exists():
-        try:
-            results = json.loads(probe_results_path.read_text(encoding="utf-8"))
-            failed_count = results.get("failed", 0)
-            probes_passed = (failed_count == 0)
-        except Exception:
-            pass
-
-    return {
-        "status": "PASS" if probes_passed else "FAIL",
-        "path": str(upstream_dir),
-        "dataset_files": "verified",
-        "contract_probes_passed": probes_passed,
-        "failed_contract_probes": failed_count,
-    }
+from src.evaluation.libero_mem_protocol import DEFAULT_PROTOCOL, source_digest
+from src.utils.file_hash import sha256_file
 
 
 def main():
-    report = {
-        "benchmark_config": audit_config(),
-        "evaluator_conformance": audit_evaluator_conformance(),
-        "writer_fsm_conformance": audit_writer_fsm(),
-        "upstream_environment_conformance": audit_upstream_environment(),
-    }
+    p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--split-lock',required=True)
+    p.add_argument('--data-dir',type=Path,default=ROOT/'data/libero_mem')
+    p.add_argument('--tasks',nargs='+',default=['T1','T3'],choices=['T1','T3'])
+    p.add_argument('--demo-ids',nargs='+',type=int,default=[1])
+    p.add_argument('--output',type=Path,required=True)
+    a=p.parse_args()
+    if a.output.exists():raise FileExistsError('Use a fresh conformance output')
+    a.output.mkdir(parents=True)
+    report=dict(classification='REAL_DEMONSTRATION_REPLAY_NOT_POLICY_SCORE',status='running',
+                protocol_sha256=source_digest(DEFAULT_PROTOCOL),split_file_sha256=sha256_file(a.split_lock),
+                runtime={k:importlib.metadata.version(k) for k in ['robosuite','numpy','mujoco','bddl','robomimic']},episodes=[])
+    for task in a.tasks:
+        env=LiberoMemEnv(task,split_lock=a.split_lock,split='train',purpose='demo_replay')
+        try:
+            for demo_id in a.demo_ids:
+                key='demo_'+str(demo_id)
+                index=next(i for i,e in enumerate(env.episodes) if e['demo']==key)
+                first=env.reset(index)
+                env.upstream._overshot=True  # reset isolation probe only, before replay begins
+                obs=env.reset(index)
+                reset_error=max(float(np.max(np.abs(first[k].astype(float)-obs[k].astype(float)))) for k in first)
+                if reset_error>1e-6 or env.upstream._overshot or env.upstream._satisfied_subgoals:
+                    raise AssertionError('Repeated exact-state reset is not isolated/reproducible')
+                original=env.upstream._check_success
+                calls=[]
+                def counted(*args,**kwargs):
+                    calls.append(bool(kwargs.get('inc',args[0] if args else False)))
+                    return original(*args,**kwargs)
+                env.upstream._check_success=counted
+                task_path=a.data_dir/(env.task_name+'_demo.hdf5')
+                pose_errors=[];quat_errors=[];image_errors=[];timestamps=[]
+                started=time.perf_counter()
+                try:
+                    with h5py.File(task_path,'r') as f, (a.output/(task+'_'+str(demo_id)+'_trace.jsonl')).open('w') as trace:
+                        g=f['data'][key];actions=g['actions'][:];robot=g['robot_states'][:]
+                        for t in range(len(actions)):
+                            pose_errors.append(float(np.linalg.norm(obs['robot0_eef_pos']-robot[t,2:5])))
+                            q=obs['robot0_eef_quat'];qt=robot[t,5:9]
+                            quat_errors.append(float(min(np.linalg.norm(q-qt),np.linalg.norm(q+qt))))
+                            if t%20==0:
+                                actual=obs['agentview_image'][::-1].astype(float)
+                                image_errors.append(float(np.mean(np.abs(actual-g['obs/agentview_rgb'][t]))))
+                            info=dict(env.last_info);info['eval_result']=asdict(info['eval_result'])
+                            trace.write(json.dumps(dict(frame=t,info=info,eef_error=pose_errors[-1]))+'\n')
+                            if t%50==0:print(task,key,t,'count',len(env.upstream._satisfied_subgoals),'eef_error',pose_errors[-1],flush=True)
+                            if env._is_done:break
+                            # The final target is not executed: no corresponding source next observation.
+                            if t+1<len(actions):obs,_,_,_=env.step(actions[t])
+                        count=len(env.upstream._satisfied_subgoals)
+                        result=dict(task=task,demo=key,frames_observed=len(pose_errors),
+                            source_frames=len(actions),completed=count,target=env.target_cycles,
+                            final_predicate=env.last_info['final_predicate'],overshot=env.upstream._overshot,
+                            reset_max_error=reset_error,inc_true_calls=sum(calls),inc_false_calls=len(calls)-sum(calls),
+                            eef_error_median_m=float(np.median(pose_errors)),eef_error_max_m=max(pose_errors),
+                            quaternion_error_max=max(quat_errors),rgb_mae_sampled=float(np.mean(image_errors)),
+                            elapsed_seconds=time.perf_counter()-started)
+                        if sum(calls)!=len(pose_errors)-1:raise AssertionError('Incorrect explicit increment cadence')
+                        result['sequence_replay_passed']=count==env.target_cycles and not env.upstream._overshot and bool(env.last_info['final_predicate'])
+                        report['episodes'].append(result)
+                        print(json.dumps(result),flush=True)
+                finally:env.upstream._check_success=original
+                (a.output/'report.json').write_text(json.dumps(report,indent=2)+'\n')
+        finally:env.close()
+    report['status']='passed' if all(e['sequence_replay_passed'] for e in report['episodes']) else 'replay_mismatch'
+    report['scope']='This verifies selected demonstration replay and reset/call schedule, not a policy benchmark or author-runtime equivalence.'
+    (a.output/'report.json').write_text(json.dumps(report,indent=2)+'\n')
+    print(report['status'])
+    if report['status']!='passed':raise SystemExit(2)
 
-    unit_pass = (
-        report["benchmark_config"].get("status") == "PASS"
-        and report["evaluator_conformance"].get("status") == "PASS"
-        and report["writer_fsm_conformance"].get("status") == "PASS"
-    )
-    report["unit_contract_conformance"] = "PASS" if unit_pass else "FAIL"
 
-    upstream_ready = report["upstream_environment_conformance"].get("status") == "PASS"
-    report["overall_runtime_readiness"] = "READY" if (unit_pass and upstream_ready) else "NOT_READY"
-
-    print(json.dumps(report, indent=2))
-    if not unit_pass:
-        sys.exit(1)
-
-
-if __name__ == "__main__":
-    main()
+if __name__=='__main__':main()
