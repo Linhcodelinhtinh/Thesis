@@ -45,7 +45,7 @@ def parse_args():
     parser.add_argument(
         "--execution-horizon",
         type=int,
-        default=50,
+        default=10,
         choices=[1, 5, 10, 25, 50],
         help="Receding horizon execution steps s per predicted chunk.",
     )
@@ -53,10 +53,10 @@ def parse_args():
     parser.add_argument(
         "--max-steps",
         type=int,
-        default=1000,
+        default=500,
         help="Maximum allowable steps (official benchmark standard is 1000).",
     )
-    parser.add_argument("--device", type=str, default=None, help="Device to run policy on (cpu, cuda).")
+    parser.add_argument("--device", type=str, default="cuda", help="Device to run policy on (cpu, cuda).")
     parser.add_argument(
         "--output-dir",
         type=str,
@@ -66,13 +66,13 @@ def parse_args():
     parser.add_argument(
         "--record-video",
         action="store_true",
-        default=False,
+        default=True,
         help="Capture camera frames and save an MP4 video of the rollout.",
     )
     parser.add_argument(
         "--record-video-policy",
         type=str,
-        default="all",
+        default="failed_and_first",
         choices=["all", "failed_and_first", "none"],
         help="Video recording persistence policy: 'all', 'failed_and_first', or 'none'.",
     )

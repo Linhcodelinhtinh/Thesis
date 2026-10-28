@@ -1,50 +1,86 @@
-# ARCHITECTURE — Persistent External Memory for Frozen VLA Manipulation
+# ARCHITECTURE — Persistent External Memory for VLA Robot Manipulation
 
 > **Research-Oriented System Architecture Document**  
-> Trọng tâm hệ thống là nghiên cứu **Persistent External Memory cho Frozen Vision-Language-Action (VLA) Policy trong Closed-Loop Robot Manipulation** dưới điều kiện quan sát một phần (Partial Observability).  
-> Simulator (LIBERO/Robosuite), Robot (UR3/Panda), và VLA model (SmolVLA/MiniVLA) chỉ đóng vai trò **experimental substrate**, không phải contribution cốt lõi.
+> Trọng tâm hệ thống là nghiên cứu **Persistent External Memory cho Vision-Language-Action (VLA) Policy trong Closed-Loop Robot Manipulation** dưới điều kiện quan sát một phần (Partial Observability) và nhiệm vụ thao tác nhiều chu kỳ (Multi-cycle Manipulation).  
+> Simulator (LIBERO/Robosuite), Robot (Franka Panda), và VLA model (SmolVLA) đóng vai trò **experimental substrate**, phục vụ đo đạc hiệu năng của cơ chế memory.
 
 ---
 
-## 1. Research Objective & Core Loop
+## 1. Research Objective & System Dual-Loop Architecture
 
-Mục tiêu chính của luận văn là chứng minh một **lớp memory bên ngoài (external, lightweight, training-free)** có thể giúp một **frozen VLA** duy trì và khai thác thông tin từ quá khứ khi thông tin đó không thể khôi phục đầy đủ từ quan sát hiện tại (current observation).
+Mục tiêu chính của luận văn là chứng minh một **lớp memory bên ngoài (external, structured, perception-grounded memory layer)** có thể giúp VLA policy duy trì và khai thác thông tin từ quá khứ khi thông tin đó không thể khôi phục đầy đủ từ quan sát hiện tại (current observation).
+
+Hệ thống hỗ trợ hai đường tích hợp thực nghiệm:
+1. **Zero-Shot Prompt Conditioning (V2.1 Frozen VLA)**: Tiêm context memory dạng văn bản vào task prompt của mô hình VLA đã freeze ($W_{\text{VLA}} = \text{const}$).
+2. **Mixed Memory-Augmented SFT Adaptation (V2.2 Action-Expert LoRA)**: Thích ứng Action-Expert của VLA thông qua Supervised Fine-Tuning kết hợp **50% Base Replay + 50% Memory Data**, giúp mô hình học cách điều kiện hóa phân phối hành động theo token memory mà không bị lãng quên thảm khốc (catastrophic forgetting) các kỹ năng thao tác cơ bản.
 
 ```text
-Current Observation (t) ──┐
-                          ▼
-Evidence Sources ──► Perception / Tracker ──► Memory Update ──► Persistent World Memory
-                                                                        │
-Task Instruction ───────────────────────────────────────────────► Task Retrieval
-                                                                        │
-                        ┌───────────────────────────────────────────────┴──────────────┐
-                        ▼                                                              ▼
-               Text Memory Interface                                        Spatial Memory Interface
-             (Compact factual context)                                     (3D anchor → 2D marker)
-                        │                                                              │
-                        └───────────────────────┬──────────────────────────────────────┘
-                                                ▼
-                                    Memory-Augmented Context
-                                                ▼
-                                      Frozen VLA Policy
-                                                ▼
-                                       Action Chunk (H)
-                                                ▼
-                                 Commit s steps via Controller
-                                                ▼
-                                       Robot / Simulator
-                                                │
-                                                ▼
-                                    New Observation (t+s) ──► (Loop)
+                                 [WORLD / SIMULATOR]
+                                          │
+                   ┌──────────────────────┴──────────────────────┐
+                   │ Observation RGB-D (256x256)                 │ Proprioception (8D)
+                   ▼                                             ▼
+     ┌───────────────────────────┐                 ┌───────────────────────────┐
+     │ Perception Worker (IPC)   │                 │ Action & State Feedback   │
+     │ Grounding DINO Zero-Shot  │                 │ Gripper aperture /contacts│
+     │ Causal Object Tracker     │                 │ Execution chunk status    │
+     └─────────────┬─────────────┘                 └─────────────┬─────────────┘
+                   │ Bounding Boxes & Anchors                    │ Kinematic events
+                   └──────────────────────┬──────────────────────┘
+                                          ▼
+                         ┌─────────────────────────────────┐
+                         │   Visual Event Memory Writer    │
+                         │   (FSM: Departure / Return)     │
+                         │   Hysteresis & Gap Tracking     │
+                         └────────────────┬────────────────┘
+                                          ▼
+                         ┌─────────────────────────────────┐
+                         │    Persistent Episode Memory    │
+                         │    • Immutable Event History    │
+                         │    • Cycle Count / Status       │
+                         │    • Provenance & Confidence    │
+                         └────────────────┬────────────────┘
+                                          │
+                    Task Instruction      ▼
+            ────────────────────────►┌─────────────────────────────────┐
+                                     │ Task-Conditioned Retrieval      │
+                                     │ Filter stale, rank relevance    │
+                                     └────────────────┬────────────────┘
+                                                      ▼
+                                     ┌─────────────────────────────────┐
+                                     │ Token-Aware Text Renderer       │
+                                     │ Strict Budget <= 48 tokens      │
+                                     │ Privilege Gated (No Oracle)     │
+                                     └────────────────┬────────────────┘
+                                                      │
+                                                      ▼
+                                            Augmented Prompt Context
+                                                      │
+                                                      ▼
+                                     ┌─────────────────────────────────┐
+                                     │         VLA Policy Stack        │
+                                     │ • Track 1: Frozen SmolVLA       │
+                                     │ • Track 2: Action-Expert LoRA   │
+                                     └────────────────┬────────────────┘
+                                                      │ Action Chunk H = 50
+                                                      ▼
+                                     ┌─────────────────────────────────┐
+                                     │    OSC_POSE Controller (20 Hz)  │
+                                     │    Receding Horizon (s = 50)    │
+                                     └────────────────┬────────────────┘
+                                                      │ Joint Torques
+                                                      ▼
+                                             [Franka Panda Robot]
 ```
 
 ---
 
 ## 2. Research Questions (RQ)
 
-* **RQ1 (Utility)**: Liệu persistent external memory có cải thiện đáng kể hiệu năng manipulation của một frozen VLA trong các tác vụ mà thông tin quan trọng bị che khuất hoặc biến mất khỏi observation hiện tại?
-* **RQ2 (Modality Ablation)**: Vai trò tương đối và mức độ đóng góp độc lập của Spatial Memory (hình học 3D) so với Textual Episodic Memory (sự kiện, trạng thái) là gì?
-* **RQ3 (Robustness & Dynamics)**: Hệ thống thích ứng như thế nào trước nhiễu định vị (spatial noise), độ trễ/lạc hậu (staleness), độ bất định (uncertainty) và độ dài horizon thực thi chunk?
+* **RQ1 (Utility & Task Headroom)**: Liệu external episodic memory có cải thiện đáng kể tỷ lệ hoàn thành tác vụ (Task Success Rate) trong các bài toán thao tác đa chu kỳ (multi-cycle) hoặc yêu cầu nhớ trạng thái trước đó (như `LIBERO-Mem` T1/T3)?
+* **RQ2 (Retention & Non-Interference)**: Việc huấn luyện thích ứng với memory tokens (Mixed SFT) có giữ nguyên năng lực thao tác nguyên bản trên các tác vụ không cần memory (LIBERO-10 suite retention) hay gây ra hiện tượng suy giảm kỹ năng?
+* **RQ3 (Perception Grounding vs. Oracle Upper Bound)**: Khoảng cách hiệu năng giữa memory sinh từ visual perception thực tế (`Grounding DINO` + tracker FSM) so với memory sinh từ simulator ground-truth (`OracleMemoryWriter`) là bao nhiêu?
+* **RQ4 (Modality & Interface Robustness)**: Tác động của việc giới hạn token budget ($\le 48$ tokens), hiện tượng mất dấu quan sát (incomplete history / occlusion gap) và định dạng prompt lên độ ổn định điều khiển của policy.
 
 ---
 
@@ -52,423 +88,279 @@ Task Instruction ─────────────────────
 
 > **Memory is information originating from past observations, actions, or world states that remains usable when that information is not recoverable from the current observation alone.**
 
-* **Perception / Tracking $\neq$ Memory**: Nếu vật thể đang visible và tracker xác định được vị trí tại $t$, đó là *Perception*.
-* **Tracking là một Memory Writer**: Memory bắt đầu hoạt động khi vật thể rời khỏi trường nhìn (out-of-view) hoặc bị che khuất (occluded). Khi đó, thông tin quá khứ vẫn được lưu giữ và truy xuất để robot hành động.
+* **Perception $\neq$ Memory**: Nếu vật thể đang visible và tracker đo được bounding box tại frame $t$, đó là *Perception*.
+* **Tracking là một Memory Writer**: Memory bắt đầu hoạt động khi sự kiện diễn ra trong quá khứ (ví dụ: vật thể được nhấc lên, di chuyển ra khỏi vị trí ban đầu rồi đặt trở lại đĩa), và thông tin đó được lưu trữ có cấu trúc để làm căn cứ quyết định cho các chu kỳ tiếp theo khi quan sát tức thời tại $t$ không thể hiện số lần đã lặp lại.
 
 ---
 
 ## 4. Core Design Principles
 
-1. **Frozen Policy First**: Giữ nguyên toàn bộ trọng số của VLA ($W_{\text{VLA}} = \text{const}$). Memory chỉ thay đổi input/context (prompt text hoặc visual marker). Mọi so sánh OFF vs. ON đều đảm bảo tính quy kết nhân quả (causal attribution).
-2. **External & Lightweight**: Không yêu cầu vector database nặng nề hay learned memory network. Memory module triển khai bằng cấu trúc dữ liệu Python, JSON/SQLite và retrieval xác định (deterministic).
-3. **Structured First, Natural Language Second**: Nguồn chân lý duy nhất (single source of truth) là dữ liệu có cấu trúc (`WorldMemory`, `ObjectMemory`, `Event`). Ngôn ngữ tự nhiên (text summary) chỉ là một *rendered interface/view* phục vụ prompt VLA.
-4. **Spatial Memory as 3D World Anchors**: Tọa độ vật thể được lưu theo hệ quy chiếu thế giới 3D ($[x, y, z]$). Khi robot hoặc camera di chuyển, hệ thống chiếu (project) tọa độ 3D lên mặt phẳng camera hiện tại để tạo visual marker 2D ($[u, v]$). Marker 2D chỉ là giao diện hiển thị, không phải memory gốc.
-5. **State Retention Beyond Location**: Memory phải lưu trữ cả trạng thái ngữ nghĩa và quan hệ chứa đựng (container hierarchy, open/closed, grasped, inside) thay vì chỉ lưu tọa độ điểm ảnh cũ.
-6. **First-Class Confidence & Provenance**: Mọi record đều gắn nhãn nguồn gốc (`tracker`, `action_inference`, `env_obs`), mốc thời gian (`first_seen`, `last_confirmed`), độ tin cậy ($c \in [0, 1]$), và trạng thái hiệu lực (`confirmed`, `uncertain`, `stale`, `invalidated`, `unknown`).
+1. **Strict Provenance & Zero Hallucination**: Mọi fact và event trong memory đều phải gắn liền với nguồn chứng cứ (`EvidenceSource.PREDICTED_RGB_TRACKER`, `OBSERVATION_TRACKER`, `ORACLE_SIMULATOR`), mốc thời gian xuất hiện, và độ tin cậy. Nghiêm cấm tự sinh fact giả hoặc suy diễn trạng thái không có căn cứ quan sát.
+2. **Decoupled Perception Worker**: Module thị giác mở (`GroundingDINO`) chạy trong tiến trình worker độc lập (`ProcessVisualDetector`) giao tiếp qua IPC, bảo đảm cách ly hoàn toàn phụ thuộc thư viện (CUDA, PyTorch, Transformers) khỏi môi trường thực thi policy hoặc simulator.
+3. **Structured First, Natural Language as a View**: Single Source of Truth là schema dữ liệu có cấu trúc (`SchemaV2EpisodeMemory`, `V2MemoryEvent`, `ObjectMemory`). Chuỗi văn bản đưa vào prompt chỉ là một phép chiếu (rendered view) tuân thủ ngân sách token của tokenizer gốc.
+4. **Deterministic Paired Comparisons**: Mọi thực nghiệm so sánh (B0 vs F0 vs F1 vs F1-off) phải giữ nguyên tuyệt đối initial state, seed sinh ngẫu nhiên, camera resolution, controller gains và execution horizon $H=50, s=50$.
+5. **Dual-Domain Replay Preservation**: Trong pha SFT, cân bằng chính xác 50% dữ liệu base manipulation và 50% dữ liệu memory-augmented để ngăn ngừa catastrophic forgetting.
+6. **Immutable State Locking**: Tập split train/val/test được nhóm theo hash vector initial-state 64-bit IEEE-754 (`split_lock.py`), bảo đảm không rò rỉ trạng thái khởi tạo giữa tập huấn luyện và tập kiểm định.
 
 ---
 
-## 5. System Boundaries
-
-| Thuộc phạm vi nghiên cứu (Inside Thesis Contribution) | Hạ tầng thực nghiệm (Outside / Infrastructure) |
-|---|---|
-| • World Memory Store & State Representation<br>• Memory Update Policy & Lifecycle<br>• Task-Conditioned Retrieval Engine<br>• Text Memory Interface (render prompt)<br>• Spatial Memory Interface (3D $\to$ 2D projection marker)<br>• Causal & Relational Graph Modeling<br>• Memory Corruption, Noise & Staleness Models<br>• Evaluation Protocols & Ablation Benchmarks | • Pre-trained VLA Backbone (SmolVLA, MiniVLA)<br>• Physics Simulator (MuJoCo, Robosuite, LIBERO)<br>• Robot Hardware (Franka Panda, UR3)<br>• Low-level Cartesian / IK Controllers<br>• SOTA Visual Detectors / Segmenters (SAM, YOLO, XMem)<br>• Rendering engine (EGL, OpenGL)<br>• Dataset loading pipelines |
-
----
-
-## 6. System Architecture & Components
+## 5. System Boundaries & Layer Separation
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                                     WORLD / SIMULATOR                                  │
-└───────────────┬────────────────────────────────────────────────────────┬───────────────┘
-                │ Raw RGB-D / Proprioception                             │ State Changes
-                ▼                                                        ▼
-┌─────────────────────────────────┐                    ┌─────────────────────────────────┐
-│   Perception / Tracking Layer   │                    │     Action / Execution Feedback │
-│  • Stage A: Oracle Tracker      │                    │  • Gripper contact status       │
-│  • Stage B: RGB Detector/Tracker│                    │  • Controller completion flags  │
-└───────────────┬─────────────────┘                    └────────────────┬────────────────┘
-                │ TrackedObject                                         │ Action evidence
-                └───────────────────────────────┬───────────────────────┘
-                                                ▼
-                               ┌─────────────────────────────────┐
-                               │       Memory Update Policy      │
-                               │  CREATE | UPDATE | CONFIRM      │
-                               │  INVALIDATE | DELETE            │
-                               └────────────────┬────────────────┘
-                                                ▼
-                               ┌─────────────────────────────────┐
-                               │     Persistent World Memory     │
-                               │  • Object Memory (3D Pose, State)│
-                               │  • Spatial Memory (3D Anchors)  │
-                               │  • Event & Causal History       │
-                               │  • Semantic Relations           │
-                               └────────────────┬────────────────┘
-                                                │
-                          Query Instruction     ▼
-               ────────────────────────►┌─────────────────────────────────┐
-                                        │ Task-Conditioned Retrieval      │
-                                        │  Filter stale, rank relevance   │
-                                        └───────┬─────────────────┬───────┘
-                                                │                 │
-                                   Compact State│                 │3D Coordinates
-                                                ▼                 ▼
-                               ┌──────────────────┐   ┌───────────────────────────┐
-                               │   Text Interface │   │     Spatial Interface     │
-                               │  Prompt injection│   │  3D → 2D Projection marker│
-                               └────────┬─────────┘   └───────────┬───────────────┘
-                                        │                         │
-                                        └───────────┬─────────────┘
-                                                    ▼
-                                    ┌─────────────────────────────┐
-                                    │      Frozen VLA Policy      │
-                                    │    Generates Chunk H = 50   │
-                                    └───────────────┬─────────────┘
-                                                    ▼
-                                    ┌─────────────────────────────┐
-                                    │  Cartesian / IK Controller  │
-                                    │    Executes s steps         │
-                                    └─────────────────────────────┘
+│ 1. RESEARCH LAYER (Thesis Contributions)                                               │
+│    • Visual Memory Perception & Tracking (Grounding DINO + Causal Tracker)             │
+│    • Visual Event Writer v3 (FSM: Departure / Return / Incomplete History)             │
+│    • Episode Memory Store, Updater, & Immutable Schemas                                │
+│    • Tokenizer-Budgeted Prompt Renderer (LiberoMemTextRenderer, <= 48 tokens)          │
+│    • Mixed Replay SFT Training Protocol (50% Base / 50% Mem)                           │
+│    • Multi-Condition Evaluation Protocol (B0, F0, F1, F1-off) & Milestone Metrics      │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 2. MODEL ADAPTATION LAYER                                                              │
+│    • SmolVLA Base Policy Adapter (lerobot/smolvla_libero @ 31d453f)                    │
+│    • Action-Expert LoRA Adapter (Rank 16 / Alpha 16, Frozen VLM)                       │
+│    • Receding Horizon Chunk Execution Engine (H = 50, s = 50)                          │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 3. SIMULATION & BENCHMARK SUBSTRATE                                                    │
+│    • LIBERO Official Benchmark (Git commit 8f1084e)                                    │
+│    • LIBERO-Mem Multi-Cycle Benchmark (Git commit 6df130c)                             │
+│    • Franka Panda Robot + OSC_POSE Operational Space Controller (20 Hz)                │
+│    • MuJoCo 3.x / Robosuite 1.4.0 Engine (256x256 Dual RGB Cameras)                    │
+└────────────────────────────────────────────────────────────────────────────────────────┘
 ```
-
-### 6.1 Observation Schema
-
-Dữ liệu quan sát chuẩn hóa truyền vào hệ thống:
-
-```python
-class Observation:
-    rgb: dict[str, np.ndarray]       # e.g. {"agentview": (128,128,3), "eye_in_hand": (128,128,3)}
-    depth: dict[str, np.ndarray]     # Optional depth maps
-    instruction: str                 # Natural language task instruction
-    proprioception: np.ndarray       # EEF pose (x, y, z, qx, qy, qz, qw) + gripper state
-    camera_pose: dict[str, np.ndarray] # Extrinsics [R|t] & Intrinsics K per camera
-    timestamp: float                 # Simulation / wall time
-```
-
-### 6.2 Perception & Tracking Layer
-
-Hệ thống hỗ trợ 2 giai đoạn thực nghiệm để cô lập lỗi nhận thức khỏi lỗi memory:
-* **Stage A (Oracle Tracking)**: Lấy ground-truth bounding box và 3D pose trực tiếp từ simulator để kiểm chứng thuật toán memory và retrieval.
-* **Stage B (Realistic Tracking)**: Sử dụng pipeline vision mở (Detector $\to$ Segmenter $\to$ Visual Tracker) để kiểm chứng tính thực tế.
-
-```python
-class TrackedObject:
-    object_id: str
-    semantic_label: str
-    image_bbox: tuple[int, int, int, int] # (xmin, ymin, xmax, ymax)
-    image_center: tuple[int, int]         # (u, v)
-    world_pose: np.ndarray                # 4x4 transformation matrix or [x, y, z, qx, qy, qz, qw]
-    confidence: float                     # [0.0, 1.0]
-    visible: bool                         # True if currently detected in frame
-    timestamp: float
-```
-
-### 6.3 Persistent World Memory & Schemas
-
-Trung tâm lưu trữ hợp nhất toàn bộ trạng thái không gian và ngữ nghĩa của môi trường:
-
-```python
-class ObjectMemory:
-    id: str                               # Unique identifier, e.g. "mustard_bottle_01"
-    semantic_label: str                   # "mustard bottle"
-    world_position: list[float]           # [x, y, z] in world frame
-    orientation: list[float]              # [qx, qy, qz, qw]
-    visible: bool                         # True if currently visible
-    confidence: float                     # Derived certainty score
-    first_seen: float                     # First observation timestamp
-    last_seen: float                      # Last confirmed observation timestamp
-    state: str                            # "on_table", "grasped", "inside", "hidden"
-    container_id: str | None              # ID of parent container (e.g. "drawer_left")
-    relations: list[str]                  # ["inside(drawer_left)", "near(ketchup)"]
-    last_event: str                       # "placed_into(drawer_left)"
-    source: list[str]                     # ["tracker", "action_inference"]
-
-class Event:
-    timestamp: float
-    event_type: str                       # "pick", "place", "open", "close", "disappear"
-    actor: str                            # "robot"
-    object: str                           # "mustard_bottle_01"
-    source_state: str                     # "grasped"
-    target: str | None                    # "drawer_left"
-    target_state: str                     # "inside"
-    confidence: float
-    evidence: list[str]
-```
-
-### 6.4 Spatial Memory & Projection Pipeline
-
-Chuyển đổi 3D anchor thành visual marker 2D phục vụ input thị giác của VLA:
-
-$$\mathbf{p}_{\text{cam}} = \mathbf{R}_{\text{cam}} (\mathbf{p}_{\text{world}} - \mathbf{t}_{\text{cam}})$$
-
-$$\begin{bmatrix} u \\ v \\ 1 \end{bmatrix} \sim \mathbf{K} \begin{bmatrix} X_{\text{cam}} / Z_{\text{cam}} \\ Y_{\text{cam}} / Z_{\text{cam}} \\ 1 \end{bmatrix}$$
-
-* Nếu $Z_{\text{cam}} > 0$ và $(u, v)$ nằm trong khung hình, vẽ visual marker (ví dụ: vòng tròn màu nổi bật có bán kính cố định $r=3\text{ px}$).
-* Marker chỉ là **visual encoding của spatial memory**, màu sắc hay ký hiệu có thể cấu hình được và giữ cố định suốt quá trình đánh giá.
-
-### 6.5 Causal State Transitions & Relations
-
-Hệ thống lưu giữ chuỗi nhân quả của các tương tác thay vì bản ghi log độc lập:
-
-$$\text{Grasp}(O) \xrightarrow{} O.\text{state}=\text{grasped} \xrightarrow{\text{PlaceInto}(O, C)} O.\text{container}=C \xrightarrow{\text{Close}(C)} C.\text{state}=\text{closed} \land O.\text{visible}=\text{False}$$
-
-Các quan hệ nhị phân được chuẩn hóa: `inside(obj, container)`, `on(obj, surface)`, `left_of(a, b)`, `right_of(a, b)`, `near(a, b)`, `grasped_by(robot, obj)`.
-
-### 6.6 Memory Update Policy
-
-Memory được cập nhật qua 5 thao tác cơ bản:
-1. **CREATE**: Khởi tạo object/relation mới khi phát hiện entity chưa từng thấy.
-2. **UPDATE**: Làm mới tọa độ 3D, bounding box khi entity đang visible.
-3. **CONFIRM**: Xác nhận trạng thái sau khi hành động hoàn tất (ví dụ: gripper đóng và nhấc lên $\implies$ `grasped`).
-4. **INVALIDATE**: Đánh dấu `stale` hoặc `uncertain` khi quan sát mâu thuẫn với memory (ví dụ: mở ngăn kéo nhưng không thấy vật).
-5. **DELETE**: Xóa hoặc chuyển vào archive sau một khoảng thời gian hết hạn (expiration threshold).
-
-### 6.7 Task-Conditioned Retrieval Engine
-
-Thuật toán retrieval 6 bước xác định (deterministic) để trích xuất ngữ cảnh tối thiểu phục vụ VLA:
-1. **Entity Identification**: Phân tích task instruction để xác định target object và container liên quan.
-2. **State Lookup**: Truy xuất `ObjectMemory` mới nhất có `confidence` cao nhất của các entity đích.
-3. **Event Extraction**: Trích xuất các sự kiện gần nhất gắn với target object.
-4. **Relation Resolution**: Lấy các quan hệ không gian hiện thời (ví dụ: vật đang nằm trong hộp nào, hộp đang đóng hay mở).
-5. **Staleness Filtering**: Lọc bỏ các bản ghi đã bị invalidate hoặc có timestamp quá hạn.
-6. **Interface Rendering**: Render thông tin thành text context và danh sách 3D spatial points.
-
-### 6.8 Memory-to-VLA Interfaces
-
-* **Text Memory Interface**: Định dạng chuỗi sự kiện/trạng thái súc tích nối vào instruction prompt:
-  ```text
-  Instruction: Take the mustard bottle out.
-  [Memory Context]
-  - mustard_bottle was placed inside drawer_left at t=12.4s.
-  - drawer_left is currently closed.
-  ```
-* **Spatial Memory Interface**: Render marker đồ họa đè trực tiếp lên ảnh RGB quan sát của VLA tại tọa độ $(u, v)$ được chiếu từ 3D anchor.
-* **Tính bổ trợ**: Text Memory giải quyết **CÁI GÌ** (What happened, container, state); Spatial Memory giải quyết **Ở ĐÂU** (Where to search/reach, 3D target coordinates).
 
 ---
 
-## 7. Closed-Loop Control & Execution Architecture
+## 6. Detailed Component Architecture
 
-VLA hoạt động theo cơ chế **Closed-Loop Action Chunking**:
+### 6.1 Perception & Object Tracking Layer (`src/perception/`)
 
-$$O_t \xrightarrow{} \text{Update Memory} \xrightarrow{} \text{Retrieve} \xrightarrow{} \pi_{\text{VLA}}(O_t, M_t) \xrightarrow{} A_{t:t+H}$$
+Lớp nhận thức chịu trách nhiệm trích xuất thông tin thực thể từ quan sát RGB thô mà không sử dụng ground-truth từ simulator:
 
-* **Action Chunk Horizon ($H$)**: Chiều dài chuỗi hành động mô hình dự đoán (ví dụ: $H = 50$).
-* **Execution Horizon ($s$)**: Số bước thực thi thực tế trước khi quan sát lại ($s \in \{1, 5, 10, 25, 50\}$).
-* **Decoupling Controller**: VLA xuất delta Cartesian pose của End-Effector: $(\Delta x, \Delta y, \Delta z, \Delta \text{roll}, \Delta \text{pitch}, \Delta \text{yaw}, \text{gripper}) \implies$ Cartesian Controller $\implies$ Inverse Kinematics (IK) $\implies$ Joint targets cho robot chạy ở 20 Hz. Tách biệt tần số policy (ví dụ: 2-5 Hz) khỏi tần số điều khiển (20-500 Hz).
+* **[GroundingDINO Zero-Shot Detector](file:///d:/Thesis_26/src/perception/grounding_dino.py)**:
+  - Sử dụng checkpoint `IDEA-Research/grounding-dino-tiny` được pin mật mã SHA-256.
+  - Nhận text queries nhắm mục tiêu: `"a metal bowl."`, `"a white plate."`.
+  - Trích xuất bounding boxes và scores chuẩn hóa $[0, 1]$.
+* **[ProcessVisualDetector](file:///d:/Thesis_26/src/perception/process_detector.py)**:
+  - Khởi chạy tiến trình con chạy môi trường `.venv_memory` độc lập.
+  - Giao tiếp tuần tự qua stdin/stdout JSON IPC, truyền ảnh frame hash và bounding boxes.
+  - Ngăn ngừa xung đột phiên bản CUDA/PyTorch giữa LeRobot/SmolVLA và GroundingDINO.
+* **[CausalObjectTracker & VisualObjectTracker](file:///d:/Thesis_26/src/perception/object_tracker.py)**:
+  - Khởi tạo anchor cho support container (`white plate`) tại frame đầu tiên khi gripper mở.
+  - Theo dõi bounding box của target (`metal bowl`) trong không gian ảnh 2D.
+  - Áp dụng cơ chế hysteresis và temporal continuity ($\le 3$ frames) để loại trừ proposal nhiễu.
+  - Hỗ trợ cơ chế cache detection (`--detection-cache`) có kiểm tra hash SHA-256 từng frame RGB.
+
+### 6.2 Visual Event Memory Writer v3 (`src/memory/`)
+
+Bộ sinh memory thế hệ 3 loại bỏ hoàn toàn các giả định heuristic về proprioception (như ngưỡng $z \le 0.95$ vốn gây ra 0 memory frames trên task sách và đĩa):
+
+* **[LiberoMemEventWriter](file:///d:/Thesis_26/src/memory/event_writer.py)**:
+  - **FSM State Machine**: Quản lý các chuyển trạng thái:
+    1. `initial_support_observed`: Xác định quan hệ ban đầu giữa target và support.
+    2. `departed_support`: Mép dưới bounding box của vật thể dịch chuyển lên trên so với support anchor theo tỷ lệ kích thước vật ban đầu (xác nhận nhấc vật).
+    3. `returned_to_support`: Vật thể quay trở lại footprint ban đầu của support, vị trí ổn định, gripper mở (aperture $\ge 0.055$m) liên tục trong 3 frame liên tiếp.
+  - **Hysteresis & Anti-Double-Count**: Bắt buộc phải có một chu kỳ departure mới trước khi cho phép ghi nhận một return tiếp theo.
+  - **Gap & Incomplete History Handling**: Khi mất dấu quan sát (không có detection hợp lệ), hệ thống **không** giả định vật đã rời đi hoặc gán vị trí bằng EEF. Thay vào đó, hệ thống đánh dấu `history_complete = False` và tăng `uncertain_count`.
+* **[LiberoMemOracleWriter](file:///d:/Thesis_26/src/memory/libero_mem_oracle.py)**:
+  - Truy vấn trực tiếp contact physics và simulation state của MuJoCo/Robosuite.
+  - Đóng vai trò đối chứng chẩn đoán (Diagnostic Upper Bound / Oracle Reference).
+
+### 6.3 Memory Store & Immutable Schemas (`src/memory/models.py`)
+
+* **`V2MemoryEvent`**:
+  - Ghi nhận `event_id`, `event_type` (`initial_support_observed`, `departed_support`, `returned_to_support`), `target_entity`, `support_entity`, `occurred_at`, `available_at`, `evidence_ids`, `source`.
+* **`SchemaV2EpisodeMemory`**:
+  - Đóng gói toàn bộ trạng thái memory của episode: `episode_id`, `task_name`, `confirmed_cycles`, `cycle_in_progress`, `history_complete`, `uncertain_count`, `events`.
+  - Thiết kế **Deep Immutability**: Sử dụng `MappingProxyType` và tuple cho các danh sách sự kiện và metadata, loại trừ khả năng sửa đổi trạng thái sau khi đã snapshot.
+
+### 6.4 Token-Aware Text Memory Renderer (`src/interfaces/`)
+
+* **[LiberoMemTextRenderer](file:///d:/Thesis_26/src/interfaces/libero_mem_text.py)**:
+  - **Tokenizer-Strict Budgeting**: Tích hợp trực tiếp tokenizer gốc của SmolVLA (`HuggingFaceTB/SmolVLM2-500M-Video-Instruct`), bảo đảm context bổ sung cộng với instruction gốc không bao giờ vượt quá **48 tokens**.
+  - **Privilege Gate**: Cấm tuyệt đối sự rò rỉ của các fact mang nhãn `ORACLE_SIMULATOR` khi chạy ở chế độ evaluation thực tế (`allow_oracle = False`).
+  - **Compaction Syntax**:
+    - Khi lịch sử đầy đủ:
+      ```text
+      lift the bowl and place it back on the plate 3 times
+      Memory: bowl A: 2 returns to original plate. Cycle underway.
+      ```
+    - Khi có khoảng mất dấu (gap):
+      ```text
+      lift the bowl and place it back on the plate 3 times
+      Memory: bowl A: at least 2 returns to original plate; history incomplete.
+      ```
+    - Khi `condition = "off"`: Bảo toàn nguyên vẹn 100% chuỗi instruction gốc không thêm bất kỳ khoảng trắng hay ký tự lạ nào.
+
+### 6.5 Mixed Memory SFT Training Pipeline (`src/training/`)
+
+* **[MixedMemoryDataset & ReplaySampler](file:///d:/Thesis_26/src/training/mixed_sft.py)**:
+  - **Dual-Domain 50/50 Balance**: Mỗi optimizer batch bao gồm đúng 50% mẫu từ LIBERO-10 Base Replay và 50% mẫu từ LIBERO-Mem Multi-Cycle Demonstrations.
+  - **Round-Robin Task Balancing**: Lấy mẫu đồng đều giữa các task trong từng domain để ngăn các trajectory dài lấn át trajectory ngắn.
+* **[SplitLock Management](file:///d:/Thesis_26/src/training/split_lock.py)**:
+  - Băm toàn bộ vector trạng thái khởi tạo (64-bit float IEEE-754) để nhóm các demo có cùng initial state vào cùng một split (80% Train, 10% Val, 10% Test).
+  - Khóa mật mã `split_lock.json` bảo đảm tuyệt đối không có rò rỉ initial state giữa tập huấn luyện và tập kiểm định.
+* **Kaggle 2×T4 Distributed Execution (`scripts/train_memory_sft.py`)**:
+  - Huấn luyện phân tán qua HuggingFace Accelerate / DDP trên 2 GPU NVIDIA T4.
+  - Sử dụng official Flow-Matching Loss của SmolVLA với Action-Expert LoRA (Rank 16, Alpha 16).
+  - Lưu checkpoint và chạy validation định kỳ mỗi 500 optimizer updates trong tổng số 3,000 updates.
+
+### 6.6 Closed-Loop Rollout Engine & Protocol (`src/evaluation/`)
+
+* **[LiberoMemRolloutRunner](file:///d:/Thesis_26/src/evaluation/libero_mem_rollout.py)**:
+  - Vòng lặp điều khiển kín (Closed-Loop) chạy ở chu kỳ policy receding horizon $H=50, s=50$.
+  - Cập nhật visual memory tại mỗi bước quan sát thông qua `ProcessVisualDetector`.
+  - Quản lý 4 điều kiện thực nghiệm chuẩn hóa:
+    1. **B0**: Checkpoint SmolVLA nguyên bản (Frozen Baseline, Memory OFF).
+    2. **F0**: Checkpoint fine-tune trên tập hỗn hợp nhưng Memory OFF (đối chứng tác động của SFT).
+    3. **F1**: Checkpoint fine-tune với Memory ON (sinh từ visual detector thực tế).
+    4. **F1-off**: Checkpoint F1 nhưng tắt Memory khi inference (ablation kiểm tra mức độ phụ thuộc vào memory).
+* **[LiberoMemMetrics & Protocol](file:///d:/Thesis_26/src/evaluation/libero_mem_metrics.py)**:
+  - Đánh giá theo các milestone chính thức của LIBERO-Mem: nhấc vật (lifted), đặt lên đĩa (on-support), thời gian dwell ($\ge 5$ steps), số chu kỳ hoàn thành, và phát hiện lỗi overshoot.
+
+---
+
+## 7. Closed-Loop Execution Lifecycle
+
+```text
+[Episode Init: Reset Env & Seed]
+              │
+              ▼
+[Observer: Capture 256x256 RGB & 8D State]
+              │
+              ▼
+[Perception: ProcessVisualDetector worker generates bounding boxes]
+              │
+              ▼
+[Writer: LiberoMemEventWriter updates FSM transitions & cycle count]
+              │
+              ▼
+[Store: Snapshot immutable SchemaV2EpisodeMemory]
+              │
+              ▼
+[Interface: LiberoMemTextRenderer encodes prompt (<= 48 tokens)]
+              │
+              ▼
+[Policy: SmolVLA predicts action chunk (50, 7)]
+              │
+              ▼
+[Controller: OSC_POSE executes s=50 steps at 20 Hz in MuJoCo]
+              │
+              ▼
+[Milestone Evaluator: Checks dwell time & cycle success]
+              │
+              ├─────────── If not done ───────────┐
+              ▼                                   │
+[Episode Complete: Log telemetry, video, & traces]│
+                                                  │
+                                                  ▲
+                                                  └── (Loop back to Observer)
+```
 
 ---
 
 ## 8. Memory-Critical Task Taxonomy
 
-Một tác vụ là **Memory-Critical** khi:
-
-$$P(\text{Success} \mid \text{Obs}_t) \ll P(\text{Success} \mid \text{Obs}_t, \text{Memory}_{<t})$$
-
-Hệ thống phân cấp thành 5 bậc tác vụ (Tiers):
-
-| Tier | Phân loại | Mô tả tình huống quan sát | Vai trò thực nghiệm |
+| Task Family | Tác vụ cụ thể | Đặc tính quan sát | Vai trò thực nghiệm |
 |---|---|---|---|
-| **Tier 1** | **Memory-Irrelevant Control** | Target luôn visible trong suốt quá trình thao tác. Ví dụ: gắp khối cube trên bàn để vào khay mở ngay trước mặt. | Đối chứng (Control). Đảm bảo memory ON không làm giảm hiệu năng cơ bản ($OFF \approx ON$). |
-| **Tier 2** | **Short-Term Occlusion** | Target bị che khuất tạm thời trong vài bước hành động (ví dụ: robot di chuyển qua vật cản). | Đánh giá khả năng bám bắt lại mục tiêu nhanh chóng. |
-| **Tier 3** | **Long-Term Spatial Memory** | Robot di chuyển sang vùng khác, target hoàn toàn rời khỏi trường nhìn camera. Cần quay lại vị trí cũ để thao tác tiếp. | Đánh giá Spatial Memory: giảm thời gian tìm kiếm (search time) và quỹ đạo tìm kiếm. |
-| **Tier 4** | **Event & State Memory** | Đặt vật vào hộp/ngăn kéo $\to$ đóng ngăn kéo lại $\to$ yêu cầu lấy vật ra. Quan sát hiện tại chỉ thấy ngăn kéo đóng. | Đánh giá State Memory: nhận diện đúng container cần mở thay vì tìm kiếm mù quáng. |
-| **Tier 5** | **Identity & Relational Memory** | Nhiều vật thể giống hệt nhau hoặc nhiều ngăn kéo tương đồng; cần phân biệt bằng lịch sử tương tác ("lấy vật đặt vào lúc nãy"). | Đánh giá Relational & Disambiguation Memory. |
+| **Retention Suite (LIBERO-10 Subset)** | 7/10 tasks đã khóa nguồn (như `put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it`) | Quan sát thông thường, chuỗi hành động đơn lẻ | Đánh giá Non-Interference: Đo lường xem mô hình có duy trì được năng lực thao tác cơ bản sau khi SFT không. |
+| **LIBERO-Mem T1** | `pick_up_the_bowl_and_place_it_back_on_the_plate` (1 chu kỳ) | Thao tác 1 chu kỳ hoàn chỉnh | Đánh giá năng lực xác nhận hoàn thành thao tác và dừng lại đúng lúc. |
+| **LIBERO-Mem T3** | `pick_up_the_bowl_and_place_it_back_on_the_plate_3_times` (3 chu kỳ) | Vị trí bát và đĩa tại cuối mỗi chu kỳ giống hệt nhau; quan sát tức thời tại $t$ không chứa số chu kỳ đã hoàn thành | Đánh giá cốt lõi: Chứng minh memory cung cấp thông tin lịch sử cần thiết để hoàn thành đủ 3 chu kỳ và dừng lại (tránh dừng sớm hoặc overshoot). |
 
 ---
 
-## 9. Evaluation Protocol, Metrics & Robustness
+## 9. Evaluation Protocol & Statistical Rigor
 
-### 9.1 Evaluation Protocol Invariants
+### 9.1 Invariants Across Evaluations
+- Cùng Model Architecture & Tokenizer.
+- Cùng bộ seed ngẫu nhiên cho từng episode: $\text{seed} = \text{base\_seed} + \text{task\_index} \times 100 + \text{init\_id}$.
+- Cùng cấu hình camera (Dual 256×256) và Controller `OSC_POSE` (20 Hz).
+- Cùng Execution Horizon $H=50, s=50$.
 
-Mọi so sánh giữa các điều kiện phải giữ nguyên tuyệt đối:
-* Cùng Model Checkpoint, seed, initial environment state.
-* Cùng Action Horizon $H$ và Execution Horizon $s$.
-* Cùng Controller gains, camera parameters, và robot kinematics.
-* Điểm khác biệt duy nhất là **Memory Condition**.
-
-### 9.2 Core Metrics
-
-1. **Task Success Rate (%)**: Tỷ lệ hoàn thành tác vụ thành công trong số lần thử.
-2. **Target Reacquisition Time ($t_{\text{reacq}}$)**: Thời gian từ khi target biến mất đến khi nó xuất hiện trở lại trong camera view.
-3. **Search Time ($t_{\text{search}}$)**: Thời gian robot thực hiện các hành vi thăm dò tìm kiếm target.
-4. **Search Trajectory**: Chiều dài đường đi của End-Effector/Camera (Path length) và mức độ chuyển động thừa (Exploratory distance).
-5. **Exploratory Action Count**: Số lượng hành động không hướng tới mục tiêu chính.
-6. **Replan Count**: Số lần gọi policy inference trong một episode.
-7. **Time-to-Success**: Tổng thời gian hoàn thành tác vụ từ đầu đến cuối.
-
-### 9.3 Ablation Matrix
-
-Hệ thống đánh giá trên 5 điều kiện chính:
-
-| Điều kiện (Condition) | Text Memory | Spatial Memory | Oracle State | Mục đích khoa học |
-|---|:---:|:---:|:---:|---|
-| **Stateless (OFF)** | ❌ | ❌ | ❌ | Raw VLA baseline |
-| **Text-Only Memory** | ✅ | ❌ | ❌ | Đóng góp riêng của Semantic/Event Memory |
-| **Spatial-Only Memory** | ❌ | ✅ | ❌ | Đóng góp riêng của 3D Spatial Tracking |
-| **Full Memory (ON)** | ✅ | ✅ | ❌ | Hiệu quả kết hợp hoàn chỉnh |
-| **Oracle Reference** | Opt | Opt | ✅ | Thước đo giới hạn trên (Upper bound/Diagnosis) |
-
-### 9.4 Memory Noise & Staleness Benchmarking
-
-Hệ thống hỗ trợ tiêm nhiễu chủ động để đo lường đường cong suy giảm hiệu năng (Memory Quality Curves):
-* **Spatial Localization Noise**: Thêm offset Gaussian vào tọa độ 3D anchor: $\epsilon \in \{0, 2, 5, 10, 20\}\text{ cm}$.
-* **Temporal Staleness**: Trì hoãn cập nhật memory sau $k$ giây hoặc $N$ bước hành động can thiệp: $\Delta t \in \{0, 1, 5, 15, 30, 60\}\text{ s}$.
-* **Semantic Corruption**: Làm sai lệch có chủ đích nội dung text context (sai container, sai trạng thái, đảo lộn thứ tự sự kiện) để kiểm tra xem policy tin tưởng mù quáng hay có khả năng fallback khi mâu thuẫn quan sát.
+### 9.2 Statistical Estimation (Newcombe Method 10)
+Để loại trừ lỗi suy biến của công thức Wald khi mẫu nhỏ ($N \le 50$) hoặc tỷ lệ thành công ở biên ($0\%$ hoặc $100\%$), mọi so sánh ghép cặp (paired comparison) đều sử dụng:
+* **Newcombe Method 10** cho khoảng tin cậy 95% của hiệu số tỷ lệ thành công: $\Delta \text{SR} = \text{SR}_{\text{Treatment}} - \text{SR}_{\text{Control}}$.
+* **Exact McNemar / Permutation Test** hai phía để kiểm định mức ý nghĩa thống kê ($p$-value).
 
 ---
 
-## 10. Hardware, Simulation & Provenance Strategy
+## 10. Codebase Architecture & Python Interfaces
 
-* **Simulation Track**: Là môi trường đánh giá định lượng chính (quantitative benchmark) nhờ tính tất định, khả năng thiết lập initial state chính xác, kiểm soát độ che khuất và ground-truth poses.
-* **UR3 Real-Robot Track**: Dùng cho kiểm chứng định tính (qualitative validation), kiểm tra nhận thức trong môi trường thực và demo video cuối cùng; không dùng để kết luận định lượng thay cho benchmark chính nếu chưa giải quyết xong bài toán sim-to-real.
-* **Provenance Manifest**: Mỗi lần chạy thực nghiệm tự động ghi lại file JSON metadata:
-  ```json
-  {
-    "git_commit": "8f1084e...",
-    "vla_checkpoint": "smolvla-base",
-    "checkpoint_hash": "a1b2c3...",
-    "environment": "LIBERO-Spatial",
-    "controller": {"type": "OSC_POSE", "H": 50, "s": 5},
-    "memory_condition": "full",
-    "noise_config": {"spatial_noise_cm": 0.0, "staleness_s": 0.0},
-    "seed": 42
-  }
-  ```
-
----
-
-## 11. Codebase Architecture & Core Python Interfaces
-
-### 11.1 Project Structure
+Cấu trúc mã nguồn thực tế của dự án:
 
 ```text
-src/
-├── memory/
-│   ├── models.py            # Data schemas: ObjectMemory, Event, WorldMemory
-│   ├── store.py             # Memory storage backend (in-memory / SQLite)
-│   ├── updater.py           # Evidence integration & update rules
-│   ├── retriever.py         # Task-conditioned retrieval algorithms
-│   ├── confidence.py        # Uncertainty & decay estimators
-│   └── corruption.py        # Noise & staleness injection utilities
-├── interfaces/
-│   ├── text_memory.py       # Prompt formatting & context renderer
-│   └── spatial_memory.py    # 3D-to-2D projection & visual marker painter
-├── perception/
-│   ├── detector.py          # Vision object detector
-│   ├── tracker.py           # Multi-object tracker
-│   └── oracle_tracker.py    # Simulator ground-truth tracker
-├── policies/
-│   ├── base.py              # Abstract VLA policy interface
-│   └── adapters/            # SmolVLA, MiniVLA, OpenVLA wrappers
-├── controllers/
-│   ├── cartesian.py         # Operational space Cartesian controller
-│   └── ik.py                # Inverse kinematics solver
-├── environments/
-│   ├── base.py              # Abstract environment interface
-│   └── libero/              # LIBERO suite wrappers
-└── evaluation/
-    ├── rollout.py           # Execution loop (H, s chunking)
-    ├── metrics.py           # Metrics calculators (reacquisition, search time)
-    ├── protocols.py         # OFF vs ON benchmark runners
-    └── analysis.py          # Plotting & statistical verification
+Thesis_26/
+├── src/
+│   ├── perception/
+│   │   ├── grounding_dino.py       # Zero-shot Grounding DINO model wrapper
+│   │   ├── process_detector.py     # Subprocess IPC worker for isolated perception
+│   │   ├── object_tracker.py       # Visual & causal object trackers with anchor memory
+│   │   ├── visual_evidence.py      # Structured evidence data classes
+│   │   └── cached_detector.py      # Frame-hash verified detection cache
+│   ├── memory/
+│   │   ├── models.py               # Immutable data schemas: V2MemoryEvent, SchemaV2EpisodeMemory
+│   │   ├── event_writer.py         # LiberoMemEventWriter (FSM: lift, return, hysteresis)
+│   │   ├── observation_writer.py   # Legacy proprioceptive FSM writer (diagnostic baseline)
+│   │   ├── libero_mem_oracle.py    # MuJoCo simulation contact/predicate ground-truth writer
+│   │   ├── store.py                # Episode-scoped memory store
+│   │   ├── updater.py              # State transition updater
+│   │   ├── retriever.py            # Task-conditioned memory retrieval
+│   │   └── visual_pipeline.py      # High-level visual memory factory
+│   ├── interfaces/
+│   │   ├── libero_mem_text.py      # Tokenizer-budgeted prompt renderer (<= 48 tokens)
+│   │   └── text_memory.py          # General episodic memory text interface
+│   ├── training/
+│   │   ├── mixed_sft.py            # Mixed SFT dataset & collator
+│   │   ├── replay_sampler.py       # 50/50 dual-domain balanced sampler
+│   │   ├── split_lock.py           # 64-bit IEEE-754 initial-state split locking
+│   │   ├── libero_mem_data.py      # LIBERO-Mem HDF5 data processor
+│   │   └── libero_mem_hdf5_loader.py # Streaming HDF5 trajectory loader
+│   ├── simulator/
+│   │   ├── libero_env.py           # Standard LIBERO MuJoCo environment wrapper
+│   │   ├── libero_mem_env.py       # LIBERO-Mem environment wrapper
+│   │   └── libero_mem_loader.py    # Upstream BDDL loader for T1/T3
+│   ├── models/
+│   │   ├── base.py                 # Abstract VLA policy interface
+│   │   ├── smolvla/                # SmolVLA adapter, action unnormalization, state vector
+│   │   └── minivla/                # MiniVLA adapter (reserved)
+│   ├── evaluation/
+│   │   ├── libero_mem_rollout.py   # Closed-loop evaluation runner (B0, F0, F1, F1-off)
+│   │   ├── libero_mem_metrics.py   # Dwell-time & milestone evaluation
+│   │   ├── libero_mem_protocol.py  # Evaluation condition definitions
+│   │   ├── rollout.py              # Standard rollout runner
+│   │   └── diagnostics.py          # Behavioral failure attribution (G3)
+│   └── controllers/                # Robosuite OSC_POSE controller definitions
+├── scripts/
+│   ├── train_memory_sft.py         # Accelerate DDP training script
+│   ├── prepare_libero_mem_sft.py   # Pilot prompt index & shard generator
+│   ├── lock_memory_sft_split.py    # Initial-state split lock generator
+│   ├── replay_libero_mem_writer.py # Visual writer verification on real telemetry
+│   ├── audit_libero_mem_writer.py  # Diagnostic audit script for writer fidelity
+│   ├── compare_memory_runs.py      # Seed-matched paired evaluation with Newcombe CI
+│   ├── run_benchmark.py            # Main evaluation runner with baseline lock
+│   └── kaggle_memory_sft.sh        # Shell automation for Kaggle 2xT4 execution
+├── notebooks/
+│   └── kaggle_libero_mem_finetune.ipynb # Kaggle execution notebook
+└── configs/
+    ├── v2_baseline_lock.yaml       # Formal lock for runtime evaluation parameters
+    └── models/selected_baseline.yaml # Frozen SmolVLA baseline parameters
 ```
-
-### 11.2 Core Class Interfaces
-
-```python
-class VLAPolicy(ABC):
-    @abstractmethod
-    def reset(self) -> None: ...
-    
-    @abstractmethod
-    def predict_action_chunk(self, observation: Observation) -> np.ndarray:
-        """Outputs an action chunk of shape (H, action_dim)."""
-        ...
-
-class MemorySystem(ABC):
-    @abstractmethod
-    def update(self, evidence: dict) -> None: ...
-    
-    @abstractmethod
-    def retrieve(self, query: str) -> dict: ...
-    
-    @abstractmethod
-    def get_state(self) -> WorldMemory: ...
-
-class TextMemoryRenderer(ABC):
-    @abstractmethod
-    def render(self, retrieved_memory: dict, query: str) -> str: ...
-
-class SpatialMemoryRenderer(ABC):
-    @abstractmethod
-    def project(self, points_3d: list[np.ndarray], camera_params: dict) -> list[tuple[int, int]]: ...
-    
-    @abstractmethod
-    def render(self, rgb_image: np.ndarray, projected_points: list[tuple[int, int]]) -> np.ndarray: ...
-
-class RobotEnv(ABC):
-    @abstractmethod
-    def reset(self) -> Observation: ...
-    
-    @abstractmethod
-    def step(self, action: np.ndarray) -> tuple[Observation, float, bool, dict]: ...
-    
-    @abstractmethod
-    def check_success(self) -> bool: ...
-```
-
-### 11.3 Memory Lifecycle
-
-```text
-[OBSERVE] ──► [DETECT] ──► [ASSOCIATE] ──► [UPDATE] ──► [STORE]
-                                                          │
-[RE-OBSERVE] ◄── [ACT] ◄── [RENDER] ◄── [RETRIEVE] ◄──────┘
-```
-
-### 11.4 Failure Handling & Non-Goals
-
-* **Fail-Fast & Zero Hallucination**: Khi thông tin không chắc chắn hoặc không tìm thấy, hệ thống gán trạng thái `unknown` hoặc `uncertain`. Nghiêm cấm tự tạo (fabricate) tọa độ giả định.
-* **Explicit Non-Goals**:
-  - Không huấn luyện end-to-end một mạng neural memory.
-  - Không sử dụng vector database quy mô lớn.
-  - Không triển khai SLAM đầy đủ hoặc tái tạo lưới 3D phức tạp.
-  - Không train lại VLA backbone.
 
 ---
 
-## 12. Thesis Contribution Framing & 7-Phase Execution Priority
-
-### 12.1 Canonical Contribution Statement
-
-> **"A lightweight external persistent memory architecture for frozen VLA manipulation, combining structured episodic/state memory with persistent spatial memory and exposing the retrieved memory through text and visual interfaces without retraining the underlying VLA."**
-
-### 12.2 Strict 7-Phase Implementation Priority
-
-Mọi quyết định kỹ thuật phải tuân thủ nghiêm ngặt thứ tự ưu tiên sau:
+## 11. Implementation Roadmap & Execution Status
 
 ```text
-Phase 1: Chuẩn hóa một small VLA suy luận tin cậy trên môi trường (ví dụ: SmolVLA)
-   │
-   ▼
-Phase 2: Freeze hoàn toàn VLA checkpoint và chuẩn hóa controller baseline
-   │
-   ▼
-Phase 3: Định nghĩa bộ tác vụ Memory-Critical (Tiers 1 - 5)
-   │
-   ▼
-Phase 4: Thực thi benchmark so sánh OFF vs. ON trong điều kiện đồng nhất
-   │
-   ▼
-Phase 5: Thu thập và phân tích định lượng các chỉ số (Success, Reacquisition, Search Trajectory)
-   │
-   ▼
-Phase 6: Tiến hành Ablation: Text-only vs. Spatial-only vs. Full Memory
-   │
-   ▼
-Phase 7: Đánh giá độ bền vững trước nhiễu không gian và độ trễ (Noise & Staleness)
+Phase 0: Research Problem Definition & Scoping ─────────────────► [HOÀN THÀNH]
+Phase 1: Standardized Simulation Infrastructure ────────────────► [HOÀN THÀNH]
+Phase 2: Frozen SmolVLA Adapter Integration ────────────────────► [HOÀN THÀNH]
+Phase 3: V1 Raw Baseline Validation & Freeze (ADR-0012) ────────► [HOÀN THÀNH & ĐÃ KHÓA]
+Phase 4: Task Suite Selection (LIBERO-10 7-task + Mem T1/T3) ───► [HOÀN THÀNH]
+Phase 5: Memory Architecture & Visual Perception Worker ────────► [HOÀN THÀNH & AUDITED]
+Phase 6: Mixed Memory SFT Adaptation Pipeline ──────────────────► [HOÀN THÀNH & READY TO TRAIN]
+Phase 7: Closed-Loop Benchmark Evaluation (B0, F0, F1, F1-off) ──► [READY FOR EXECUTION]
+Phase 8: Thesis Defense & Final Reporting ──────────────────────► [IN PROGRESS]
 ```
 
 > [!IMPORTANT]
-> Chỉ mở rộng sang các mô hình khác, task suite mở rộng, hoặc robot thực (UR3) sau khi toàn bộ 7 phase trên đã được nghiệm thu định lượng trên simulation benchmark.
+> Toàn bộ kiến trúc và mã nguồn đã được thiết kế tuân thủ nguyên tắc **Fail-Fast**, **Strict Provenance**, và **Zero Fabrication**. Mọi kết quả thực nghiệm sẽ được công bố với nhãn phân cấp minh bạch, bảo đảm tính liêm chính học thuật tuyệt đối của luận văn.

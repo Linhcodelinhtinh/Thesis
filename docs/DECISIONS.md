@@ -174,6 +174,32 @@ This document records the architectural and design decisions for **VLA Policy Ev
   - Provides a mathematically sound and scientifically honest framework for evaluating memory augmentation on frozen VLAs.
   - Guarantees complete provenance and eliminates artifact mismatch or degenerate confidence intervals before conducting the formal pilot.
 
+---
 
-
-
+## ADR-0014: Mixed Memory SFT Adaptation, Zero-Shot Grounding DINO Perception Worker, and LIBERO-Mem Evaluation Protocol for V2
+- **Status**: Accepted
+- **Context**:
+  - Pre-pilot evaluations on frozen SmolVLA (ADR-0013) demonstrated that zero-shot appending of multi-line episodic memory text into a frozen VLA prompt causes severe attention dilution and prompt sensitivity, degrading base execution because the pretrained weights never encountered memory tokens during base training.
+  - Rigorous telemetry audits on official demonstration data (26/10/2026) revealed that heuristic proprioceptive observation writers (`ObservationMemoryWriter`) suffer from crippling coverage and fact fidelity flaws (e.g. 0/9,420 memory frames in book/caddy due to EEF height gates, and 1.91% in bowl/drawer with false bilateral contact rejections). Proprioception alone cannot disambiguate object identity, containment, or multi-stage cycle progress.
+  - To rigorously evaluate the scientific contribution of memory, the benchmark must assess memory-critical multi-cycle tasks (`LIBERO-Mem` T1 and T3) while proving that the policy preserves fundamental manipulation skills across the base benchmark (`LIBERO-10` retention suite).
+- **Decision**:
+  1. **Dual-Domain Mixed Action-Expert SFT Adaptation**:
+     - Adapt the SmolVLA policy via Action-Expert LoRA (Rank 16, Alpha 16, frozen VLM) using the official SmolVLA flow-matching loss.
+     - Implement a balanced dual-domain sampler (`ReplaySampler`, `MixedMemoryDataset`) enforcing exactly **50% Base Replay + 50% Memory Data** per global optimizer batch, with round-robin task balancing to prevent long trajectories from dominating.
+     - Execute training in a Kaggle 2×T4 distributed DDP environment (`scripts/train_memory_sft.py`, `notebooks/kaggle_libero_mem_finetune.ipynb`) across 3,000 steps with periodic validation.
+  2. **Decoupled RGB Visual Perception Worker**:
+     - Deploy `GroundingDINO` zero-shot detector (`IDEA-Research/grounding-dino-tiny` pinned SHA-256) inside an isolated subprocess worker (`ProcessVisualDetector`) running `.venv_memory` via JSON IPC, eliminating library/CUDA dependency collisions with the policy and simulation stack.
+     - Implement `LiberoMemEventWriter` (v3) driven strictly by RGB bounding-box vertical displacement (lift/departure) and aperture return criteria with hysteresis, replacing kinematic heuristics and explicitly marking incomplete history gaps.
+  3. **Immutable Initial-State Split Lock**:
+     - Implement `scripts/lock_memory_sft_split.py` to hash exact 64-bit float IEEE-754 initial-state vectors and assign disjoint Train/Val/Test splits (80/10/10) globally across domains, guaranteeing zero initial-state leakage into evaluation splits.
+  4. **4-Way Matched Evaluation Protocol**:
+     - Formalize a 4-way evaluation matrix:
+       - **B0**: Pinned original SmolVLA baseline (Frozen, Memory OFF).
+       - **F0**: Base-finetuned control (Memory OFF, measuring pure adaptation effect).
+       - **F1**: Memory-augmented treatment (Memory ON, perception-grounded).
+       - **F1-off**: Diagnostic ablation (F1 checkpoint with Memory OFF, verifying causal reliance on memory tokens).
+     - Standardize milestone dwell-time evaluation ($\ge 5$ steps) and Newcombe Method 10 paired confidence intervals.
+- **Consequences**:
+  - Solves the frozen prompt-sensitivity bottleneck while rigorously preventing catastrophic forgetting of base skills.
+  - Grounds memory in genuine, non-oracle RGB perception with full provenance and isolation.
+  - Establishes a definitive, statistically powered protocol for thesis defense.
