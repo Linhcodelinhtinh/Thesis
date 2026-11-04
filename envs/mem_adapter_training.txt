@@ -1,0 +1,14 @@
+# Dedicated training environment. Primary versions from the successful
+# no_memory-20261029-175154/run_config.json; do not install in perception/simulator.
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.11.0+cu128
+torchvision==0.26.0+cu128
+lerobot[smolvla,peft,dataset]==0.6.1
+transformers==5.5.4
+peft==0.20.0
+accelerate==1.14.0
+h5py==3.16.0
+safetensors==0.8.0
+tokenizers==0.22.2
+av==15.1.0
+PyYAML==6.0.3

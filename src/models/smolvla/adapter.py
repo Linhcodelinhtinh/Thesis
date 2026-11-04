@@ -120,6 +120,19 @@ class SmolVLAAdapter(VLAPolicy):
         from lerobot.policies.factory import make_pre_post_processors
         from lerobot.policies.smolvla.modeling_smolvla import SmolVLAPolicy
 
+        from pathlib import Path
+        adapter_path = None
+        self.mem_adapter_manifest = None
+        self._memory_contract_verified = False
+        if (Path(checkpoint_path) / "mem_adapter_manifest.json").is_file():
+            from src.training.mem_adapter_artifact import validate_adapter
+            adapter_path = checkpoint_path
+            checkpoint_path = str(kwargs.pop("base_checkpoint", Path(__file__).resolve().parents[3] /
+                                             "resources/checkpoints/smolvla_libero"))
+            self.mem_adapter_manifest = validate_adapter(adapter_path, checkpoint_path)
+            from src.memory.visual_pipeline import load_prompt_tokenizer
+            self.tokenizer = load_prompt_tokenizer(Path(adapter_path) / "tokenizer.json")
+
         if device is None:
             self.device = "cuda" if torch.cuda.is_available() else "cpu"
         else:
@@ -131,6 +144,12 @@ class SmolVLAAdapter(VLAPolicy):
         self.policy = SmolVLAPolicy.from_pretrained(checkpoint_path, **kwargs)
         self.policy.to(self.device)
         self.policy.eval()
+
+        if adapter_path is not None:
+            from peft import PeftModel
+            self.policy = PeftModel.from_pretrained(self.policy, adapter_path, is_trainable=False)
+            self.policy.eval()
+            self.checkpoint_path = adapter_path
 
         # 2. Instantiate official LiberoProcessorStep (environment preprocessor)
         self.env_preprocessor = self._ensure_env_preprocessor()
@@ -145,8 +164,18 @@ class SmolVLAAdapter(VLAPolicy):
 
         self._is_loaded = True
 
+    def bind_memory_runtime(self, writer, renderer):
+        """Verify the actual online writer before using an isolated Mem adapter."""
+        if self.mem_adapter_manifest is not None:
+            from src.training.mem_adapter_artifact import validate_runtime
+            validate_runtime(self.mem_adapter_manifest, writer, renderer)
+            if renderer.tokenizer is not self.tokenizer:
+                raise ValueError("Use the adapter's pinned prompt tokenizer")
+            self._memory_contract_verified = True
+
     def reset(self) -> None:
         """Reset internal action queue and underlying policy recurrent state."""
+        self._memory_contract_verified = False
         super().reset()
         if self.policy is not None and hasattr(self.policy, "reset"):
             self.policy.reset()
@@ -250,6 +279,8 @@ class SmolVLAAdapter(VLAPolicy):
 
         Fails fast if preprocessor is not loaded.
         """
+        if getattr(self, "mem_adapter_manifest", None) is not None and not self._memory_contract_verified:
+            raise RuntimeError("Mem adapter requires a verified online writer/renderer; use the base checkpoint for baseline tasks")
         raw_features = self.build_raw_features(obs, instruction)
 
         if self.preprocessor is not None:

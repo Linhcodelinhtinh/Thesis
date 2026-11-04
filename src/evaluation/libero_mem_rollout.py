@@ -110,6 +110,8 @@ class LiberoMemRolloutRunner:
                 target_object_id="bowl_A",
                 support_id="plate_A",
             )
+            if getattr(self.policy, "mem_adapter_manifest", None) is not None:
+                self.policy.bind_memory_runtime(writer, self.renderer)
         elif self.condition == "O1":
             oracle_writer = LiberoMemOracleWriter(
                 episode_id=episode_id,

@@ -22,11 +22,13 @@ export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
 python3 scripts/run_benchmark.py \
   --preset libero_10 \
   --model-name smolvla_libero \
-  --checkpoint resources/checkpoints/smolvla_libero \
+  --checkpoint experiments/training/results/no_memory-20261029-175154/pretrained_model \
   --execution-horizon 10 \
   --memory-condition off \
-  --output-dir experiments/results/test-libero-10 \
+  --output-dir experiments/results/test-libero-10-finetuned \
   --seed 42 \
-  --episodes-per-task 1 \
-  --max-steps 500
+  --episodes-per-task 10 \
+  --max-steps 1000 \
+  --allow-derived \
+  --device cuda 
   "$@"

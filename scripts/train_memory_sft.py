@@ -34,6 +34,9 @@ def validate_inputs(args):
         manifest = validate_mixed_dataset(root)
         if args.condition == "memory" and manifest["memory_source"] != "predicted_rgb_v3":
             raise ValueError("F1 requires predicted-memory shards; this dataset is ready for no_memory only")
+        if args.condition == "memory":
+            from src.training.mem_adapter_artifact import verify_memory_code
+            verify_memory_code(manifest["memory_provenance"])
         if args.condition == "memory" and args.memory_dropout:
             raise ValueError("Use --memory-dropout 0 for the locked Mem experiment")
     else:
@@ -54,6 +57,9 @@ def validate_inputs(args):
 
 def export_model(policy, assets, destination, run_info):
     """Merge PEFT for the existing evaluation adapter; keep normalizers byte-identical."""
+    if run_info.get("arguments", {}).get("export_format") == "adapter":
+        from src.training.mem_adapter_artifact import export_adapter
+        return export_adapter(policy, assets, destination, run_info)
     destination.mkdir(parents=True, exist_ok=False)
     if hasattr(policy, "merge_and_unload"):
         policy = policy.merge_and_unload(safe_merge=True)
@@ -139,8 +145,11 @@ def train(args):
                                 "tokenizer_processor": {"tokenizer_name": str(assets / "backbone")}},
         postprocessor_overrides={"device_processor": {"device": str(accelerator.device)}})
     if args.adaptation == "expert_lora":
-        policy = policy.wrap_with_peft(peft_cli_overrides={"method_type": "LORA", "r": args.rank,
-                                                          "lora_alpha": args.rank, "lora_dropout": 0.0})
+        overrides = {"method_type": "LORA", "r": args.rank,
+                     "lora_alpha": args.rank, "lora_dropout": 0.0}
+        if args.lora_scope == "attention":
+            overrides["target_modules"] = r"model\.vlm_with_expert\.lm_expert\..*\.(q|v)_proj"
+        policy = policy.wrap_with_peft(peft_cli_overrides=overrides)
     trainable = {n: p.numel() for n, p in policy.named_parameters() if p.requires_grad}
     if not trainable or any("vlm_with_expert.vlm." in name for name in trainable):
         raise RuntimeError("Unexpected trainable parameter set: backbone must stay frozen")
@@ -191,6 +200,7 @@ def train(args):
                 "official_policy_source_sha256": sha256(inspect.getfile(SmolVLAPolicy)),
                 "normalization": "unchanged original checkpoint", "precision": "FP32 weights, FP16 AMP + GradScaler"}
     run_info["padding_keys_read_by_policy"] = padding_keys
+    run_info["memory_provenance"] = manifest.get("memory_provenance", [])
     if replay_sampler is not None:
         run_info["mixed_replay"] = dict(base_fraction=replay_sampler.actual_base_fraction,
             balancing="domain per optimizer batch; shuffled task round-robin; uniform episode then frame",
@@ -342,6 +352,8 @@ def main():
         p.add_argument("--" + name, required=True)
     p.add_argument("--condition", choices=["memory", "no_memory"], default="memory")
     p.add_argument("--adaptation", choices=["expert_lora", "expert_full"], default="expert_lora")
+    p.add_argument("--export-format", choices=["merged", "adapter"], default="merged")
+    p.add_argument("--lora-scope", choices=["default", "attention"], default="default")
     p.add_argument("--expected-gpus", type=int, default=2)
     p.add_argument("--batch-size", type=int, default=2, help="Per GPU")
     p.add_argument("--accumulation", type=int, default=8)
@@ -360,6 +372,8 @@ def main():
     p.add_argument("--validation-max-batches", type=int, default=0, help="0=full validation; >0 is a labeled smoke-test subset")
     p.add_argument("--resume")
     args = p.parse_args()
+    if args.export_format == "adapter" and (args.adaptation != "expert_lora" or args.condition != "memory"):
+        p.error("Mem adapter export requires expert_lora and condition=memory")
     if any(getattr(args, n) < 1 for n in ["expected_gpus", "batch_size", "accumulation", "steps", "rank", "log_every", "save_every", "eval_every"]):
         p.error("GPU/batch/step/interval values must be positive")
     if not 0 <= args.memory_dropout < 1 or args.lr <= 0 or args.warmup_steps < 0 or args.validation_max_batches < 0:

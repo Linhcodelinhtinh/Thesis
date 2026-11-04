@@ -483,6 +483,7 @@ def main():
     git_hash = None
     git_clean = None
     git_diff_sha256 = None
+    diff_out = None
     try:
         import subprocess
         git_hash = subprocess.check_output(["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL).decode("utf-8").strip()
