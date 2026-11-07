@@ -1,5 +1,12 @@
 # V2 memory SFT trên Kaggle 2×T4
 
+> **Workflow hiện hành — 06/11/2026:** dùng [Mem adapter riêng](MEM_ADAPTER_V1.md)
+> và `notebooks/kaggle_mem_adapter_v1.ipynb`: full 10 task base + T1/T3, causal RGB
+> writer v3, LoRA attention q/v, export **unmerged adapter**. Hướng dẫn đó ghi cách
+> chuẩn bị trực tiếp trên Kaggle, train/resume và bind memory khi inference.
+> Các lệnh, LR 1e-4, dropout 0.2, writer legacy và merged export bên dưới thuộc
+> pipeline lịch sử; không áp dụng chúng mặc định cho adapter mới.
+
 > **Pipeline mixed mới (26/10/2026):** xem [data/split/evaluator protocol](LIBERO_MEM_FINETUNE_DATA_PROTOCOL.md) và `notebooks/kaggle_libero_mem_finetune.ipynb`. Notebook mới dựa trên bản `working_notebooks/memory-sft-nb.ipynb` đã chạy được. Các lệnh base/interface bên dưới được giữ làm lịch sử; không dùng để chuẩn bị mixed LIBERO-10 + T1/T3.
 
 > **Audit writer 26/10/2026:** [chẩn đoán book/caddy và bowl/drawer](MEMORY_WRITER_DIAGNOSIS_2026-10-26.md) tái hiện đúng 0/9.420 và 237/12.384 memory frames. Bowl chỉ có memory ở 2/50 demo, toàn bộ thuộc train; val/test không có memory. Writer hiện tại cần thiết kế lại evidence/event logic trước khi dùng dataset này để kết luận đóng góp của memory.

@@ -18,6 +18,7 @@ def main():
     p.add_argument("--assets-dir", type=Path, required=True)
     p.add_argument("--output-dir", type=Path, required=True)
     p.add_argument("--gpus", type=int, choices=[1, 2], default=2)
+    p.add_argument("--resume", type=Path, help="Resume training from an existing checkpoint directory")
     a = p.parse_args()
     manifest = validate_mixed_dataset(a.data_dir)
     recipe = json.loads((ROOT / "configs/training/mem_adapter_v1.json").read_text())
@@ -31,6 +32,8 @@ def main():
     args += [str(ROOT / "scripts/train_memory_sft.py"), "--data-dir", str(a.data_dir.resolve()),
              "--assets-dir", str(a.assets_dir.resolve()), "--output-dir", str(a.output_dir.resolve()),
              "--expected-gpus", str(a.gpus), "--batch-size", "2", "--accumulation", str(16 // a.gpus)]
+    if a.resume:
+        args += ["--resume", str(a.resume.resolve())]
     for key in ("condition", "adaptation", "export_format", "lora_scope", "rank", "lr", "steps",
                 "base_fraction", "memory_dropout", "save_every", "eval_every"):
         args += ["--" + key.replace("_", "-"), str(recipe[key])]

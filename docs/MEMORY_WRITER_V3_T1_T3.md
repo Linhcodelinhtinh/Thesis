@@ -1,5 +1,11 @@
 # RGB memory writer v3 — pilot T1/T3
 
+> **Cách dùng với adapter Mem riêng (06/11/2026):** xem
+> [MEM_ADAPTER_V1.md](MEM_ADAPTER_V1.md) cho data preparation, Kaggle 2×T4 và
+> runtime binding. Các kết quả ngày 26/10 bên dưới là audit writer lịch sử,
+> không phải kết quả policy sau fine-tuning. Luồng mới dùng cùng writer này cho
+> causal prompt offline và online; chỉ hỗ trợ profile bát/đĩa gốc T1/T3.
+
 Phạm vi của thay đổi này là writer/perception, causal prompt index và nối cùng writer vào replay/rollout. Không training/fine-tuning, không thay preprocessing/action decoding của policy, không đo success rate policy. Đây là thí nghiệm V2 tùy chỉnh, không phải điểm LIBERO chính thức.
 
 ## Thiết kế đã triển khai
@@ -83,16 +89,31 @@ Tạo prompt index cho pilot (chưa phải dataset nạp trực tiếp vào trai
 
 Hai nhánh dùng cùng nguồn/episode/split và action index. Không trỏ notebook base vào index này như thể nó đã là training shards. Lệnh `scripts/prepare_memory_sft.py` cũ vẫn dùng writer legacy cho base.
 
-Online wiring dùng cùng factory, nhưng chọn quy ước ảnh của adapter:
+Online wiring dùng cùng factory, với policy đã load Mem adapter và detector/config
+khớp training manifest. `env` phải là simulator/bridge thật đã xác minh; xem ví dụ
+đủ imports và các gate trong [hướng dẫn adapter](MEM_ADAPTER_V1.md):
 
 ```python
 detector = ProcessVisualDetector(perception_python, model_dir, device="cuda")
-factory = visual_writer_factory(detector, image_convention="libero_raw")
-renderer = LiberoMemTextRenderer(tokenizer=load_prompt_tokenizer(tokenizer_dir), strict_tokenizer=True)
-runner = LiberoMemRolloutRunner(env, policy, condition="F1", writer_factory=factory, renderer=renderer)
-# close the worker when evaluation finishes (or use its context manager)
-detector.close()
+try:
+    contract = policy.mem_adapter_manifest["memory_provenance"][0]
+    factory = visual_writer_factory(detector, image_convention="libero_raw",
+                                    config=TrackerConfig(**contract["writer_config"]))
+    renderer = LiberoMemTextRenderer(tokenizer=policy.tokenizer, strict_tokenizer=True,
+                                     max_total_tokens=48, allow_oracle=False)
+    runner = LiberoMemRolloutRunner(env, policy, condition="F1", writer_factory=factory,
+                                   renderer=renderer, execution_horizon=10, max_steps=1000)
+    # runner.run_episode(...) reset và bind writer/renderer cho từng episode.
+finally:
+    detector.close()
 ```
+
+Với unmerged adapter, tokenizer phải là đúng object `policy.tokenizer`; load lại
+tokenizer riêng như ví dụ writer-only trước đây sẽ bị runtime guard từ chối.
+Writer cập nhật mỗi observation/action, prompt chỉ gửi khi query policy. Không
+chuyển trực tiếp adapter sang B0/F0 để làm memory-off ablation; mode đó chưa được
+hỗ trợ. Baseline dùng checkpoint gốc. Các flag `text_only` của CLI legacy không
+thay thế runner F1 này.
 
 Đây là wiring API; không chứng nhận simulator/evaluator hiện tại đã conform với tác giả. Các gap simulator/evaluator trong audit 23/10 phải được đóng trước benchmark policy.
 

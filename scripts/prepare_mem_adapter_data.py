@@ -17,6 +17,7 @@ from src.evaluation.libero_mem_protocol import load_protocol
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--output-root", type=Path, required=True)
+    p.add_argument("--dataset-dir", type=Path, help="Optional separate scratch location for large training shards")
     p.add_argument("--perception-python", type=Path, required=True)
     p.add_argument("--tokenizer-path", type=Path, required=True)
     p.add_argument("--previous-lock", type=Path, default=ROOT / "resources/manifests/libero_mem_t1_t3_base7_split_v1.json")
@@ -56,9 +57,10 @@ def main():
         if not (index / "manifest.json").exists():
             run(a.perception_python, "prepare_libero_mem_sft.py", "--output-dir", index,
                 "--task-name", task["name"], "--stream", "predicted_memory",
-                "--tokenizer-path", a.tokenizer_path, "--split-lock", lock_path)
+                "--tokenizer-path", a.tokenizer_path, "--split-lock", lock_path,
+                "--resume")
         indices.append(index)
-    dataset = out / "dataset"
+    dataset = a.dataset_dir.resolve() if a.dataset_dir else out / "dataset"
     if not (dataset / "manifest.json").exists():
         run(sys.executable, "prepare_mixed_memory_sft.py", "--split-lock", lock_path,
             "--tokenizer-path", a.tokenizer_path, "--output-dir", dataset, "--memory-index", *indices)

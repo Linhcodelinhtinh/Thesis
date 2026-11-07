@@ -203,3 +203,33 @@ This document records the architectural and design decisions for **VLA Policy Ev
   - Solves the frozen prompt-sensitivity bottleneck while rigorously preventing catastrophic forgetting of base skills.
   - Grounds memory in genuine, non-oracle RGB perception with full provenance and isolation.
   - Establishes a definitive, statistically powered protocol for thesis defense.
+
+---
+
+## ADR-0015: Separate Mem Adapter with Shared Causal Memory Contract
+
+- **Status**: Accepted implementation direction, 2026-11-06; policy benefit remains to be measured.
+- **Context**: Shared fine-tuning showed regression. Mixed replay and lower offline
+  loss alone do not establish retention or useful closed-loop memory behavior.
+  The retention guarantees stated in ADR-0014 are objectives, not established results.
+- **Decision**:
+  1. Keep the original baseline artifact and explicitly select it for ordinary
+     LIBERO tasks. Select a separate unmerged attention q/v LoRA for Mem T1/T3;
+     no learned router or evaluator-based task selection is implemented.
+  2. Expand replay to all ten official LIBERO-10 tasks, preserving earlier split
+     assignments. Train with predicted RGB v3 prompts on Mem and original
+     instructions on base replay, using the shared offline/online writer,
+     renderer, pinned tokenizer and detector contract. Retain uncertainty and
+     empty memory rather than substitute oracle labels.
+  3. Bind the actual online writer and renderer each episode before adapter
+     inference. Require the adapter tokenizer object, 48-token total prompt
+     budget, raw simulator camera convention and matching artifact/provenance.
+     Preserve official policy preprocessing and action decoding.
+  4. Keep simulator, policy, perception and training dependencies isolated.
+     Use the [current workflow](MEM_ADAPTER_V1.md) and complete the
+     [evaluation prerequisites](RESULTS_MEM_2_TEST_PLAN.md) before benchmark runs.
+- **Consequences**: Routing to the original model preserves access to baseline
+  behavior; it does not prove the adapted checkpoint retains base skills.
+  Adapter memory-off ablation is not yet supported. Report routed-base regression,
+  adapter retention and Mem improvement as separate measurements. T2/T4 remain
+  outside the supported writer profile. These are custom V2 experiments.

@@ -1,5 +1,15 @@
 # Mixed SmolVLA fine-tuning: data and evaluator contract
 
+> **Current usage (2026-11-06):** [MEM_ADAPTER_V1.md](MEM_ADAPTER_V1.md) documents
+> the separate, unmerged Mem adapter and `kaggle_mem_adapter_v1.ipynb` workflow.
+> It expands replay to all ten base tasks, preserves previous state assignments
+> in `libero_mem_t1_t3_base10_split_v1.json`, and uses predicted RGB v3 memory on
+> T1/T3 with original instructions on base replay. Its recipe is attention-only
+> LoRA, LR 2e-5, memory dropout 0, global batch 32. The seven-task inventory,
+> settings and completion status below describe the historical 2026-10-26 pilot.
+> F1-off is an experimental design here; the new adapter runtime does not yet
+> support that mode. See [evaluation prerequisites](RESULTS_MEM_2_TEST_PLAN.md).
+
 Implementation: 2026-10-26. Scope: **LIBERO-10 retention evaluation + LIBERO-Mem T1/T3**.
 The prepared pilot uses **7/10 LIBERO-10 tasks for replay** and all 198 T1/T3 demonstrations.
 Three author source files could not be completed because of CDN transfer failures; no substitutes were used.

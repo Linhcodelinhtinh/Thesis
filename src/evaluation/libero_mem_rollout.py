@@ -58,6 +58,7 @@ class LiberoMemRolloutRunner:
         max_steps: int = 1000,
         renderer: Optional[LiberoMemTextRenderer] = None,
         writer_factory=None,
+        observer=None,
     ) -> None:
         self.env = env
         self.policy = policy_adapter
@@ -65,6 +66,7 @@ class LiberoMemRolloutRunner:
         self.execution_horizon = execution_horizon
         self.max_steps = max_steps
         self.writer_factory = writer_factory
+        self.observer = observer
         if condition not in ("B0", "F0", "F1", "O1"):
             raise ValueError("Unknown memory condition")
         if not 1 <= execution_horizon <= 50 or max_steps < 1:
@@ -94,11 +96,13 @@ class LiberoMemRolloutRunner:
             protocol = self.env.protocol["rollout"]
             if self.max_steps != protocol["horizon_policy_actions"] or self.execution_horizon != protocol["execution_horizon"]:
                 raise ValueError("Rollout horizon differs from the locked protocol; create a separate protocol for an ablation")
+        start_time = time.perf_counter()
         if hasattr(self.policy, "reset") and callable(self.policy.reset):
             self.policy.reset()
 
         obs = self.env.reset(initial_state_id=initial_state_id)
-        start_time = time.perf_counter()
+        if self.observer is not None:
+            self.observer("observation", step=0, observation=obs, info=getattr(self.env, "last_info", {}))
 
         # Initialize writers based on condition
         writer: Optional[LiberoMemEventWriter] = None
@@ -133,6 +137,8 @@ class LiberoMemRolloutRunner:
             memory_trace.append({"step": index, "snapshot": snapshot.to_dict(),
                                  "signals": writer.last_signals,
                                  "writer_ms": (time.perf_counter() - started) * 1000.0})
+            if self.observer is not None:
+                self.observer("memory", **memory_trace[-1])
 
         # Initial step 0 observation ingestion
         if self.condition == "F1" and writer is not None:
@@ -153,6 +159,8 @@ class LiberoMemRolloutRunner:
             # 2. Render prompt
             mem_enabled = self.condition in ("F1", "O1")
             render_res = self.renderer.render(instruction, mem_snapshot, enabled=mem_enabled)
+            if getattr(render_res, "tokenizer_truncated", False):
+                raise ValueError("Instruction exceeds the pinned tokenizer budget")
             active_prompt = render_res.text
             prompt_history.append(active_prompt)
 
@@ -171,6 +179,9 @@ class LiberoMemRolloutRunner:
                 )
             t_policy_end = time.perf_counter()
             latencies_ms.append((t_policy_end - t_policy_start) * 1000.0)
+            if self.observer is not None:
+                self.observer("query", step=step, prompt=active_prompt, chunk=chunk,
+                              render=render_res, policy_ms=latencies_ms[-1])
 
             # 4. Execute action chunk for execution_horizon steps
             for action_idx in range(self.execution_horizon):
@@ -179,8 +190,13 @@ class LiberoMemRolloutRunner:
 
                 action = chunk[action_idx]
                 obs, reward, done, info = self.env.step(action)
+                if self.observer is not None:
+                    self.observer("action", step=step, action=action, chunk_index=action_idx,
+                                  reward=reward, done=done)
                 last_action = action
                 step += 1
+                if self.observer is not None:
+                    self.observer("observation", step=step, observation=obs, info=info)
 
                 # Update writer between chunk steps
                 if self.condition == "F1" and writer is not None:

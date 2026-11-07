@@ -140,6 +140,22 @@ class SmolVLAAdapter(VLAPolicy):
 
         self.checkpoint_path = checkpoint_path
 
+        # Resolve local backbone for offline execution if available
+        local_backbone = Path(__file__).resolve().parents[3] / "experiments/training/assets_mem_adapter_v1/backbone"
+        prep_overrides = {"device_processor": {"device": self.device}}
+        if "config" not in kwargs and local_backbone.is_dir():
+            from lerobot.configs.policies import PreTrainedConfig
+            from lerobot.policies.smolvla.modeling_smolvla import SmolVLAConfig
+            # The serialized `type` discriminator belongs to the registry base.
+            # Parsing through SmolVLAConfig directly rejects it in Draccus.
+            cfg = PreTrainedConfig.from_pretrained(checkpoint_path)
+            if not isinstance(cfg, SmolVLAConfig):
+                raise TypeError("Expected the audited SmolVLA checkpoint")
+            cfg.vlm_model_name = str(local_backbone)
+            cfg.load_vlm_weights = False
+            kwargs["config"] = cfg
+            prep_overrides["tokenizer_processor"] = {"tokenizer_name": str(local_backbone)}
+
         # 1. Load official SmolVLAPolicy
         self.policy = SmolVLAPolicy.from_pretrained(checkpoint_path, **kwargs)
         self.policy.to(self.device)
@@ -158,7 +174,7 @@ class SmolVLAAdapter(VLAPolicy):
         self.preprocessor, self.postprocessor = make_pre_post_processors(
             policy_cfg=self.policy.config,
             pretrained_path=checkpoint_path,
-            preprocessor_overrides={"device_processor": {"device": self.device}},
+            preprocessor_overrides=prep_overrides,
             postprocessor_overrides={"device_processor": {"device": self.device}},
         )
 

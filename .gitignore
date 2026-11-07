@@ -28,6 +28,7 @@ external/
 
 # Experiment artifacts and videos
 experiments/results/
+experiments/evaluation/
 experiments/training/
 experiments/audits/
 experiments/runtime/

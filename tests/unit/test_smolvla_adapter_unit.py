@@ -66,6 +66,44 @@ def test_smolvla_adapter_fails_fast_when_not_loaded():
 
 
 @requires_transformers
+def test_local_backbone_load_uses_registered_config(tmp_path, monkeypatch):
+    """Decode the real official config before entering the weight loader."""
+    import json
+    import src.models.smolvla.adapter as adapter_module
+    from lerobot.policies.smolvla.modeling_smolvla import SmolVLAConfig, SmolVLAPolicy
+
+    checkpoint = tmp_path / "checkpoint"
+    checkpoint.mkdir()
+    SmolVLAConfig().save_pretrained(checkpoint)
+    # This LeRobot serializer omits the registry discriminator. Reproduce the
+    # official downloaded checkpoint schema in this temporary unit fixture.
+    fixture_config = json.loads((checkpoint / "config.json").read_text())
+    fixture_config["type"] = "smolvla"
+    (checkpoint / "config.json").write_text(json.dumps(fixture_config))
+    original = (checkpoint / "config.json").read_bytes()
+    assert json.loads(original)["type"] == "smolvla"
+    backbone = tmp_path / "experiments/training/assets_mem_adapter_v1/backbone"
+    backbone.mkdir(parents=True)
+    monkeypatch.setattr(adapter_module, "__file__", str(tmp_path / "src/models/smolvla/adapter.py"))
+    captured = {}
+
+    class ReachedWeightLoader(Exception):
+        pass
+
+    def capture_load(path, **kwargs):
+        captured.update(path=path, **kwargs)
+        raise ReachedWeightLoader
+
+    monkeypatch.setattr(SmolVLAPolicy, "from_pretrained", capture_load)
+    with pytest.raises(ReachedWeightLoader):
+        SmolVLAAdapter().load(str(checkpoint), device="cpu")
+    assert isinstance(captured["config"], SmolVLAConfig)
+    assert captured["config"].vlm_model_name == str(backbone)
+    assert captured["config"].load_vlm_weights is False
+    assert (checkpoint / "config.json").read_bytes() == original
+
+
+@requires_transformers
 def test_smolvla_adapter_raw_feature_mapping():
     """Verify mapping of LIBERO obs to LeRobot format with 8D state and (3, 256, 256) images."""
     adapter = SmolVLAAdapter()
