@@ -10,6 +10,7 @@ param (
     [string[]]$Conditions = @("B0", "F1"),
     [int]$PolicySeed = 42,
     [string]$OutputDirBase = "experiments/evaluation/results_mem_2/step4_validation",
+    [string]$TargetDir = "",
     [string]$SimPython = "/mnt/d/Thesis_26/.venv_libero_reference/bin/python",
     [string]$DetectorPython = "D:\Thesis_26\.venv_detector\Scripts\python.exe",
     [string]$AdapterDir = "experiments/training/results_mem_2/mem-adapter-20261105-083543/pretrained_model",
@@ -28,8 +29,10 @@ Write-Host "  Step 4: LIBERO-Mem Validation Evaluation (40 Episodes Target)  " -
 Write-Host "  Conditions: $($Conditions -join ', ') | Tasks: $($Tasks -join ', ') | States: $States" -ForegroundColor Cyan
 Write-Host "=================================================================" -ForegroundColor Cyan
 
-$Timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
-$TargetDir = "${OutputDirBase}_${Timestamp}"
+if ([string]::IsNullOrWhiteSpace($TargetDir)) {
+    $Timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+    $TargetDir = "${OutputDirBase}_${Timestamp}"
+}
 
 # Ensure output directory base exists
 if (-not (Test-Path $TargetDir)) {
@@ -94,6 +97,15 @@ if (-not $SkipF1 -and ($Conditions -contains "F1")) {
 # ------------------------------------------------------------------------------
 # 3. Consolidate and Generate Paired Report
 # ------------------------------------------------------------------------------
+$ExistingB0 = Join-Path $TargetDir "val_B0"
+if ((Test-Path $ExistingB0) -and ($ResultsDirs -notcontains $ExistingB0)) {
+    $ResultsDirs += $ExistingB0
+}
+$ExistingF1 = Join-Path $TargetDir "val_F1"
+if ((Test-Path $ExistingF1) -and ($ResultsDirs -notcontains $ExistingF1)) {
+    $ResultsDirs += $ExistingF1
+}
+
 if ($ResultsDirs.Count -gt 0) {
     Write-Host "`n>>> Generating Consolidated Validation Report..." -ForegroundColor Cyan
     $ReportPath = Join-Path $TargetDir "validation_consolidated_report.md"

@@ -142,6 +142,12 @@ def parse_args():
         help="Path to local official checkpoint directory.",
     )
     parser.add_argument(
+        "--adapter-path",
+        type=str,
+        default=None,
+        help="Optional path to PEFT LoRA adapter directory for capability retention evaluation.",
+    )
+    parser.add_argument(
         "--model-config",
         type=str,
         default=None,
@@ -419,7 +425,12 @@ def main():
     policy = policy_cls(**valid_kwargs)
 
     print(f"Loading checkpoint from: {args.checkpoint}...")
-    policy.load(args.checkpoint, device=args.device)
+    load_sig = inspect.signature(policy.load)
+    load_kwargs = {"device": args.device}
+    if "adapter_path" in load_sig.parameters and args.adapter_path:
+        print(f"Loading LoRA adapter from: {args.adapter_path}...")
+        load_kwargs["adapter_path"] = args.adapter_path
+    policy.load(args.checkpoint, **load_kwargs)
     if not policy.loaded:
         print(f"ERROR: Policy '{args.model_name}' failed to load from '{args.checkpoint}'.", file=sys.stderr)
         return 1
