@@ -35,6 +35,22 @@ cờ lịch sử và nguồn summary. \path{mem_test_counts.csv} là bảng theo
 kết quả được phép gộp. Raw của freeze V1 được báo cáo cũ tham chiếu chưa có
 tại đường dẫn đó trong snapshot; đây là một giới hạn lưu trữ cần giải quyết.
 
+\section{Audit riêng của bộ ghi sự kiện RGB}
+Kết quả demonstration ngày 26/10 được tổng hợp tại
+\path{experiments/audits/memory_writer_v3/verification_summary.json}. Audit
+ghi sáu demonstration, ba initial state, 1.276 frame và 12 return prediction
+được ghép với 12 milestone annotation trong dung sai 20 frame. Annotation là
+milestone tích lũy, không phải nhãn grasp/contact. Replay được xem trong quá
+trình phát triển và không phải blind holdout. Các artifact con và source
+archive được đối chiếu SHA-256 khi tạo snapshot viết khóa luận. Tệp
+\path{input_hashes.json} lưu từng hash; snapshot cũng lưu riêng liệu các hash
+hiện tại của tracker, event writer và renderer có trùng audit hay không.
+
+Audit này đo thành phần writer, khác với rollout B0/F1: nó không đo success
+policy, retention, hay lợi ích nhân quả của memory. Latency detector xấp xỉ
+1 s/frame thuộc replay RGB live, không bao gồm thời gian action policy trong
+closed loop và cho thấy cấu hình này chưa đạt 20 Hz.
+
 \section{Lệnh tái tạo}
 Các công cụ sau chỉ tái tổng hợp artifact/tài liệu, không chạy policy:
 \begin{Verbatim}[breaklines=true,fontsize=\small]

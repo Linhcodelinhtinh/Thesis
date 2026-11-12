@@ -3,13 +3,48 @@
 
 \section{Phạm vi bằng chứng thực nghiệm}
 
-Chương này trình bày những artifact đã tồn tại và được rà soát tại ngày 11/11/2026. Việc tổng hợp cho bản thảo không chạy thêm policy, simulator hoặc training. Các số liệu mới được tính lại từ log đã lưu, không phải một đợt benchmark mới. Snapshot, đường dẫn input và SHA-256 được lưu cùng tài liệu để người đọc có thể truy vết \cite{artifact2026}.
+Chương này trình bày những artifact đã tồn tại và được rà soát cho bản thảo ngày 12/11/2026. Việc tổng hợp cho bản thảo không chạy thêm policy, simulator hoặc training. Các số liệu mới được tính lại từ log đã lưu, không phải một đợt benchmark mới. Snapshot, đường dẫn input và SHA-256 được lưu cùng tài liệu để người đọc có thể truy vết \cite{artifact2026}.
 
 Bộ thực nghiệm chính là \path{step5_test_20261109-093744}, gồm hai thư mục condition B0 và F1. Mỗi condition có 20 episode complete, chia đều cho T1 và T3. Từng \path{summary.json} được đối chiếu checksum đã ghi trong \path{status.json}; roster task/state/seed cũng được kiểm tra. Phép kiểm này xác nhận tính nhất quán của các artifact được dùng trong bảng, không chứng nhận lại mọi byte của simulator, video hoặc dữ liệu huấn luyện.
 
 Báo cáo freeze V1 vẫn là nguồn lịch sử về giai đoạn không memory. Tuy nhiên, thư mục raw mà báo cáo đó tham chiếu không có episode tại lần rà soát này. Các run khác có tên tương tự không được dùng thay thế. Do đó, chương không sử dụng điểm V1 từ báo cáo cũ làm bảng baseline chính đã xác minh lại. Việc giữ ranh giới này tránh biến một báo cáo tổng hợp thành bằng chứng mạnh hơn những gì còn có thể kiểm tra.
 
+Báo cáo V1 ghi nhận kết quả nội bộ 77/160 thành công (48,13\%) trên 40 task với bốn initial state/task, cùng 28/40 (70\%) trên tập acceptance 10 task. Đây là mốc lịch sử đã được đóng băng cho V2 theo report và sign-off; báo cáo cũng gắn nhãn \path{LIBERO-DERIVED} và \path{NON-COMPARABLE_OFFICIAL_PAPER}. Tại snapshot hiện tại, các đường raw mà report trỏ tới không còn \path{episode.json} để tái tính các con số. Vì thế, số liệu được nêu như \textbf{kết quả được báo cáo trong V1}, không phải phép tính độc lập của bản thảo này. V1 còn thực thi $s=50$, trong khi rollout Mem dùng $s=10$; khác cadence và source/runtime đủ để loại phép trừ hai success rate như một ước lượng tác động memory.
+
+Tỷ lệ 27,5\% được report ghi cho suite LIBERO-10 (11/40) giúp đặt vấn đề về độ khó của các task nhiều giai đoạn, nhưng không tự chứng minh policy “quên tiến độ”. Trong 83 failure của V1, report ghi 71 trường hợp không quy được nguyên nhân gốc dưới mã chẩn đoán đã dùng. Vì vậy, chênh lệch giữa các suite chỉ tạo động lực nghiên cứu; không được trình bày như bằng chứng nhân quả rằng thiếu memory gây ra failure \cite{artifact2026}.
+
 Ngoài bộ Mem chính, repository còn nhiều baseline và fine-tune runs. Công cụ tài liệu đã đọc 1.520 \path{episode.json} và lập inventory riêng theo run. Inventory phục vụ kiểm kê tiến độ, không xác nhận mọi run đầy đủ hay so sánh được với nhau. Chẳng hạn việc tồn tại một checkpoint được gọi là no-memory không đủ để nhận nó làm F0 matched nếu nguồn dữ liệu và ngân sách khác F1 hiện tại.
+
+\section{Kiểm tra thành phần ghi sự kiện trên demonstration}
+
+Trước đợt rollout policy tháng 11, writer RGB v3 được kiểm tra riêng trên sáu demonstration T1/T3 ngày 26/10. Tập này bao gồm 1.276 frame và ba initial state, với mỗi state xuất hiện ở cả T1 và T3. Hai demonstration được dùng để phát triển; tập kiểm tra bổ sung cũng đã được quan sát trong quá trình phát triển, do đó không được xem là blind holdout. Annotation milestone chỉ ghi tiến độ tác vụ tích lũy, không gắn nhãn trực tiếp thời điểm grasp, release hoặc tiếp xúc.
+
+Một predicted return được ghép với một milestone annotation khi khoảng cách thời gian không quá 20 frame, theo phép ghép một-một. Trong tập đã xem, 12/12 return dự đoán được ghép và không có return dự đoán dư hoặc milestone chưa ghép. Độ trễ xác nhận có trung vị 9 frame, trung bình xấp xỉ 9,92 frame và khoảng 6–20 frame. Trên 1.172 detection bát được tracker chấp nhận, 1.169 đạt IoU ít nhất 0,5 với box annotation. Đây là các kết quả chẩn đoán có điều kiện trên detection/trajectory đã chọn; chúng không phải ước lượng precision–recall tổng quát.
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.25\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.35\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.4\textwidth-2\tabcolsep\relax}}
+\caption{Kết quả chẩn đoán writer trên demonstration T1/T3}\label{tab:generated4}\\
+\toprule
+\textbf{Chỉ số chẩn đoán} & \textbf{Kết quả đã lưu} & \textbf{Cách diễn giải} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Chỉ số chẩn đoán} & \textbf{Kết quả đã lưu} & \textbf{Cách diễn giải} \\
+\midrule\endhead
+\bottomrule\endfoot
+Demonstration / initial state / frame & 6 / 3 / 1.276 & Dữ liệu replay thành công, không đại diện nhiều trạng thái \\
+Return annotation / prediction / match & 12 / 12 / 12 & Ghép một-một trong dung sai ±20 frame \\
+False return / missed milestone trong tập replay & 0 / 0 & Không có negative failure trajectory để ước lượng lỗi ngoài tập này \\
+Delay xác nhận & Median 9; range 6–20 frame & Độ trễ so với milestone annotation, không phải latency tính toán \\
+Box detection có IoU $\ge0{,}5$ & 1.169/1.172 (99,74\%) & Có điều kiện trên detection được tracker chấp nhận \\
+Frame có grounding / memory text & 1.172/1.276 / 1.258/1.276 & Coverage của pipeline trên demonstration, không phải event accuracy \\
+Prompt dài nhất & 31/48 token & Đếm bằng tokenizer đã pin trong audit \\
+RGB detector end-to-end & Khoảng 999–1.058 ms/frame & Chậm hơn chu kỳ 20 Hz; chưa đạt điều khiển thời gian thực \\
+\end{longtable}
+\endgroup
+
+Audit cũng ghi nhận parity của worker perception trên 12 frame đầu/cuối của sáu episode và parity 162 sample giữa predicted-memory index với replay tương ứng. Các phép này kiểm tra việc vận chuyển RGB, detection và prompt theo cùng quy ước trong đúng số frame đã đối chiếu. Chúng không phải rollout policy. Cùng đợt này ghi nhận 49 unit tests cho memory/Mem và 47 regression tests cho phần base; 96 phép kiểm phần mềm không phải 96 policy episode và không chứng nhận fidelity trên mọi scene. Việc replay FSM từ cache mất khoảng 1–2 ms/frame nhưng loại bỏ thời gian detector, vì vậy không được dùng thay latency end-to-end.
+
+Kết quả cho thấy kiểm tra memory cần tách chất lượng nội dung khỏi chi phí tạo nội dung: bộ đếm có thể khớp milestone trong demonstration, trong khi detector vẫn là nút thắt tốc độ. Các trajectory được chọn đều là demonstration hoàn thành task và không có thiết kế failure-trajectory set; do đó không thể suy ra false-confirmation rate khi vật bị nhấc hụt, đặt sai support hoặc che khuất kéo dài. Hash các manifest, so sánh và report audit được lưu trong snapshot bằng chứng để tái kiểm tra \cite{artifact2026}.
 
 \section{Môi trường và provenance}
 
@@ -17,7 +52,7 @@ Training run ghi nhận hai GPU Tesla T4. Evaluation run ghi nhận GPU NVIDIA G
 
 \begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
 \begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.31\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.69\textwidth-2\tabcolsep\relax}}
-\caption{Môi trường và protocol được ghi trong các artifact}\label{tab:generated2}\\
+\caption{Môi trường và protocol được ghi trong các artifact}\label{tab:generated5}\\
 \toprule
 \textbf{Thành phần} & \textbf{Phiên bản hoặc lựa chọn được ghi nhận} \\
 \midrule\endfirsthead
@@ -46,7 +81,7 @@ Dataset manifest của training chứa 698 demonstration: 500 thuộc 10 task LI
 
 \begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
 \begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.29\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}}
-\caption{Số demonstration theo domain và split trong dataset manifest}\label{tab:generated3}\\
+\caption{Số demonstration theo domain và split trong dataset manifest}\label{tab:generated6}\\
 \toprule
 \textbf{Nhóm dữ liệu} & \textbf{Train} & \textbf{Validation} & \textbf{Test} & \textbf{Tổng} \\
 \midrule\endfirsthead
@@ -65,9 +100,29 @@ T1/T3 chia sẻ 10 initial-state hashes trong test. Vì vậy,20 task-episodes c
 
 Artifact F1 là adapter unmerged từ run \path{mem-adapter-20261105-083543}. Run hoàn tất 3.000 bước, rank LoRA 16, 645.120 tham số được train, learning rate khởi đầu $2\times10^{-5}$ và effective batch 32. Cấu hình có base fraction 0,5, memory dropout 0 và checkpoint/validation mỗi 500 bước. Những giá trị này là recipe đã chạy, chưa được chứng minh tối ưu.
 
+Sampler của training schema v2 bảo đảm mỗi optimizer batch có số mẫu base/Mem theo tỷ lệ đã cấu hình; trong miền mỗi domain, task được chọn theo vòng lặp đã xáo trộn, rồi chọn episode đồng đều và một frame trong episode đó. Cách lấy mẫu giảm ảnh hưởng trực tiếp của độ dài episode lên xác suất chọn trajectory. Nó không làm episode độc lập về thống kê và không chứng minh rằng mixture 50/50 là tối ưu cho adaptation hoặc retention.
+
 Bốn file export được manifest liệt kê đã được hash lại và khớp, gồm trọng số adapter, config, tokenizer và README. Dataset manifest cũng khớp hash training. Lần rà soát không hash lại toàn bộ base weights, raw HDF5 và shards lớn. Không được mở rộng kết quả kiểm bốn file thành khẳng định mọi tài nguyên đều đã được chứng nhận đầy đủ.
 
-Nguồn Mem của F1 là dữ liệu tác giả có convention refined được chuyển về raw trước xử lý policy. Một số replay artifacts derived đời cũ đã được tạo; summary T3 ghi 78 replay và 73 outcome success. Đây là metadata tạo dữ liệu, không phải success rate của policy và chưa là chứng nhận dataset version mới. Tại snapshot, chưa có chuỗi derived-v1 lock/index/shards/training hoàn chỉnh. Vì vậy, F1 trong chương này không phải model đã thích ứng trên dataset derived mới.
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.18\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.23\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.26\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.33\textwidth-2\tabcolsep\relax}}
+\caption{Cấu hình huấn luyện adapter F1 được ghi trong run manifest}\label{tab:generated7}\\
+\toprule
+\textbf{Hạng mục} & \textbf{Cấu hình đã chạy} & \textbf{Vai trò trong phương pháp} & \textbf{Giới hạn diễn giải} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Hạng mục} & \textbf{Cấu hình đã chạy} & \textbf{Vai trò trong phương pháp} & \textbf{Giới hạn diễn giải} \\
+\midrule\endhead
+\bottomrule\endfoot
+Vị trí thích ứng & LoRA tại query/value attention của action expert; rank 16; 645.120 tham số trainable & Giữ trọng số VLM và phần nền cố định theo recipe & Không phải thuật toán adaptation mới; chưa so rank hoặc vị trí module \\
+Tối ưu hóa & AdamW; learning rate đầu $2\times10^{-5}$; 100 bước warmup; 3.000 optimizer steps; clip norm 1,0 & Cấu hình tái lập của candidate F1 & Không có sweep để chọn siêu tham số tối ưu \\
+Batch và replay & Effective batch 32 trên 2×Tesla T4; base fraction 0,5; seed 42 & Cân bằng domain và episode trong lúc huấn luyện & Không chứng minh replay bảo toàn kỹ năng \\
+Memory khi train & Memory dropout bằng 0; validation/save mỗi 500 bước & Giữ condition F1 nhất quán với memory input & Bỏ memory ở inference có thể nằm ngoài phân phối train \\
+Export và checkpoint & Adapter unmerged; checkpoint cuối được kiểm ở step 3.000 & Tách file adapter khỏi base weights và kiểm identity & Chưa chứng minh step 3.000 là checkpoint tốt nhất theo rollout \\
+\end{longtable}
+\endgroup
+
+Nguồn Mem của F1 là dữ liệu tác giả có convention refined được chuyển về raw trước xử lý policy. Một số replay artifact derived đời cũ đã được tạo; summary T3 ghi 78 replay và 73 outcome success. Đây là metadata tạo dữ liệu, không phải success rate của policy và chưa là chứng nhận dataset version mới. Tại snapshot, chưa có chuỗi derived-v1 lock/index/shards/training hoàn chỉnh. Vì vậy, F1 trong chương này không phải model đã thích ứng trên dataset derived mới.
 
 \section{Kết quả offline của adapter}
 
@@ -90,7 +145,7 @@ Bảng dưới được tính trực tiếp từ 40 summary episode hoàn tất.
 
 \begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
 \begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.12\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.14\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.2\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.12\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.19\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.23\textwidth-2\tabcolsep\relax}}
-\caption{Kết quả T1/T3 local: một policy seed, mười nhóm initial state}\label{tab:generated4}\\
+\caption{Kết quả T1/T3 local: một policy seed, mười nhóm initial state}\label{tab:generated8}\\
 \toprule
 \textbf{Task} & \textbf{Condition} & \textbf{Success / N} & \textbf{SR} & \textbf{Mean SCR} & \textbf{Overshot / N} \\
 \midrule\endfirsthead
@@ -116,13 +171,21 @@ Hai task & F1 & 1/20 & 5\% & 0,1333 & 1/20 \\
 
 Quan sát trực tiếp là F1 có thêm một episode thành công trên T3. Phần lớn episode ở cả hai điều kiện vẫn thất bại. Chênh lệch macro 5 điểm phần trăm là mô tả trên bộ mẫu này; nó không đủ xác nhận một cải thiện đáng tin cậy, càng không tách được memory khỏi adaptation và perception.
 
+Do hai condition dùng cùng roster, có thể viết chênh lệch success ghép cặp ở mức task–state như:
+
+\begin{equation}
+\widehat{\Delta}_{\mathrm{SR}}=\frac{1}{K}\sum_{j=1}^{K}\left(S_{F1,j}-S_{B0,j}\right),\qquad K=20.
+\end{equation}
+
+Từ artifact hiện có, 19 cặp có outcome $(0,0)$ và một cặp có outcome $(0,1)$ theo thứ tự $(B0,F1)$; do đó $\widehat{\Delta}_{\mathrm{SR}}=1/20=0{,}05$. Đây là mô tả ghép cặp, không phải ước lượng có sai số chuẩn đáng tin cậy. Hai task chia sẻ cùng 10 nhóm initial state và chỉ có một seed, nên các episode không thể được coi là 20 quan sát hoàn toàn độc lập. Bản thảo vì thế không gán p-value hoặc khoảng tin cậy cho chênh lệch này.
+
 SCR cung cấp một góc nhìn khác. Trên T1, cả hai conditions đều có một episode đạt milestone nhưng bị overshot nên không thành công ở endpoint. Trên T3, mean SCR của F1 cao hơn B0, cho thấy có một số tiến độ được evaluator ghi nhận. Điều đó vẫn chưa xác định thành phần nào tạo ra khác biệt, và không có lý do để thay metric success bằng SCR chỉ vì SCR thuận lợi hơn.
 
 \section{Phân tích trace và các trường hợp điển hình}
 
 Để tránh lựa chọn ví dụ chỉ theo cảm tính, phần này xem episode thành công duy nhất và các episode có overshot. Phân tích dựa trên summary và memory/prompt trace; chưa thay thế một audit toàn bộ video hoặc annotation sự kiện độc lập.
 
-Trong 20 F1 episodes,19 snapshot cuối có cờ lịch sử chưa đầy đủ. Có 1.927 policy queries, trong đó 1.894 prompt chứa suffix memory và 1.738 prompt chứa chuỗi \path{history incomplete}. Các số này cho thấy renderer thường cung cấp một phát biểu về sự không đầy đủ của lịch sử. Chúng không đo event precision/recall và không phải hàng nghìn phép thử độc lập.
+Trong 20 F1 episode, 19 snapshot cuối có cờ lịch sử chưa đầy đủ. Có 1.927 policy query, trong đó 1.894 prompt chứa suffix memory và 1.738 prompt chứa chuỗi \path{history incomplete}. Các số này cho thấy renderer thường cung cấp một phát biểu về sự không đầy đủ của lịch sử. Chúng không đo event precision/recall và không phải hàng nghìn phép thử độc lập.
 
 Episode \path{T3_F1_test_state2}, khởi tạo từ \path{demo_29}, là success duy nhất. Evaluator ghi nhận ba chu kỳ, final predicate thỏa mãn và không overshot ở horizon 1.000. Trong snapshot cuối của writer, số return được xác nhận là hai và \path{history_complete=False}. Do đó, success này không thể được mô tả là minh chứng writer đã đếm đúng ba rồi policy dừng theo count đó. Có thể có nhiều cơ chế dẫn đến outcome; trace hiện chưa cho phép xác định cơ chế nhân quả.
 

@@ -1,4 +1,4 @@
-# Bản thảo khóa luận theo tiến độ ngày 11/11/2026
+# Bản thảo khóa luận cập nhật ngày 12/11/2026
 
 **Nâng cao khả năng xử lý tác vụ chuỗi dài cho mô hình VLA trong điều khiển Robot**  
 **Sinh viên:** Lưu Quang Linh, 23020392, K68A-AI2  
@@ -7,7 +7,7 @@
 
 Thông tin bìa lấy từ hàng 31, trang 4 của quyết định trong `docs/format_reference` và đã được sinh viên xác nhận trong phiên làm việc. Không sử dụng tên sinh viên/năm 2025 còn sót trong mẫu LaTeX.
 
-Đây là **bản thảo đang phát triển**, không phải bản nộp hay tuyên bố đã hoàn thành mục tiêu nâng cao hiệu năng. Luận điểm hiện bảo vệ được là: đã xây dựng, huấn luyện và chạy thử một hệ thống bộ nhớ sự kiện thị giác cho SmolVLA; đã có bằng chứng về khả năng vận hành và giới hạn của hệ thống; chưa cô lập được lợi ích riêng của thông tin lịch sử.
+Đây là **bản thảo đang phát triển**, không phải bản nộp hay tuyên bố đã hoàn thành mục tiêu nâng cao hiệu năng. Snapshot bằng chứng mới nhất được tạo ngày 12/11/2026; snapshot này chỉ tái tổng hợp artifact đã lưu, không chạy thí nghiệm mới. Luận điểm hiện bảo vệ được là: đã xây dựng, huấn luyện và chạy thử một hệ thống bộ nhớ sự kiện thị giác cho SmolVLA; đã có bằng chứng thành phần trên demonstration và rollout policy trong hai task; chưa cô lập được lợi ích riêng của thông tin lịch sử.
 
 ## Đọc theo thứ tự
 
@@ -24,6 +24,7 @@ Thông tin bìa lấy từ hàng 31, trang 4 của quyết định trong `docs/f
 - Tách V1 không memory khỏi V2 memory; không sửa baseline đã khóa để phù hợp kết quả mới.
 - Các kết quả local mang nhãn **LIBERO-derived / NON-COMPARABLE_OFFICIAL_PAPER**. T1/T3 local không đại diện toàn bộ LIBERO-Mem.
 - Số liệu rollout chính lấy từ `summary.json` từng episode của run tháng 11, kiểm tra `status.json` và SHA-256. Đây là tên artifact của runner mới, khác `episode.json` của runner cũ.
+- Kết quả writer replay ngày 26/10 được báo riêng: sáu demonstration, ba initial state, 12/12 event ghép trong dung sai ±20 frame. Đây là kiểm tra chẩn đoán trên demonstration đã xem, không phải ước lượng tổng quát event accuracy. Các hash evidence được đưa vào `input_hashes.json`.
 - Số 77/160 trong báo cáo V1 được lưu ở phần lịch sử: đường raw được báo cáo tham chiếu hiện không có episode để kiểm lại. Không lấy run khác thay vào cùng tên.
 - Có checkpoint F1 được train trên dữ liệu tác giả. Không gọi nó là checkpoint đã train trên demonstration derived mới.
 - `data/libero_mem_derived` có summary replay T3; output `data/libero_mem_derived_v1` và chuỗi lock/index/shards được xác nhận đầy đủ vẫn chưa có trong snapshot. Metadata replay cũ không chứng nhận dataset version mới.
@@ -35,7 +36,9 @@ Từ thư mục gốc repository, dùng Python cho công cụ tài liệu; khôn
 
 ```powershell
 python -X utf8 docs/thesis/tools/collect_evidence.py
+python -X utf8 docs/thesis/tools/make_figures.py
 python -X utf8 docs/thesis/tools/build_latex.py
+python -X utf8 docs/thesis/tools/validate_draft.py
 ```
 
 Collector chỉ đọc artifact và ghi snapshot trong thư mục này, không chạy simulator, policy hay training. Các lần kiểm tra sau có thể nhìn thấy working tree khác; giữ snapshot đã dùng cho bản nộp cùng Git revision và hashes.

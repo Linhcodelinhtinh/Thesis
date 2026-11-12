@@ -9,6 +9,18 @@ Lịch sử quan sát–hành động có thể viết thành $h_t=(o_0,a_0,\ldo
 
 Hai lịch sử có thể dẫn đến các quan sát gần nhau nhưng đòi hỏi quyết định khác nhau. Trường hợp bát đã quay về đĩa hai lần và ba lần là một ví dụ về thiết kế task như vậy. Dù vậy, sự giống nhau bằng mắt không phải chứng minh hai phân phối quan sát hoàn toàn đồng nhất. Các tín hiệu phụ như tư thế robot hay thời gian có thể tương quan với tiến độ. Một đánh giá memory chặt chẽ cần xem xét khả năng policy sử dụng những tín hiệu đó.
 
+Một mô hình hóa chuẩn cho tình huống này là quá trình quyết định Markov quan sát một phần (POMDP), ký hiệu $\mathcal P=(\mathcal X,\mathcal A,T,\mathcal O,Z,r,\gamma)$. $T(x'\mid x,a)$ mô tả chuyển trạng thái, $Z(o\mid x)$ mô tả quan sát, $r$ là hàm thưởng và $\gamma$ là hệ số chiết khấu. Policy chỉ nhìn thấy lịch sử $h_t=(o_0,a_0,\ldots,a_{t-1},o_t)$ thay vì trạng thái $x_t$. Trong trường hợp tổng quát, phân phối niềm tin $b_t(x)=P(x_t=x\mid h_t)$ là một biểu diễn lịch sử có thể dùng để ra quyết định.
+
+Khóa luận không xây dựng bộ lọc Bayes để ước lượng toàn bộ $b_t$. Thay vào đó, writer duy trì một thống kê sự kiện chuyên biệt $m_t$ về quan hệ bát–đĩa. Vì vậy, $m_t$ chỉ có thể được xem là đủ cho quyết định nếu các thông tin ngoài count không ảnh hưởng đến hành động tối ưu trong phạm vi tác vụ. Điều kiện đó chưa được chứng minh. Định nghĩa memory hẹp giúp tạo giả thuyết có thể kiểm định, nhưng đồng thời giới hạn phạm vi diễn giải.
+
+Có thể diễn đạt mục tiêu của một memory hữu ích bằng mức mất thông tin quyết định:
+
+\begin{equation}
+\Delta_t = d\!\left(\pi^*(\cdot\mid h_t,\ell),\,\pi_\phi(\cdot\mid o_t,m_t,\ell)\right),
+\end{equation}
+
+trong đó $d$ là một độ đo khoảng cách giữa phân phối hành động tối ưu và phân phối policy được triển khai. Nếu lịch sử chứa thông tin không biểu đạt trong $o_t$, một memory thích hợp có thể làm giảm $\Delta_t$. Bản thân thiết kế không đảm bảo điều này: lỗi detector, mất dấu, diễn đạt mơ hồ hoặc policy không hiểu text đều có thể làm khoảng cách tăng. Trong luận văn, SR và các metric thành phần là quan sát thực nghiệm gián tiếp; $\Delta_t$ không được đo trực tiếp.
+
 \section{SmolVLA và thực thi theo action chunk}
 
 Trong hệ thống này, policy sinh một ma trận hành động $A_t$ gồm $H$ hàng. Mỗi hàng là lệnh điều khiển tại một bước. Bộ điều khiển chỉ thực thi $s$ hành động đầu, nhận quan sát mới rồi yêu cầu policy dự đoán lại. Vì vậy, $H$ là độ dài dự đoán và $s$ là khoảng thực thi giữa hai lần lập kế hoạch lại. Chúng không phải cùng một đại lượng.
@@ -17,7 +29,7 @@ Checkpoint được sử dụng là \path{lerobot/smolvla_libero} tại revision
 
 Quy trình tiền xử lý và giải chuẩn hóa hành động do implementation LeRobot tương ứng thực hiện. Adapter của khóa luận giữ nhiệm vụ ánh xạ dữ liệu và kiểm tra contract. Đối với checkpoint này, gripper đi theo dấu native của simulator: giá trị âm mở, giá trị dương đóng. Không được sao chép quy ước dấu của một checkpoint khác chỉ vì các model cùng điều khiển Panda.
 
-Trong thí nghiệm Mem, $s=10$ dù $H=50$. Ở tần số điều khiển mô phỏng20 Hz, mười action tương ứng nửa giây thời gian mô phỏng. Điều này không có nghĩa toàn hệ thống xử lý trong nửa giây thời gian thực: simulator có thể tạm dừng khi chờ suy luận và perception. Phân biệt này cần được giữ khi trình bày latency và khả năng triển khai.
+Trong thí nghiệm Mem, $s=10$ dù $H=50$. Ở tần số điều khiển mô phỏng 20 Hz, mười action tương ứng nửa giây thời gian mô phỏng. Điều này không có nghĩa toàn hệ thống xử lý trong nửa giây thời gian thực: simulator có thể tạm dừng khi chờ suy luận và perception. Phân biệt này cần được giữ khi trình bày latency và khả năng triển khai.
 
 \section{Các hướng biểu diễn memory}
 
@@ -47,6 +59,10 @@ Phương pháp của khóa luận & Sự kiện bát–đĩa, count và cờ thi
 \endgroup
 
 Bảng trên so sánh lựa chọn thiết kế, không phải xếp hạng hiệu năng. Các paper dùng model, dữ liệu, robot và protocol khác với hệ thống local.
+
+Nhìn theo mức độ can thiệp vào policy, các phương pháp trên tạo thành một phổ. Video memory giữ bằng chứng giàu hình học nhưng cần encoder và cơ chế nén; memory đặc trưng có thể học cách truy xuất nhưng đòi hỏi dữ liệu và tính toán để huấn luyện; memory sự kiện tường minh có thể audit bằng con người nhưng phụ thuộc mạnh vào độ đúng của perception và ngôn ngữ hóa. Lựa chọn trong khóa luận ưu tiên khả năng truy nguyên nguồn và thời điểm của một fact. Đổi lại, biểu diễn text làm mất phần lớn hình học và không cung cấp bảo đảm rằng action expert sẽ dùng fact đó.
+
+Khác biệt này dẫn đến yêu cầu so sánh theo hai tầng. Tầng thứ nhất đo writer: sự kiện có được phát hiện đúng thời điểm và có biết từ chối khi không đủ bằng chứng hay không. Tầng thứ hai đo policy: khi cùng nhìn thấy các điều kiện khác nhau, liệu action và success có cải thiện hay không. Một phép thử ở tầng thứ nhất không thay cho tầng thứ hai; rollout thành công ở tầng thứ hai cũng không tự xác nhận mọi event là đúng.
 
 \section{Từ detection đến sự kiện}
 

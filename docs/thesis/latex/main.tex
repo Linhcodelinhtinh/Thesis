@@ -33,7 +33,7 @@
 \renewcommand{\headrulewidth}{0pt}
 \fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}}
 \newcommand{\thesistitle}{Nâng cao khả năng xử lý tác vụ chuỗi dài cho mô hình VLA trong điều khiển Robot}
-\hypersetup{pdftitle={\thesistitle},pdfauthor={Lưu Quang Linh},pdfsubject={Bản thảo theo tiến độ ngày 11/11/2026}}
+\hypersetup{pdftitle={\thesistitle},pdfauthor={Lưu Quang Linh},pdfsubject={Bản thảo cập nhật ngày 12/11/2026}}
 
 \begin{document}
 \input{frontmatter/cover}
@@ -41,7 +41,7 @@
 \pagestyle{empty}
 \chapter*{Ghi chú phiên bản bản thảo}
 \thispagestyle{empty}
-Bản thảo ngày 11/11/2026. Các kết quả local mang nhãn
+Bản thảo cập nhật ngày 12/11/2026; snapshot tái tổng hợp artifact đã có ngày 12/11/2026. Các kết quả local mang nhãn
 \texttt{NON-COMPARABLE\_OFFICIAL\_PAPER}. Nội dung chưa đủ để kết luận memory
 cải thiện hiệu năng; các mục chưa có thực nghiệm được nêu ở phần giới hạn.
 Đây chưa phải bản nộp cuối. Cần biên dịch và kiểm tra phân trang, hoàn thiện
@@ -63,19 +63,33 @@ nội dung, số liệu và nguồn trích dẫn. Bản thảo không tạo ch�
 \listoftables
 \chapter*{Danh mục ký hiệu và chữ viết tắt}
 \addcontentsline{toc}{chapter}{Danh mục ký hiệu và chữ viết tắt}
-\begin{tabular}{ll}
+\begin{longtable}{p{.20\textwidth}p{.74\textwidth}}
 VLA & Mô hình thị giác--ngôn ngữ--hành động\\
 VLM & Mô hình thị giác--ngôn ngữ\\
+POMDP & Quá trình quyết định Markov quan sát một phần\\
 FSM & Máy trạng thái hữu hạn\\
 LoRA & Thích ứng hạng thấp\\
 SFT & Tinh chỉnh có giám sát\\
 SR & Tỷ lệ thành công theo episode\\
 SCR & Tỷ lệ milestones được hoàn thành\\
+RGB & Đỏ--lục--lam, biểu diễn ảnh màu\\
+IoU & Giao trên hợp giữa hai hộp giới hạn\\
+IPC & Giao tiếp giữa các tiến trình\\
+T1, T3 & Task nhấc--đặt lại bát một lần và ba lần\\
+B0 & Checkpoint SmolVLA gốc, không memory\\
+F0 & Adapter fine-tune matched không memory, chưa có kết quả\\
+F1 & Checkpoint gốc cộng adapter đã train với memory\\
+F1-off & Adapter F1 khi tắt memory lúc suy luận\\
 $H$ & Độ dài action chunk dự đoán\\
 $s$ & Số action thực thi trước khi query lại\\
 $m_t$ & Snapshot memory khả dụng tại bước $t$\\
 $o_t$ & Quan sát policy được phép sử dụng\\
-\end{tabular}
+$x_t$ & Trạng thái đầy đủ của simulator ở bước $t$\\
+$h_t$ & Lịch sử quan sát--hành động đến bước $t$\\
+$N$ & Số chu kỳ nhấc--đặt lại task yêu cầu\\
+$\hat z_t$ & Số chu kỳ writer đã xác nhận đến bước $t$\\
+$\tau_j,\upsilon_j$ & Thời điểm event xảy ra ước lượng và thời điểm có thể sử dụng\\
+\end{longtable}
 \mainmatter
 \input{content/chapter1}
 \input{content/chapter2}

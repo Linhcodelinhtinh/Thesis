@@ -43,14 +43,51 @@ REQUIRED_RUNS = {f"{task}/{split}" for task in ("T1", "T3") for split in ("train
 def atomic_json(path: Path, value):
     path = Path(path)
     temporary = path.with_suffix(path.suffix + ".partial")
-    temporary.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    if temporary.exists():
+        try:
+            temporary.unlink()
+        except OSError:
+            pass
+    content = json.dumps(value, indent=2, ensure_ascii=False) + "\n"
+    with open(temporary, "w", encoding="utf-8") as f:
+        f.write(content)
+        f.flush()
+        os.fsync(f.fileno())
+    if path.exists():
+        try:
+            path.unlink()
+        except OSError:
+            pass
     os.replace(temporary, path)
 
 
-def atomic_copy(source: Path, destination: Path):
+def safe_copy(source: Path, destination: Path, buffer_size=16*1024*1024):
+    """Copy file safely across filesystems (e.g. ext4 to 9P/drvfs) avoiding sendfile EIO."""
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with open(source, "rb") as fsrc, open(destination, "wb") as fdst:
+        while True:
+            chunk = fsrc.read(buffer_size)
+            if not chunk:
+                break
+            fdst.write(chunk)
+        fdst.flush()
+        os.fsync(fdst.fileno())
+
+
+def atomic_copy(source: Path, destination: Path, buffer_size=16*1024*1024):
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_suffix(destination.suffix + ".partial")
-    shutil.copy2(source, temporary)
+    if temporary.exists():
+        try:
+            temporary.unlink()
+        except OSError:
+            pass
+    safe_copy(source, temporary, buffer_size=buffer_size)
+    if destination.exists():
+        try:
+            destination.unlink()
+        except OSError:
+            pass
     os.replace(temporary, destination)
 
 
@@ -126,7 +163,7 @@ def parse_args():
                         default=ROOT / "experiments/training/results_mem_2/mem-adapter-v1/dataset-split.lock.json")
     parser.add_argument("--source-dir", type=Path, default=ROOT / "data/libero_mem")
     parser.add_argument("--output-dir", type=Path, default=ROOT / "data/libero_mem_derived_v1")
-    parser.add_argument("--staging-dir", type=Path, default=Path("/tmp/libero_mem_derived_staging_v1"))
+    parser.add_argument("--staging-dir", type=Path, default=Path("/var/tmp/libero_mem_derived_staging_v1"))
     parser.add_argument("--resume", action="store_true", default=True)
     parser.add_argument("--no-resume", dest="resume", action="store_false")
     parser.add_argument("--max-episodes", type=int)
@@ -277,7 +314,7 @@ def run_task(task_alias: str, args, parent_lock, generator_hash, runtime, code_h
                 (stage_root / "metainfo.json").unlink()
         if not work_h5.exists():
             if target_h5.exists():
-                shutil.copy2(target_h5, work_h5)
+                safe_copy(target_h5, work_h5)
             else:
                 with h5py.File(work_h5, "w"):
                     pass

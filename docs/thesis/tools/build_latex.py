@@ -38,8 +38,12 @@ def inline(text):
 
 CAPTIONS = [
     "So sánh cơ chế memory và phạm vi liên hệ với khóa luận",
+    "Ngưỡng hình học và ngưỡng xác nhận của writer RGB v3",
+    "Các condition dùng để tách adaptation khỏi memory",
+    "Kết quả chẩn đoán writer trên demonstration T1/T3",
     "Môi trường và protocol được ghi trong các artifact",
     "Số demonstration theo domain và split trong dataset manifest",
+    "Cấu hình huấn luyện adapter F1 được ghi trong run manifest",
     "Kết quả T1/T3 local: một policy seed, mười nhóm initial state",
 ]
 table_index = 0
@@ -52,7 +56,7 @@ def table(lines):
     n = len(header)
     if any(len(row) != n for row in rows):
         raise ValueError("Non-rectangular table")
-    fractions = {2: [.31, .69], 4: [.18, .23, .26, .33],
+    fractions = {2: [.31, .69], 3: [.25, .35, .40], 4: [.18, .23, .26, .33],
                  5: [.29, .1775, .1775, .1775, .1775],
                  6: [.12, .14, .20, .12, .19, .23]}[n]
     cols = "".join(r">{\raggedright\arraybackslash}p{\dimexpr " + str(f) + r"\textwidth-2\tabcolsep\relax}" for f in fractions)

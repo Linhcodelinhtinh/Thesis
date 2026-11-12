@@ -78,6 +78,6 @@ Liên quan trực tiếp với khóa luận này ở mức phương pháp luận
 | `smolvlaCheckpoint` | HF `lerobot/smolvla_libero` @ `31d453f7edd78c839a8bbc39744a292686daf0de` | Contract thực tế của checkpoint local |
 | `liberoSource` | Official LIBERO @ `8f1084e3132a39270c3a13ebe37270a43ece2a01` | Nguồn phần baseline |
 | `liberomemSource` | `libero-mem/libero-mem` @ `0eee0defa4024e51511b6e15a79f30e9620209de` | Nguồn T1/T3; không dùng short pin cũ6df130c của docs tháng10 |
-| `artifact2026` | Snapshot nội bộ11/11/2026 và run manifests | Bằng chứng số liệu local; không phải công bố đã phản biện |
+| `artifact2026` | Snapshot nội bộ 12/11/2026 và run manifests | Bằng chứng số liệu local; không phải công bố đã phản biện |
 
 Metadata paper bổ sung được kiểm trên arXiv; cấu hình sử dụng trong thực nghiệm lấy từ local manifest/code đã pin, không lấy bản mới nhất trên mạng thay nguồn đã chạy. Mọi citation trong bản thảo có entry BibTeX; giữ full hashes trong evidence để tránh nhồi chuỗi hash vào mạch lập luận.

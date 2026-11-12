@@ -199,6 +199,59 @@ for parent in ["data/libero_mem_derived", "data/libero_mem_derived_pilot"]:
             "file": p.relative_to(ROOT).as_posix(),
             **{k: r.get(k) for k in ["task", "split", "total_replayed", "successful_episodes", "timestamp", "target_hdf5_sha256"]},
         })
+
+# Preserve the earlier RGB event-writer audit as a separate evidence stream.
+# Its demonstrations and metrics are not pooled with the later policy rollout.
+writer_root = Path("experiments/audits/memory_writer_v3")
+writer = read(writer_root / "verification_summary.json")
+writer_evidence_hashes = {}
+for relative, expected in writer["evidence_hashes"].items():
+    artifact = writer_root / relative
+    actual = digest(ROOT / artifact)
+    if actual != expected:
+        raise ValueError(f"Writer audit evidence checksum mismatch: {artifact}")
+    writer_evidence_hashes[artifact.as_posix()] = actual
+package = writer_root / "memory_writer_source.zip"
+package_hash = digest(ROOT / package)
+if package_hash != writer["source_package"]["sha256"]:
+    raise ValueError("Writer source archive checksum mismatch")
+writer_evidence_hashes[package.as_posix()] = package_hash
+INPUTS.update(writer_evidence_hashes)
+writer_core = ["src/perception/object_tracker.py", "src/memory/event_writer.py",
+               "src/interfaces/libero_mem_text.py"]
+writer_core_matches = {}
+for relative in writer_core:
+    actual = digest(ROOT / relative)
+    expected = writer["code_hashes"][relative]
+    writer_core_matches[relative] = {"sha256": actual, "matches_audit": actual == expected}
+snapshot["writer_replay"] = {
+    "summary": (writer_root / "verification_summary.json").as_posix(),
+    "summary_status": writer["status"],
+    "date": writer["date"],
+    "real_demonstrations": writer["real_demonstrations"],
+    "unique_initial_states": writer["unique_initial_states"],
+    "frames": writer["frames"],
+    "grounded_frames": writer["grounded_frames"],
+    "memory_frames": writer["memory_frames"],
+    "max_prompt_tokens": writer["max_prompt_tokens"],
+    "annotated_returns": writer["annotated_returns"],
+    "predicted_returns": writer["predicted_returns"],
+    "matches": writer["matches"],
+    "false_positive": writer["false_positive"],
+    "false_negative": writer["false_negative"],
+    "event_tolerance_frames": writer["event_tolerance_frames"],
+    "confirmation_delay_frames": writer["confirmation_delay_frames"],
+    "incomplete_histories": writer["incomplete_histories"],
+    "accepted_bowl_detections": writer["accepted_bowl_detections"],
+    "accepted_at_iou_0_5": writer["accepted_at_iou_0_5"],
+    "predicted_index_live_detector_parity_frames": writer["predicted_index_live_detector_parity_frames"],
+    "no_memory_index_parity_frames": writer["no_memory_index_parity_frames"],
+    "worker_parity": writer["worker_parity"],
+    "core_source_hashes": writer_core_matches,
+    "limitations": writer["limitations"],
+    "evidence_sha256": writer_evidence_hashes,
+}
+
 for folder in ["docs", "src", "configs", "envs", "resources/manifests"]:
     for p in (ROOT / folder).rglob("*"):
         if not p.is_file() or "thesis" in p.relative_to(ROOT).parts or "__pycache__" in p.parts:

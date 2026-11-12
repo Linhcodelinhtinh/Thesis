@@ -1,6 +1,6 @@
 # Kế hoạch viết toàn bộ khóa luận
 
-Mốc nội dung: **11/11/2026**. Đề tài chính thức: **Nâng cao khả năng xử lý tác vụ chuỗi dài cho mô hình VLA trong điều khiển Robot**. Giữ nguyên tên đã duyệt; trong nội dung xác định phạm vi thực hiện là SmolVLA, bộ nhớ sự kiện thị giác trong một episode và đánh giá T1/T3 dưới protocol local.
+Mốc biên tập và snapshot bằng chứng: **12/11/2026**. Snapshot chỉ đọc lại artifact đã tồn tại; rollout/training được trình bày trong chương thực nghiệm mang ngày chạy riêng. Đề tài chính thức: **Nâng cao khả năng xử lý tác vụ chuỗi dài cho mô hình VLA trong điều khiển Robot**. Giữ nguyên tên đã duyệt; trong nội dung xác định phạm vi thực hiện là SmolVLA, bộ nhớ sự kiện thị giác trong một episode và đánh giá T1/T3 dưới protocol local.
 
 ## 1. Câu chuyện khoa học
 
@@ -24,7 +24,7 @@ RQ2 và RQ3 là câu hỏi mở. Không viết “chứng minh tăng hiệu năn
 | Đóng góp khả dĩ | Thành quả cụ thể của repository | Giá trị | Giới hạn tuyên bố |
 |---|---|---|---|
 | C1. Hệ thống đánh giá có truy vết | Tách simulator/policy/perception; khóa source, controller, split; log action, prompt, evidence, status | Giúp phát hiện và phân biệt lỗi tài nguyên, interface, thí nghiệm; tạo điều kiện kiểm chứng lại | Đóng góp thực nghiệm/kỹ thuật; không phải một benchmark chính thức mới hay chứng minh tái lập tuyệt đối |
-| C2. Bộ nhớ sự kiện theo thực thể | Tracker bát–đĩa gốc, FSM departure/return, hysteresis, `occurred_at`/`available_at`, incomplete history, renderer có budget | Biểu diễn lịch sử có thể kiểm tra, hạn chế khẳng định quá mức, nối perception với quyết định | Là thiết kế tích hợp cho bài toán hẹp; chưa chứng minh mới toàn cầu, chưa có fidelity tổng quát |
+| C2. Bộ nhớ sự kiện theo thực thể | Tracker bát–đĩa gốc, FSM departure/return, hysteresis, `occurred_at`/`available_at`, incomplete history, renderer có budget; audit demo ghép 12/12 return trong ±20 frame | Biểu diễn lịch sử có thể kiểm tra; có kiểm tra ban đầu về thứ tự/timing event | Chỉ sáu demonstration, ba state, milestone không phải contact label; chưa chứng minh mới toàn cầu hoặc fidelity tổng quát |
 | C3. Quy trình thích ứng gọn | LoRA q/v action expert, backbone gốc được bảo toàn, replay base/Mem, split theo initial-state hash, export unmerged có hash | Cho phép khảo sát memory conditioning trên mô hình nhỏ với dữ liệu và chi phí kiểm soát | LoRA, flow matching, Grounding DINO, replay là kỹ thuật kế thừa; tỷ lệ 50/50 chưa được chứng minh tối ưu |
 | C4. Bằng chứng thực nghiệm và phân tích giới hạn | Checkpoint 3.000 bước; B0/F1 trên cùng roster T1/T3; phân biệt loss, SCR, success, overshot | Cho thấy offline loss và khả năng vận hành không đủ thay thế closed-loop success; xác định phép kiểm định còn cần | Chưa có kết quả xác nhận đóng góp riêng của memory; không quy failure thành “quên” hoặc “attention dilution” |
 
@@ -69,7 +69,7 @@ Mục chờ thực nghiệm được ghi trong kế hoạch/backlog, không dự
 
 | Giai đoạn | Công việc | Đầu ra có thể kiểm tra | Điều kiện chuyển bước |
 |---|---|---|---|
-| W0: viết ngay | Chốt nguồn/claims, viết chương 1–3, kết quả đã kiểm được của chương 4, kết luận tạm | Bộ tài liệu hiện tại | Không có claim mạnh hơn evidence |
+| W0: viết ngay | Chốt nguồn/claims, viết chương 1–3, kết quả writer replay và rollout policy đã kiểm được ở chương 4, kết luận tạm | Bộ tài liệu hiện tại | Không có claim mạnh hơn evidence; tách writer audit khỏi policy SR |
 | E1: đóng đường dữ liệu | Audit source thay đổi ngày 11/11; chạy export version mới; convention raw/refined, resume, terminal, metadata, provenance | Dataset derived đầy đủ có manifest, parent lock, indices/shards, validation ảnh thật | Mỗi artifact hoàn tất; không dùng pilot cũ thay version mới |
 | E2: đối chứng | F0/F1 cùng dữ liệu, split, ngân sách, checkpoint-selection; hỗ trợ F1-off/base rõ ràng | Hai training runs + export đã xác minh | Không lấy checkpoint cũ khác data làm matched F0 |
 | E3: phát triển trên validation | Kiểm writer fidelity, rollout pilot, chọn candidate theo metric đặt trước | Validation report và quyết định khóa | Không chọn checkpoint trên test đã xem |

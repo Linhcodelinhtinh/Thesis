@@ -1,22 +1,33 @@
 {
-  "created_at": "2026-11-11T21:34:10.413204+07:00",
+  "created_at": "2026-11-12T09:08:08.826508+07:00",
   "scope": "Existing artifact inspection; no fresh benchmark/training/runtime tests",
-  "git_head": "933ad9eeb0ee73caa1e5c6523df327c41f1b05d4",
+  "git_head": "57867994bcbe470571e17955e1af5ef078ef6233",
   "git_status": [
-    " M docs/LIBERO_MEM_DERIVED_SPEC.md",
-    " M envs/libero_reference.yml",
-    " M scripts/prepare_libero_mem_sft.py",
-    " M scripts/prepare_mixed_memory_sft.py",
-    " M scripts/run_libero_mem_derived.ps1",
-    " M src/simulator/libero_mem_env.py",
-    " M src/training/mixed_sft.py",
-    "?? docs/LIBERO_MEM_DERIVED_AUDIT_2026-11-11.md",
-    "?? docs/thesis/",
-    "?? scripts/generate_derived_demonstrations.py",
-    "?? scripts/lock_libero_mem_derived_split.py",
-    "?? scripts/run_generate_derived_demonstrations.ps1",
-    "?? tests/unit/test_derived_generator_unit.py",
-    "?? tmp/thesis_reference_review/"
+    " M docs/thesis/README.md",
+    " M docs/thesis/REFERENCE_REVIEW.md",
+    " M docs/thesis/STATUS_AND_CLAIMS.md",
+    " M docs/thesis/THESIS_DRAFT.md",
+    " M docs/thesis/WRITING_PLAN.md",
+    " M docs/thesis/evidence/document_validation.json",
+    " M docs/thesis/evidence/input_hashes.json",
+    " M docs/thesis/evidence/snapshot.json",
+    " M docs/thesis/figures/architecture.svg",
+    " M docs/thesis/figures/mem_success.svg",
+    " M docs/thesis/figures/validation_loss.svg",
+    " M docs/thesis/latex/appendices/provenance.tex",
+    " M docs/thesis/latex/content/abstract.tex",
+    " M docs/thesis/latex/content/chapter1.tex",
+    " M docs/thesis/latex/content/chapter2.tex",
+    " M docs/thesis/latex/content/chapter3.tex",
+    " M docs/thesis/latex/content/chapter4.tex",
+    " M docs/thesis/latex/content/chapter5.tex",
+    " M docs/thesis/latex/main.tex",
+    " M docs/thesis/latex/references.bib",
+    " M docs/thesis/tools/build_latex.py",
+    " M docs/thesis/tools/collect_evidence.py",
+    " M docs/thesis/tools/validate_draft.py",
+    " M docs/thesis_completeness.md",
+    " M scripts/generate_derived_demonstrations.py"
   ],
   "limitations": [
     "Episode JSONs and selected small manifests were read and hashed.",
@@ -651,7 +662,7 @@
     ]
   },
   "derived_data": {
-    "versioned_v1_output_exists": false,
+    "versioned_v1_output_exists": true,
     "legacy_replay_summaries": [
       {
         "file": "data/libero_mem_derived/T3_train_summary.json",
@@ -682,5 +693,65 @@
       }
     ],
     "note": "Summary metadata only; HDF5 contents, byte hashes and end-to-end readiness not certified"
+  },
+  "writer_replay": {
+    "summary": "experiments/audits/memory_writer_v3/verification_summary.json",
+    "summary_status": "passed_for_documented_pilot_scope",
+    "date": "2026-10-26",
+    "real_demonstrations": 6,
+    "unique_initial_states": 3,
+    "frames": 1276,
+    "grounded_frames": 1172,
+    "memory_frames": 1258,
+    "max_prompt_tokens": 31,
+    "annotated_returns": 12,
+    "predicted_returns": 12,
+    "matches": 12,
+    "false_positive": 0,
+    "false_negative": 0,
+    "event_tolerance_frames": 20,
+    "confirmation_delay_frames": {
+      "min": 6,
+      "max": 20,
+      "median": 9.0,
+      "mean": 9.916666666666666
+    },
+    "incomplete_histories": 5,
+    "accepted_bowl_detections": 1172,
+    "accepted_at_iou_0_5": 1169,
+    "predicted_index_live_detector_parity_frames": 162,
+    "no_memory_index_parity_frames": 162,
+    "worker_parity": "passed",
+    "core_source_hashes": {
+      "src/perception/object_tracker.py": {
+        "sha256": "5f169bdf539c166f65a37458d1bbd93439690a69b1fa88bd85af411e2e3c4e23",
+        "matches_audit": true
+      },
+      "src/memory/event_writer.py": {
+        "sha256": "2384c583388cac1d4dca0922223481887eacd78afb44647640129e8022212994",
+        "matches_audit": true
+      },
+      "src/interfaces/libero_mem_text.py": {
+        "sha256": "21fe6930d5850d0e22844583ea12075b92cd766ff90db95651bcbf70e4fbd7cd",
+        "matches_audit": true
+      }
+    },
+    "limitations": [
+      "Three initial states only, no blind holdout",
+      "Successful demonstrations; failure-trajectory precision unmeasured",
+      "RGB relation estimates, not physical contact truth",
+      "About 1 second per live detector frame",
+      "No training or policy success/retention benchmark"
+    ],
+    "evidence_sha256": {
+      "experiments/audits/memory_writer_v3/final_dev_comparison.json": "432303ba5abcbe115d2cd81f00baec6444a8f618469df3d6986d85b793c96122",
+      "experiments/audits/memory_writer_v3/final_check_comparison.json": "80bf9a691010e083112b6cd34ca1e0842916671cf36af138e0a081cf96d576cf",
+      "experiments/audits/memory_writer_v3/unit_results.xml": "74b2047bba45b380968330829cc4f66efa18c4010e784ed9194a5242dedb6cb6",
+      "experiments/audits/memory_writer_v3/base_regression.xml": "3ec30cd18ba1d70f3cfd65a92b9a879842a1e2f27368f37e7e3c4ed08f503686",
+      "experiments/audits/memory_writer_v3/worker_parity_12_frames.json": "041ae19e14260e2a8329945abed2939f948663dea181aff459347d66d8f95c3a",
+      "experiments/audits/memory_writer_v3/predicted_index/manifest.json": "315f399bd6e350b67d917add5ee592c155949222e647d689fa7a6665c23de4b5",
+      "experiments/audits/memory_writer_v3/no_memory_index/manifest.json": "665e5f4c99ed4843ee2fd3e6604d413cb6718fc6834d86616d8c34ebac2d42fc",
+      "experiments/audits/memory_writer_v3/memory_writer_source.zip": "72fa5d621436fcf2c97e120b7521117fef8cdc8a666cf341006c649586e5fc3f"
+    }
   }
 }

@@ -7,6 +7,8 @@ Khóa luận đã xây dựng một hướng bổ sung bộ nhớ sự kiện th
 
 Một quy trình thích ứng action expert bằng LoRA đã được triển khai và tạo ra adapter sau 3.000 bước huấn luyện. Các file export được xác minh theo manifest. Đợt rollout B0/F1 trên T1/T3 đã tạo đủ artifact cho 40 task-episodes, cho phép đối chiếu kết quả với prompt và trạng thái memory. Đây là bằng chứng về việc phương pháp đã được đưa vào một hệ thống thực thi, vượt qua mức chỉ có kiến trúc đề xuất.
 
+Ở tầng kiểm tra thành phần, audit demonstration ghi nhận 12/12 return khớp milestone annotation trong dung sai ±20 frame trên sáu episode, nhưng latency detector xấp xỉ một giây mỗi frame và tập đánh giá không gồm failure trajectory. Hai điều kiện này cho thấy một bộ ghi sự kiện có thể được kiểm tra bằng tiêu chí riêng, đồng thời chỉ ra rằng mức khớp trong demo chưa đủ để chứng nhận hiệu năng runtime hay tính đúng trên dữ liệu ngoài mẫu.
+
 \section{Điều rút ra từ kết quả hiện tại}
 
 Kết quả hiện tại chưa chứng minh mục tiêu nâng cao hiệu năng đã đạt. F1 có một success trong 20 task-episodes trong khi B0 không có success, nhưng phép so sánh còn gộp adaptation và memory, số nhóm state nhỏ và chỉ có một seed. Không có cơ sở chuyển các con số này thành một cải thiện chính thức trên LIBERO-Mem hoặc một kết luận tổng quát về memory cho VLA.
@@ -15,8 +17,10 @@ Một kết luận có căn cứ hơn là chất lượng và khả năng sử d
 
 Giá trị học thuật hiện có nằm ở cách đặt và làm rõ bài toán, thiết kế biểu diễn sự kiện có truy vết, cùng những phép kiểm giúp tránh kết luận vượt bằng chứng. Giá trị này cần được đánh giá trong phạm vi một khóa luận xây dựng và khảo sát hệ thống; chưa phải chứng minh tính mới toàn cầu hay ưu thế so với các kiến trúc memory lớn.
 
+Điểm phương pháp luận có thể giữ lại từ nghiên cứu là phân rã đường bằng chứng thành ba tầng: chất lượng perception/event, tác động của memory lên policy khi adaptation được kiểm soát, và duy trì năng lực trên task cơ sở. Chỉ tầng đầu có một phép kiểm định lượng nhỏ đã hoàn tất; tầng thứ hai và thứ ba vẫn mở. Cách phân rã này giúp kết quả âm hoặc chưa rõ được diễn giải như giới hạn của phép đo hiện tại thay vì gán nguyên nhân cho một module chưa được cô lập.
+
 \section{Hạn chế và hướng phát triển}
 
-Các hạn chế chính là phạm vi một quan hệ bát–đĩa, thiếu đánh giá event fidelity, chưa có F0 matched và retention của adapter hiện tại, cùng khác biệt chưa được đóng hoàn toàn giữa dữ liệu tác giả và runtime local. Chuỗi tạo dữ liệu derived mới còn cần export thật và audit hoàn chỉnh trước khi được dùng cho kết luận huấn luyện mới.
+Các hạn chế chính là phạm vi một quan hệ bát–đĩa, thiếu đánh giá event fidelity trên failure trajectories, chưa có F0 matched và retention của adapter hiện tại, cùng khác biệt chưa được đóng hoàn toàn giữa dữ liệu tác giả và runtime local. Bộ detector chưa đạt 20 Hz trên hardware được ghi trong audit; rollout đồng bộ làm simulator tạm dừng và không chứng minh điều khiển thời gian thực. Chuỗi tạo dữ liệu derived mới còn cần export thật và audit hoàn chỉnh trước khi được dùng cho kết luận huấn luyện mới.
 
 Hướng tiếp theo là hoàn thiện chuỗi dữ liệu có version, xây dựng đối chứng thích ứng không memory trên cùng demonstration, đo chất lượng writer và thực hiện paired evaluation với phạm vi holdout được công bố rõ. Sau khi làm rõ giá trị của lịch sử trong bài toán hẹp, nghiên cứu mới có cơ sở mở rộng sang nhiều thực thể, nhiều backbone hoặc robot thật. Tóm tắt và kết luận cuối cùng sẽ được cập nhật theo kết quả thực nghiệm bổ sung, kể cả khi kết quả đó không xác nhận giả thuyết ban đầu.

@@ -17,17 +17,35 @@ Trong phạm vi hiện tại, bài toán được thu hẹp vào quan hệ giữ
 
 Một khó khăn độc lập với thiết kế memory là tính hợp lệ của phép đo. Policy, simulator, dữ liệu demonstration, bộ tiền xử lý và bộ chấm điểm phải có nguồn gốc rõ ràng. Nếu quy ước ảnh hoặc điều kiện kết thúc khác nhau, chênh lệch success có thể phản ánh thay đổi của đường thực nghiệm thay vì thông tin lịch sử. Vì vậy, xây dựng một phép so sánh có thể kiểm tra lại là một phần của phương pháp nghiên cứu.
 
+Có thể mô tả bài toán ở mức trừu tượng như sau. Tại thời điểm $t$, môi trường có trạng thái đầy đủ $x_t$, nhưng policy chỉ nhận quan sát được cho phép $o_t$, instruction $ell$ và snapshot lịch sử $m_t$. Mục tiêu của task là số chu kỳ cần hoàn thành $N\in\{1,3\}$. Gọi $z_t$ là số chu kỳ vật lý đã thực hiện và $\hat z_t$ là số chu kỳ writer đã xác nhận. Hai đại lượng này không đồng nhất: $z_t$ thuộc trạng thái mô phỏng và evaluator, còn $\hat z_t$ là ước lượng từ bằng chứng RGB có thể thiếu hoặc sai.
+
+Tại mỗi lần truy vấn, policy nhận chuỗi điều kiện $c_t=R(\ell,m_t)$ và sinh một action chunk $A_t$. Yêu cầu thiết kế là duy trì một bộ nhớ có ích cho quyết định nhưng tuân theo ràng buộc thông tin và giao diện:
+
+\begin{equation}
+\begin{aligned}
+m_t &= U(m_{t-1},o_t,a_{t-1}),\\
+A_t &\sim \pi_{\theta,\phi}(\cdot\mid o_t,c_t),\\
+\operatorname{Tok}(\ell\oplus R(\ell,m_t)) &\le 48.
+\end{aligned}
+\end{equation}
+
+Ở đây $a_{t-1}$ là action đã thực thi trước quan sát hiện tại; $\oplus$ biểu thị phép ghép instruction với memory theo đúng quy ước tiền xử lý; $\operatorname{Tok}$ là phép đếm bằng tokenizer checkpoint. Mọi sự kiện được dùng tại thời điểm $t$ phải có nguồn quan sát hợp lệ và thời điểm sẵn sàng không vượt quá $t$. Việc tăng SR không được giả định từ định nghĩa bài toán; nó là một giả thuyết cần kiểm tra bằng rollout có đối chứng.
+
 \section{Mục tiêu và câu hỏi nghiên cứu}
 
 Mục tiêu tổng quát là khảo sát khả năng hỗ trợ tác vụ chuỗi dài của VLA bằng bộ nhớ sự kiện thị giác. Mục tiêu thực hiện ở giai đoạn này gồm thiết kế bộ nhớ, tích hợp với checkpoint có nguồn gốc xác định, huấn luyện thích ứng nhẹ và thực hiện đánh giá sơ bộ trong mô phỏng.
 
 RQ1 đặt câu hỏi liệu có thể đưa memory từ RGB vào SmolVLA trong khi duy trì ranh giới thông tin và contract của policy. RQ2 xem xét liệu lịch sử giúp xử lý tác vụ lặp tốt hơn khi đã kiểm soát tác động của adaptation. RQ3 kiểm tra khả năng duy trì kỹ năng cơ sở sau thích ứng. RQ4 tìm hiểu những giới hạn do chất lượng writer, quy ước dữ liệu và chi phí thực thi gây ra. Các câu hỏi được tách ra để một bằng chứng về khả năng vận hành không bị diễn giải thành bằng chứng về hiệu quả hay tính tổng quát.
 
+Trong phạm vi bản thảo này, RQ1 được trả lời ở mức tích hợp cho hai task và có các kiểm tra riêng về writer trên demonstration. RQ2–RQ4 chưa có đủ phép đo để kết luận. Đặc biệt, so sánh B0–F1 hiện có thay đổi đồng thời trọng số adapter và đường perception–memory; đây là phép đo hệ thống tổng hợp, không nhận diện tác động riêng của lịch sử.
+
 \section{Phạm vi và đóng góp}
 
 Nghiên cứu sử dụng nguồn task và simulator từ LIBERO cùng nhánh LIBERO-Mem đã được khóa revision \cite{liberoSource,liberomemSource}. Giai đoạn V1 thiết lập baseline policy không memory. Phần memory thuộc V2; các kết quả hai giai đoạn không được gộp khi runtime hoặc cadence thực thi khác nhau. Mọi kết quả local trong bản thảo được phân loại là LIBERO-derived và không so ngang với điểm của paper chính thức.
 
 Đóng góp hiện có thứ nhất là một thiết kế tích hợp bộ nhớ sự kiện có bằng chứng và thời điểm khả dụng, gắn với quy tắc xử lý lịch sử chưa đầy đủ. Thứ hai là quy trình nối bộ nhớ với SmolVLA bằng văn bản và thích ứng action expert, có lưu provenance của dữ liệu, tokenizer và adapter. Thứ ba là tập artifact thực nghiệm và cách phân tích giúp phân biệt tiến độ triển khai với mức độ kiểm chứng giả thuyết. Những thành quả này có ý nghĩa ở phương diện thiết kế hệ thống nghiên cứu và thực hành thực nghiệm.
+
+Ở mức thực nghiệm thành phần, audit writer ngày 26/10 ghi nhận 12 lần return trong sáu demonstration được ghép một-một với milestone annotation trong dung sai ±20 frame. Đây là bằng chứng ban đầu rằng pipeline thị giác có thể tạo chuỗi sự kiện đúng thứ tự trong các trajectory đã khảo sát. Các demonstration đều thành công, chỉ đại diện ba trạng thái khởi tạo, và milestone không phải nhãn contact; do đó kết quả này chưa ước lượng được lỗi trên trajectory thất bại hay độ đúng trên phân phối rộng.
 
 Khóa luận kế thừa SmolVLA, Grounding DINO, LoRA, loss huấn luyện và các tài nguyên benchmark. Việc kết hợp chúng không tự chứng minh một nguyên lý memory mới hoặc hiệu năng vượt các công trình liên quan. Đóng góp về cải thiện policy chỉ được xác nhận khi có đối chứng phù hợp. Ở tiến độ hiện tại, kết luận đó vẫn còn mở.
 

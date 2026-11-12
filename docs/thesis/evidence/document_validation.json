@@ -2,10 +2,11 @@
   "status": "STATIC_CHECKS_PASS",
   "citations": 13,
   "chapters": 5,
-  "markdown_whitespace_tokens": 9400,
+  "markdown_whitespace_tokens": 13058,
   "note": "Not a linguistic word count; Vietnamese words may span spaces.",
   "tex_compiled": false,
   "pdf_layout_verified": false,
   "evidence_summary_hashes_verified": 40,
+  "writer_audit_artifacts_hashes_verified": 8,
   "limitations": "No new policy benchmark, model inference, training, HDF5 audit or TeX compilation in this writing task."
 }

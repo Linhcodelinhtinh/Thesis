@@ -27,6 +27,15 @@ assert snapshot["mem_test"]["primary_summary_hashes_verified"] == 40
 assert snapshot["mem_test"]["unique_state_clusters"] == 10
 assert snapshot["training"]["data_manifest_matches_training"] is True
 assert all(x["matches_manifest"] for x in snapshot["training"]["adapter_files"].values())
+writer = snapshot["writer_replay"]
+assert writer["matches"] == writer["annotated_returns"] == writer["predicted_returns"] == 12
+assert writer["event_tolerance_frames"] == 20
+assert writer["real_demonstrations"] == 6 and writer["unique_initial_states"] == 3
+assert len(writer["evidence_sha256"]) == 8
+assert all(v["matches_audit"] for v in writer["core_source_hashes"].values())
+for rel, expected in writer["evidence_sha256"].items():
+    from hashlib import sha256
+    assert sha256((BASE.parents[1] / rel).read_bytes()).hexdigest() == expected, rel
 with (BASE / "evidence/mem_test_episodes.csv").open(encoding="utf-8-sig") as stream:
     es = list(csv.DictReader(stream))
 f1 = [r for r in es if r["condition"] == "F1"]
@@ -40,6 +49,7 @@ result = {"status": "STATIC_CHECKS_PASS", "citations": len(used), "chapters": 5,
           "note": "Not a linguistic word count; Vietnamese words may span spaces.",
           "tex_compiled": False, "pdf_layout_verified": False,
           "evidence_summary_hashes_verified": 40,
+          "writer_audit_artifacts_hashes_verified": len(writer["evidence_sha256"]),
           "limitations": "No new policy benchmark, model inference, training, HDF5 audit or TeX compilation in this writing task."}
 (BASE / "evidence/document_validation.json").write_text(json.dumps(result, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
 print(json.dumps(result, ensure_ascii=False, indent=2))

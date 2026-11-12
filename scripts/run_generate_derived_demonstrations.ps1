@@ -7,7 +7,7 @@ param (
     [string[]]$Tasks = @("T1", "T3"),
     [string]$Split = "train",
     [string]$OutputDir = "data/libero_mem_derived_v1",
-    [string]$StagingDir = "/tmp/libero_mem_derived_staging_v1",
+    [string]$StagingDir = "/var/tmp/libero_mem_derived_staging_v1",
     [string]$SplitLock = "experiments/training/results_mem_2/mem-adapter-v1/dataset-split.lock.json",
     [string]$SourceDir = "data/libero_mem",
     [switch]$NoResume,

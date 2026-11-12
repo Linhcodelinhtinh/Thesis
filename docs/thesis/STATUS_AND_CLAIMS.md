@@ -1,6 +1,6 @@
 # Trạng thái và các tuyên bố được phép viết
 
-Mốc rà soát: **11/11/2026**, theo [snapshot máy đọc được](evidence/snapshot.json). HEAD tại rà soát là `933ad9eeb0ee73caa1e5c6523df327c41f1b05d4`; working tree có thay đổi đang phát triển. Snapshot dùng hashes nội dung, không coi HEAD là toàn bộ code đã chạy. Không chạy thêm policy benchmark hoặc training trong công việc viết này.
+Mốc rà soát: **12/11/2026**, theo [snapshot máy đọc được](evidence/snapshot.json). HEAD tại rà soát là `57867994bcbe470571e17955e1af5ef078ef6233`; working tree có thay đổi đang phát triển. Snapshot dùng hashes nội dung, không coi HEAD là toàn bộ code đã chạy. Không chạy thêm policy benchmark hoặc training trong công việc viết này.
 
 ## 1. Bốn mức bằng chứng
 
@@ -18,7 +18,7 @@ Mốc rà soát: **11/11/2026**, theo [snapshot máy đọc được](evidence/s
 | SmolVLA adapter | S+A; đã được dùng trong rollout tháng 11 | Model manifest, `src/models/smolvla/adapter.py`, run manifests | Pipeline state 8/action7/chunk 50, camera, normalization | Không coi manifest version chung là resolved runtime của mọi run |
 | MiniVLA / OpenVLA | Có code/manifest ứng viên; chưa có kết quả được nhận vào luận văn | `src/models/minivla/`, model manifests | Nêu candidate ngoài phạm vi hiện tại | Bảng so sánh nhiều model, tuyên bố tốt hơn backbone khác |
 | Simulator–policy–perception bridge | S+A; đã chạy thật cho B0/F1 | Worker/IPC code, environments và episode status tháng 11 | Kiến trúc tách tiến trình, allowlist, source lock | Không nói policy chạy trong venv riêng hoàn hảo: manifest ghi Python host Windows cho policy, WSL venv cho simulator, venv riêng cho detector |
-| Tracker và writer RGB v3 | S+A; có trace thật | `object_tracker.py`, `event_writer.py`, F1 memory traces | Anchor gốc, FSM, hysteresis, unknown, causal timestamps | Chưa có kiểm định event precision/recall/delay đầy đủ; không gọi count là ground truth |
+| Tracker và writer RGB v3 | S+A; có trace rollout và audit demonstration riêng | `object_tracker.py`, `event_writer.py`, `experiments/audits/memory_writer_v3/verification_summary.json`, F1 memory traces | Anchor gốc, FSM, hysteresis, unknown, causal timestamps; 12/12 return ghép milestone trong ±20 frame trên sáu demo | Chỉ ba state và demo thành công đã xem; milestone không phải contact label; chưa có ước lượng fidelity trên failure trajectory |
 | Renderer | S+A | `libero_mem_text.py`, `queries.jsonl`/prompt history | Budget toàn prompt 48 token, giữ instruction, privilege gate | Trạng thái causal/nguồn hợp lệ không chứng minh nội dung đúng hoặc model sử dụng hữu ích |
 | Split và dataset tác giả | A+V ở mức manifest/training identity | `mem-adapter-v1/dataset-manifest.json`, split lock | 698 demo tổng; 558/70/70 train/val/test; Mem 158/20/20 | Chưa hash lại toàn bộ HDF5/shards; holdout không bảo đảm checkpoint pretrained chưa từng thấy dữ liệu |
 | Huấn luyện F1 hiện tại | A+V | `mem-adapter-20261105-083543`, progress step 3000, metrics, 4 export hashes khớp | LoRA attention q/v, rank 16, 645.120 tham số; 2×T4; loss validation | Step3000 chưa được chứng minh tốt nhất; loss không phải SR; không gọi là train trên derived mới |
@@ -57,6 +57,8 @@ Nguồn: [episode-level CSV được tái tổng hợp](evidence/mem_test_episod
 N=20 là task-episodes mỗi condition, cùng 10 initial-state hashes qua T1/T3, policy seed 42. Chênh lệch 5 điểm phần trăm không phải chứng minh tăng hiệu năng có ý nghĩa hoặc do riêng memory. Hai source snapshots khác ba launcher/diagnostic scripts, không được viết “toàn bộ code giống hệt”; tên/hash đã lưu trong snapshot. Protocol, split và checkpoint gốc khớp.
 
 ### Chất lượng thông tin memory quan sát được
+
+Audit writer ngày 26/10 là một tập chẩn đoán riêng với rollout policy tháng 11. Trên sáu demonstration và 1.276 frame, có 12/12 return ghép một-một với milestone annotation trong dung sai 20 frame; median delay 9 frame. 1.169/1.172 detection bát được chấp nhận có IoU ≥0,5. Kết quả này chỉ mô tả các demonstration đã xem, trong đó không có failure trajectory. Nó không phải precision/recall trên phân phối thao tác, và milestone không đồng nghĩa nhãn vật lý về grasp hoặc contact. Detector RGB mất khoảng 999–1.058 ms/frame trong audit live nên chưa đáp ứng 20 Hz. Artifact con và source archive được hash-kiểm trong snapshot.
 
 Trong 20 F1 episodes, **19 snapshot cuối có `history_complete=False`**. Trong 1.927 policy queries, 1.894 prompt có suffix memory; 1.738 prompt có chuỗi `history incomplete`. Đây là phép đếm trace/văn bản, không phải event recall, không phải 1.927 mẫu độc lập và không phải đo tác động nhân quả.
 
