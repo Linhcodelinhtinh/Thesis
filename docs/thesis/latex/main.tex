@@ -1,13 +1,14 @@
 % Compile with XeLaTeX -> BibTeX -> XeLaTeX -> XeLaTeX.
 % Text is generated from ../THESIS_DRAFT.md; do not edit content/*.tex by hand.
-\documentclass[fontsize=13pt,paper=a4,oneside,open=any,headings=normal]{scrbook}
+\documentclass[fontsize=13pt,paper=a4,DIV=calc,oneside,open=any,headings=normal,numbers=noenddot]{scrbook}
+\usepackage{lmodern}
 \usepackage{fontspec}
 \IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{\setmainfont{TeX Gyre Termes}}
 \setsansfont{TeX Gyre Heros}
 \setmonofont{Latin Modern Mono}[Scale=MatchLowercase]
-\usepackage[a4paper,top=2.5cm,bottom=3cm,left=3cm,right=2cm]{geometry}
+\usepackage[a4paper,top=2.5cm,bottom=3cm,left=3cm,right=2cm,headheight=21pt]{geometry}
 \usepackage{amsmath,amssymb,graphicx,booktabs,longtable,array}
-\usepackage{setspace,indentfirst,caption,fancyhdr,xurl}
+\usepackage{setspace,indentfirst,caption,scrlayer-scrpage,xurl}
 \usepackage[unicode,hidelinks,breaklinks=true]{hyperref}
 \usepackage{fvextra}
 \usepackage{tikz}
@@ -16,36 +17,41 @@
 \setlength{\parindent}{1cm}
 \setlength{\parskip}{6pt}
 \setlength{\emergencystretch}{2em}
+\setlength{\LTpre}{8pt plus 2pt minus 2pt}
+\setlength{\LTpost}{8pt plus 2pt minus 2pt}
 \setcounter{secnumdepth}{2}
 \setcounter{tocdepth}{2}
 \setkomafont{disposition}{\normalfont\bfseries}
-\renewcommand{\chaptername}{Chương}
-\renewcommand{\contentsname}{Mục lục}
-\renewcommand{\listfigurename}{Danh mục hình}
-\renewcommand{\listtablename}{Danh mục bảng}
-\renewcommand{\bibname}{Tài liệu tham khảo}
-\renewcommand{\appendixname}{Phụ lục}
+\setkomafont{pageheadfoot}{\normalfont}
+\setlength{\footheight}{21pt}
+\RedeclareSectionCommand[beforeskip=0pt,afterskip=22pt]{chapter}
+\RedeclareSectionCommand[beforeskip=15pt plus 3pt minus 2pt,afterskip=8pt plus 2pt,afterindent=true]{section}
+\AddToHook{begindocument/end}{%
+  \renewcommand{\chaptername}{Chương}%
+  \renewcommand{\contentsname}{Mục lục}%
+  \renewcommand{\listfigurename}{Danh mục hình}%
+  \renewcommand{\listtablename}{Danh mục bảng}%
+  \renewcommand{\bibname}{Tài liệu tham khảo}%
+  \renewcommand{\appendixname}{Phụ lục}%
+}
 \captionsetup[figure]{name=Hình,position=bottom,labelfont=bf,labelsep=period}
 \captionsetup[table]{name=Bảng,position=top,labelfont=bf,labelsep=period}
-\pagestyle{fancy}
-\fancyhf{}
-\fancyfoot[C]{\thepage}
-\renewcommand{\headrulewidth}{0pt}
-\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}}
+\clearpairofpagestyles
+\cfoot*{\pagemark}
 \newcommand{\thesistitle}{Nâng cao khả năng xử lý tác vụ chuỗi dài cho mô hình VLA trong điều khiển Robot}
-\hypersetup{pdftitle={\thesistitle},pdfauthor={Lưu Quang Linh},pdfsubject={Bản thảo cập nhật ngày 12/11/2026}}
+\hypersetup{pdftitle={\thesistitle},pdfauthor={Lưu Quang Linh},pdfsubject={Bản thảo cập nhật ngày 12/11/2026},pdflang={vi-VN}}
 
 \begin{document}
+\pagenumbering{Roman}
 \input{frontmatter/cover}
-\frontmatter
 \pagestyle{empty}
 \chapter*{Ghi chú phiên bản bản thảo}
 \thispagestyle{empty}
 Bản thảo cập nhật ngày 12/11/2026; snapshot tái tổng hợp artifact đã có ngày 12/11/2026. Các kết quả local mang nhãn
 \texttt{NON-COMPARABLE\_OFFICIAL\_PAPER}. Nội dung chưa đủ để kết luận memory
 cải thiện hiệu năng; các mục chưa có thực nghiệm được nêu ở phần giới hạn.
-Đây chưa phải bản nộp cuối. Cần biên dịch và kiểm tra phân trang, hoàn thiện
-lời cảm ơn và lời cam đoan cá nhân trước khi nộp.
+Bản thảo còn hai mục dành cho tác giả hoàn thiện trước khi nộp là lời cảm ơn
+và lời cam đoan.
 \chapter*{Lời cảm ơn}
 \thispagestyle{empty}
 Phần này dành cho tác giả tự viết theo những đóng góp và hỗ trợ thực tế.
@@ -55,14 +61,12 @@ Bản thảo hiện chưa tạo nội dung cảm ơn thay tác giả.
 \thispagestyle{empty}
 Tác giả cần tự hoàn thiện và xác nhận lời cam đoan sau khi đọc toàn bộ
 nội dung, số liệu và nguồn trích dẫn. Bản thảo không tạo chữ ký hoặc xác nhận thay tác giả.
-\cleardoublepage
-\pagestyle{fancy}
-\pagenumbering{roman}
+\frontmatter
+\pagestyle{scrheadings}
 \tableofcontents
 \listoffigures
 \listoftables
-\chapter*{Danh mục ký hiệu và chữ viết tắt}
-\addcontentsline{toc}{chapter}{Danh mục ký hiệu và chữ viết tắt}
+\addchap{Danh mục ký hiệu và chữ viết tắt}
 \begin{longtable}{p{.20\textwidth}p{.74\textwidth}}
 VLA & Mô hình thị giác--ngôn ngữ--hành động\\
 VLM & Mô hình thị giác--ngôn ngữ\\

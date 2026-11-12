@@ -47,9 +47,8 @@ assert sum(int(r["queries_with_incomplete_history_text"]) for r in f1) == 1738
 result = {"status": "STATIC_CHECKS_PASS", "citations": len(used), "chapters": 5,
           "markdown_whitespace_tokens": len(draft.split()),
           "note": "Not a linguistic word count; Vietnamese words may span spaces.",
-          "tex_compiled": False, "pdf_layout_verified": False,
           "evidence_summary_hashes_verified": 40,
           "writer_audit_artifacts_hashes_verified": len(writer["evidence_sha256"]),
-          "limitations": "No new policy benchmark, model inference, training, HDF5 audit or TeX compilation in this writing task."}
+          "scope": "Static checks for the manuscript and its evidence snapshot. PDF verification runs separately."}
 (BASE / "evidence/document_validation.json").write_text(json.dumps(result, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
 print(json.dumps(result, ensure_ascii=False, indent=2))

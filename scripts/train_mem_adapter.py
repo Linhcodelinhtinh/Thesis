@@ -19,9 +19,15 @@ def main():
     p.add_argument("--output-dir", type=Path, required=True)
     p.add_argument("--gpus", type=int, choices=[1, 2], default=2)
     p.add_argument("--resume", type=Path, help="Resume training from an existing checkpoint directory")
+    p.add_argument("--steps", type=int, help="Override number of training steps")
+    p.add_argument("--save-every", type=int, help="Override checkpoint saving frequency")
     a = p.parse_args()
     manifest = validate_mixed_dataset(a.data_dir)
     recipe = json.loads((ROOT / "configs/training/mem_adapter_v1.json").read_text())
+    if a.steps:
+        recipe["steps"] = a.steps
+    if a.save_every:
+        recipe["save_every"] = a.save_every
     if len(manifest["retention_replay_tasks"]) != recipe["required_base_tasks"] or manifest["memory_source"] != recipe["memory_source"]:
         raise ValueError("Requires expanded ten-task replay with predicted causal memory")
     verify_memory_code(manifest["memory_provenance"])

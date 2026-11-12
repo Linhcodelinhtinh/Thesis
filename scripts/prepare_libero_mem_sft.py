@@ -24,7 +24,7 @@ from src.evaluation.libero_mem_protocol import DEFAULT_PROTOCOL, source_digest
 from src.utils.file_hash import sha256_file
 
 
-def recover_completed_index(out_dir):
+def recover_completed_index(out_dir, expected_frames=None):
     """Recover metadata for all fully-indexed episodes and prune incomplete trailing frames."""
     s_file = out_dir / "samples.jsonl"
     t_file = out_dir / "memory_trace.jsonl"
@@ -93,6 +93,9 @@ def recover_completed_index(out_dir):
         t_list = trace_by_ep.get(ep, [])
         d_list = det_by_ep.get(ep, [])
         n = len(s_list)
+        if expected_frames is not None and expected_frames.get(ep) != n:
+            print(f"Pruning episode '{ep}': recovered {n} of {expected_frames.get(ep)} locked frames")
+            break
         if n == 0 or len(t_list) != n or len(d_list) != n:
             print(f"Pruning incomplete episode '{ep}': samples={n}, trace={len(t_list)}, det={len(d_list)}")
             break
@@ -148,6 +151,14 @@ def main():
     p.add_argument("--resume", action="store_true", help="Resume from partially written prompt index")
     args = p.parse_args()
     out = args.output_dir
+    split_lock = load_split_lock(args.split_lock) if args.split_lock else None
+    if split_lock is not None and split_lock["protocol_sha256"] != source_digest(DEFAULT_PROTOCOL):
+        raise ValueError("Split lock was generated for a different evaluator protocol")
+    expected_frames = None if split_lock is None else {
+        f'{row["task"]}_{row["demo"]}': row["frames"]
+        for row in split_lock["episodes"]
+        if row["domain"] == "mem" and row["task"] == args.task_name
+    }
     episodes, total, with_memory, completed_ids = [], 0, 0, set()
     if out.exists():
         if not args.resume:
@@ -161,14 +172,11 @@ def main():
                     return
             except Exception:
                 pass
-        episodes, total, with_memory, completed_ids = recover_completed_index(out)
+        episodes, total, with_memory, completed_ids = recover_completed_index(out, expected_frames)
         print(f"Resuming index at {out}: recovered {len(completed_ids)} completed episodes ({total} samples).")
     else:
         out.mkdir(parents=True)
     source_manifest = json.loads((ROOT / "resources/manifests/libero_mem_planning_sources.json").read_text(encoding="utf-8"))
-    split_lock = load_split_lock(args.split_lock) if args.split_lock else None
-    if split_lock is not None and split_lock["protocol_sha256"] != source_digest(DEFAULT_PROTOCOL):
-        raise ValueError("Split lock was generated for a different evaluator protocol")
     filenames = [args.task_name + "_demo.hdf5", "metainfo.json"]
     sources = {name: sha256(args.data_dir / name) for name in filenames}
     if args.source_kind == "author_refined":

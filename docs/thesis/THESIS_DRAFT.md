@@ -108,7 +108,7 @@ LIBERO-Mem nhấn mạnh lịch sử theo thực thể; paper đi kèm khảo s�
 |---|---|---|---|
 | MEM | Video ngắn và tóm tắt ngôn ngữ | Policy nhiều cấp | Động lực phân biệt thang thời gian và nén sự kiện |
 | MemoryVLA | Đặc trưng perceptual/cognitive | Retrieval, gate, consolidation | Tham khảo thiết kế ablation |
-| LIBERO-Mem/Embodied-SlotSSM | Biểu diễn thực thể theo thời gian | Slot-state-space và relational encoding | Nguồn task và bài toán lịch sử thực thể |
+| LIBERO-Mem và Embodied-SlotSSM | Biểu diễn thực thể theo thời gian | Slot-state-space và relational encoding | Nguồn task và bài toán lịch sử thực thể |
 | Phương pháp của khóa luận | Sự kiện bát–đĩa, count và cờ thiếu lịch sử | Renderer văn bản và action-expert adapter | Thiết kế tường minh, phạm vi hẹp, cần kiểm chứng riêng |
 
 Bảng trên so sánh lựa chọn thiết kế, không phải xếp hạng hiệu năng. Các paper dùng model, dữ liệu, robot và protocol khác với hệ thống local.
@@ -159,7 +159,7 @@ Tỷ lệ thành công đo số episode đạt điều kiện cuối. Subgoal Co
 
 ## 3.1. Phát biểu bài toán và giả định
 
-Tại bước $t$, hệ thống nhận hai ảnh RGB và trạng thái robot. Đặt $o_t=(I_t^{\mathrm{ext}},I_t^{\mathrm{wrist}},p_t)$, trong đó $p_t\in\mathbb{R}^{8}$. Instruction $\ell$ mô tả task. Bộ nhớ sự kiện được cập nhật theo lịch sử khả dụng:
+Tại bước $t$, hệ thống nhận quan sát $o_t=(I_t^{\mathrm{ext}},I_t^{\mathrm{wrist}},p_t)$ gồm hai ảnh RGB và trạng thái robot $p_t\in\mathbb{R}^{8}$. Instruction $\ell$ mô tả task. Bộ nhớ sự kiện được cập nhật theo lịch sử khả dụng:
 
 $$
 \begin{aligned}

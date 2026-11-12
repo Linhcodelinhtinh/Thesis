@@ -136,3 +136,16 @@ def test_cli_accepts_resume_flag():
     )
     assert "--resume" in result.stdout
 
+
+def test_resume_rejects_equal_length_traces_for_truncated_episode(tmp_path):
+    # A terminated process can flush the same number of lines to all three files.
+    (tmp_path / "samples.jsonl").write_text(make_sample("ep1", 0) + make_sample("ep2", 0), encoding="utf-8")
+    (tmp_path / "memory_trace.jsonl").write_text(make_trace("ep1", 0) + make_trace("ep2", 0), encoding="utf-8")
+    (tmp_path / "detections.jsonl").write_text(make_detection("ep1") + make_detection("ep2"), encoding="utf-8")
+
+    _, total, _, completed = recover_completed_index(tmp_path, {"ep1": 1, "ep2": 3})
+
+    assert completed == {"ep1"}
+    assert total == 1
+    assert '"ep2"' not in (tmp_path / "samples.jsonl").read_text(encoding="utf-8")
+

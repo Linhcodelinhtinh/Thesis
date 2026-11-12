@@ -222,7 +222,10 @@ def train(args):
                 if saved.get(key) != run_info[key]:
                     raise ValueError("Resume implementation differs: " + key)
         expected = {k: v for k, v in vars(args).items() if k not in {"resume", "output_dir", "data_dir", "assets_dir"}}
-        if saved["training_arguments"] != expected:
+        saved_args = dict(saved["training_arguments"])
+        if expected.get("steps", 0) >= saved_args.get("steps", 0):
+            saved_args["steps"] = expected["steps"]
+        if saved_args != expected:
             raise ValueError("Resume training arguments differ; use the original schedule and batch configuration")
         accelerator.load_state(args.resume)
         epoch, step, skip = saved["epoch"], saved["step"], saved["next_batch"]

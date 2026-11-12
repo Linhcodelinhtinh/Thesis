@@ -43,15 +43,16 @@ python -X utf8 docs/thesis/tools/validate_draft.py
 
 Collector chỉ đọc artifact và ghi snapshot trong thư mục này, không chạy simulator, policy hay training. Các lần kiểm tra sau có thể nhìn thấy working tree khác; giữ snapshot đã dùng cho bản nộp cùng Git revision và hashes.
 
-Biên dịch `latex/main.tex` bằng XeLaTeX và BibTeX (ví dụ chọn XeLaTeX trên Overleaf):
+Từ thư mục gốc repository, chạy XeLaTeX và BibTeX trong thư mục chứa `main.tex`:
 
-```text
-xelatex main.tex
+```powershell
+Set-Location docs/thesis/latex
+xelatex -interaction=nonstopmode -halt-on-error -file-line-error -no-shell-escape main.tex
 bibtex main
-xelatex main.tex
-xelatex main.tex
+xelatex -interaction=nonstopmode -halt-on-error -file-line-error -no-shell-escape main.tex
+xelatex -interaction=nonstopmode -halt-on-error -file-line-error -no-shell-escape main.tex
 ```
 
-Bản hiện tại chưa được biên dịch/kiểm tra phân trang bằng TeX tại máy này vì chưa tìm thấy TeX engine trên Windows; việc kiểm tra engine qua WSL bị từ chối quyền truy cập. Kiểm tra tĩnh không thay thế kiểm tra PDF. Không cần đổi environment nghiên cứu chỉ để viết khóa luận.
+Bản thảo đã được biên dịch bằng MiKTeX 26.5 và rà phân trang. [Mở bản PDF](../../output/pdf/khoa-luan-luu-quang-linh-ban-thao.pdf). Nếu PowerShell đang mở từ trước khi cài MiKTeX, hãy mở phiên mới để nhận `PATH` của Windows.
 
 Lời cảm ơn và lời cam đoan là nội dung cá nhân cần tác giả tự hoàn thiện, đọc và xác nhận trước khi nộp; bản thảo không tạo chữ ký hoặc xác nhận thay tác giả.

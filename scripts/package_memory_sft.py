@@ -15,7 +15,7 @@ def main():
     files += [ROOT / "scripts" / name for name in (
         "prepare_memory_sft.py", "prepare_libero_mem_sft.py", "train_memory_sft.py", "memory_sft_assets.py",
         "prepare_mem_adapter_data.py", "train_mem_adapter.py",
-        "package_mem_adapter_data.py",
+        "package_mem_adapter_data.py", "package_libero_mem_derived_sources.py",
         "evaluate_mem_adapter.py", "libero_mem_sim_worker.py", "mem_eval_runtime.py",
         "run_mem_validation_and_test.sh", "run_mem_validation_and_test.ps1",
         "replay_libero_mem_writer.py", "download_memory_detector.py", "audit_libero_mem_writer.py",
@@ -34,7 +34,8 @@ def main():
         "resources/manifests/libero_mem_t1_t3_base10_split_v1.json",
         "docs/MEMORY_WRITER_V3_T1_T3.md",
         "docs/LIBERO_MEM_FINETUNE_DATA_PROTOCOL.md", "configs/benchmarks/libero_mem_t1_t3_protocol.json",
-        "notebooks/kaggle_libero_mem_finetune.ipynb", "notebooks/kaggle_mem_adapter_v1.ipynb")]
+        "notebooks/kaggle_libero_mem_finetune.ipynb", "notebooks/kaggle_mem_adapter_v1.ipynb",
+        "notebooks/kaggle_libero_mem_derived_v1.ipynb")]
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(out, "w", compression=zipfile.ZIP_DEFLATED) as z:
