@@ -1,0 +1,140 @@
+% Generated from THESIS_DRAFT.md.
+\chapter{Bộ nhớ sự kiện thị giác cho SmolVLA}
+
+\section{Phát biểu bài toán và giả định}
+
+Tại bước $t$, hệ thống nhận hai ảnh RGB và trạng thái robot. Đặt $o_t=(I_t^{\mathrm{ext}},I_t^{\mathrm{wrist}},p_t)$, trong đó $p_t\in\mathbb{R}^{8}$. Instruction $\ell$ mô tả task. Bộ nhớ sự kiện được cập nhật theo lịch sử khả dụng:
+
+\begin{equation}
+\begin{aligned}
+m_t&=U(m_{t-1},o_t,a_{t-1}),\\
+c_t&=R(\ell,m_t),\qquad A_t\sim\pi_{\theta,\phi}(\cdot\mid o_t,c_t).
+\end{aligned}
+\end{equation}
+
+$U$ là writer, $R$ là renderer, $\theta$ biểu diễn checkpoint gốc và $\phi$ là các tham số thích ứng. Tại bước khởi tạo không có action trước đó; writer chỉ đọc quan sát đầu. Từ các bước sau, action đi vào writer phải là action đã thực thi, không phải action còn nằm trong chunk dự đoán. Memory không được chứa ảnh tương lai, nhãn success cuối episode hoặc biến đếm của evaluator.
+
+Trong T1/T3, mục tiêu thị giác là bát được xác định trong vùng cảnh ban đầu cùng đĩa nâng đỡ nó. Khi bằng chứng không đủ để gán danh tính hoặc xác nhận quan hệ, trạng thái phải giữ chưa biết. Giả định quan trọng là quan hệ nâng và đặt lại có thể được ước lượng từ các biến đổi bounding box và trạng thái mở gripper dưới góc nhìn đang dùng. Đây là giả định của estimator 2D, cần được kiểm chứng; nó không thay thế mô phỏng tiếp xúc 3D.
+
+\section{Kiến trúc và ranh giới thông tin}
+
+Hệ thống có ba đường xử lý liên quan nhưng khác chức năng. Đường điều khiển nhận quan sát, dựng prompt và sinh action. Đường bộ nhớ chuyển ảnh thành bằng chứng, cập nhật trạng thái sự kiện và tạo snapshot. Đường đánh giá đọc trạng thái simulator để chấm điểm. Chỉ kết quả từ hai đường đầu được đưa vào policy; thông tin đánh giá được lưu để phân tích sau.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{../figures/architecture.png}
+\caption{Kiến trúc đường điều khiển, memory và đánh giá. Hình tự xây dựng từ implementation; nhánh evaluator không cấp progress cho policy.}
+\label{fig:architecture}
+\end{figure}
+
+Simulator chạy trong process có dependency riêng; detector cũng có process riêng. Policy giao tiếp với simulator bằng request/response có identity và thứ tự bước. Các kênh quan sát được allowlist, còn lỗi worker, timeout hoặc sai contract phải được báo rõ. Việc tách process làm giảm xung đột thư viện nhưng không tự chứng minh tính tương đương của runtime. Manifest của từng run vẫn cần ghi môi trường thực sự đã sử dụng.
+
+Đối với đường F1 hiện tại, writer giữ trạng thái episode và trả snapshot cho renderer. Repository còn có các abstraction store/updater/retriever cho những thiết kế memory trước; sự tồn tại của các lớp này không có nghĩa tất cả đều nằm trên đường thực thi của F1. Mô tả kiến trúc ở đây bám vào đường \path{LiberoMemRolloutRunner}, visual writer và renderer đã được sử dụng.
+
+\section{Theo dõi bát và đĩa gốc}
+
+Detector được pin theo model/revision và cấu hình truy vấn. Tracker không được tự lấy nhãn đối tượng, reward hay subgoal từ simulator làm detection. Bằng chứng gồm bounding box, camera, bước quan sát và hash của frame; thông tin này cho phép phát hiện việc dùng nhầm frame hoặc cache không khớp.
+
+Đĩa gốc được xác lập từ quan sát ban đầu khi quan hệ bát–đĩa đủ rõ và gripper đã mở. Những lần sau, tracker tìm proposal phù hợp với anchor đó, không chọn bất kỳ đĩa nào đang gần bát nhất. Cách gắn anchor giúp diễn đạt đúng yêu cầu “đặt lại đĩa ban đầu”, nhưng chỉ phù hợp với phạm vi cảnh mà các giả định theo dõi còn đúng.
+
+Gọi $b_t$ và $q_t$ là tọa độ tâm mép dưới bounding box của bát và đĩa ở frame hiện tại; $b_0,q_0$ là các tọa độ tại lúc xác lập anchor, và $w_0,h_0$ là kích thước bát ban đầu. Tracker xét biến đổi tương đối:
+
+\begin{equation}
+d_t=(b_t-q_t)-(b_0-q_0),\qquad D_t=\left\|d_t\oslash(w_0,h_0)\right\|_2,\qquad L_t=-d_{t,y}/h_0.
+\end{equation}
+
+$\oslash$ biểu thị phép chia theo từng thành phần. $D_t$ mô tả độ lệch khỏi cấu hình tương đối ban đầu, còn $L_t$ là tín hiệu nâng theo chiều ảnh. Implementation kết hợp các đại lượng này với ràng buộc scale, mức chuyển động giữa các frame và khoảng mở gripper. Các ngưỡng là hyperparameter của writer, không phải tham số contact của benchmark.
+
+Khi có nhiều proposal cạnh tranh, tracker sử dụng tính liên tục của vị trí đo trước trong một khoảng thời gian giới hạn. Vị trí cũ chỉ hỗ trợ association; nó không được phát lại như một detection hiện tại nếu không có bằng chứng. Trạng thái ambiguous hoặc missing phải được truyền sang writer. Điều này bảo toàn ý nghĩa “đã quan sát”, dù có thể làm giảm số frame cung cấp count đầy đủ.
+
+\section{Máy trạng thái ghi sự kiện}
+
+Writer vận hành qua các trạng thái chưa khởi tạo, đã thấy support, ứng viên departure, departure đã xác nhận, ứng viên return và return đã xác nhận. Việc có các trạng thái ứng viên giúp tránh ghi sự kiện chỉ từ một frame nhiễu. Cấu hình được dùng trong artifact training yêu cầu ba frame phù hợp cho bước xác nhận.
+
+Khi quan sát ban đầu cho thấy bát trên đĩa ổn định và gripper mở, writer ghi \path{initial_support_observed}. Sau đó, các tín hiệu nâng bền vững tạo \path{departed_support}. Chỉ khi đã có departure, một chuỗi quan sát quay lại gần đĩa gốc, ổn định và gripper mở mới tạo \path{returned_to_support} và tăng counter. Sau return, phải xuất hiện một departure mới trước khi có thể tăng counter tiếp.
+
+Thuật toán sau mô tả logic chính; các ngưỡng và kiểm tra danh tính được thực hiện trong tracker, không được thay bằng pseudocode này khi benchmark.
+
+\begin{Verbatim}[breaklines=true,fontsize=\small,frame=single]
+Tại mỗi quan sát o_t theo đúng thứ tự:
+    E_t <- phát hiện và liên kết bằng chứng thị giác
+    Nếu mất bằng chứng hoặc bỏ qua bước:
+        đánh dấu history_complete = False
+        xóa ứng viên chưa xác nhận; giữ các sự kiện đã ghi
+    Nếu chưa xác lập support:
+        xác nhận support ban đầu khi đủ bằng chứng ổn định
+    Nếu support đã biết và chưa có departure đang diễn ra:
+        xác nhận departure khi tín hiệu nâng đủ bền vững
+    Nếu đã có departure:
+        xác nhận return khi gần đĩa gốc, ổn định và gripper mở
+        tăng count đúng một lần; kết thúc departure hiện hành
+    Xuất snapshot có evidence và thời điểm khả dụng
+\end{Verbatim}
+
+Hysteresis làm cho counter không tăng chỉ vì robot đứng yên trên đĩa qua nhiều frame. Tuy nhiên, tính nhất quán của chuyển trạng thái không chứng minh detection đúng. False positive ở perception vẫn có thể dẫn đến event sai. Vì thế, correctness của FSM và fidelity của sự kiện phải được đánh giá bằng các loại bằng chứng khác nhau.
+
+Khi có khoảng quan sát không đủ bằng chứng, writer giữ số return đã xác nhận nhưng đánh dấu lịch sử chưa đầy đủ. Renderer có thể biểu đạt “ít nhất” số return đã ghi hoặc báo count chưa biết. Cách diễn đạt này phản ánh sự thận trọng của estimator; nó chỉ là cận dưới thật nếu các return đã xác nhận đều đúng. Khóa luận chưa có bằng chứng để bảo đảm điều kiện đó cho mọi episode.
+
+\section{Tính nhân quả và giao diện văn bản}
+
+Mỗi sự kiện phân biệt \path{occurred_at} với \path{available_at}. Nếu tín hiệu bắt đầu ở frame 10 và cần ba frame để xác nhận, sự kiện có thể được quy về frame 10 nhưng chỉ sẵn sàng sau frame 12. Với query tại bước $q$, quy tắc sử dụng là:
+
+\begin{equation}
+t_{\mathrm{occurred}}\le t_{\mathrm{available}}\le q.
+\end{equation}
+
+Việc gán timestamp ngược về thời điểm bắt đầu không cho phép đưa sự kiện vào các prompt trước khi có đủ bằng chứng. Quy tắc này đặc biệt quan trọng khi xây dựng dữ liệu offline, vì toàn bộ trajectory tương lai đã có trên đĩa nhưng không được phép đi vào sample tại thời điểm hiện tại.
+
+Renderer kiểm tra nguồn của snapshot, event được tham chiếu, danh tính object/support và sự thống nhất giữa count với các return events. Trong đường predicted, dữ liệu có nguồn oracle simulator hoặc human annotation không được dùng để tạo fact cho policy. Snapshot chứa dữ liệu đặc quyền không trở thành nguồn hợp lệ chỉ bằng việc bỏ một trường hiển thị.
+
+Instruction gốc được giữ làm phần đầu của prompt. Renderer chỉ thêm những fact phù hợp với ngân sách của tokenizer thực tế. Ngân sách được đặt là 48 token cho toàn bộ instruction cộng memory, kể cả quy ước newline và special tokens được áp dụng. Nếu chỉ instruction đã vượt budget, runner dừng thay vì âm thầm cắt nội dung. Nếu memory không đủ chỗ, fact bị loại được ghi trong telemetry.
+
+Một ví dụ khái niệm là instruction yêu cầu ba lần nhấc–đặt lại, đi kèm suffix nói rằng writer đã quan sát hai lần quay về đĩa gốc. Ví dụ này minh họa giao diện; nó không phải bằng chứng rằng policy hiểu suffix hoặc sẽ dừng đúng sau lần thứ ba. Bằng chứng sử dụng hữu ích phải đến từ thí nghiệm có đối chứng.
+
+\section{Dữ liệu, quy ước ảnh và khóa split}
+
+Dữ liệu thích ứng hiện tại ghép demonstration LIBERO-10 với T1/T3 từ bản phát hành của tác giả. Các episode được gán vào train/validation/test theo nhóm trạng thái khởi tạo. Hash được tính trên toàn bộ vector state đã chuẩn hóa về biểu diễn float64 little-endian, nhờ đó các episode có cùng vector không bị tách sang hai split chỉ vì mang task hoặc demo ID khác nhau.
+
+Nhóm state đã dùng phát triển writer phải ở train. Cơ chế grouping làm giảm một loại leakage cụ thể; nó không loại bỏ việc tác giả quan sát test để sửa hệ thống, cũng không chứng minh checkpoint pretrained chưa từng thấy các task hoặc state tương tự. Vì vậy, provenance của split và lịch sử sử dụng dữ liệu cần được báo riêng.
+
+Quy ước ảnh là một phần của contract dữ liệu. Frame author-refined của Mem và ảnh raw OpenGL từ simulator không được xử lý như cùng nguồn. Đường preparation hiện xác định convention từ source: ảnh refined được đưa về raw đúng một lần, còn ảnh replay derived vốn là raw được giữ nguyên trước processor policy. Writer cũng phải nhận convention tương ứng ở offline và online. Việc một HDF5 có shape hợp lệ chưa chứng minh hình ảnh đi vào model đúng hướng.
+
+Đường dữ liệu derived mới nhằm tạo lại observation từ chính runtime local. Action replay chỉ được chấp nhận làm demonstration nếu outcome mới đáp ứng quy tắc chất lượng đã đặt trước. Không thể lấy nhãn memory của trajectory cũ gắn vào ảnh mới sau khi động lực học đã khác. Generator, kiểm tra terminal, resume, source hash và publication của manifest vì thế thuộc chuỗi nghiệm thu dữ liệu. Ở mốc bản thảo, source cho chuỗi này đã được bổ sung nhưng output version mới chưa hoàn tất; checkpoint được báo cáo ở chương 4 vẫn dùng dữ liệu tác giả.
+
+\section{Thích ứng action expert}
+
+Hệ thống giữ checkpoint SmolVLA gốc và huấn luyện adapter LoRA ở attention query/value của action expert. Các normalizer và cách giải mã action vẫn thuộc checkpoint gốc. Việc export adapter riêng giúp phân biệt trọng số nền với thay đổi do thích ứng và cho phép kiểm hash từng thành phần khi nạp lại.
+
+Bộ lấy mẫu chia một optimizer batch giữa base và Mem, sau đó cân bằng task và chọn episode trong từng domain. Việc chọn frame theo episode giúp trajectory dài không tự chiếm toàn bộ xác suất chỉ vì có nhiều frame hơn. Training dùng loss chính thức cùng padding/mask tương ứng, thay vì tự dựng một mục tiêu action khác.
+
+Trong thiết kế đối chứng, F0 phải được huấn luyện trên cùng demonstration, split và ngân sách nhưng không có memory. F1 dùng memory trong quá trình thích ứng và suy luận. B0 giữ policy gốc. F1-off dùng cùng adapter F1 nhưng bỏ memory khi suy luận. B0–F0 mô tả adaptation; F0–F1 giúp đánh giá hệ thống memory khi adaptation budget được kiểm soát; F1–F1-off đo độ phụ thuộc vào đầu vào memory của cùng checkpoint. Phép so sánh cuối có thể chịu ảnh hưởng out-of-distribution nếu F1 không từng được train với memory off.
+
+Ngay cả F0–F1 cũng cần được diễn giải cẩn thận. F1 nhận thông tin từ detector ngoài backbone cùng một biểu diễn lịch sử. Muốn tách giá trị lịch sử khỏi phần tóm tắt quan sát hiện tại, cần thêm đối chứng current-only; muốn kiểm tra ảnh hưởng của thêm token cần một đối chứng sham phù hợp ngân sách. Những đối chứng này hiện là thiết kế cần thực hiện, không phải kết quả đã có.
+
+\section{Protocol thực thi và chấm điểm}
+
+Protocol local giữ Panda với controller OSC\_POSE20 Hz, hai camera 256×256 và initial state từ split lock. Sau reset có 20 bước warmup với action đã khai báo; trạng thái tiến độ được làm sạch theo protocol. Policy sinh chunk 50 nhưng chỉ thực thi10 action trước khi query lại. Trong khoảng đó, writer tiếp nhận từng observation sau action, giúp sự kiện không chỉ được cập nhật ở ranh giới chunk.
+
+Horizon của mỗi episode là 1.000 policy actions. Thiết kế không dừng sớm ngay khi một milestone hoặc full success tạm thời xuất hiện; episode tiếp tục đến horizon, hoặc dừng khi upstream overshot không thể phục hồi. Thành công được xét ở endpoint theo đồng thời ba điều kiện: đủ milestones, final predicate còn đúng và không overshot. Đây là lựa chọn protocol local, không được gắn nhãn điểm chính thức của paper.
+
+Gọi $K_i$ là số milestones đạt, $K_i^*$ là số cần thiết, $P_i$ là final predicate và $O_i$ là cờ overshot. Các độ đo được diễn đạt:
+
+\begin{equation}
+\begin{aligned}
+S_i&=\mathbf{1}[K_i\ge K_i^*\land P_i\land\neg O_i],\\
+\mathrm{SCR}_i&=\frac{K_i}{K_i^*},\qquad \widehat{\mathrm{SR}}=\frac{1}{N}\sum_{i=1}^{N}S_i.
+\end{aligned}
+\end{equation}
+
+Đối với hai task có cùng số episode, macro-average bằng trung bình gộp theo episode. Nếu số episode khác nhau, cần báo rõ hai kiểu trung bình và không đổi cách tổng hợp sau khi thấy kết quả. Run chưa hoàn tất phải báo coverage, không coi episode còn thiếu là failure hay success.
+
+Evaluator lấy predicate và tiến độ từ implementation upstream đã pin. Các counters live/nonlive tích lũy giữa milestones; protocol ghi điều kiện vượt ngưỡng tương ứng, không phải số frame liên tiếp của writer. Gọi evaluator thêm lần nữa chỉ để logging có thể làm thay đổi tiến độ, nên logging phải đọc kết quả đã tính. Sự độc lập giữa writer và evaluator cho phép so sánh hai nguồn đánh giá mà không tạo vòng rò rỉ thông tin.
+
+\section{Giới hạn của phương pháp hiện tại}
+
+Phương pháp được thiết kế cho một quan hệ vật–support và các chu kỳ lặp. Nó chưa có đánh giá đầy đủ về đổi danh tính khi nhiều vật giống nhau, thay đổi camera, occlusion dài hoặc support di chuyển. Memory văn bản mất phần lớn thông tin hình học của lịch sử; policy vẫn phải thực hiện thao tác chính xác từ quan sát hiện tại.
+
+Chi phí perception có thể lớn vì detector được gọi theo observation. Số tham số LoRA nhỏ không đồng nghĩa toàn hệ thống có latency thấp. Mặt khác, bộ nhớ lưu event và evidence trong episode, nên không thể suy rằng chi phí lưu trữ luôn hằng số chỉ vì prompt có 48 token. Các giới hạn này cần được đo thay vì loại bỏ bằng mô tả kiến trúc.
+
+Cuối cùng, các kiểm tra contract không bao phủ mọi nhánh của repository. Chẳng hạn adapter hiện còn một nhánh legacy gán gripper state mặc định nếu thiếu field; chưa có bằng chứng nhánh đó được kích hoạt trong các run được báo cáo, nhưng nó ngăn việc tuyên bố toàn codebase tuyệt đối fail-fast. Bản thảo không sửa hoặc hợp thức hóa nhánh này. Các đường sử dụng trong benchmark phải được audit theo artifact thực tế và yêu cầu dừng khi thiếu quan sát bắt buộc.
+

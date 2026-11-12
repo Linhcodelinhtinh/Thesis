@@ -88,7 +88,7 @@ def prepare(args):
                                          local_dir=args.source_root))
         if sha256(source) != expected_hash:
             raise ValueError(f"Corrupt or unverified source: {source}")
-        task = source.name.removesuffix("_demo.hdf5")
+        task = source.name[:-len("_demo.hdf5")] if source.name.endswith("_demo.hdf5") else source.name
         shard_rel = f"shards/{task}.hdf5"
         with h5py.File(source, "r") as original, h5py.File(out / shard_rel, "w") as shard:
             data = original["data"]

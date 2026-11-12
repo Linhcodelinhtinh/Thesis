@@ -31,14 +31,15 @@ def load_memory_indices(paths, lock):
             raise ValueError("Memory must come from a completed RGB v3 predicted index")
         if m.get("split_lock_sha256") != lock["lock_sha256"]:
             raise ValueError("Generate memory indices using the same --split-lock first")
+        expected_convention = lock.get("mem_image_convention", "libero_mem_refined")
         if (m.get("tokenizer_revision") != TOKENIZER_REVISION or m.get("max_total_tokens") != 48 or
-            m.get("obs_action_offset") != 0 or m.get("image_convention") != "libero_mem_refined"):
+            m.get("obs_action_offset") != 0 or m.get("image_convention") != expected_convention):
             raise ValueError("Memory tokenizer/alignment/image contract differs")
         for name, digest in m["artifacts_sha256"].items():
             if sha256_file(root / name) != digest:
                 raise ValueError("Corrupt memory index artifact: " + name)
         source_hashes = {e["path"]: e["sha256"] for e in lock["sources"] if e["domain"] == "mem"}
-        if (len(m["sources"]) != 2 or "metainfo.json" not in m["sources"] or
+        if (not m["sources"] or "metainfo.json" not in m["sources"] or
             any(source_hashes.get(name) != digest for name, digest in m["sources"].items())):
             raise ValueError("Memory/source data mismatch")
         for line in (root / "samples.jsonl").read_text(encoding="utf-8").splitlines():
@@ -84,7 +85,9 @@ def prepare(args):
         memory_source="predicted_rgb_v3" if memory_provenance else "none",
         memory_provenance=memory_provenance, tokenizer_revision=TOKENIZER_REVISION,
         tokenizer_files_sha256={"tokenizer.json": TOKENIZER_SHA256},
-        image_contract="canonical raw OpenGL RGB; Mem refined vertical flip undone once before unchanged policy preprocessing",
+        image_contract=dict(base="raw OpenGL RGB",
+            mem_source=lock.get("mem_image_convention", "libero_mem_refined"),
+            policy_input="canonical raw OpenGL RGB; source conversion is explicit and policy preprocessing is unchanged"),
         alignment=dict(base="obs[i] -> action[i+1]; final source observation excluded", mem="obs[i] -> action[i]"),
         state_contract="gripper2, eef_pos3, quaternion_xyzw4 -> existing official processor state8",
         action_contract="native OSC_POSE action7, unchanged checkpoint normalizers, episode-bounded padding",
@@ -136,17 +139,22 @@ def prepare(args):
                             prepared_index=t, source_obs_idx=t, source_action_start_idx=t+offset,
                             last_executed_action_idx=t+offset-1, has_memory=flags[-1])) + "\n")
                     target = shard.create_group(e["demo"])
+                    source_record = next(s for s in lock["sources"] if s["domain"] == domain and s["path"] == source)
+                    image_convention = source_record.get(
+                        "image_convention", "raw_opengl" if domain == "base" else lock.get("mem_image_convention", "libero_mem_refined"))
                     for camera in ("agentview_rgb", "eye_in_hand_rgb"):
                         data = g["obs/" + camera]
                         shape = (n,) + data.shape[1:]
                         ds = target.create_dataset(camera, shape=shape, dtype="uint8", chunks=(1,)+shape[1:], compression="lzf")
                         for begin in range(0, n, 32):
-                            ds[begin:begin+32] = canonical_raw_rgb(data[begin:min(begin+32,n)], domain)
+                            ds[begin:begin+32] = canonical_raw_rgb(
+                                data[begin:min(begin+32,n)], source_convention=image_convention)
                     target.create_dataset("robot_states", data=robot[:n])
                     target.create_dataset("actions", data=actions[offset:])
                     target.create_dataset("prompts", data=prompts, dtype=h5py.string_dtype("utf-8"))
                     target.create_dataset("has_memory", data=flags)
                     target.attrs.update(instruction=instruction, split=e["split"], domain=domain,
+                        source_image_convention=image_convention,
                         initial_state_sha256=e["initial_state_sha256"], source_action_offset=offset)
                     row = {k: e[k] for k in ("domain", "task", "demo", "split", "initial_state_sha256", "source")}
                     row.update(length=n, shard=relative, memory_frames=sum(flags))

@@ -1,0 +1,47 @@
+\chapter{Nguồn artifact và cách tái tổng hợp}
+Các đường dẫn dưới đây tính từ gốc repository \texttt{Thesis\_26}.
+Snapshot viết khóa luận lưu tại \path{docs/thesis/evidence/snapshot.json};
+\path{input_hashes.json} cùng thư mục lưu SHA-256 của các input đã kiểm.
+Snapshot không phải chứng nhận runtime mới và không thay thế việc lưu raw artifacts.
+
+\section{Thực nghiệm được dùng trong chương 4}
+Run đánh giá:
+\begin{quote}\small
+\path{experiments/evaluation/results_mem_2/step5_test_20261109-093744}
+\end{quote}
+Mỗi condition có \path{run_manifest.json}, \path{split.lock.json} và các
+thư mục episode. Số liệu lấy từ \path{episodes/*/summary.json}, đối chiếu
+\path{status.json} và checksum summary. Manifest ghi protocol, state roster,
+code snapshot, environments và checkpoint. Không đổi tên các summary này
+thành \path{episode.json} của runner cũ.
+
+Run huấn luyện:
+\begin{quote}\small
+\path{experiments/training/results_mem_2/mem-adapter-20261105-083543}
+\end{quote}
+Các file sử dụng gồm \path{run_config.json}, \path{metrics.jsonl},
+\path{checkpoint-003000/progress.json}, và export trong \path{pretrained_model}.
+Dataset manifest/split nằm tại
+\path{experiments/training/results_mem_2/mem-adapter-v1}.
+Hash lớn của base weights và raw HDF5 được tham chiếu theo manifest;
+lần viết này không hash lại toàn bộ các tài nguyên lớn đó.
+
+\section{Bảng tái tổng hợp}
+\path{docs/thesis/evidence/mem_test_episodes.csv} giữ một dòng cho mỗi
+episode, gồm outcome, state hash, seed, count của evaluator, count của writer,
+cờ lịch sử và nguồn summary. \path{mem_test_counts.csv} là bảng theo task.
+\path{validation_loss.csv} lấy từ metrics của training.
+\path{historical_run_inventory.csv} chỉ là inventory, không phải một tập
+kết quả được phép gộp. Raw của freeze V1 được báo cáo cũ tham chiếu chưa có
+tại đường dẫn đó trong snapshot; đây là một giới hạn lưu trữ cần giải quyết.
+
+\section{Lệnh tái tạo}
+Các công cụ sau chỉ tái tổng hợp artifact/tài liệu, không chạy policy:
+\begin{Verbatim}[breaklines=true,fontsize=\small]
+python -X utf8 docs/thesis/tools/collect_evidence.py
+python -X utf8 docs/thesis/tools/make_figures.py
+python -X utf8 docs/thesis/tools/build_latex.py
+python -X utf8 docs/thesis/tools/validate_draft.py
+\end{Verbatim}
+Khi source hoặc artifact thay đổi, cần lưu snapshot mới và nêu rõ phiên bản
+bản thảo tương ứng. Không sửa checksum để làm một artifact không khớp vượt qua kiểm tra.

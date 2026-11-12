@@ -1,0 +1,7 @@
+﻿condition,task,n_task_episodes,unique_state_hashes,successes,sr,mean_scr,overshot_count
+B0,T1,10,10,0,0.0,0.1,1
+B0,T3,10,10,0,0.0,0.0,0
+B0,ALL,20,10,0,0.0,0.05,1
+F1,T1,10,10,0,0.0,0.1,1
+F1,T3,10,10,1,0.1,0.16666666666666666,0
+F1,ALL,20,10,1,0.05,0.13333333333333333,1

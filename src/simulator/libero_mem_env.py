@@ -97,7 +97,8 @@ class LiberoMemEnv:
     def _format_obs(obs):
         result = {}
         for key, shape in (("agentview_image", (256, 256, 3)), ("robot0_eye_in_hand_image", (256, 256, 3)),
-                           ("robot0_eef_pos", (3,)), ("robot0_eef_quat", (4,)), ("robot0_gripper_qpos", (2,))):
+                           ("robot0_eef_pos", (3,)), ("robot0_eef_quat", (4,)),
+                           ("robot0_gripper_qpos", (2,)), ("robot0_joint_pos", (7,))):
             value = np.asarray(obs[key])
             if value.shape != shape or not np.isfinite(value).all():
                 raise ValueError("Unexpected raw observation contract: " + key)

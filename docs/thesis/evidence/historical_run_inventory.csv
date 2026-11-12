@@ -1,0 +1,22 @@
+﻿run,episodes_found,successes_in_found_episodes,task_count,execution_horizons,checkpoints_recorded,interpretation
+experiments/results/ab_test_libero10_base,100,70,10,[10],"[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/ab_test_libero10_finetuned,100,42,10,[10],"[""experiments/training/results/no_memory-20261029-175154/pretrained_model""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/baseline_full_40,220,173,40,[10],"[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/baseline_s10_clean_reset,28,11,10,[10],"[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/full-40-tasks-finetuned,400,195,40,[10],"[""experiments/training/results/no_memory-20261029-175154/pretrained_model""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/full-clean,200,92,40,[10],"[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/libero-10-wsl,50,35,10,[10],"[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/memory_text_only,68,7,7,[50],"[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/pilot_smoke_test,1,1,1,[10],"[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/test-libero-10,100,70,10,"[10, 5]","[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/test-libero-10-finetuned,100,36,10,[10],"[""experiments/training/results/no_memory-20261029-175154/pretrained_model""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/v2_memory/ablation_original_prompt,10,7,2,[10],"[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/v2_memory/ablation_shadow,10,7,2,[10],"[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/v2_memory/ablation_static_suffix,10,2,2,[10],"[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/v2_memory/ablation_validated_dynamic,10,7,2,[10],"[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/v2_memory/pilot_smoke_off,5,4,5,[50],"[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/v2_memory/pilot_smoke_text_only,5,0,5,[50],"[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/v2_memory/prompt_shoren_obs_text,100,28,10,[10],"[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/v2_memory/smoke_obs_text,1,0,1,[50],"[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/v2_memory/smoke_test_text_only,1,0,1,[50],"[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified
+experiments/results/v2_memory/smoke_test_text_shadow,1,1,1,[50],"[""resources/checkpoints/smolvla_libero""]",INVENTORY_ONLY; completeness and matched provenance not certified

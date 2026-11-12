@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "path": "docs\\format_reference\\2023 Huong dan viet khoa luan.pdf",
+    "pages": 13,
+    "sha256": "64e55826716a538f620f0c2413483c0d0924934665fd239342983c0c1ee7144a",
+    "metadata": "{'/Author': '', '/CreationDate': \"D:20231022102024+07'00'\", '/ModDate': \"D:20231022102024+07'00'\", '/Producer': 'Microsoft: Print To PDF', '/Title': 'Microsoft Word - 2023.10 how to write thesis.doc'}",
+    "text_path": "tmp\\thesis_reference_review\\reference_1.txt"
+  },
+  {
+    "id": 2,
+    "path": "docs\\format_reference\\2026 - MEM_ Multi-Scale Embodied Memory for.pdf",
+    "pages": 15,
+    "sha256": "213bbe173026561d1ca4b9aaa626e51991bcfb49d343516ed7fd6658709e5475",
+    "metadata": "{'/Author': 'Marcel Torne; Karl Pertsch; Homer Walke; Kyle Vedder; Suraj Nair; Brian Ichter; Allen Z. Ren; Haohuan Wang; Jiaming Tang; Kyle Stachowicz; Karan Dhabalia; Michael Equi; Quan Vuong; Jost Tobias Springenberg; Sergey Levine; Chelsea Finn; Danny Driess', '/Creator': 'arXiv GenPDF (tex2pdf:7b1e169)', '/DOI': 'https://doi.org/10.48550/arXiv.2603.03596', '/License': 'http://creativecommons.org/licenses/by/4.0/', '/PTEX.Fullbanner': 'This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) kpathsea version 6.4.1', '/Producer': 'pikepdf 8.15.1', '/Title': 'MEM: Multi-Scale Embodied Memory for Vision Language Action Models', '/Trapped': '/False', '/arXivID': 'https://arxiv.org/abs/2603.03596v2'}",
+    "text_path": "tmp\\thesis_reference_review\\reference_2.txt"
+  },
+  {
+    "id": 3,
+    "path": "docs\\format_reference\\2026 CoRL - A Balanced Data Diet_ Addressing the Exploration.pdf",
+    "pages": 21,
+    "sha256": "1017cc0863353b02ecf237d00437e83998ee0bee67d9e22c352df281653a0ee1",
+    "metadata": "{'/Author': 'Octi Zhang; Mateo Guaman Castro; Patrick Yin; Ignacio Dagnino; Abhishek Gupta; Rosario Scalise; Byron Boots', '/Creator': 'arXiv GenPDF (tex2pdf:07e334b)', '/DOI': 'https://doi.org/10.48550/arXiv.2610.12465', '/License': 'http://creativecommons.org/licenses/by/4.0/', '/PTEX.Fullbanner': 'This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) kpathsea version 6.4.1', '/Producer': 'pikepdf 8.15.1', '/Title': 'A Balanced Data Diet: Addressing the Exploration Bottleneck in Mega-Scale RL for Robot Control', '/Trapped': '/False', '/arXivID': 'https://arxiv.org/abs/2610.12465v1'}",
+    "text_path": "tmp\\thesis_reference_review\\reference_3.txt"
+  },
+  {
+    "id": 4,
+    "path": "docs\\format_reference\\ICLR2026-MEMORYVLA.pdf",
+    "pages": 36,
+    "sha256": "07161ae7543b8ebabdac6dfbc2af58e8e3a4669723882d7ff924490892cc1117",
+    "metadata": "{'/Author': 'Hao Shi; Bin Xie; Yingfei Liu; Lin Sun; Fengrong Liu; Tiancai Wang; Erjin Zhou; Haoqiang Fan; Xiangyu Zhang; Gao Huang', '/Creator': 'arXiv GenPDF (tex2pdf:57610bf)', '/DOI': 'https://doi.org/10.48550/arXiv.2508.19236', '/License': 'http://arxiv.org/licenses/nonexclusive-distrib/1.0/', '/PTEX.Fullbanner': 'This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) kpathsea version 6.4.1', '/Producer': 'pikepdf 8.15.1', '/Title': 'MemoryVLA: Perceptual-Cognitive Memory in Vision-Language-Action Models for Robotic Manipulation', '/Trapped': '/False', '/arXivID': 'https://arxiv.org/abs/2508.19236v2'}",
+    "text_path": "tmp\\thesis_reference_review\\reference_4.txt"
+  },
+  {
+    "id": 5,
+    "path": "docs\\format_reference\\Signed.Signed.Signed.QD TTNT_thang12.pdf",
+    "pages": 5,
+    "sha256": "07063ad7991491c463ff615d97188e9f2f73aec378d0bcaf80639e4ab50d3150",
+    "metadata": "{'/Author': 'Le Huy', '/CreationDate': \"D:20260918145727+07'00'\", '/Creator': 'Microsoft® Word LTSC', '/ModDate': \"D:20260918162133+07'00'\", '/Producer': 'Microsoft® Word LTSC; modified using iText® Core 7.2.3 (AGPL version) ©2000-2022 iText Group NV; modified using iText® Core 7.2.3 (AGPL version) ©2000-2022 iText Group NV; modified using iText® Core 7.2.3 (AGPL version) ©2000-2022 iText Group NV; modified using iText® Core 7.2.3 (AGPL version) ©2000-2022 iText Group NV; modified using iText® Core 7.2.3 (AGPL version) ©2000-2022 iText Group NV; modified using iText® Core 7.2.3 (AGPL version) ©2000-2022 iText Group NV; modified using iText® Core 7.2.3 (AGPL version) ©2000-2022 iText Group NV; modified using iText® Core 7.2.3 (AGPL version) ©2000-2022 iText Group NV; modified using iText® Core 7.2.3 (AGPL version) ©2000-2022 iText Group NV; modified using iText® Core 7.2.3 (AGPL version) ©2000-2022 iText Group NV; modified using iText® Core 7.2.3 (AGPL version) ©2000-2022 iText Group NV; modified using iText® Core 7.2.3 (AGPL version) ©2000-2022 iText Group NV; modified using iText® Core 7.2.3 (AGPL version) ©2000-2022 iText Group NV'}",
+    "text_path": "tmp\\thesis_reference_review\\reference_5.txt"
+  }
+]

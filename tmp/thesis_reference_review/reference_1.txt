@@ -1,0 +1,412 @@
+=== PAGE 1 ===
+Một số gợi ý về trình bày khóa luận tốt nghiệp 
+Nguyễn Việt Hà 
+Viện Trí tuệ nhân tạo, Trường Đại học Công nghệ 
+(Tài liệu tham khảo cho sinh viên viết khóa luận, đồ án tại Trường ĐHCN) 
+ 
+Tài liệu có mục đích hướng dẫn sinh viên trình bày bản viết khóa luận/đồ án tốt 
+nghiệp đại học. Tài liệu dùng để tham khảo, sinh viên cần tuân thủ chặt chẽ các yêu cầu 
+của giảng viên hướng dẫn, cũng như các qui định của Nhà trường về thực hiện khóa 
+luận/đồ án tốt nghiệp. 
+ 
+1. Khóa luận là gì? 
+Khóa luận trình bày kết quả nghiên cứu khoa học của sinh viên tốt nghiệp, vì vậy cần 
+được trình bày bằng ngôn từ khoa học, đảm bảo tính logic, chính xác, trung thực và tuân 
+theo các qui tắc chung của trình bày công trình khoa học. 
+Khóa luận đóng vai trò như một bài thi để đánh giá sinh viên có đủ điều kiện tốt 
+nghiệp hay không, vì vậy cần thể hiện được kiến thức, năng lực và tư duy ở bậc đại học 
+(đáp ứng chuẩn đầu ra của ngành đào tạo); đồng thời phải thể hiện được khối lượng 
+công việc của sinh viên đã hoàn thành trong thời gian tương ứng. 
+Khóa luận đồng thời là kết quả của một môn học theo hình thức đặc biệt, vì vậy 
+cần thể hiện được sự trưởng thành của sinh viên về tư duy, về phương pháp nghiên cứu, 
+về kiến thức chuyên môn và khả năng vận dụng để giải quyết các bài toán thực tế. 
+2. Cấu trúc của khóa luận 
+Khóa luận của các ngành công nghệ, kỹ thuật thường có cấu trúc và các nội dung chính 
+như sau: 
+- Đặt vấn đề 
+- Cơ sở lý thuyết 
+- Phương pháp giải quyết vấn đề 
+- Thực nghiệm, kết quả, và so sánh đánh giá 
+
+=== PAGE 2 ===
+- Kết luận 
+Như vậy, nói một cách đơn giản khóa luận cần có 5 chương ứng với các nội dung 
+trên. Chương 1 thường được đặt tên là Mở đầu hoặc Đặt vấn đề, Chương 2 trình bày về 
+cơ sở lý thuyết của nghiên cứu, Chương 3 trình bày về phương pháp giải quyết vấn đề và 
+cần được đặt tên cho sát với nội dung cụ thể đã được thực hiện. Chương tiếp theo 
+thường được đặt tên đơn giản là Thực nghiệm, mặc dù nội dung thường bao gồm mô tả 
+việc phát triển công cụ thực nghiệm, việc thu thập dữ liệu thực nghiệm, các thực nghiệm 
+đã tiến hành, kết quả, và các so sánh, đánh giá.  
+Trong trường hợp nội dung nghiên cứu gồm một số phương pháp, giải pháp hay 
+bài toán con khác nhau thì bạn có thể tách chương 3 thành nhiều chương tương ứng. 
+Với các khóa luận định hướng ứng dụng công nghệ giải quyết một bài toán thực tế cụ 
+thể thì các chương 3 và chương 4 nêu trên thường được chuyển thành chương về phân 
+tích, thiết kế; và chương phát triển ứng dụng. 
+Với các đề tài nghiên cứu có tính lý thuyết và có kết quả nghiên cứu tốt, sinh viên 
+nên bổ sung thêm một chương trình bày so sánh đánh giá với các nghiên cứu liên quan. 
+Chương này có thể đặt sau chương mở đầu, phân tích sâu hơn về xu hướng và các hạn 
+chế của các nghiên cứu đã có, qua đó dẫn dắt đến các vấn đề cần giải quyết trong khóa 
+luận. Chương này cũng có thể đặt sau chương Thực nghiệm để thảo luận và so sánh với 
+kết quả đạt được của chính tác giả. 
+Tất nhiên, khóa luận còn có các phần bắt buộc khác như tóm tắt, mục lục, danh 
+mục tài liệu tham khảo và ngoài ra là một số phụ lục nếu có. 
+Như vậy, cấu trúc khóa luận về cơ bản tuân theo khuôn dạng IMRAD 
+(Introduction, Methods, Results, and Discussion) được dùng phổ biến để trình bày các 
+công trình khoa học. 
+3. Chương Mở đầu 
+Chương Mở đầu thường là một trong các phần khó viết nhất, kể cả đối với các nhà 
+nghiên cứu có kinh nghiệm. Bạn phải viết sao cho đảm bảo hai yếu tố quan trọng là làm 
+cho người đọc cảm thấy hấp dẫn, đồng thời giúp người đọc có sự nhận thức sơ bộ về 
+nội dung để có định hướng đọc các phần tiếp theo. 
+Chương mở đầu của khóa luận thông thường gồm các phần chính như sau: 
+- Bối cảnh, xuất xứ của nghiên cứu 
+
+=== PAGE 3 ===
+- Nội dung nghiên cứu cụ thể trong khóa luận 
+- Bố cục các phần còn lại của khóa luận 
+Bối cảnh của nghiên cứu nhằm chỉ ra lý do chọn đề tài nghiên cứu, đồng thời có 
+phác họa chung về xu hướng nghiên cứu liên quan, và bài toán nghiên cứu cần giải 
+quyết. Ở đây bạn cần làm rõ tầm quan trọng của nghiên cứu, tính thời sự của nghiên 
+cứu. Bài toán hoặc hướng nghiên cứu được mô tả ở bối cảnh nên là bài toán rộng và là 
+mối quan tâm chung của cộng đồng nghiên cứu hiện tại. 
+Trên cơ sở đó, bạn xác định mục tiêu nghiên cứu, bài toán và phương pháp 
+nghiên cứu cụ thể để giải quyết trong phạm vi làm khóa luận. Đây chính là phần tóm 
+lược về về nội dung nghiên cứu cụ thể của khóa luận. Tuy nhiên, ở chương mở đầu thì 
+thông thường bạn không cần mô tả cụ thể về phương pháp giải quyết vấn đề và không 
+cần đề cập đến thực nghiệm đã tiến hành. 
+Cuối cùng, bạn cần mô tả bố cục các phần còn lại của khóa luận. Cách thông 
+thường nhất là bạn mô tả tóm tắt nội dung các chương còn lại. 
+Chương mở đầu là một trong các chương được đọc nhiều nhất, vì vậy bạn cần 
+phải viết hết sức cẩn thận. Nếu chương mở đầu trình bày cẩu thả và có lỗi thì sẽ tạo 
+phản cảm cho người phản biện và ảnh hưởng xấu tới kết quả đánh giá. 
+Một trong những lỗi hay gặp của sinh viên là phần bối cảnh mô tả chung chung 
+do cóp nhặt từ nhiều nguồn khác nhau, dẫn tới lập luận thiếu logic, và do đó không làm 
+rõ bài toán nghiên cứu cũng như ý nghĩa của nghiên cứu. 
+Khi viết tài liệu, các bạn cần triệt để tuân thủ nguyên tắc “nói có sách, mách có 
+chứng”. Một lỗi điển hình là hầu hết sinh viên không trích dẫn tài liệu tham khảo trong 
+chương mở đầu, đặc biệt là trong phần bối cảnh. Ở đây, bạn đề cập đến xuất xứ bài 
+toán, các xu hướng phát triển, các đánh giá cũng như số liệu liên quan thì cần phải có 
+dẫn chứng tường minh. Thông thường, chương mở đầu cần trích dẫn nhiều tài liệu, nếu 
+không muốn nói là trích dẫn hầu hết các tài liệu tham khảo đã được dùng trong quá 
+trình bạn làm khóa luận. 
+Như vậy, để viết tốt Chương Mở đầu, sinh viên phải hiểu rất rõ đề tài của mình, 
+gồm cả mục tiêu dài hạn và mục tiêu cụ thể cần được giải quyết trong phạm vi khóa luận, 
+đồng thời cũng đã nắm vững các việc mình đã làm để giải quyết vấn đề, kết quả đã đạt 
+được, cũng như nắm được các kết quả đó đã đáp ứng được các yêu cầu, mục tiêu đặt ra 
+
+=== PAGE 4 ===
+đến mức độ nào. Một cách tiếp cận để viết tốt chương mở đầu là trước tiên phác thảo 
+các ý cần có, sau khi viết xong toàn bộ khóa luận thì quay lại hoàn thiện chương Mở đầu. 
+Với mức độ khóa luận tốt nghiệp đại học tại Trường ĐHCN, chương Mở đầu nên 
+trình bày trong phạm vi từ 3 đến 5 trang. 
+4. Chương Cơ sở lý thuyết 
+Tiếp theo chương mở đầu nên là “Chương 2. Cơ sở lý thuyết” trình bày khái quát một số 
+lý thuyết và/hoặc công nghệ chính mà sinh viên sử dụng. Mục đích của việc này là cung 
+cấp cho người đọc không đúng chuyên ngành kiến thức để đọc hiểu các phần tiếp theo. 
+Với khóa luận tốt nghiệp, chương này cũng giúp cho người phản biện đánh giá được 
+mức độ lĩnh hội kiến thức của sinh viên. 
+Kiến thức trình bày ở đây phải là kiến thức chuyên ngành được tiếp tục sử dụng 
+trong phần sau của khóa luận, đồng thời không phải là các kiến thức phổ thông đã được 
+giảng trong các môn học bắt buộc. 
+Sinh viên cần trình bày ngắn gọn bằng các câu văn của mình tự viết chứ không 
+được chép lại cơ học từ các tài liệu khác. Thứ nhất, không được phép sao chép, sao chép 
+cơ học nghĩa là bạn lấy công sức của người khác thành công sức của mình; thứ hai, việc 
+trình bày lại bằng câu văn của mình thể hiện được sinh viên thực sự đã hiểu các kiến 
+thức này. Sinh viên cần trích dẫn đầy đủ và tường minh các nguồn tài liệu về các kiến 
+thức đã có. 
+Chương này chỉ cần trình bày ngắn gọn đáp ứng đúng các mục đích nêu trên. Với 
+mức độ khóa luận tốt nghiệp đại học tại Trường ĐHCN, chương này không nên dài quá 
+10 trang. 
+5. Chương về Phương pháp, giải pháp đề xuất 
+Phương pháp hay giải pháp giải quyết vấn đề nghiên cứu chính là lõi của công trình 
+nghiên cứu, là đóng góp chủ yếu của sinh viên. 
+Trước tiên, tiêu đề của chương này cần mô tả chính xác phương pháp để giải bài 
+toán. Ví dụ, nếu bạn dùng mạng nơ ron tích chập (CNN) để nhận dạng biển báo giao 
+thông thì có thể đặt tiêu đề chương là “Phương pháp nhận dạng biển báo giao thông sử 
+dụng mạng nơ ron tích chập”. Nói chung, bạn cần đặt tiêu đề của các chương, mục sao 
+cho giầu thông tin và sát với nội dung. Tiêu đề chứa thông tin hữu ích (informative 
+
+=== PAGE 5 ===
+heading) như vậy sẽ giúp người đọc hiểu nội dung một cách dễ hơn và thuận tiện cho 
+việc tra cứu. 
+Chương này cần được mô tả chính xác, chi tiết và cần làm rõ đâu là kết quả mới 
+của tác giả (ở đây là sinh viên) và đâu là các kết quả đã có. Thông thường, các nội dung 
+cần mô tả là: 
+- Định nghĩa bài toán kèm theo ví dụ 
+- Cách giải (phương pháp, giải pháp, mô hình, thuật toán để giải quyết) 
+- Phân tích, đánh giá 
+Tuy bài toán nghiên cứu đã được đề cập tại chương mở đầu, ở đây chúng ta vẫn 
+cần định nghĩa chính xác bài toán, và nếu được thì cố gắng định nghĩa bằng phương 
+pháp hình thức. Đồng thời, cần có ví dụ minh họa cho bài toán. 
+Với các khóa luận định hướng ứng dụng công nghệ, thay vì chương về phương 
+pháp thì thường sẽ là các chương về phân tích và thiết kế ứng dụng. Trong trường hợp 
+này, bạn cần mô tả rõ bài toán và sử dụng qui trình phân tích và thiết kế phù hợp để 
+đưa ra lời giải/giải pháp. 
+Sinh viên cần mô tả chi tiết và rõ ràng phương pháp/giải pháp bằng ngôn ngữ và 
+ký pháp phù hợp, bao gồm từ ý tưởng cho đến các mô hình, công thức và bước thực 
+hiện (thuật toán) cụ thể. Bạn cần minh họa cách giải bằng ví dụ. 
+Vai trò của ví dụ là đặc biệt quan trọng, nhiều người đọc sẽ chỉ hiểu vấn đề thông 
+qua ví dụ. Không những thế, nếu sinh viên không chỉ ra được ví dụ tốt thì người phản 
+biện có thể đánh giá là chính sinh viên cũng không hiểu kỹ bài toán nghiên cứu. 
+Nhiều sinh viên chỉ tập trung vào mô tả chi tiết kỹ thuật mà quên không trình bày 
+ý tưởng của phương pháp, của thuật toán. Việc trình bày ý tưởng là quan trọng, hầu hết 
+người đọc sẽ quan tâm tới ý tưởng, chứ chưa đọc ngay chi tiết kỹ thuật. Trình bày rõ 
+được ý tưởng còn minh chứng được bạn có tư duy logic mạch lạc. Thực tế là bạn có 
+thông minh hay không được đánh giá qua việc bạn có trình bày để người khác hiểu được 
+hay không. “Turing test” là một ví dụ kinh điển về cách nhìn như vậy, nếu máy tính trả 
+lời giống như con người thì được coi là có trí tuệ như con người. 
+Nếu phương pháp hay thuật toán được đề xuất là kế thừa và cải tiến của phương 
+pháp/thuật toán đã có và đó không phải là phương pháp/hay thuật toán cơ bản được 
+giảng dạy trong chương trình đào tạo thì bạn cần trình bày lại các phương pháp/thuật 
+
+=== PAGE 6 ===
+toán này. Khi đó, đặc biệt chú ý cách trình bày để phân biệt rõ cái gì đã có mà bạn kế 
+thừa, và cái gì là đề xuất, cải tiến mới của bạn. 
+Một nội dung quan trọng là sinh viên cần phân tích, đánh giá cách giải được đề 
+xuất, chỉ ra mặt mạnh cũng như các hạn chế, tồn tại. Nên nêu rõ phần nào đã giải được, 
+phần nào chưa giải được từ đó là căn cứ để dẫn tới các hướng nghiên cứu tiếp theo. Với 
+các thuật toán mới đề xuất, bạn cần khảo sát về tính dừng, về độ phức tạp. Bạn cần tìm 
+hiểu và chỉ ra phương pháp hay độ đo để đánh giá kết quả, đặc biệt là với các nghiên 
+cứu có tính thực nghiệm. Nhiều nhà nghiên cứu khuyên rằng không nên thực hiện một 
+nghiên cứu mà chưa rõ độ đo đánh giá của nó. Vì nếu không có độ đo khách quan thì 
+chúng ta sẽ không biết là có sự tiến bộ hay không. 
+Ở mức độ khóa luận đại học nếu không đủ thời gian thì sinh viên chưa cần đầu tư 
+quá nhiều công sức vào phần phân tích này, tuy nhiên cũng cần phải tập dượt làm quen 
+để làm tốt cho các công trình tiếp theo. 
+6. Chương Thực nghiệm 
+Mục đích của thực nghiệm trước tiên là để khẳng định sự đúng đắn, phù hợp của 
+phương pháp đề xuất và góp phần chỉ ra tính thực tiễn và khả năng áp dụng của nghiên 
+cứu. Với khóa luận tốt nghiệp, mô tả thực nghiệm còn góp phần minh chứng năng lực 
+vận dụng và thực hành của sinh viên. 
+Thực nghiệm cần được mô tả chính xác, rõ ràng và trung thực. Đồng thời, cần mô 
+tả sao cho người đọc có thể tin cậy vào nội dung và kết quả thực nghiệm. Vì sẽ không có 
+một tài liệu nào về nghiên cứu này tỷ mỉ hơn khóa luận của bạn nên bạn cần tuân thủ 
+nguyên tắc “tái tạo lại được”, nghĩa là cần mô tả ở mức chi tiết sao cho một người có 
+năng lực tương đương có thể làm lại thực nghiệm của bạn. 
+Chương thực nghiệm mô tả việc bạn đã làm, vì vậy cần chú ý cách trình bày để 
+thể hiện rõ là bạn đã làm các thực nghiệm đó. Nghĩa là, bạn cần viết theo văn phong rõ 
+ràng là “tôi đã cài đặt thuật toán…”, “tôi đã tiến hành thực nghiệm với bộ dữ liệu...”,… 
+Với kinh nghiệm hướng dẫn và phản biện nhiều khóa luận trong lĩnh vực CNTT, 
+tôi thấy rất nhiều sinh viên trình bày phần thực nghiệm chưa tốt. 
+Mô tả thực nghiệm không quá khó nhưng sinh viên cho đến khi làm khóa luận 
+thường còn thiếu kỹ năng, kinh nghiệm thiết kế, tiến hành thực nghiệm và mô tả thực 
+nghiệm. Thêm nữa, sinh viên các ngành về CNTT thường chú trọng vào thiết kế và cài 
+
+=== PAGE 7 ===
+đặt mà chưa quan tâm đúng mức tới kiểm thử chương trình. Vì vậy, với hầu hết các 
+khóa luận theo định hướng phát triển ứng dụng, ở phần này rất nhiều sinh viên chỉ đơn 
+giản liệt kê ra một loạt trang màn hình và coi như đã xong việc mà thiếu hẳn phần kiểm 
+thử và đánh giá. 
+Với một khóa luận theo định hướng nghiên cứu, chương thực nghiệm chí ít cần 
+trình bày được các vấn đề sau: 
+- Công cụ thực nghiệm, môi trường tổ chức thực nghiệm 
+- Dữ liệu dùng cho thực nghiệm 
+- Cách thức tổ chức thực nghiệm và kết quả thực nghiệm 
+- Ví dụ cụ thể 
+- Phân tích, đánh giá 
+Nếu sinh viên tự xây dựng công cụ thực nghiệm thì cần phải mô tả rõ ràng công 
+việc này, đây cũng sẽ được xem là đóng góp quan trọng của sinh viên. Nếu công cụ phức 
+tạp thì sinh viên cần mô tả cả phân tích và thiết kế.  
+Bạn cần mô tả công cụ khác mà bạn sử dụng trong thực nghiệm. Với các công cụ 
+phức tạp, bạn nên bổ sung phụ lục mô tả chức năng, tính năng và cách thức sử dụng.  
+Môi trường thực nghiệm đóng vai trò quan trọng và ảnh hưởng tới kết quả thực 
+nghiệm trong rất nhiều trường hợp, vì vậy bạn phải mô tả rõ ràng. 
+Việc có dữ liệu tốt cho thực nghiệm là điều đặc biệt quan trọng. Dữ liệu cần phải 
+phù hợp với bài toán và phải đảm bảo tính khách quan, và cần phải đủ lớn để tránh các 
+phân bố cục bộ. Ở mức khóa luận tốt nghiệp đại học, sinh viên cần làm việc chặt chẽ với 
+giáo viên hướng dẫn để biết cách thu thập dữ liệu. Nếu bạn phải xây dựng các công cụ 
+thu thập dữ liệu thì cần mô tả các công cụ này cũng như mô tả cách thức tổ chức dữ liệu 
+và quá trình (thực nghiệm) thu thập dữ liệu. Với các bài toán đã có các bộ dữ liệu chuẩn 
+thì nên dùng các bộ dữ liệu này, vừa giảm thiểu công sức và sai sót trong tạo dữ liệu, 
+vừa thuận tiện để so sánh kết quả. 
+Sinh viên cần mô tả rõ ràng cách thức tổ chức thực nghiệm, ví dụ các bước thực 
+hiện, việc thiết lập các tham số, số lần chạy chương trình,…  
+Tiếp theo, cần mô tả kết quả thực nghiệm một cách cụ thể, đặc biệt phải chú ý tới 
+phân tích kết quả và trình bày kết quả theo tiếp cận thống kê. Các bạn sinh viên CNTT 
+
+=== PAGE 8 ===
+nói chung thường chưa quan tâm đúng mức việc phân tích dữ liệu và sử dụng các 
+phương pháp thống kê. Kỹ năng phân tích dữ liệu chỉ có thể hình thành qua làm việc 
+thực tế và vào lúc này, bạn cần chủ động hỏi và học từ người hướng dẫn. 
+Ngoài trình bày kết quả dạng thống kê, bạn cần mô tả, phân tích một số ví dụ 
+thực nghiệm điển hình, ví dụ như trường hợp giải được, trường hợp không giải được. 
+Cuối cùng, phải phân tích đánh giá kết quả thực nghiệm một cách định lượng. 
+Qua kết quả thực nghiệm phải đánh giá xem phương pháp đề xuất có đúng đắn không, 
+hiệu quả không, các ưu điểm và các tồn tại. Cần phải so sánh kết quả với kết quả của các 
+nghiên cứu liên quan nếu có. Chú ý, bạn phải học cách đánh giá một cách định lượng, 
+tránh việc đánh giá thuần túy định tính. Phân tích đánh giá là công việc hết sức khó khăn, 
+vì vậy bạn cần trao đổi kỹ với người hướng dẫn, đồng thời luôn phải trung thực và khách 
+quan. 
+Các phần phân tích, đánh giá và so sánh ở chương trước và chương này cũng có 
+thể coi như tương ứng với phần Discussion (thảo luận) trong khuôn dạng IMRAD nêu 
+trên. 
+Với khóa luận định hướng áp dụng công nghệ, bạn cần mô tả về sản phẩm mà 
+bạn đã phát triển, nghĩa là cụ thể hóa cái đã được phân tích và thiết kế ở các chương 
+trước. Ở đây bạn cần cụ thể đã dùng ngôn ngữ lập trình nào, công cụ nào, hệ quản trị 
+CSDL nào và môi trường ứng dụng nào.Trên cơ sở đó trình bày kết quả đạt được và kết 
+quả kiểm thử (testing) của sản phẩm đó. Cần chú ý là việc tạo ra một sản phẩm hoàn 
+chỉnh không phải là mục tiêu chính của khóa luận. Vì vậy, thay vì ôm đồm liệt kê một 
+loạt các chức năng tương tự nhau thì bạn nên lựa chọn và đi sâu vào một số chức năng 
+quan trọng, trình bày chi tiết kết quả và thực nghiệm đánh giá. 
+7. Chương Kết luận 
+Phần kết luận tuy ngắn nhưng có lẽ là phần khó viết nhất của một công trình nghiên cứu. 
+Kết luận phải thể hiện được ý tưởng chính của nghiên cứu, ý nghĩa của nghiên cứu và 
+khả năng áp dụng kết quả nghiên cứu. Các bạn có thể tham khảo một dàn ý thông 
+thường cho kết luận như sau: 
+- Mô tả ngắn gọn xuất xứ và bài toán nghiên cứu 
+- Mô tả ngắn gọn phương pháp đã đề xuất, thực nghiệm đã tiến hành, các kết quả 
+đạt được 
+
+=== PAGE 9 ===
+- Từ đó rút ra kết luận gì về ý nghĩa của nghiên cứu, về khả năng ứng dụng kết quả 
+nghiên cứu 
+- Mô tả ngắn gọn nhược điểm, tồn tại của nghiên cứu và trên cơ sở đó chỉ ra 
+hướng nghiên cứu tiếp theo để giải quyết các vấn đề này 
+Một lỗi phổ biến của các bạn sinh viên là chương kết luận thuần túy chỉ mô tả lại 
+các việc đã làm mà không đưa ra kết luận gì. Nói đơn giản, kết luận nghĩa là cuối cùng 
+qua nghiên cứu bạn phải luận ra được điều gì đó được coi là có ý nghĩa. 
+8. Một số chú ý khác 
+8.1 Viết Tóm tắt 
+Tóm tắt thường là phần được đọc trước tiên, vì vậy bạn cần viết cẩn thận, rõ ràng sao 
+cho người đọc có cái hiểu khái quát về nghiên cứu và đóng góp của bạn. Sau khi đã viết 
+tốt các chương nội dung thì có lẽ không quá khó để viết một tóm tắt tốt. Một tóm tắt 
+thường bao gồm các ý sau được viết ngắn gọn: 
+- Xuất xứ và bài toán nghiên cứu 
+- Phương pháp giải quyết vấn đề bạn đề xuất 
+- Kết quả thực nghiệm 
+- Đánh giá 
+Cần chú ý Tóm tắt là tóm tắt tổng thể khóa luận và nó khác Mở đầu và Kết luận. 
+Vì vậy các ý nêu trên cần được trình bày một cách cân đối, tránh việc sao chép cơ học 
+phần mở đầu vào trong tóm tắt hoặc ngược lại. 
+Một số tạp chí khoa học có truyền thống là biên tập viên viết tóm tắt cho bài báo 
+mình phụ trách biên tập, vì vậy từ đó hình thành văn phong dùng ngôi thứ ba để viết 
+tóm tắt. Bạn có thể dùng ngôi thứ ba hoặc ngôi thứ nhất để viết tóm tắt, tuy nhiên cần 
+nhất quán theo một cách. Ví dụ, bạn cần tránh dùng chủ ngữ lẫn lộn đối lập nhau kiểu 
+như “Khóa luận đề xuất phương pháp phát hiện lỗi chính tả tiếng Việt sử dụng LSTM. 
+Chúng tôi đã cài đặt công cụ thử nghiệm và thực nghiệm với ngữ liệu thu thập từ các bài 
+về giáo dục của Báo điện tử Dân trí.”. 
+8.2 Trình bày bảng và hình 
+Bảng và hình là một phần quan trọng của khóa luận, giúp cho người đọc hiểu được nội 
+dung một cách trực quan, đồng giời giúp trình bày kết quả một cách chính xác, khoa học. 
+
+=== PAGE 10 ===
+Một nguyên tắc chung là các bảng và hình cần được trình bày khoa học, rõ ràng 
+và chứa các thông tin có nghĩa. Cần trình bày các số liệu theo cách tiếp cận thống kê, và 
+phải đảm bảo chính xác. Như đã nói, việc phân tích và trình bày số liệu đòi hỏi phải tập 
+dượt và có kỹ năng, sinh viên cần chủ động trao đổi và học từ người hướng dẫn. 
+Các bảng và hình cần được trình bày theo một định dạng thống nhất trong toàn 
+khóa luận, ví dụ như về ký pháp sử dụng, về kiểu chữ và kích thước phông chữ,… Cỡ chữ 
+cơ bản trong các hình và bảng nên được đặt nhỏ hơn cỡ chữ cơ bản của khóa luận và 
+nên dùng kiểu chữ dễ đọc, rõ ràng, ví dụ như kiểu chữ Arial. 
+Một điểm cần chú ý là thông thường các hình được dùng để minh họa làm rõ cho 
+nội dung của văn bản, vì vậy thông thường một hình sẽ xuất hiện sau đoạn văn mô tả về 
+vấn đề đó. Sinh viên thường hay mắc lỗi là chỉ có hình mà không có đoạn văn tương ứng 
+thuyết minh. Thậm chí, trong rất nhiều khóa luận, có nhiều mục chỉ có mỗi đề mục và 
+trong đó có 1 hình mà không hề có câu văn thuyết minh nào đi kèm. 
+Một lỗi đặc biệt sinh viên hay mắc phải là việc cắt dán hình và bảng từ các tài liệu 
+khác. Nếu bạn muốn đưa vào khóa luận một hình từ tài liệu khác thì cần phải vẽ lại. Rất 
+nhiều tác giả quan niệm là bạn có thể sử dụng “nội dung” của hình, nhưng họ giữ “bản 
+quyền về một cách vẽ hình cụ thể”. Nếu sao chép theo kiểu copy ảnh thì bạn có thể bị 
+xem là vi phạm bản quyền. Thứ hai là nếu copy hình vẽ thì chất lượng in ấn sẽ kém và 
+định dạng sẽ không giống như các hình còn lại. Lý do quan trọng khác mà bạn cần phải 
+vẽ lại hình là chỉ có thực sự tự vẽ lại hình thì bạn mới có thể hiểu hết ý nghĩa của hình đó. 
+Tất nhiên, bạn vẫn phải trích dẫn tài liệu gốc về hình này.  
+8.3 Trích dẫn tài liệu 
+Trong khóa luận các bạn sẽ đề cập và trình bày đến rất nhiều kiến thức và kết quả 
+nghiên cứu đã có, kể cả kết quả của chính nhóm nghiên cứu mà bạn tham gia. Các kết 
+quả này thường là các phương pháp, thuật toán, hình vẽ, số liệu và các đánh giá. Với các 
+kiến thức và kết quả đó, bạn cần trích dẫn tài liệu tham khảo một cách tường minh. 
+Việc trích dẫn tài liệu thứ nhất là khẳng định rõ bạn kế thừa cái gì, cái gì là kết quả 
+từ công sức nghiên cứu của bạn. Thứ hai, việc trích dẫn giúp người đọc có nguồn tài liệu 
+để tìm hiểu sâu thêm về vấn đề liên quan cũng như kiểm chứng đối sánh với nghiên cứu 
+của bạn. 
+
+=== PAGE 11 ===
+Như vậy, trong chương mở đầu chúng ta phải trích dẫn nhiều tài liệu, trong phần 
+mô tả cơ sở lý thuyết phải trích dẫn tài liệu, các phương pháp và thuật toán đã có mà 
+được mô tả trong phần phương pháp phải được trích dẫn, phần so sánh càng phải trích 
+dẫn tài liệu. 
+Vì khóa luận gồm nhiều chương, để tiện theo dõi thì chúng ta có thể trích dẫn 
+nhiều lần cùng một tài liệu. Ví dụ trong chương mở đầu chúng ta đề cập đến mạng nơ 
+ron tích chập thì cần trích dẫn, tiếp theo sang chương phương pháp, nếu chúng ta tiếp 
+tục đề cập đến mạng nơ ron tích chập thì lại có thể trích dẫn thêm một lần nữa. Tuy 
+nhiên, nếu trong cùng một tiểu mục thì không nên lặp lại việc trích dẫn như vậy. 
+Một điểm đặc biệt cần chú ý là bạn phải trích dẫn tài liệu đúng vị trí. Giả dụ, tài 
+liệu số [7] nói về mô hình GAN của tác giả Goodfellow và cộng sự, việc trích dẫn như 
+trong câu văn sau: 
+“Goodfellow và cộng sự đã đề xuất mô hình GAN cải thiện chất lượng kết quả tạo 
+sinh bằng cách học cạnh tranh dùng hai mạng nơ ron [7].” 
+thì sẽ làm cho người đọc hiểu sai rằng tài liệu [7] nói về mạng nơ ron nói chung. Cách 
+đặt trích dẫn đúng phải là: 
+“Goodfellow và cộng sự đã đề xuất mô hình GAN [7] cải thiện chất lượng kết quả 
+tạo sinh bằng cách học cạnh tranh dùng hai mạng nơ ron.” 
+Danh mục tài liệu tham khảo được đặt sau chương kết luận và trước các phụ lục. 
+Với khóa luận, sinh viên nên tham khảo và liệt kê từ 10 đến 20 tài liệu tham khảo. Tài 
+liệu tham khảo phải ghi đầy đủ các thông tin theo qui định, thường theo thứ tự tên tác 
+giả, tên tài liệu, tên tạp chí, trang, năm xuất bản. Tài liệu cần được gán nhãn để tham 
+chiếu, có 2 qui tắc là gán nhãn bằng số, và gán nhãn theo tên tác giả và năm xuất bản. 
+Gán nhãn bằng số thì thông thường thứ tự tài liệu là thứ tự xuất hiện lần đầu trong khóa 
+luận, gán nhãn bằng tên tác giả thì thứ tự theo vần ABC của tên tác giả và với cùng tên 
+thì theo năm xuất hiện. Bạn cần dùng thống nhất một cách gán nhãn trong khóa luận. 
+8.4 Một số lưu ý khác 
+Các bạn phải trình bày khóa luận bằng văn phong khoa học, chính xác. Phải chú ý không 
+dùng văn phong khẩu ngữ. Chú ý kiểm tra xem từng câu văn có đủ chủ ngữ, vị ngữ, đúng 
+ngữ pháp hay không. Đồng thời bạn cũng cần tránh viết các câu văn quá dài dòng. Một 
+câu văn quá dài sẽ làm người đọc khó hiểu và hay dẫn đến lỗi ngữ pháp là có 2 chủ ngữ 
+
+=== PAGE 12 ===
+khác nhau. Tóm lại, mỗi câu văn nên viết ngắn gọn mô tả rõ một ý chính định nói, nghĩa 
+là cần học nguyên tắc “one sentence-one meaning”. 
+Mặt khác, các bạn cần diễn đạt đủ ý, tránh nhẩy cóc, bắt người đọc phải đọc giữa 
+các dòng. Nhiều vấn đề bạn có thể coi là hiển nhiên, tuy nhiên bạn vẫn cần diễn giải đủ ý 
+thì người đọc lần đầu cũng như người đọc không cùng chuyên môn mới có thể hiểu 
+được. 
+Bạn cần chú ý nhất quán về sử dụng ngôi (chủ ngữ) trong các đoạn văn. Ví dụ như 
+dùng ngôi thứ ba để mô tả công việc do người khác tiến hành và dùng ngôi thứ nhất để 
+mô tả công việc do bạn tiến hành. Một lỗi hay xẩy ra là ngay trong một đoạn văn lại 
+dùng lẫn lộn ngôi thứ nhất và thứ ba để mô tả công việc của bạn làm. 
+Bạn cần chú ý sử dụng “thời” phù hợp với từng phần trong khóa luận. Nguyên tắc 
+cơ bản là, cái gì xảy ra trước khi làm khóa luận thì là thời đã hoàn thành, ví dụ như khi 
+trích dẫn các công trình đã có thì bạn cần viết dạng như “Tác giả A đã đề xuất phương 
+pháp B …”. Với các nội dung của chính bạn đã thực hiện trong quá trình làm khóa luận 
+thì tùy theo chương cần dùng thời phù hợp, thông thường là với chương mở đầu, 
+chương về phương pháp thì bạn dùng thời hiện tại; chương thực nghiệm và chương kết 
+luận thì bạn dùng thời quá khứ. Ví dụ, giả dụ bạn đã thực hiện nghiên cứu về dùng LSTM 
+(Long-short term memory) để phát hiện lỗi chính tả tiếng Việt, ở chương 1, bạn có thể 
+viết về nội dung nghiên cứu là “Chúng tôi đề xuất phương pháp sử dụng LSTM để phát 
+hiện lỗi chính tả”, tương tự ở chương 3 về Phương pháp thì bạn cũng viết là “Chúng tôi 
+đề xuất sử dụng LSTM để phát hiện lỗi chính tả, cụ thể như sau: …”. Ở chương 4 thực 
+nghiệm thì viết với văn phong là “Chúng tôi đã cài đặt phương pháp đề xuất…”, “Chúng 
+tôi đã thực nghiệm với bộ ngữ liệu…”. Và cuối cùng, tại chương 5 kết luận thì với những 
+nội dung này dùng thời quá khứ như chương thực nghiệm. 
+Nhiều khóa luận lạm dụng việc gạch đầu dòng. Chỉ gạch đầu dòng khi trình bày 
+các ý mang tính liệt kê để dễ phân biệt. Thông thường chương mở đầu mang tính dẫn 
+dắt nên phải hạn chế việc viết dạng gạch dầu dòng. Không được viết các mục mà chỉ có 
+đề mục và gạch đầu dòng, cần phải bổ sung các đoạn văn mang tính nhập dẫn và diễn 
+giải. 
+Bạn cần chú ý sử dụng đúng các dấu ngắt (chấm, phẩy, và chấm phẩy). Ví dụ, 
+nhiều sinh viên mắc lỗi chấm câu khi viết tiêu đề các mục. Tiêu đề là bắt đầu của đề mục, 
+vì vậy không đặt chấm câu (nghĩa là kết thúc) ở đó. Tương tự, nếu tiêu đề của bảng đặt 
+
+=== PAGE 13 ===
+ở trên bảng thì không đặt chấm câu, vì được hiểu là tiêu đề cộng với bảng sau đó như là 
+“1 câu văn liên tục”. Ngược lại, do tiêu đề của hình đặt bên dưới hình nên chặt chẽ thì 
+cần chấm câu. 
+9. Khởi thừa chuyển kết 
+Các bạn chắc đều đã từng đọc một vài bài thơ Đường, trong đó có thể thơ thất ngôn tứ 
+tuyệt. Thể thơ thất ngôn tứ tuyệt gồm 4 câu, mỗi câu 7 chữ và có bố cục theo thứ tự của 
+các câu gọi là khởi – câu mở đầu bài thơ, thừa – phát triển ý thơ, chuyển – chuyển sang 
+một ý mới, và cuối cùng là kết – câu kết nói lên tâm sự của nhà thơ. 
+Chúng ta đã nói về khuôn dạng IMRAD cho bố cục của công trình nghiên cứu, ở 
+đây chúng ta có thêm cách nhìn khởi thừa chuyển kết để làm rõ nội dung trình bày của 
+một nghiên cứu. 
+Một công trình khoa học cần trình bày làm rõ:  
+- Khởi đầu, xuất xứ của nghiên cứu 
+- Kế thừa các kết quả nào đã có, kết quả nào là mới 
+- Kết quả nghiên cứu được chuyển qua áp dụng vào đâu 
+- Qua nghiên cứu này rút ra kết luận gì 
+Trong quá trình nghiên cứu cũng như viết khóa luận, bạn nên ý thức để làm rõ 4 
+điểm trên, và nếu làm rõ được 4 điểm này thì có nghĩa là bạn thực sự hiểu rõ bài toán và 
+đã nghiên cứu một cách nghiêm túc, khoa học. 
+ 
+ 

@@ -19,6 +19,9 @@ from src.memory.visual_pipeline import load_prompt_tokenizer, visual_writer_fact
 from src.perception.grounding_dino import GroundingDinoDetector
 from src.perception.object_tracker import TrackerConfig
 from src.training.libero_mem_hdf5_loader import LiberoMemHDF5Parser
+from src.training.split_lock import load_split_lock
+from src.evaluation.libero_mem_protocol import DEFAULT_PROTOCOL, source_digest
+from src.utils.file_hash import sha256_file
 
 
 def recover_completed_index(out_dir):
@@ -140,6 +143,8 @@ def main():
     p.add_argument("--max-episodes", type=int)
     p.add_argument("--split", choices=["train", "val", "test"])
     p.add_argument("--split-lock", type=Path, help="Required when producing memory for the mixed training dataset")
+    p.add_argument("--source-kind", choices=("author_refined", "derived_raw"), default="author_refined",
+                   help="Select the pinned source RGB convention and provenance contract")
     p.add_argument("--resume", action="store_true", help="Resume from partially written prompt index")
     args = p.parse_args()
     out = args.output_dir
@@ -160,17 +165,36 @@ def main():
         print(f"Resuming index at {out}: recovered {len(completed_ids)} completed episodes ({total} samples).")
     else:
         out.mkdir(parents=True)
-    lock = json.loads((ROOT / "resources/manifests/libero_mem_planning_sources.json").read_text(encoding="utf-8"))
-    inventory = {item["path"]: item["upstream_sha256"] for item in lock["annotated_dataset"]["selected_pilot_files"]}
+    source_manifest = json.loads((ROOT / "resources/manifests/libero_mem_planning_sources.json").read_text(encoding="utf-8"))
+    split_lock = load_split_lock(args.split_lock) if args.split_lock else None
+    if split_lock is not None and split_lock["protocol_sha256"] != source_digest(DEFAULT_PROTOCOL):
+        raise ValueError("Split lock was generated for a different evaluator protocol")
     filenames = [args.task_name + "_demo.hdf5", "metainfo.json"]
     sources = {name: sha256(args.data_dir / name) for name in filenames}
-    for name, actual in sources.items():
-        if actual != inventory[name]:
-            raise ValueError(f"Unverified/corrupt source: {name}")
+    if args.source_kind == "author_refined":
+        inventory = {item["path"]: item["upstream_sha256"]
+                     for item in source_manifest["annotated_dataset"]["selected_pilot_files"]}
+        for name, actual in sources.items():
+            if actual != inventory.get(name):
+                raise ValueError(f"Unverified/corrupt author source: {name}")
+        image_convention = "libero_mem_refined"
+        source_revision = source_manifest["annotated_dataset"]["revision"]
+    else:
+        if split_lock is None or split_lock.get("classification") != "CUSTOM_V2_LIBERO_MEM_DERIVED_TRAINING_DATA":
+            raise ValueError("derived_raw requires the derived-data split lock")
+        if split_lock.get("mem_image_convention") != "raw_opengl":
+            raise ValueError("Derived split lock has an unknown RGB convention")
+        locked_sources = {row["path"]: row["sha256"] for row in split_lock["sources"] if row["domain"] == "mem"}
+        for name, actual in sources.items():
+            if actual != locked_sources.get(name):
+                raise ValueError(f"Derived source differs from its lock: {name}")
+        image_convention = "raw_opengl"
+        source_revision = "derived:" + split_lock["derived_manifest_sha256"]
     renderer = LiberoMemTextRenderer(tokenizer=load_prompt_tokenizer(args.tokenizer_path), strict_tokenizer=True)
     detector = GroundingDinoDetector(args.model_dir, args.device) if args.stream == "predicted_memory" else None
     config = TrackerConfig()
-    factory = visual_writer_factory(detector, "libero_mem_refined", config)
+    writer_convention = "libero_raw" if image_convention == "raw_opengl" else image_convention
+    factory = visual_writer_factory(detector, writer_convention, config)
     loader = LiberoMemHDF5Parser(args.data_dir, split_lock=args.split_lock)
     mode = "a" if completed_ids else "w"
     with (out / "samples.jsonl").open(mode, encoding="utf-8") as samples, \
@@ -210,9 +234,9 @@ def main():
         writer_code_sha256={str(p.relative_to(ROOT)).replace("\\", "/"): sha256(p)
                             for directory in ("src/perception", "src/memory", "src/interfaces")
                             for p in sorted((ROOT / directory).glob("*.py"))},
-        sources=sources, source_revision=lock["annotated_dataset"]["revision"],
+        sources=sources, source_kind=args.source_kind, source_revision=source_revision,
         detector=detector.provenance if detector else None, tokenizer_revision=TOKENIZER_REVISION,
-        obs_action_offset=0, image_convention="libero_mem_refined", max_total_tokens=48,
+        obs_action_offset=0, image_convention=image_convention, max_total_tokens=48,
         split_contract="same canonical initial state grouped across T1/T3; not official benchmark split",
         episodes=episodes, total_samples=total, memory_frames=with_memory,
         artifacts_sha256={name: sha256(out / name) for name in ("samples.jsonl", "memory_trace.jsonl", "detections.jsonl")}))

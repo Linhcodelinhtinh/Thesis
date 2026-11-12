@@ -12,14 +12,24 @@ from src.memory.visual_pipeline import TOKENIZER_REVISION, TOKENIZER_SHA256
 ARTIFACT = "mixed_base_mem_sft_shards"
 
 
-def canonical_raw_rgb(images, domain):
-    """Undo author Mem vertical flip; the unchanged policy processor handles raw RGB."""
+def canonical_raw_rgb(images, domain=None, *, source_convention=None):
+    """Convert an explicitly identified source image convention to raw OpenGL RGB.
+
+    Released author-refined Mem frames have one vertical flip applied during
+    export. Replayed derived frames come directly from the simulator and must
+    remain unchanged. ``domain`` remains as a compatibility path for older
+    callers; dataset preparation must pass ``source_convention`` from its lock.
+    """
     images = np.asarray(images)
     if images.ndim != 4 or images.shape[-1] != 3 or images.dtype != np.uint8:
         raise ValueError("Expected uint8 NHWC RGB")
-    if domain not in ("base", "mem"):
-        raise ValueError("Unknown image source convention")
-    return np.ascontiguousarray(images[:, ::-1] if domain == "mem" else images)
+    if source_convention is None:
+        if domain not in ("base", "mem"):
+            raise ValueError("Pass an explicit source_convention")
+        source_convention = "libero_mem_refined" if domain == "mem" else "raw_opengl"
+    if source_convention not in ("raw_opengl", "libero_mem_refined"):
+        raise ValueError("Unknown image source convention: " + str(source_convention))
+    return np.ascontiguousarray(images[:, ::-1] if source_convention == "libero_mem_refined" else images)
 
 
 def sample_identity(episode, frame):

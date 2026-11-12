@@ -21,6 +21,7 @@ dependencies:
     - pytest>=7.0.0
     - pyyaml>=6.0
     - h5py>=3.7.0
+    - ijson==3.3.0
     - imageio>=2.22.0
     - imageio-ffmpeg>=0.4.7
     - torch==1.11.0+cu113

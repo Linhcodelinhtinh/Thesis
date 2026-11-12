@@ -1,0 +1,686 @@
+{
+  "created_at": "2026-11-11T21:34:10.413204+07:00",
+  "scope": "Existing artifact inspection; no fresh benchmark/training/runtime tests",
+  "git_head": "933ad9eeb0ee73caa1e5c6523df327c41f1b05d4",
+  "git_status": [
+    " M docs/LIBERO_MEM_DERIVED_SPEC.md",
+    " M envs/libero_reference.yml",
+    " M scripts/prepare_libero_mem_sft.py",
+    " M scripts/prepare_mixed_memory_sft.py",
+    " M scripts/run_libero_mem_derived.ps1",
+    " M src/simulator/libero_mem_env.py",
+    " M src/training/mixed_sft.py",
+    "?? docs/LIBERO_MEM_DERIVED_AUDIT_2026-11-11.md",
+    "?? docs/thesis/",
+    "?? scripts/generate_derived_demonstrations.py",
+    "?? scripts/lock_libero_mem_derived_split.py",
+    "?? scripts/run_generate_derived_demonstrations.ps1",
+    "?? tests/unit/test_derived_generator_unit.py",
+    "?? tmp/thesis_reference_review/"
+  ],
+  "limitations": [
+    "Episode JSONs and selected small manifests were read and hashed.",
+    "Only the four exported adapter files are independently rehashed here; large base weights, raw HDF5, shards and all videos are not rehashed.",
+    "Historical runs are inventoried, not pooled or declared comparable.",
+    "Stored test split has already been used for development; it is not a fresh confirmatory holdout."
+  ],
+  "historical_runs_found": 21,
+  "historical_episode_jsons_read": 1520,
+  "frozen_v1": {
+    "report": "experiments/baseline_v1/V1_BASELINE_REPORT.md",
+    "signoff": {
+      "status": "V1_DERIVED_BASELINE_FROZEN",
+      "release_git_commit": "43ddd06e01d05d6ad3e70ae56c0e807db99d7fd4",
+      "evaluation_run_commit": "12509989bd4d05ad422ad2e71bd06faef3afe3ad",
+      "release_tag": "v1.0-baseline",
+      "criteria_checks": {
+        "g0_infrastructure_tests": true,
+        "g1_basic_manipulation": true,
+        "g2_success_rate": true,
+        "g3_failure_attribution": "CONDITIONALLY_VERIFIED",
+        "g4_inference_stability": true,
+        "model_contract_consistency": true,
+        "file_integrity_verified": true
+      },
+      "all_criteria_met_for_internal_baseline": true,
+      "acceptance_10_success_rate": 0.7,
+      "acceptance_10_ci_95": [
+        0.5457,
+        0.8193
+      ],
+      "full_40_success_rate": 0.4813,
+      "full_40_ci_95": [
+        0.4052,
+        0.5582
+      ],
+      "suite_success_rates": {
+        "libero_goal": 0.675,
+        "libero_object": 0.5,
+        "libero_spatial": 0.475,
+        "libero_10": 0.275
+      },
+      "primary_baseline": "smolvla_libero",
+      "total_raw_artifacts_audited": 1000,
+      "ready_for_memory_v2": true,
+      "notes": "Internal derived baseline frozen for paired comparison against V2 memory models under identical host conditions. Strict official reproduction is not claimed."
+    },
+    "referenced_raw_episode_count": 0,
+    "use": "Historical reported result only; referenced raw episodes absent at inspection"
+  },
+  "mem_test": {
+    "run": "experiments/evaluation/results_mem_2/step5_test_20261109-093744",
+    "counts": [
+      {
+        "condition": "B0",
+        "task": "T1",
+        "n_task_episodes": 10,
+        "unique_state_hashes": 10,
+        "successes": 0,
+        "sr": 0.0,
+        "mean_scr": 0.1,
+        "overshot_count": 1
+      },
+      {
+        "condition": "B0",
+        "task": "T3",
+        "n_task_episodes": 10,
+        "unique_state_hashes": 10,
+        "successes": 0,
+        "sr": 0.0,
+        "mean_scr": 0.0,
+        "overshot_count": 0
+      },
+      {
+        "condition": "B0",
+        "task": "ALL",
+        "n_task_episodes": 20,
+        "unique_state_hashes": 10,
+        "successes": 0,
+        "sr": 0.0,
+        "mean_scr": 0.05,
+        "overshot_count": 1
+      },
+      {
+        "condition": "F1",
+        "task": "T1",
+        "n_task_episodes": 10,
+        "unique_state_hashes": 10,
+        "successes": 0,
+        "sr": 0.0,
+        "mean_scr": 0.1,
+        "overshot_count": 1
+      },
+      {
+        "condition": "F1",
+        "task": "T3",
+        "n_task_episodes": 10,
+        "unique_state_hashes": 10,
+        "successes": 1,
+        "sr": 0.1,
+        "mean_scr": 0.16666666666666666,
+        "overshot_count": 0
+      },
+      {
+        "condition": "F1",
+        "task": "ALL",
+        "n_task_episodes": 20,
+        "unique_state_hashes": 10,
+        "successes": 1,
+        "sr": 0.05,
+        "mean_scr": 0.13333333333333333,
+        "overshot_count": 1
+      }
+    ],
+    "paired_task_episodes": 20,
+    "unique_state_clusters": 10,
+    "outcome_pairs": {
+      "B0_0_F1_0": 19,
+      "B0_0_F1_1": 1
+    },
+    "matched_manifest_fields": {
+      "protocol_sha256": true,
+      "split_lock_sha256": true,
+      "split_lock_file_sha256": true,
+      "base": true
+    },
+    "source_hash_differences": [
+      "scripts/diagnose_libero_mem_author_bottle.py",
+      "scripts/install_libero_mem_author_candidate.sh",
+      "scripts/run_step5_test.ps1"
+    ],
+    "run_provenance": {
+      "B0": {
+        "git_revision": "a0b714f19276f72b6d57347fbd80459f118702ff",
+        "dirty_diff_sha256": "3fc9bfddbdb1f99aee45db6821899828d8cab5121fe0a30d47f5d1f42343661c",
+        "code_snapshot_sha256": "1564bf570b08628b044a4388610094e2156294b4b88e84dd8f00837028787250",
+        "protocol_sha256": "5b3904d73b349b32b31bc0252cf67291c34e4bcda980389df9704cb76aa092ac",
+        "split_lock_sha256": "bb5124d2a52912af941907ed94600deebbf467557e85575c010be8d41b35a3c3",
+        "base": {
+          "revision": "31d453f7edd78c839a8bbc39744a292686daf0de",
+          "files": {
+            "model.safetensors": "9a9f6413e42c0f332fccbce9a0dc796af2790f82cf002f791cdbf7e01e1afca8",
+            "config.json": "5c9f3ba9f5f37ea7024c9501b0b20b1941f232989c2167853cb46d9071a70dd7",
+            "policy_preprocessor.json": "122ec5106602b1bf129f49690d05ab2f49748a0ac6119de55ea0677d4e90d248",
+            "policy_preprocessor_step_5_normalizer_processor.safetensors": "b0cdde6e8a6f49a8e19eefb376728e47c09d3b3cc20ce3a97c45619fe7a732d9",
+            "policy_postprocessor.json": "3b51f092c70c710ce0213ee1b63bf51b4878ec67828dd2d67daf9ef51081a41a",
+            "policy_postprocessor_step_0_unnormalizer_processor.safetensors": "b0cdde6e8a6f49a8e19eefb376728e47c09d3b3cc20ce3a97c45619fe7a732d9"
+          }
+        },
+        "environments": {
+          "policy": {
+            "prefix": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python3",
+            "executable": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python3\\python.exe",
+            "python": "3.12.2",
+            "platform": "Windows-11-10.0.26300-SP0",
+            "packages": {
+              "numpy": "2.5.4",
+              "torch": "2.6.0+cu124",
+              "torchvision": "0.21.0+cu124",
+              "lerobot": "0.6.1",
+              "transformers": "5.5.4",
+              "peft": "0.19.1",
+              "tokenizers": "0.22.2",
+              "robosuite": "1.5.2",
+              "bddl": "3.6.0",
+              "mujoco": "3.12.0",
+              "robomimic": "0.3.0",
+              "imageio": "2.38.1",
+              "imageio-ffmpeg": "0.8.1"
+            }
+          },
+          "simulator": {
+            "prefix": "/mnt/d/Thesis_26/.venv_libero_reference",
+            "executable": "/mnt/d/Thesis_26/.venv_libero_reference/bin/python",
+            "python": "3.8.20",
+            "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5",
+            "packages": {
+              "numpy": "1.22.4",
+              "torch": "2.4.1",
+              "torchvision": "0.19.1",
+              "lerobot": null,
+              "transformers": null,
+              "peft": null,
+              "tokenizers": null,
+              "robosuite": "1.4.0",
+              "bddl": "1.0.1",
+              "mujoco": "3.2.3",
+              "robomimic": "0.2.0",
+              "imageio": "2.35.1",
+              "imageio-ffmpeg": "0.5.1"
+            }
+          }
+        },
+        "cuda": {
+          "torch": "2.6.0+cu124",
+          "cuda": "12.4",
+          "devices": [
+            "NVIDIA GeForce RTX 4060 Laptop GPU"
+          ]
+        },
+        "loaded_policies": {
+          "B0": {
+            "official_policy_source_sha256": "37b1d56f37510732a087cf5c32c05cd15d6234201a3f002f108ec4c53438cc7d",
+            "official_env_processor_source_sha256": "41cf74048b233652b2b03d38c79b30d6f1d341592d553a5625f971de555f3a3a",
+            "parameter_dtype": "torch.float32",
+            "numpy_imported_version": "2.5.4",
+            "torch_imported_version": "2.6.0+cu124"
+          }
+        }
+      },
+      "F1": {
+        "git_revision": "b220e56ff959bf443762127ef0760d73db28d8c7",
+        "dirty_diff_sha256": "f1e79f75effc5352eebd02bf7d6aecfe16cb5f51f1a2e017ecbe085a863588a6",
+        "code_snapshot_sha256": "4e8b87cf1f25e65b17b92a50141bc79527deff96bb23f8b79bd23bb264b9c7d6",
+        "protocol_sha256": "5b3904d73b349b32b31bc0252cf67291c34e4bcda980389df9704cb76aa092ac",
+        "split_lock_sha256": "bb5124d2a52912af941907ed94600deebbf467557e85575c010be8d41b35a3c3",
+        "base": {
+          "revision": "31d453f7edd78c839a8bbc39744a292686daf0de",
+          "files": {
+            "model.safetensors": "9a9f6413e42c0f332fccbce9a0dc796af2790f82cf002f791cdbf7e01e1afca8",
+            "config.json": "5c9f3ba9f5f37ea7024c9501b0b20b1941f232989c2167853cb46d9071a70dd7",
+            "policy_preprocessor.json": "122ec5106602b1bf129f49690d05ab2f49748a0ac6119de55ea0677d4e90d248",
+            "policy_preprocessor_step_5_normalizer_processor.safetensors": "b0cdde6e8a6f49a8e19eefb376728e47c09d3b3cc20ce3a97c45619fe7a732d9",
+            "policy_postprocessor.json": "3b51f092c70c710ce0213ee1b63bf51b4878ec67828dd2d67daf9ef51081a41a",
+            "policy_postprocessor_step_0_unnormalizer_processor.safetensors": "b0cdde6e8a6f49a8e19eefb376728e47c09d3b3cc20ce3a97c45619fe7a732d9"
+          }
+        },
+        "environments": {
+          "policy": {
+            "prefix": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python3",
+            "executable": "C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python3\\python.exe",
+            "python": "3.12.2",
+            "platform": "Windows-11-10.0.26300-SP0",
+            "packages": {
+              "numpy": "2.5.4",
+              "torch": "2.6.0+cu124",
+              "torchvision": "0.21.0+cu124",
+              "lerobot": "0.6.1",
+              "transformers": "5.5.4",
+              "peft": "0.19.1",
+              "tokenizers": "0.22.2",
+              "robosuite": "1.5.2",
+              "bddl": "3.6.0",
+              "mujoco": "3.12.0",
+              "robomimic": "0.3.0",
+              "imageio": "2.38.1",
+              "imageio-ffmpeg": "0.8.1"
+            }
+          },
+          "simulator": {
+            "prefix": "/mnt/d/Thesis_26/.venv_libero_reference",
+            "executable": "/mnt/d/Thesis_26/.venv_libero_reference/bin/python",
+            "python": "3.8.20",
+            "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5",
+            "packages": {
+              "numpy": "1.22.4",
+              "torch": "2.4.1",
+              "torchvision": "0.19.1",
+              "lerobot": null,
+              "transformers": null,
+              "peft": null,
+              "tokenizers": null,
+              "robosuite": "1.4.0",
+              "bddl": "1.0.1",
+              "mujoco": "3.2.3",
+              "robomimic": "0.2.0",
+              "imageio": "2.35.1",
+              "imageio-ffmpeg": "0.5.1"
+            }
+          },
+          "detector": {
+            "prefix": "D:\\Thesis_26\\.venv_detector",
+            "executable": "D:\\Thesis_26\\.venv_detector\\Scripts\\python.exe",
+            "python": "3.12.2",
+            "platform": "Windows-11-10.0.26300-SP0",
+            "packages": {
+              "numpy": "2.5.4",
+              "torch": "2.6.0+cu124",
+              "torchvision": "0.21.0+cu124",
+              "lerobot": "0.6.1",
+              "transformers": "4.51.3",
+              "peft": "0.19.1",
+              "tokenizers": "0.21.1",
+              "robosuite": "1.5.2",
+              "bddl": "3.6.0",
+              "mujoco": "3.12.0",
+              "robomimic": "0.3.0",
+              "imageio": "2.38.1",
+              "imageio-ffmpeg": "0.8.1"
+            }
+          }
+        },
+        "cuda": {
+          "torch": "2.6.0+cu124",
+          "cuda": "12.4",
+          "devices": [
+            "NVIDIA GeForce RTX 4060 Laptop GPU"
+          ]
+        },
+        "loaded_policies": {
+          "F1": {
+            "official_policy_source_sha256": "37b1d56f37510732a087cf5c32c05cd15d6234201a3f002f108ec4c53438cc7d",
+            "official_env_processor_source_sha256": "41cf74048b233652b2b03d38c79b30d6f1d341592d553a5625f971de555f3a3a",
+            "parameter_dtype": "torch.float32",
+            "numpy_imported_version": "2.5.4",
+            "torch_imported_version": "2.6.0+cu124"
+          }
+        }
+      }
+    },
+    "primary_summary_hashes_verified": 40
+  },
+  "training": {
+    "run": "experiments/training/results_mem_2/mem-adapter-20261105-083543",
+    "step": 3000,
+    "arguments": {
+      "data_dir": "/kaggle/temp/mem-adapter-v1/dataset",
+      "assets_dir": "/kaggle/temp/mem-adapter-v1/assets",
+      "output_dir": "/kaggle/working/mem-adapter-20261105-083543",
+      "condition": "memory",
+      "adaptation": "expert_lora",
+      "export_format": "adapter",
+      "lora_scope": "attention",
+      "expected_gpus": 2,
+      "batch_size": 2,
+      "accumulation": 8,
+      "workers": 0,
+      "rank": 16,
+      "lr": 2e-05,
+      "steps": 3000,
+      "warmup_steps": 100,
+      "grad_clip": 1.0,
+      "memory_dropout": 0.0,
+      "base_fraction": 0.5,
+      "seed": 42,
+      "log_every": 10,
+      "save_every": 500,
+      "eval_every": 500,
+      "validation_max_batches": 0,
+      "resume": null
+    },
+    "effective_batch_size": 32,
+    "trainable_parameters": 645120,
+    "versions": {
+      "torch": "2.11.0+cu130",
+      "transformers": "5.5.4",
+      "lerobot": "0.6.1",
+      "peft": "0.21.2",
+      "accelerate": "1.15.0",
+      "h5py": "3.14.0"
+    },
+    "hardware": [
+      "Tesla T4",
+      "Tesla T4"
+    ],
+    "adapter_files": {
+      "README.md": {
+        "sha256": "b3ba0403abe005673605b3d60a90a71eb14a2d3ff4bc79702fde068a62e48840",
+        "matches_manifest": true
+      },
+      "tokenizer.json": {
+        "sha256": "5ece781dc8d2b2f3e2f289ca0ae50b17cfc27dd27bfe7971bb8241e0b964331a",
+        "matches_manifest": true
+      },
+      "adapter_config.json": {
+        "sha256": "098f4caeaf6a78d291d2f8c75ee069ba39d5be798a6923d4056717eebfb0ae62",
+        "matches_manifest": true
+      },
+      "adapter_model.safetensors": {
+        "sha256": "da0f89ea1228cdb698ef531b77ff084f7060ce91c9f85cbde7965b6f2f565c1b",
+        "matches_manifest": true
+      }
+    },
+    "data_manifest_matches_training": true,
+    "dataset_episode_counts": {
+      "base/train": 400,
+      "base/val": 50,
+      "base/test": 50,
+      "mem/train": 158,
+      "mem/test": 20,
+      "mem/val": 20
+    },
+    "dataset_frame_counts": {
+      "base": {
+        "train": 109945,
+        "val": 13525,
+        "test": 14120
+      },
+      "mem": {
+        "train": 34305,
+        "val": 4299,
+        "test": 4253
+      }
+    },
+    "dataset_image_contract": "canonical raw OpenGL RGB; Mem refined vertical flip undone once before unchanged policy preprocessing",
+    "dataset_sources": [
+      {
+        "domain": "mem",
+        "path": "KITCHEN_SCENE1_1_pick_up_the_bowl_and_place_it_back_on_the_plate_demo.hdf5",
+        "sha256": "1737ddd2f460fc2f9f2fef735cb0f373c2ac86b5d4e9ed7a6ebe9a2f00742b22"
+      },
+      {
+        "domain": "mem",
+        "path": "KITCHEN_SCENE1_3_lift_the_bowl_and_place_it_back_on_the_plate_3_times_demo.hdf5",
+        "sha256": "bffe4eff3a7648ede07d04b4f573367ad34d30200390826f7c072bdd1603cb9f"
+      },
+      {
+        "domain": "mem",
+        "path": "metainfo.json",
+        "sha256": "2afe9bc01f9579d4adeec63a6cf012f8560de3b5a4b7d5a96c0643c94777ad0c"
+      },
+      {
+        "domain": "base",
+        "path": "libero_10/KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it_demo.hdf5",
+        "sha256": "6b30906a52a5741e98ef447d27e7066d6c0be4a5f7acd7ecaf1cb7468aca4aa9"
+      },
+      {
+        "domain": "base",
+        "path": "libero_10/KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it_demo.hdf5",
+        "sha256": "703950f48a3c49dfde61be489ade91527f16e1449b4f29a85f2e51153cef3638"
+      },
+      {
+        "domain": "base",
+        "path": "libero_10/KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it_demo.hdf5",
+        "sha256": "1cef1974f76176214dfd1d983a1961507c2b23d54be9dbf9abb2f243f3efacef"
+      },
+      {
+        "domain": "base",
+        "path": "libero_10/KITCHEN_SCENE8_put_both_moka_pots_on_the_stove_demo.hdf5",
+        "sha256": "e329bb21a8ded3457854faf6a23513c90cb4b34f0e40f3f4e9e70451fc9ba504"
+      },
+      {
+        "domain": "base",
+        "path": "libero_10/LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket_demo.hdf5",
+        "sha256": "09fdc7cc0f546ab4b5232907c424670d08791476c69c1ee453b9ea4b70111cff"
+      },
+      {
+        "domain": "base",
+        "path": "libero_10/LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket_demo.hdf5",
+        "sha256": "3173ebc709b064683956b757ae8737909457d730aa305b23c5735292e59066af"
+      },
+      {
+        "domain": "base",
+        "path": "libero_10/LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket_demo.hdf5",
+        "sha256": "ce03c7be607cdc3d55f634998eb15beee770006b053fbcd9cbfb207c8b72847a"
+      },
+      {
+        "domain": "base",
+        "path": "libero_10/LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate_demo.hdf5",
+        "sha256": "a2a75bc6c301a914d0998ccac9dcf1d70d0f501897fbb6baf86aa61315b57b31"
+      },
+      {
+        "domain": "base",
+        "path": "libero_10/LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate_demo.hdf5",
+        "sha256": "75988131f8f443d68108bbfaacc22dab229ece93f141362524e69a2c49a23516"
+      },
+      {
+        "domain": "base",
+        "path": "libero_10/STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy_demo.hdf5",
+        "sha256": "2e0127d0cf73afceacc2c0854e505d5743b6d3d5aaf5572c842f84c6a1c8173b"
+      }
+    ],
+    "validation_loss": [
+      {
+        "step": 500,
+        "inference_memory": "memory",
+        "domain": "base",
+        "loss": 0.6680503888191335,
+        "samples": 13525
+      },
+      {
+        "step": 500,
+        "inference_memory": "memory",
+        "domain": "mem",
+        "loss": 0.4810326407418941,
+        "samples": 4299
+      },
+      {
+        "step": 500,
+        "inference_memory": "no_memory",
+        "domain": "base",
+        "loss": 0.6680503888191335,
+        "samples": 13525
+      },
+      {
+        "step": 500,
+        "inference_memory": "no_memory",
+        "domain": "mem",
+        "loss": 0.6035958541794194,
+        "samples": 4299
+      },
+      {
+        "step": 1000,
+        "inference_memory": "memory",
+        "domain": "base",
+        "loss": 0.4938167595425397,
+        "samples": 13525
+      },
+      {
+        "step": 1000,
+        "inference_memory": "memory",
+        "domain": "mem",
+        "loss": 0.2899476102020164,
+        "samples": 4299
+      },
+      {
+        "step": 1000,
+        "inference_memory": "no_memory",
+        "domain": "base",
+        "loss": 0.4938167595425397,
+        "samples": 13525
+      },
+      {
+        "step": 1000,
+        "inference_memory": "no_memory",
+        "domain": "mem",
+        "loss": 0.3993198185583746,
+        "samples": 4299
+      },
+      {
+        "step": 1500,
+        "inference_memory": "memory",
+        "domain": "base",
+        "loss": 0.4530866202904865,
+        "samples": 13525
+      },
+      {
+        "step": 1500,
+        "inference_memory": "memory",
+        "domain": "mem",
+        "loss": 0.2518861582803848,
+        "samples": 4299
+      },
+      {
+        "step": 1500,
+        "inference_memory": "no_memory",
+        "domain": "base",
+        "loss": 0.4530866202904865,
+        "samples": 13525
+      },
+      {
+        "step": 1500,
+        "inference_memory": "no_memory",
+        "domain": "mem",
+        "loss": 0.3550873436146377,
+        "samples": 4299
+      },
+      {
+        "step": 2000,
+        "inference_memory": "memory",
+        "domain": "base",
+        "loss": 0.43905165985419436,
+        "samples": 13525
+      },
+      {
+        "step": 2000,
+        "inference_memory": "memory",
+        "domain": "mem",
+        "loss": 0.2375739588068374,
+        "samples": 4299
+      },
+      {
+        "step": 2000,
+        "inference_memory": "no_memory",
+        "domain": "base",
+        "loss": 0.43905165985419436,
+        "samples": 13525
+      },
+      {
+        "step": 2000,
+        "inference_memory": "no_memory",
+        "domain": "mem",
+        "loss": 0.34010806740037397,
+        "samples": 4299
+      },
+      {
+        "step": 2500,
+        "inference_memory": "memory",
+        "domain": "base",
+        "loss": 0.4331108339987489,
+        "samples": 13525
+      },
+      {
+        "step": 2500,
+        "inference_memory": "memory",
+        "domain": "mem",
+        "loss": 0.23223729874261953,
+        "samples": 4299
+      },
+      {
+        "step": 2500,
+        "inference_memory": "no_memory",
+        "domain": "base",
+        "loss": 0.4331108339987489,
+        "samples": 13525
+      },
+      {
+        "step": 2500,
+        "inference_memory": "no_memory",
+        "domain": "mem",
+        "loss": 0.3363407993453912,
+        "samples": 4299
+      },
+      {
+        "step": 3000,
+        "inference_memory": "memory",
+        "domain": "base",
+        "loss": 0.42984211668399697,
+        "samples": 13525
+      },
+      {
+        "step": 3000,
+        "inference_memory": "memory",
+        "domain": "mem",
+        "loss": 0.23023574997045518,
+        "samples": 4299
+      },
+      {
+        "step": 3000,
+        "inference_memory": "no_memory",
+        "domain": "base",
+        "loss": 0.42984211668399697,
+        "samples": 13525
+      },
+      {
+        "step": 3000,
+        "inference_memory": "no_memory",
+        "domain": "mem",
+        "loss": 0.335536603505846,
+        "samples": 4299
+      }
+    ]
+  },
+  "derived_data": {
+    "versioned_v1_output_exists": false,
+    "legacy_replay_summaries": [
+      {
+        "file": "data/libero_mem_derived/T3_train_summary.json",
+        "task": "T3",
+        "split": "train",
+        "total_replayed": 78,
+        "successful_episodes": 73,
+        "timestamp": "2026-11-11T10:12:31.572571+00:00",
+        "target_hdf5_sha256": "270db726f28a2e818c21c8dbaaae05c71f27cd247ce1a4aafd8bbc43497a997e"
+      },
+      {
+        "file": "data/libero_mem_derived_pilot/T1_train_summary.json",
+        "task": "T1",
+        "split": "train",
+        "total_replayed": 5,
+        "successful_episodes": 5,
+        "timestamp": "2026-11-11T04:30:21.344135+00:00",
+        "target_hdf5_sha256": "c10812249a78477f883123c8f70025344db72f9cbe8bb0c3177d9e971ce23a50"
+      },
+      {
+        "file": "data/libero_mem_derived_pilot/T3_train_summary.json",
+        "task": "T3",
+        "split": "train",
+        "total_replayed": 5,
+        "successful_episodes": 5,
+        "timestamp": "2026-11-11T04:35:12.084161+00:00",
+        "target_hdf5_sha256": "6825a3c9997e713aa848585a903ae20504b87abdd3259aa94a19e4e32a6e9253"
+      }
+    ],
+    "note": "Summary metadata only; HDF5 contents, byte hashes and end-to-end readiness not certified"
+  }
+}

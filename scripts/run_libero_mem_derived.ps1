@@ -48,7 +48,7 @@ $ResultsDirs = @()
 if (-not $SkipB0 -and ($Conditions -contains "B0")) {
     $B0Dir = Join-Path $TargetDir "eval_B0"
     Write-Host "`n>>> [1/2] Starting B0 Evaluation (Base SmolVLA) -> $B0Dir" -ForegroundColor Green
-    
+
     python scripts/evaluate_mem_adapter.py `
         --split test `
         --tasks $Tasks `
@@ -107,13 +107,20 @@ if (-not $SkipF1 -and ($Conditions -contains "F1")) {
 # ------------------------------------------------------------------------------
 # 3. Consolidate Evaluation Results
 # ------------------------------------------------------------------------------
-Write-Host "`n>>> Consolidating Evaluation Results across conditions..." -ForegroundColor Cyan
+if ($ResultsDirs.Count -gt 0) {
+    Write-Host "`n>>> Generating Consolidated Benchmark Report..." -ForegroundColor Cyan
+    $ReportPath = Join-Path $TargetDir "benchmark_consolidated_report.md"
+    $CsvPath = Join-Path $TargetDir "benchmark_consolidated_summary.csv"
 
-$ConsolidateScript = Join-Path $PSScriptRoot "consolidate_test_results.py"
-if (Test-Path $ConsolidateScript) {
-    python $ConsolidateScript --results-dirs $ResultsDirs --output-dir $TargetDir
-} else {
-    Write-Host "Consolidation script not found at $ConsolidateScript, skipping auto-consolidation." -ForegroundColor Yellow
+    python scripts/summarize_mem_evaluation.py `
+        $ResultsDirs `
+        --title "LIBERO-Mem-Derived Benchmark Evaluation Report" `
+        --output-report $ReportPath `
+        --output-csv $CsvPath
+
+    Write-Host "`nEvaluation complete! Consolidated report saved to:" -ForegroundColor Green
+    Write-Host "  Report: $ReportPath" -ForegroundColor Yellow
+    Write-Host "  CSV:    $CsvPath" -ForegroundColor Yellow
 }
 
 Write-Host "`n=================================================================" -ForegroundColor Cyan

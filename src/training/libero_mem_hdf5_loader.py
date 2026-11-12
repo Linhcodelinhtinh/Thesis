@@ -55,7 +55,10 @@ class LiberoMemHDF5Parser:
         self.split_lock = load_split_lock(split_lock) if split_lock is not None else None
 
     def resolve_hdf5_path(self, task_name):
-        clean = task_name.removesuffix(".hdf5").removesuffix(".bddl").removesuffix("_demo")
+        clean = task_name
+        for suffix in (".hdf5", ".bddl", "_demo"):
+            if clean.endswith(suffix):
+                clean = clean[:-len(suffix)]
         candidate = self.data_dir / f"{clean}_demo.hdf5"
         if not candidate.is_file():
             raise FileNotFoundError(f"Exact author demonstration file not found: {candidate}")
@@ -74,13 +77,13 @@ class LiberoMemHDF5Parser:
 
     def iter_task(self, task_name, max_episodes=None, split_filter=None, demo_ids=None):
         path = self.resolve_hdf5_path(task_name)
-        task = path.name.removesuffix("_demo.hdf5")
+        task = path.name[:-len("_demo.hdf5")] if path.name.endswith("_demo.hdf5") else path.name
         if max_episodes is not None and max_episodes < 1:
             raise ValueError("max_episodes must be positive")
         if split_filter not in (None, "train", "val", "test"):
             raise ValueError("Unknown split")
         with h5py.File(path, "r") as file:
-            demos = sorted(file["data"], key=lambda key: int(key.removeprefix("demo_")))
+            demos = sorted(file["data"], key=lambda key: int(key[len("demo_"):] if key.startswith("demo_") else key))
             if demo_ids is not None:
                 requested = {f"demo_{int(i)}" for i in demo_ids}
                 if not requested <= set(demos):

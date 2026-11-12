@@ -1,0 +1,156 @@
+% Generated from THESIS_DRAFT.md.
+\chapter{Thực nghiệm và thảo luận}
+
+\section{Phạm vi bằng chứng thực nghiệm}
+
+Chương này trình bày những artifact đã tồn tại và được rà soát tại ngày 11/11/2026. Việc tổng hợp cho bản thảo không chạy thêm policy, simulator hoặc training. Các số liệu mới được tính lại từ log đã lưu, không phải một đợt benchmark mới. Snapshot, đường dẫn input và SHA-256 được lưu cùng tài liệu để người đọc có thể truy vết \cite{artifact2026}.
+
+Bộ thực nghiệm chính là \path{step5_test_20261109-093744}, gồm hai thư mục condition B0 và F1. Mỗi condition có 20 episode complete, chia đều cho T1 và T3. Từng \path{summary.json} được đối chiếu checksum đã ghi trong \path{status.json}; roster task/state/seed cũng được kiểm tra. Phép kiểm này xác nhận tính nhất quán của các artifact được dùng trong bảng, không chứng nhận lại mọi byte của simulator, video hoặc dữ liệu huấn luyện.
+
+Báo cáo freeze V1 vẫn là nguồn lịch sử về giai đoạn không memory. Tuy nhiên, thư mục raw mà báo cáo đó tham chiếu không có episode tại lần rà soát này. Các run khác có tên tương tự không được dùng thay thế. Do đó, chương không sử dụng điểm V1 từ báo cáo cũ làm bảng baseline chính đã xác minh lại. Việc giữ ranh giới này tránh biến một báo cáo tổng hợp thành bằng chứng mạnh hơn những gì còn có thể kiểm tra.
+
+Ngoài bộ Mem chính, repository còn nhiều baseline và fine-tune runs. Công cụ tài liệu đã đọc 1.520 \path{episode.json} và lập inventory riêng theo run. Inventory phục vụ kiểm kê tiến độ, không xác nhận mọi run đầy đủ hay so sánh được với nhau. Chẳng hạn việc tồn tại một checkpoint được gọi là no-memory không đủ để nhận nó làm F0 matched nếu nguồn dữ liệu và ngân sách khác F1 hiện tại.
+
+\section{Môi trường và provenance}
+
+Training run ghi nhận hai GPU Tesla T4. Evaluation run ghi nhận GPU NVIDIA GeForce RTX 4060 Laptop. Simulator evaluation chạy qua WSL trong environment riêng, còn policy dùng Python host Windows và detector dùng một environment Windows riêng. Các thông tin này lấy từ manifest từng run, không lấy giá trị mặc định trong file environment để thay cho runtime đã xảy ra.
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.31\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.69\textwidth-2\tabcolsep\relax}}
+\caption{Môi trường và protocol được ghi trong các artifact}\label{tab:generated2}\\
+\toprule
+\textbf{Thành phần} & \textbf{Phiên bản hoặc lựa chọn được ghi nhận} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Thành phần} & \textbf{Phiên bản hoặc lựa chọn được ghi nhận} \\
+\midrule\endhead
+\bottomrule\endfoot
+Checkpoint gốc & \path{lerobot/smolvla_libero}, revision \path{31d453f7edd78c839a8bbc39744a292686daf0de} \\
+Nguồn Mem & \path{libero-mem/libero-mem}, revision \path{0eee0defa4024e51511b6e15a79f30e9620209de} \\
+Simulator & Python 3.8.20, robosuite 1.4.0, MuJoCo 3.2.3, NumPy 1.22.4 \\
+Policy evaluation & Python 3.12.2, torch 2.6.0+cu124, LeRobot 0.6.1, transformers 5.5.4, PEFT 0.19.1 \\
+Training & torch 2.11.0+cu130, LeRobot 0.6.1, transformers 5.5.4, PEFT 0.21.2, accelerate 1.15.0 \\
+Observation & Hai camera 256×256; state 8D; preprocessing theo checkpoint \\
+Control & OSC\_POSE,20 Hz; chunk 50; execution horizon 10 \\
+Reset và endpoint & State từ split lock; warmup 20; horizon 1.000; dừng sớm khi overshot \\
+\end{longtable}
+\endgroup
+
+Các bản Python hoặc thư viện khác giữa training, policy và simulator được ghi tường minh. Chúng không tạo thành một stack tái hiện nguyên trạng môi trường tham chiếu Python 3.8.13 của V1. Bởi vậy, các kết quả ở đây được sử dụng cho đánh giá nội bộ dưới cấu hình đã khai báo.
+
+Hai manifest B0/F1 có cùng protocol hash, split hash và base checkpoint identity. Source snapshots khác nhau ở ba script launcher/diagnostic; danh sách và hashes nằm trong phụ lục evidence. Không diễn đạt cặp run là toàn bộ mã nguồn giống hệt nhau. Đối với các đường policy/simulator/processor quan trọng, audit và manifests cung cấp căn cứ đối chiếu, nhưng vẫn cần công bố những khác biệt thay vì chỉ ghi một Git commit chung.
+
+\section{Dữ liệu và cấu hình thích ứng}
+
+Dataset manifest của training chứa 698 demonstration: 500 thuộc 10 task LIBERO-10 và 198 thuộc Mem T1/T3. Split có 558 train, 70 validation và 70 test. Các con số là số episode được manifest liệt kê, không phải số frame độc lập. Manifest hash khớp identity mà training run ghi lại.
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.29\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}}
+\caption{Số demonstration theo domain và split trong dataset manifest}\label{tab:generated3}\\
+\toprule
+\textbf{Nhóm dữ liệu} & \textbf{Train} & \textbf{Validation} & \textbf{Test} & \textbf{Tổng} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Nhóm dữ liệu} & \textbf{Train} & \textbf{Validation} & \textbf{Test} & \textbf{Tổng} \\
+\midrule\endhead
+\bottomrule\endfoot
+Base LIBERO-10 & 400 & 50 & 50 & 500 \\
+Mem T1 & 80 & 10 & 10 & 100 \\
+Mem T3 & 78 & 10 & 10 & 98 \\
+Tổng & 558 & 70 & 70 & 698 \\
+\end{longtable}
+\endgroup
+
+T1/T3 chia sẻ 10 initial-state hashes trong test. Vì vậy,20 task-episodes của một condition chỉ có 10 nhóm state khác nhau. Cách chia split giữ các state trùng nhau trong cùng một tập, nhưng test hiện tại đã được quan sát phục vụ phát triển. Bản thảo gọi đây là kết quả trên split mang tên test trong artifact, không coi nó là holdout xác nhận chưa từng được sử dụng để đưa ra quyết định.
+
+Artifact F1 là adapter unmerged từ run \path{mem-adapter-20261105-083543}. Run hoàn tất 3.000 bước, rank LoRA 16, 645.120 tham số được train, learning rate khởi đầu $2\times10^{-5}$ và effective batch 32. Cấu hình có base fraction 0,5, memory dropout 0 và checkpoint/validation mỗi 500 bước. Những giá trị này là recipe đã chạy, chưa được chứng minh tối ưu.
+
+Bốn file export được manifest liệt kê đã được hash lại và khớp, gồm trọng số adapter, config, tokenizer và README. Dataset manifest cũng khớp hash training. Lần rà soát không hash lại toàn bộ base weights, raw HDF5 và shards lớn. Không được mở rộng kết quả kiểm bốn file thành khẳng định mọi tài nguyên đều đã được chứng nhận đầy đủ.
+
+Nguồn Mem của F1 là dữ liệu tác giả có convention refined được chuyển về raw trước xử lý policy. Một số replay artifacts derived đời cũ đã được tạo; summary T3 ghi 78 replay và 73 outcome success. Đây là metadata tạo dữ liệu, không phải success rate của policy và chưa là chứng nhận dataset version mới. Tại snapshot, chưa có chuỗi derived-v1 lock/index/shards/training hoàn chỉnh. Vì vậy, F1 trong chương này không phải model đã thích ứng trên dataset derived mới.
+
+\section{Kết quả offline của adapter}
+
+Tại step 3.000, loss trên Mem validation của cùng adapter là 0,23023575 khi có memory và 0,33553660 khi bỏ memory. Loss trên base là 0,42984212 ở cả hai mode. Bộ Mem validation chứa 4.299 frame-samples và base validation chứa 13.525 frame-samples. Phép đo này so hai chế độ đầu vào của cùng F1, không phải hai model F0/F1 được train độc lập.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{../figures/validation_loss.png}
+\caption{Validation flow loss theo checkpoint, tính từ metrics.jsonl của cùng adapter. Memory on/off là chế độ đánh giá offline; các đường này không biểu diễn success rate.}
+\label{fig:validation_loss}
+\end{figure}
+
+Kết quả cho thấy đầu vào memory liên quan đến loss dự đoán action trong phân phối validation đã lưu. Tuy nhiên, loss nhỏ hơn chưa chứng minh nội dung lịch sử là nguyên nhân của cải thiện closed-loop. Một policy có thể khớp demonstration hơn nhưng vẫn gặp failure khi trajectory của nó rời phân phối demonstration. Cũng chưa có căn cứ gọi step 3.000 là checkpoint tốt nhất theo success, vì chọn checkpoint cuối và chọn theo metric triển khai là hai quy tắc khác nhau.
+
+Base loss giống nhau giữa memory-on/off không chứng minh retention. Nếu base samples không có memory suffix, hai mode có thể tạo cùng đầu vào. Muốn đo retention phải so chính policy đã thích ứng với B0 trong rollout base matched, không so hai lần tính loss của cùng model rồi kết luận kỹ năng được bảo toàn.
+
+\section{Kết quả closed-loop sơ bộ}
+
+Bảng dưới được tính trực tiếp từ 40 summary episode hoàn tất. Mỗi condition dùng 20 task-episodes, policy seed 42 và cùng roster trạng thái. Tất cả mang nhãn CUSTOM\_V2\_LIBERO\_MEM và NON-COMPARABLE\_OFFICIAL\_PAPER.
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.12\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.14\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.2\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.12\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.19\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.23\textwidth-2\tabcolsep\relax}}
+\caption{Kết quả T1/T3 local: một policy seed, mười nhóm initial state}\label{tab:generated4}\\
+\toprule
+\textbf{Task} & \textbf{Condition} & \textbf{Success / N} & \textbf{SR} & \textbf{Mean SCR} & \textbf{Overshot / N} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Task} & \textbf{Condition} & \textbf{Success / N} & \textbf{SR} & \textbf{Mean SCR} & \textbf{Overshot / N} \\
+\midrule\endhead
+\bottomrule\endfoot
+T1 & B0 & 0/10 & 0\% & 0,1000 & 1/10 \\
+T1 & F1 & 0/10 & 0\% & 0,1000 & 1/10 \\
+T3 & B0 & 0/10 & 0\% & 0,0000 & 0/10 \\
+T3 & F1 & 1/10 & 10\% & 0,1667 & 0/10 \\
+Hai task & B0 & 0/20 & 0\% & 0,0500 & 1/20 \\
+Hai task & F1 & 1/20 & 5\% & 0,1333 & 1/20 \\
+\end{longtable}
+\endgroup
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{../figures/mem_success.png}
+\caption{Success theo task của B0 và F1 dưới protocol local. Mỗi cột có 10 episode; T1/T3 dùng chung 10 nhóm initial state, một policy seed. Không trình bày như điểm LIBERO-Mem chính thức.}
+\label{fig:mem_success}
+\end{figure}
+
+Quan sát trực tiếp là F1 có thêm một episode thành công trên T3. Phần lớn episode ở cả hai điều kiện vẫn thất bại. Chênh lệch macro 5 điểm phần trăm là mô tả trên bộ mẫu này; nó không đủ xác nhận một cải thiện đáng tin cậy, càng không tách được memory khỏi adaptation và perception.
+
+SCR cung cấp một góc nhìn khác. Trên T1, cả hai conditions đều có một episode đạt milestone nhưng bị overshot nên không thành công ở endpoint. Trên T3, mean SCR của F1 cao hơn B0, cho thấy có một số tiến độ được evaluator ghi nhận. Điều đó vẫn chưa xác định thành phần nào tạo ra khác biệt, và không có lý do để thay metric success bằng SCR chỉ vì SCR thuận lợi hơn.
+
+\section{Phân tích trace và các trường hợp điển hình}
+
+Để tránh lựa chọn ví dụ chỉ theo cảm tính, phần này xem episode thành công duy nhất và các episode có overshot. Phân tích dựa trên summary và memory/prompt trace; chưa thay thế một audit toàn bộ video hoặc annotation sự kiện độc lập.
+
+Trong 20 F1 episodes,19 snapshot cuối có cờ lịch sử chưa đầy đủ. Có 1.927 policy queries, trong đó 1.894 prompt chứa suffix memory và 1.738 prompt chứa chuỗi \path{history incomplete}. Các số này cho thấy renderer thường cung cấp một phát biểu về sự không đầy đủ của lịch sử. Chúng không đo event precision/recall và không phải hàng nghìn phép thử độc lập.
+
+Episode \path{T3_F1_test_state2}, khởi tạo từ \path{demo_29}, là success duy nhất. Evaluator ghi nhận ba chu kỳ, final predicate thỏa mãn và không overshot ở horizon 1.000. Trong snapshot cuối của writer, số return được xác nhận là hai và \path{history_complete=False}. Do đó, success này không thể được mô tả là minh chứng writer đã đếm đúng ba rồi policy dừng theo count đó. Có thể có nhiều cơ chế dẫn đến outcome; trace hiện chưa cho phép xác định cơ chế nhân quả.
+
+Ở \path{T1_F1_test_state7}, evaluator ghi một milestone và SCR bằng 1 nhưng episode kết thúc do overshot tại bước 266. Writer cuối ghi count 0 với lịch sử chưa đầy đủ. Một trường hợp B0 trên T1 cũng overshot, tại state 3 và bước 290. Hai trường hợp minh họa rằng đạt một trạng thái trung gian không đủ nếu task yêu cầu đúng số chu kỳ và duy trì điều kiện cuối.
+
+Những quan sát trên gợi ý nên ưu tiên đo chất lượng thông tin đi vào policy trước khi chỉ tăng số bước training. Tuy nhiên, không thể từ các cờ incomplete kết luận mọi failure do writer: thao tác cơ sở, domain shift, instruction conditioning và cadence vẫn có thể ảnh hưởng. Muốn quy nguyên nhân cần can thiệp có đối chứng.
+
+\section{Hiệu lực của kết luận và các nguy cơ sai lệch}
+
+Nguy cơ thứ nhất là gộp nhiều thay đổi trong một treatment. B0 và F1 khác cả adapter lẫn memory pipeline. Hiện chưa có F0 matched được nhận vào bộ thực nghiệm này, nên RQ2 chưa được trả lời ở mức đóng góp riêng của lịch sử. F1-off, nếu được bổ sung, cũng cần diễn giải cùng việc \path{memory_dropout=0} lúc train.
+
+Nguy cơ thứ hai là phụ thuộc giữa các mẫu và sử dụng lại test trong phát triển. Các query thuộc cùng episode chia sẻ trajectory; T1/T3 chia sẻ state. Không được áp dụng một phép tính uncertainty coi tất cả query hoặc40 outcomes của hai conditions là độc lập. Với chỉ 10 state groups và một seed, bản thảo giữ cách báo số đếm mô tả, chưa đưa ra khẳng định ý nghĩa thống kê hay khái quát hóa rộng.
+
+Nguy cơ thứ ba là khác biệt giữa dữ liệu và runtime. Một state vector restore đúng không tự bảo đảm ảnh sau warmup khớp demonstration refined. Replay có thể thay đổi do các thành phần của stack; việc chưa biết nguyên nhân không cho phép suy đoán tác giả dùng asset bí mật. Hướng derived phải công bố rõ biến thể local và đánh giá trực tiếp trong biến thể đó.
+
+Nguy cơ thứ tư là đánh đồng tính hoàn chỉnh của phần mềm với kết luận khoa học. Unit tests kiểm tra invariant đã mã hóa; chúng không chứng minh event grounding đúng trên mọi trajectory hay policy dùng memory hữu ích. Một file status ghi \path{running} cũng không chứng minh process đang sống. Các run chưa hoàn tất không được đưa vào mẫu kết quả hoàn tất.
+
+Nguy cơ thứ năm là diễn giải sai chi phí. Policy latency theo chunk không bao gồm đầy đủ perception, IPC, rendering và reset. Hệ thống đang dùng suy luận đồng bộ với simulator tạm dừng, nên20 Hz là tần số mô phỏng/controller, không phải tốc độ thực thi end-to-end đã đạt trên phần cứng thật. Chương này chưa đưa ra kết luận về tiết kiệm thời gian hoặc bộ nhớ toàn hệ thống.
+
+\section{Thí nghiệm cần bổ sung}
+
+Để trả lời RQ2, ưu tiên hoàn thiện dataset derived version mới và train F0/F1 cùng dữ liệu, split và ngân sách chọn siêu tham số. Trước đánh giá cuối cần khóa checkpoint-selection trên validation, mô tả rõ holdout còn độc lập với phát triển và giữ một roster chung qua conditions. Chỉ đổi seed sau khi đã nhìn nhiều failure của cùng state không khôi phục tính chưa quan sát của test.
+
+Để đánh giá riêng lịch sử, cần current-only summary và một đối chứng lịch sử sai hoặc không liên quan có cùng ngân sách thông tin phù hợp. Phép perturbation phải được khai báo trước; nếu F1-off làm hiệu năng giảm, vẫn cần phân biệt thiếu lịch sử với việc đưa input khác phân phối huấn luyện. Một kết quả âm của đối chứng cũng cần được báo.
+
+Để trả lời RQ3, chính adapter F1 cần được chạy trên base với protocol matched B0. Routing về weights gốc khi gặp base task chỉ đánh giá hệ thống định tuyến; nó không chứng minh adapter giữ kỹ năng. Nếu mục tiêu là non-inferiority, margin chấp nhận suy giảm phải được xác định trước, và không thể coi một kiểm định không có ý nghĩa là bằng chứng hai policy tương đương.
+
+Đối với RQ4, cần một tập event labels độc lập để đo false confirmation, missed event, delay và coverage unknown. Phân tích độ nhạy của các ngưỡng writer thực hiện trên train/validation. Phân tích chi phí cần đo toàn đường thực thi và công bố điều kiện đồng bộ, hardware cùng phân phối độ trễ. Các mục này hiện chưa có số liệu để điền vào bản thảo.
+
+Khi có nhiều seed và đủ state, phép tổng hợp cần giữ pairing theo task/state/seed và cụm theo initial state. Cần đặt trước đại lượng muốn ước lượng, cách xử lý incomplete runs và cách báo uncertainty ở trường hợp toàn success hoặc toàn failure. Điều này quan trọng hơn việc chọn một tên kiểm định nhưng không kiểm tra các giả định của nó.
+

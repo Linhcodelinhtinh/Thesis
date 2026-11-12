@@ -1,5 +1,7 @@
 # CẬP NHẬT TIẾN ĐỘ VÀ ĐỘ HOÀN THIỆN THESIS (THESIS COMPLETENESS)
 
+> **Lưu ý cập nhật 11/11/2026:** Nội dung bên dưới là snapshot lịch sử ngày 28/10, không phải trạng thái hiện hành. Đã có checkpoint và rollout B0/F1 mới; đồng thời chưa đủ bằng chứng để gọi toàn bộ pipeline hoàn thiện hoặc kết luận memory có lợi. Xem [ma trận trạng thái và claims](thesis/STATUS_AND_CLAIMS.md), [kế hoạch viết toàn bộ khóa luận](thesis/WRITING_PLAN.md) và [bản thảo 5 chương](thesis/THESIS_DRAFT.md). Các khẳng định “đã giải quyết triệt để” bên dưới cần được đọc trong phạm vi lịch sử, không dùng làm chứng nhận kết quả mới.
+
 > **Cập nhật ngày:** 28/10/2026  
 > **Trọng tâm:** Báo cáo tiến độ triển khai các component lớn, tính năng mới (Visual Perception Worker, Visual Event Writer v3, Mixed Memory SFT Training Pipeline, LIBERO-Mem Multi-Cycle Benchmark) và lộ trình nghiệm thu thực nghiệm.
 
