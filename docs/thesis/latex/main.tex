@@ -39,28 +39,19 @@
 \clearpairofpagestyles
 \cfoot*{\pagemark}
 \newcommand{\thesistitle}{Nâng cao khả năng xử lý tác vụ chuỗi dài cho mô hình VLA trong điều khiển Robot}
-\hypersetup{pdftitle={\thesistitle},pdfauthor={Lưu Quang Linh},pdfsubject={Bản thảo cập nhật ngày 12/11/2026},pdflang={vi-VN}}
+\hypersetup{pdftitle={\thesistitle},pdfauthor={Lưu Quang Linh},pdfsubject={Khóa luận về bộ nhớ sự kiện thị giác cho mô hình VLA},pdflang={vi-VN}}
 
 \begin{document}
 \pagenumbering{Roman}
 \input{frontmatter/cover}
 \pagestyle{empty}
-\chapter*{Ghi chú phiên bản bản thảo}
-\thispagestyle{empty}
-Bản thảo cập nhật ngày 12/11/2026; snapshot tái tổng hợp artifact đã có ngày 12/11/2026. Các kết quả local mang nhãn
-\texttt{NON-COMPARABLE\_OFFICIAL\_PAPER}. Nội dung chưa đủ để kết luận memory
-cải thiện hiệu năng; các mục chưa có thực nghiệm được nêu ở phần giới hạn.
-Bản thảo còn hai mục dành cho tác giả hoàn thiện trước khi nộp là lời cảm ơn
-và lời cam đoan.
 \chapter*{Lời cảm ơn}
 \thispagestyle{empty}
-Phần này dành cho tác giả tự viết theo những đóng góp và hỗ trợ thực tế.
-Bản thảo hiện chưa tạo nội dung cảm ơn thay tác giả.
+[\textit{Tác giả bổ sung.}]
 \input{content/abstract}
 \chapter*{Lời cam đoan}
 \thispagestyle{empty}
-Tác giả cần tự hoàn thiện và xác nhận lời cam đoan sau khi đọc toàn bộ
-nội dung, số liệu và nguồn trích dẫn. Bản thảo không tạo chữ ký hoặc xác nhận thay tác giả.
+[\textit{Tác giả bổ sung và xác nhận.}]
 \frontmatter
 \pagestyle{scrheadings}
 \tableofcontents
@@ -74,25 +65,26 @@ POMDP & Quá trình quyết định Markov quan sát một phần\\
 FSM & Máy trạng thái hữu hạn\\
 LoRA & Thích ứng hạng thấp\\
 SFT & Tinh chỉnh có giám sát\\
-SR & Tỷ lệ thành công theo episode\\
-SCR & Tỷ lệ milestones được hoàn thành\\
+RQ & Câu hỏi nghiên cứu\\
+SR & Tỷ lệ lượt thực thi thành công\\
+SCR & Tỷ lệ mục tiêu thành phần đã hoàn thành\\
 RGB & Đỏ--lục--lam, biểu diễn ảnh màu\\
 IoU & Giao trên hợp giữa hai hộp giới hạn\\
-IPC & Giao tiếp giữa các tiến trình\\
-T1, T3 & Task nhấc--đặt lại bát một lần và ba lần\\
-B0 & Checkpoint SmolVLA gốc, không memory\\
-F0 & Adapter fine-tune matched không memory, chưa có kết quả\\
-F1 & Checkpoint gốc cộng adapter đã train với memory\\
-F1-off & Adapter F1 khi tắt memory lúc suy luận\\
-$H$ & Độ dài action chunk dự đoán\\
-$s$ & Số action thực thi trước khi query lại\\
-$m_t$ & Snapshot memory khả dụng tại bước $t$\\
-$o_t$ & Quan sát policy được phép sử dụng\\
-$x_t$ & Trạng thái đầy đủ của simulator ở bước $t$\\
+T1, T3 & Tác vụ nhấc và đặt lại bát một lần và ba lần\\
+B0 & Chính sách SmolVLA gốc\\
+F0 & Đối chứng thích ứng với cùng dữ liệu và ngân sách, bỏ đầu vào bộ nhớ\\
+F1 & Chính sách SmolVLA với adapter huấn luyện có bộ nhớ\\
+F1-off & Chính sách F1 với bộ nhớ bị tắt trong suy luận\\
+$H$ & Số bước trong chuỗi hành động dự đoán\\
+$s$ & Số hành động thực thi trước lần truy vấn tiếp theo\\
+$m_t$ & Trạng thái bộ nhớ khả dụng tại bước $t$\\
+$o_t$ & Quan sát chính sách được phép sử dụng\\
+$x_t$ & Trạng thái đầy đủ của bài toán tại bước $t$\\
 $h_t$ & Lịch sử quan sát--hành động đến bước $t$\\
-$N$ & Số chu kỳ nhấc--đặt lại task yêu cầu\\
-$\hat z_t$ & Số chu kỳ writer đã xác nhận đến bước $t$\\
-$\tau_j,\upsilon_j$ & Thời điểm event xảy ra ước lượng và thời điểm có thể sử dụng\\
+$N$ & Số chu kỳ theo yêu cầu của tác vụ\\
+$z_t$ & Số chu kỳ đã hoàn tất theo định nghĩa tác vụ tại bước $t$\\
+$\hat z_t$ & Số chu kỳ bộ ghi đã xác nhận đến bước $t$\\
+$\tau_j,\upsilon_j$ & Thời điểm ước lượng sự kiện xảy ra và thời điểm bằng chứng khả dụng\\
 \end{longtable}
 \mainmatter
 \input{content/chapter1}

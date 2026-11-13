@@ -2,20 +2,20 @@
 
 Mốc biên tập và snapshot bằng chứng: **12/11/2026**. Snapshot chỉ đọc lại artifact đã tồn tại; rollout/training được trình bày trong chương thực nghiệm mang ngày chạy riêng. Đề tài chính thức: **Nâng cao khả năng xử lý tác vụ chuỗi dài cho mô hình VLA trong điều khiển Robot**. Giữ nguyên tên đã duyệt; trong nội dung xác định phạm vi thực hiện là SmolVLA, bộ nhớ sự kiện thị giác trong một episode và đánh giá T1/T3 dưới protocol local.
 
-## 1. Câu chuyện khoa học
+## 1. Lập luận nghiên cứu
 
-Một quan sát robot hiện tại có thể không cho biết một thao tác lặp đã được thực hiện bao nhiêu lần. Khóa luận khảo sát cách biến bằng chứng thị giác theo thời gian thành bộ nhớ sự kiện ngắn gọn, rồi đưa bộ nhớ vào một VLA nhỏ bằng giao diện văn bản và thích ứng action expert. Muốn biết phương pháp có ích, trước hết phải bảo đảm nguồn thông tin không rò rỉ từ bộ chấm điểm, trajectory huấn luyện phù hợp runtime, và phép so sánh tách adaptation khỏi memory.
+Một quan sát có thể phù hợp với nhiều mức tiến độ khác nhau trong tác vụ lặp. Khóa luận nghiên cứu liệu các chuyển tiếp của cùng một cặp bát–đĩa có thể cung cấp bằng chứng về tiến độ cho SmolVLA. Các công trình liên quan cho thấy lợi ích của bộ nhớ phụ thuộc tác vụ và chính sách có thể học tương quan giữa thời gian và tiến độ. Hai khoảng trống được khảo sát là cách xác nhận tiến độ từ quan sát khả dụng và cách xác định giá trị riêng của nội dung lịch sử sau khi kiểm soát thích ứng.
 
-Đây là câu chuyện về **thiết kế và đánh giá có kiểm soát một phương pháp cụ thể**, không phải danh sách module đã viết. Baseline V1 cung cấp nền tảng; đóng góp trung tâm nằm ở V2. Kết quả âm hoặc chưa rõ lợi ích vẫn có thể có giá trị khi giới hạn được đo và lý giải bằng chứng, nhưng không tự biến thiếu kết quả thành đóng góp mới.
+Chương phương pháp liên kết giả thuyết với định nghĩa sự kiện, hai tính chất có chứng minh và thiết kế đối chứng. Chương thực nghiệm đối chiếu mốc chú giải, độ nhạy của mô hình trên dữ liệu cố định và hành vi vòng kín. Chi tiết phiên bản thư viện, phép kiểm mã và nguồn kết quả V1 được đưa vào phụ lục để người đọc có thể kiểm tra phép đo.
 
 ## 2. Câu hỏi nghiên cứu và mức trả lời hiện tại
 
 | Mã | Câu hỏi | Có thể trả lời hiện tại | Bằng chứng còn thiếu |
 |---|---|---|---|
-| RQ1 | Có thể nối bộ nhớ sự kiện từ RGB vào SmolVLA mà giữ ranh giới thông tin và contract policy không? | Đã có implementation, checkpoint và rollout thật trong phạm vi T1/T3; các cơ chế causal/provenance mô tả được | Đánh giá fidelity của sự kiện và kiểm tra leak trên đường dữ liệu hoàn chỉnh |
-| RQ2 | Thông tin lịch sử giúp policy giải quyết T3 tốt hơn khi kiểm soát adaptation không? | Có B0/F1 sơ bộ; chưa cô lập được memory | F0 cùng data/budget, current-only hoặc sham cùng token budget, F1-off có mode được audit, đủ state/seed |
-| RQ3 | Thích ứng memory có bảo toàn kỹ năng LIBERO base không? | Có cơ chế replay và một số run fine-tune cũ; chưa có bằng chứng matched cho adapter hiện tại | Đo chính F1 trên base với cùng protocol/checkpoint identity; margin retention xác định trước |
-| RQ4 | Chất lượng writer, quy ước ảnh, runtime và chi phí ảnh hưởng kết quả thế nào? | Có trace, audit và quan sát thất bại để mô tả | Event precision/recall/delay với nhãn độc lập; profiling end-to-end; can thiệp có đối chứng để kết luận nguyên nhân |
+| RQ1 | Có thể biểu diễn tiến độ từ quan sát khả dụng như thế nào và bản ghi phù hợp với mốc chú giải đến mức nào? | Hai tính chất dưới giả thiết đã nêu và đối chiếu 12/12 mốc trên sáu quỹ đạo trình diễn | Độ đúng và độ trễ trên quỹ đạo độc lập, gồm cả thành công và thất bại |
+| RQ2 | Thông tin lịch sử có cải thiện điều khiển vòng kín khi giữ tương đương dữ liệu và ngân sách thích ứng không? | Độ nhạy ngoại tuyến của F1 và phép so sánh thăm dò B0/F1 | F0 đối sánh, can thiệp thông tin cùng ngân sách token, tập xác nhận độc lập và nhiều seed |
+| RQ3 | Chính sách sau thích ứng duy trì năng lực trên LIBERO cơ sở đến mức nào? | Có lấy mẫu hỗn hợp và phép đo loss cơ sở của F1 | Đo F1 và B0 theo cặp trên tác vụ cơ sở, xác định trước biên suy giảm chấp nhận được |
+| RQ4 | Thiếu hụt hoặc độ trễ của bằng chứng, sự khác biệt quỹ đạo và điều kiện thực thi ảnh hưởng thế nào đến diễn giải? | Có bất đồng giữa bộ ghi và bộ chấm, cờ lịch sử thiếu và độ trễ thành phần | Nhãn độc lập, phép thử thay nhịp hoặc chèn khoảng chờ, phép đo toàn chu trình và can thiệp có đối chứng |
 
 RQ2 và RQ3 là câu hỏi mở. Không viết “chứng minh tăng hiệu năng”, “không quên kỹ năng” hoặc “đạt real-time” trong tóm tắt hiện tại.
 
@@ -23,12 +23,11 @@ RQ2 và RQ3 là câu hỏi mở. Không viết “chứng minh tăng hiệu năn
 
 | Đóng góp khả dĩ | Thành quả cụ thể của repository | Giá trị | Giới hạn tuyên bố |
 |---|---|---|---|
-| C1. Hệ thống đánh giá có truy vết | Tách simulator/policy/perception; khóa source, controller, split; log action, prompt, evidence, status | Giúp phát hiện và phân biệt lỗi tài nguyên, interface, thí nghiệm; tạo điều kiện kiểm chứng lại | Đóng góp thực nghiệm/kỹ thuật; không phải một benchmark chính thức mới hay chứng minh tái lập tuyệt đối |
-| C2. Bộ nhớ sự kiện theo thực thể | Tracker bát–đĩa gốc, FSM departure/return, hysteresis, `occurred_at`/`available_at`, incomplete history, renderer có budget; audit demo ghép 12/12 return trong ±20 frame | Biểu diễn lịch sử có thể kiểm tra; có kiểm tra ban đầu về thứ tự/timing event | Chỉ sáu demonstration, ba state, milestone không phải contact label; chưa chứng minh mới toàn cầu hoặc fidelity tổng quát |
-| C3. Quy trình thích ứng gọn | LoRA q/v action expert, backbone gốc được bảo toàn, replay base/Mem, split theo initial-state hash, export unmerged có hash | Cho phép khảo sát memory conditioning trên mô hình nhỏ với dữ liệu và chi phí kiểm soát | LoRA, flow matching, Grounding DINO, replay là kỹ thuật kế thừa; tỷ lệ 50/50 chưa được chứng minh tối ưu |
-| C4. Bằng chứng thực nghiệm và phân tích giới hạn | Checkpoint 3.000 bước; B0/F1 trên cùng roster T1/T3; phân biệt loss, SCR, success, overshot | Cho thấy offline loss và khả năng vận hành không đủ thay thế closed-loop success; xác định phép kiểm định còn cần | Chưa có kết quả xác nhận đóng góp riêng của memory; không quy failure thành “quên” hoặc “attention dilution” |
+| C1. Phát biểu tiến độ dưới quan sát một phần | Xác định số chu kỳ và phân biệt tiến độ cần đạt, tiến độ bộ ghi xác nhận, tiến độ dùng để chấm | Gắn nội dung lịch sử với quyết định tiếp tục hay dừng | Lập luận về nhập nhằng là lý do thiết kế. Tần suất các trạng thái nhập nhằng chưa được đo |
+| C2. Bộ nhớ sự kiện có bằng chứng | Thực thể tham chiếu, xác nhận theo cặp, thời điểm khả dụng, lịch sử chưa đầy đủ, hai tính chất được chứng minh | Cho phép kiểm tra dữ kiện chính sách nhận được trước mỗi quyết định | Các tính chất có điều kiện. Độ đúng của sự kiện là câu hỏi thực nghiệm |
+| C3. Khảo sát từ bản ghi đến hành vi | Đối chiếu 12/12 mốc trên trình diễn, độ nhạy loss ngoại tuyến, so sánh vòng kín B0/F1 và phân tích các bất đồng | Xác định điểm còn thiếu bằng chứng và phép đối chứng tương ứng | Phạm vi T1/T3, một seed, chưa cô lập giá trị riêng của lịch sử hoặc đo duy trì kỹ năng cơ sở |
 
-Điểm khác với MEM và MemoryVLA là lựa chọn **bộ nhớ sự kiện tường minh bên ngoài policy**, kiểm soát nguồn thông tin và thích ứng nhẹ cho một backbone nhỏ. Đây là khác biệt thiết kế có thể mô tả. Muốn nâng thành đóng góp phương pháp đã được xác nhận cần ablation và chứng minh lợi ích/chi phí tương ứng. Không nhận video encoder, PCMB, slot-state-space model hay SGS là thành phần tự phát triển.
+Định vị phương pháp ở việc xác nhận cặp sự kiện có ngữ nghĩa trên SmolVLA. Cách đánh chỉ mục bộ nhớ theo sự kiện đã được nghiên cứu trong công trình về lối tắt thời gian. Phần đề xuất của khóa luận là biểu diễn quan hệ bát–đĩa có mốc khả dụng và trạng thái lịch sử chưa đầy đủ, cùng phép đánh giá phù hợp với giả thuyết. SmolVLA, Grounding DINO, LoRA và flow matching là các phương pháp kế thừa.
 
 ## 4. Cấu trúc 5 chương và phần viết ngay
 
@@ -37,11 +36,11 @@ Các số trang sau là ngân sách biên tập đề xuất, không phải số
 | Phần | Nội dung đến cấp mục | Ngân sách | Viết hiện tại | Hoãn |
 |---|---|---:|---|---|
 | Phần đầu | Bìa, phụ bìa, cảm ơn, tóm tắt, cam đoan, mục lục, danh mục hình/bảng, ký hiệu | Theo mẫu | Bìa và tóm tắt có giới hạn kết luận; danh mục tự sinh | Cảm ơn/cam đoan cá nhân và tóm tắt kết quả cuối |
-| 1. Mở đầu | 1.1 Bối cảnh; 1.2 bài toán; 1.3 mục tiêu/RQ; 1.4 phạm vi/đóng góp; 1.5 bố cục | 3–5 | Viết thành văn, có trích dẫn và ví dụ lặp bát | Tuyên bố mức cải thiện chưa đo |
-| 2. Cơ sở lý thuyết và nghiên cứu liên quan | 2.1 VLA/quan sát một phần; 2.2 SmolVLA/chunk; 2.3 memory; 2.4 detector/event; 2.5 LoRA/loss/replay; 2.6 benchmark và độ đo | 7–10 | Các khái niệm sẽ dùng ở chương 3–4; so sánh cơ chế với MEM/MemoryVLA/LIBERO-Mem | Tổng quan RL dài, SGS như một thuật toán đang dùng, lý thuyết phổ thông không phục vụ bài toán |
-| 3. Bộ nhớ sự kiện thị giác cho SmolVLA | 3.1 hình thức hóa; 3.2 kiến trúc/ranh giới; 3.3 tracker; 3.4 FSM; 3.5 causal renderer; 3.6 dữ liệu/split; 3.7 thích ứng; 3.8 protocol; 3.9 giới hạn | 12–16 | Phương pháp đã implement; công thức, pseudo-code, diagram, ví dụ khái niệm có nhãn | Derived export chưa chứng nhận, multi-object/OO/OR chưa làm |
-| 4. Thực nghiệm và thảo luận | 4.1 RQ/thiết kế; 4.2 runtime/provenance; 4.3 data/training; 4.4 B0/F1; 4.5 case/giới hạn; 4.6 phép đo còn thiếu | 12–18 | Bảng số liệu kiểm được, loss, local protocol, giới hạn thống kê | Kết quả F0/F1-off, retention F1, multi-seed, event accuracy, paper leaderboard |
-| 5. Kết luận | 5.1 thành quả; 5.2 điều rút ra; 5.3 tồn tại; 5.4 hướng tiếp | 2–3 | Kết luận tạm theo evidence hiện tại | Kết luận cải thiện cuối cùng |
+| 1. Mở đầu | Động cơ, hai khoảng trống, bốn câu hỏi, ba đóng góp | 3–5 | Ví dụ thao tác lặp và lý do chọn SmolVLA/T1/T3 | Phát biểu về mức cải thiện chưa được kiểm định |
+| 2. Cơ sở lý thuyết và nghiên cứu liên quan | Quan sát một phần, các cách biểu diễn lịch sử, lối tắt thời gian, thích ứng, tác vụ và phép đo | Tối đa 10 | Tổng hợp nguồn sơ cấp để định vị biểu diễn và phép đối chứng | Tổng quan rộng ngoài phạm vi giả thuyết |
+| 3. Bộ nhớ sự kiện thị giác cho SmolVLA | Phát biểu tiến độ, nguồn thông tin, ước lượng và ghi sự kiện, hai chứng minh, thích ứng, đối chứng và độ đo | 9–16 | Mô hình hóa, bảng ngưỡng, sơ đồ đường thông tin, giả thiết và phạm vi suy luận | Đánh giá nhiều thực thể và trên dữ liệu phát lại phiên bản mới |
+| 4. Thực nghiệm và thảo luận | Mốc sự kiện, điều kiện đối chiếu, dữ liệu thích ứng, độ nhạy ngoại tuyến, vòng kín, bất đồng và hiệu lực | 10–18 | Bằng chứng định lượng và diễn giải theo các câu hỏi | F0/F1-off vòng kín, duy trì kỹ năng của F1, nhiều seed và nhãn độc lập |
+| 5. Kết luận | Trả lời theo câu hỏi nghiên cứu, ý nghĩa của đóng góp và hướng kiểm định | 2–3 | Kết luận theo phạm vi của bằng chứng | Kết luận về mức cải thiện do lịch sử |
 | Sau nội dung | Tài liệu tham khảo; phụ lục provenance, contract, lệnh tái tạo | Theo nhu cầu | BibTeX và ánh xạ claim–artifact | Phụ lục video/case chưa kiểm tra trực quan |
 
 Mục chờ thực nghiệm được ghi trong kế hoạch/backlog, không dựng bảng với số 0 giả, không dùng số ước lượng thay kết quả. Bản thảo chính đã có nội dung cho cả 5 chương; phần còn thiếu được diễn đạt thành giới hạn hoặc nghiên cứu tiếp, không giả làm đã hoàn tất.

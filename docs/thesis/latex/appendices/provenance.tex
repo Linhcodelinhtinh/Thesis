@@ -1,63 +1,63 @@
-\chapter{Nguồn artifact và cách tái tổng hợp}
-Các đường dẫn dưới đây tính từ gốc repository \texttt{Thesis\_26}.
-Snapshot viết khóa luận lưu tại \path{docs/thesis/evidence/snapshot.json};
-\path{input_hashes.json} cùng thư mục lưu SHA-256 của các input đã kiểm.
-Snapshot không phải chứng nhận runtime mới và không thay thế việc lưu raw artifacts.
+\chapter{Nguồn dữ liệu và chi tiết tái lập}
+Các đường dẫn tính từ thư mục gốc \texttt{Thesis\_26}.
+Tập bằng chứng ngày 12/11/2026 lưu tại \path{docs/thesis/evidence/snapshot.json}.
+Tệp \path{input_hashes.json} cùng thư mục ghi mã SHA-256 của các nguồn đã đối chiếu.
 
-\section{Thực nghiệm được dùng trong chương 4}
-Run đánh giá:
+\section{Cấu hình và bản ghi thực nghiệm}
+Bản ghi đánh giá vòng kín được lưu tại
 \begin{quote}\small
 \path{experiments/evaluation/results_mem_2/step5_test_20261109-093744}
 \end{quote}
-Mỗi condition có \path{run_manifest.json}, \path{split.lock.json} và các
-thư mục episode. Số liệu lấy từ \path{episodes/*/summary.json}, đối chiếu
-\path{status.json} và checksum summary. Manifest ghi protocol, state roster,
-code snapshot, environments và checkpoint. Không đổi tên các summary này
-thành \path{episode.json} của runner cũ.
+Mỗi điều kiện có bản kê \path{run_manifest.json}, phân hoạch đã khóa
+\path{split.lock.json} và tóm tắt từng lượt trong \path{episodes/*/summary.json}.
+Phép tổng hợp đối chiếu trạng thái hoàn tất và SHA-256 với \path{status.json}.
+Bản kê lưu thiết lập điều khiển, danh sách trạng thái khởi tạo, phiên bản mã và mô hình.
 
-Run huấn luyện:
+Bản ghi huấn luyện được lưu tại
 \begin{quote}\small
 \path{experiments/training/results_mem_2/mem-adapter-20261105-083543}
 \end{quote}
-Các file sử dụng gồm \path{run_config.json}, \path{metrics.jsonl},
-\path{checkpoint-003000/progress.json}, và export trong \path{pretrained_model}.
-Dataset manifest/split nằm tại
-\path{experiments/training/results_mem_2/mem-adapter-v1}.
-Hash lớn của base weights và raw HDF5 được tham chiếu theo manifest;
-lần viết này không hash lại toàn bộ các tài nguyên lớn đó.
+Nguồn dùng để đối chiếu gồm \path{run_config.json}, \path{metrics.jsonl},
+\path{checkpoint-003000/progress.json} và bản xuất trong \path{pretrained_model}.
+Danh mục và phân hoạch dữ liệu nằm tại \path{experiments/training/results_mem_2/mem-adapter-v1}.
+Mã băm của trọng số nền và HDF5 gốc được tham chiếu theo bản kê.
 
-\section{Bảng tái tổng hợp}
+Mô phỏng chạy trong WSL với Python 3.8.20, robosuite 1.4.0, MuJoCo 3.2.3 và
+NumPy 1.22.4. Suy luận trên Windows dùng Python 3.12.2, torch 2.6.0+cu124,
+LeRobot 0.6.1, transformers 5.5.4 và PEFT 0.19.1.
+Huấn luyện dùng torch 2.11.0+cu130, LeRobot 0.6.1, transformers 5.5.4,
+PEFT 0.21.2 và accelerate 1.15.0. Phiên bản mô hình SmolVLA và nguồn tác vụ
+LIBERO-Mem được ghi trong danh mục tài liệu tham khảo và trong bản kê từng lần chạy.
+
+\section{Tệp dữ liệu phân tích và bối cảnh V1}
 \path{docs/thesis/evidence/mem_test_episodes.csv} giữ một dòng cho mỗi
-episode, gồm outcome, state hash, seed, count của evaluator, count của writer,
-cờ lịch sử và nguồn summary. \path{mem_test_counts.csv} là bảng theo task.
-\path{validation_loss.csv} lấy từ metrics của training.
-\path{historical_run_inventory.csv} chỉ là inventory, không phải một tập
-kết quả được phép gộp. Raw của freeze V1 được báo cáo cũ tham chiếu chưa có
-tại đường dẫn đó trong snapshot; đây là một giới hạn lưu trữ cần giải quyết.
+lượt, gồm kết quả, mã băm trạng thái, seed, tiến độ do bộ chấm và bộ ghi
+xác định, cờ lịch sử và nguồn bản tóm tắt. \path{mem_test_counts.csv} tổng hợp
+theo tác vụ. \path{validation_loss.csv} lấy từ nhật ký xác thực.
+\path{historical_run_inventory.csv} là danh mục các lần chạy lịch sử.
 
-\section{Audit riêng của bộ ghi sự kiện RGB}
-Kết quả demonstration ngày 26/10 được tổng hợp tại
-\path{experiments/audits/memory_writer_v3/verification_summary.json}. Audit
-ghi sáu demonstration, ba initial state, 1.276 frame và 12 return prediction
-được ghép với 12 milestone annotation trong dung sai 20 frame. Annotation là
-milestone tích lũy, không phải nhãn grasp/contact. Replay được xem trong quá
-trình phát triển và không phải blind holdout. Các artifact con và source
-archive được đối chiếu SHA-256 khi tạo snapshot viết khóa luận. Tệp
-\path{input_hashes.json} lưu từng hash; snapshot cũng lưu riêng liệu các hash
-hiện tại của tracker, event writer và renderer có trùng audit hay không.
+Ở giai đoạn V1, báo cáo nội bộ ghi 77/160 lượt thành công trên 40 tác vụ,
+28/40 trên tập nghiệm thu, và 11/40 trên LIBERO-10. Trong 83 lượt thất bại,
+71 lượt chưa được quy nguyên nhân gốc theo tiêu chí chẩn đoán của báo cáo.
+Tại mốc tổng hợp, các bản ghi từng lượt vắng mặt ở đường dẫn báo cáo dẫn chiếu.
+Các số liệu này được dẫn theo báo cáo V1 và dùng làm bối cảnh lịch sử.
+V1 dùng $s=50$ giữa hai lần truy vấn, còn đánh giá T1/T3 dùng $s=10$.
+Khác biệt về nhịp điều khiển và tập tác vụ giới hạn khả năng đối chiếu giữa hai giai đoạn.
 
-Audit này đo thành phần writer, khác với rollout B0/F1: nó không đo success
-policy, retention, hay lợi ích nhân quả của memory. Latency detector xấp xỉ
-1 s/frame thuộc replay RGB live, không bao gồm thời gian action policy trong
-closed loop và cho thấy cấu hình này chưa đạt 20 Hz.
+\section{Đối chiếu bản ghi sự kiện thị giác}
+Phép đo ngày 26/10 được tổng hợp tại
+\path{experiments/audits/memory_writer_v3/verification_summary.json}.
+Nhãn tham chiếu đánh dấu mốc tiến độ tích lũy trên các quỹ đạo trình diễn.
+Các báo cáo ghép mốc, kết quả thành phần và bản lưu mã nguồn được đối chiếu
+SHA-256. Tập bằng chứng cũng ghi kết quả so khớp phiên bản của bộ theo dõi,
+bộ ghi và bộ dựng văn bản với phiên bản dùng trong lần đo.
 
-\section{Lệnh tái tạo}
-Các công cụ sau chỉ tái tổng hợp artifact/tài liệu, không chạy policy:
-\begin{Verbatim}[breaklines=true,fontsize=\small]
-python -X utf8 docs/thesis/tools/collect_evidence.py
-python -X utf8 docs/thesis/tools/make_figures.py
-python -X utf8 docs/thesis/tools/build_latex.py
-python -X utf8 docs/thesis/tools/validate_draft.py
-\end{Verbatim}
-Khi source hoặc artifact thay đổi, cần lưu snapshot mới và nêu rõ phiên bản
-bản thảo tương ứng. Không sửa checksum để làm một artifact không khớp vượt qua kiểm tra.
+Các phép kiểm kỹ thuật đi kèm gồm đối chiếu đầu ra nhận dạng trên 12 khung hình,
+đối chiếu chỉ mục trên 162 mẫu, 49 kiểm thử thành phần và 47 kiểm thử hồi quy.
+Những phép kiểm này hỗ trợ đánh giá tính nhất quán của quy trình xử lý.
+Độ phù hợp của sự kiện được phân tích bằng mốc chú giải và các quỹ đạo
+trong Chương 4.
+
+\section{Tái tổng hợp số liệu}
+\path{docs/thesis/README.md} ghi các lệnh đọc bản ghi đã lưu, tổng hợp số liệu
+và tái tạo tài liệu. Mỗi lần tổng hợp sử dụng tập bằng chứng và mã băm tương ứng.

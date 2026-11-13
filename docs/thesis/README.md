@@ -7,7 +7,7 @@
 
 Thông tin bìa lấy từ hàng 31, trang 4 của quyết định trong `docs/format_reference` và đã được sinh viên xác nhận trong phiên làm việc. Không sử dụng tên sinh viên/năm 2025 còn sót trong mẫu LaTeX.
 
-Đây là **bản thảo đang phát triển**, không phải bản nộp hay tuyên bố đã hoàn thành mục tiêu nâng cao hiệu năng. Snapshot bằng chứng mới nhất được tạo ngày 12/11/2026; snapshot này chỉ tái tổng hợp artifact đã lưu, không chạy thí nghiệm mới. Luận điểm hiện bảo vệ được là: đã xây dựng, huấn luyện và chạy thử một hệ thống bộ nhớ sự kiện thị giác cho SmolVLA; đã có bằng chứng thành phần trên demonstration và rollout policy trong hai task; chưa cô lập được lợi ích riêng của thông tin lịch sử.
+Bản thảo khảo sát tiến độ thao tác dưới quan sát một phần, đề xuất bộ nhớ sự kiện có bằng chứng và phân tích vai trò của thông tin lịch sử trong SmolVLA. Bốn câu hỏi nghiên cứu định hướng các phép đo về độ phù hợp của bản ghi, giá trị điều khiển của lịch sử, khả năng duy trì kỹ năng cơ sở và điều kiện hiệu lực của kết quả. Bản biên tập học thuật sử dụng lại bộ bằng chứng ngày 12/11/2026. Chênh lệch B0/F1 mô tả hai cấu hình quan sát được, còn tác động riêng của lịch sử cần đối chứng bổ sung.
 
 ## Đọc theo thứ tự
 
@@ -53,6 +53,6 @@ xelatex -interaction=nonstopmode -halt-on-error -file-line-error -no-shell-escap
 xelatex -interaction=nonstopmode -halt-on-error -file-line-error -no-shell-escape main.tex
 ```
 
-Bản thảo đã được biên dịch bằng MiKTeX 26.5 và rà phân trang. [Mở bản PDF](../../output/pdf/khoa-luan-luu-quang-linh-ban-thao.pdf). Nếu PowerShell đang mở từ trước khi cài MiKTeX, hãy mở phiên mới để nhận `PATH` của Windows.
+Bản biên tập học thuật gồm 46 trang, đã được biên dịch bằng MiKTeX 26.5 và rà phân trang. [Mở bản PDF](../../output/pdf/khoa-luan-luu-quang-linh-ban-thao.pdf). Nếu PowerShell đang mở từ trước khi cài MiKTeX, hãy mở phiên mới để nhận `PATH` của Windows.
 
 Lời cảm ơn và lời cam đoan là nội dung cá nhân cần tác giả tự hoàn thiện, đọc và xác nhận trước khi nộp; bản thảo không tạo chữ ký hoặc xác nhận thay tác giả.

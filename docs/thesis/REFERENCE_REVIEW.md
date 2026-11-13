@@ -81,3 +81,11 @@ Liên quan trực tiếp với khóa luận này ở mức phương pháp luận
 | `artifact2026` | Snapshot nội bộ 12/11/2026 và run manifests | Bằng chứng số liệu local; không phải công bố đã phản biện |
 
 Metadata paper bổ sung được kiểm trên arXiv; cấu hình sử dụng trong thực nghiệm lấy từ local manifest/code đã pin, không lấy bản mới nhất trên mạng thay nguồn đã chạy. Mọi citation trong bản thảo có entry BibTeX; giữ full hashes trong evidence để tránh nhồi chuỗi hash vào mạch lập luận.
+
+## 8. Nguồn sơ cấp bổ sung cho bản biên tập học thuật
+
+| Citation key | Nguồn | Vai trò trong lập luận |
+|---|---|---|
+| `pomdp1998` | [Kaelbling, Littman và Cassandra, *Artificial Intelligence*, 1998](https://doi.org/10.1016/S0004-3702(98)00023-X) | Cơ sở của bài toán quyết định dưới quan sát một phần và trạng thái niềm tin. |
+| `robomme2026` | [Dai và cộng sự, ICML 2026](https://proceedings.mlr.press/v306/dai26c.html) | Đánh giá 14 biến thể có bộ nhớ trên 16 tác vụ và cho thấy hiệu quả của biểu diễn phụ thuộc vào tác vụ. |
+| `clockvla2026` | [Zhang và An, arXiv:2611.14488v1](https://arxiv.org/abs/2611.14488v1) | Bản tiền ấn phẩm ngày 10/11/2026 về hiện tượng dùng thời gian làm tín hiệu thay thế tiến độ trong tác vụ đếm. Công trình khảo sát đánh chỉ mục theo sự kiện. Khóa luận nghiên cứu xác nhận sự kiện theo quan hệ bát–đĩa, có mốc khả dụng và trạng thái lịch sử chưa đầy đủ. |

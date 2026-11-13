@@ -31,20 +31,21 @@ def inline(text):
     text = re.sub(r"`([^`]+)`", lambda m: hold(r"\path{" + m[1] + "}"), text)
     text = escape(text)
     text = re.sub(r"\*\*([^*]+)\*\*", lambda m: r"\textbf{" + m[1] + "}", text)
+    text = re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", lambda m: r"\textit{" + m[1] + "}", text)
     for i, value in enumerate(saved):
         text = text.replace(f"ZZPLACEHOLDER{i}ZZ", value)
     return text
 
 
 CAPTIONS = [
-    "So sánh cơ chế memory và phạm vi liên hệ với khóa luận",
-    "Ngưỡng hình học và ngưỡng xác nhận của writer RGB v3",
-    "Các condition dùng để tách adaptation khỏi memory",
-    "Kết quả chẩn đoán writer trên demonstration T1/T3",
-    "Môi trường và protocol được ghi trong các artifact",
-    "Số demonstration theo domain và split trong dataset manifest",
-    "Cấu hình huấn luyện adapter F1 được ghi trong run manifest",
-    "Kết quả T1/T3 local: một policy seed, mười nhóm initial state",
+    "Các cách biểu diễn lịch sử và liên hệ với câu hỏi nghiên cứu",
+    "Ngưỡng đo quan hệ giữa bát và đĩa gốc",
+    "Các điều kiện đối chứng và mục đích đánh giá",
+    "Đối chiếu sự kiện thị giác với mốc tiến độ trên quỹ đạo trình diễn",
+    "Các điều kiện đối chiếu trong thực nghiệm vòng kín",
+    "Phân hoạch quỹ đạo theo nhóm tác vụ",
+    "Cấu hình thích ứng của F1 và phạm vi suy luận",
+    "Kết quả điều khiển vòng kín theo tác vụ và điều kiện",
 ]
 table_index = 0
 

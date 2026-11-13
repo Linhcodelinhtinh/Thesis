@@ -1,516 +1,407 @@
 # Tóm tắt
 
-Các tác vụ thao tác lặp đặt ra một khó khăn cho mô hình thị giác–ngôn ngữ–hành động: trạng thái quan sát gần giống nhau có thể đòi hỏi hành động khác nhau tùy theo những sự kiện đã xảy ra. Khóa luận khảo sát một phương án bổ sung bộ nhớ sự kiện thị giác cho SmolVLA nhằm cung cấp thông tin lịch sử trong quá trình điều khiển robot. Phạm vi thực hiện tập trung vào thao tác nhấc và đặt lại một chiếc bát trên đĩa, một lần hoặc ba lần, trong môi trường phát triển từ LIBERO-Mem.
+Trong thao tác robot lặp, cảnh quan sát được sau khi hoàn tất một chu kỳ có thể gần giống cảnh ban đầu, trong khi quyết định tiếp tục hay dừng phụ thuộc vào số chu kỳ đã xảy ra. Khóa luận khảo sát liệu một bộ nhớ sự kiện thị giác có thể biểu diễn thông tin tiến độ này và hỗ trợ mô hình thị giác–ngôn ngữ–hành động SmolVLA. Bài toán được nghiên cứu qua hai tác vụ mô phỏng yêu cầu nhấc bát khỏi đĩa gốc và đặt lại một hoặc ba lần, phát triển từ LIBERO-Mem.
 
-Phương pháp sử dụng detector thị giác, cơ chế theo dõi vật thể và đĩa gốc, cùng máy trạng thái hữu hạn để ghi nhận các lần rời và quay lại đĩa. Mỗi sự kiện gắn với bằng chứng quan sát và thời điểm có thể sử dụng. Khi thiếu bằng chứng, hệ thống ghi nhận lịch sử chưa đầy đủ thay vì suy đoán số chu kỳ đã xảy ra. Bộ nhớ được biểu diễn thành văn bản trong ngân sách tokenizer của policy. Một adapter LoRA trên action expert được huấn luyện với dữ liệu hỗn hợp gồm thao tác cơ sở và tác vụ memory. Simulator, policy và perception được tổ chức thành các tiến trình tách biệt để kiểm soát phụ thuộc và nguồn thông tin.
+Phương pháp biểu diễn tiến độ bằng các cặp sự kiện rời và trở lại đĩa được xác nhận từ quan sát. Mỗi sự kiện lưu bằng chứng và thời điểm bằng chứng đủ để sử dụng. Trạng thái bộ nhớ còn biểu thị khi lịch sử chưa được quan sát đầy đủ. Hai tính chất được chứng minh trong phạm vi mô hình đề xuất là mỗi lần tăng bộ đếm cần một cặp sự kiện hợp lệ theo máy trạng thái và nội dung cấp cho chính sách tại một thời điểm chỉ phụ thuộc vào dữ liệu sẵn có đến thời điểm đó. Bản tóm tắt sự kiện được đưa vào đầu vào ngôn ngữ của SmolVLA, với phần sinh hành động được thích ứng bằng LoRA.
 
-Bản thảo cập nhật ngày 12/11/2026, sử dụng snapshot bằng chứng tạo ngày 12/11/2026 từ artifact đã lưu, ghi nhận một adapter đã được huấn luyện 3.000 bước và một đợt đánh giá có đủ log cho hai điều kiện B0 và F1. Trên mỗi điều kiện, 20 task-episodes sử dụng chung 10 nhóm trạng thái khởi tạo qua hai task và một policy seed. B0 đạt 0/20 episode thành công, F1 đạt 1/20. Trong một audit riêng của bộ ghi sự kiện, 12/12 lần return trong sáu demonstration được ghép với milestone annotation trong dung sai ±20 frame; latency detector RGB trung bình khoảng một giây mỗi frame nên chưa đáp ứng 20 Hz. Các kết quả này thuộc hai loại bằng chứng khác nhau và đều giới hạn ở phạm vi đã nêu. Rollout policy là kết quả sơ bộ theo protocol local, mang nhãn NON-COMPARABLE_OFFICIAL_PAPER. Thiết kế hiện tại chưa tách được tác động của fine-tuning khỏi thông tin memory và chưa đủ để kết luận cải thiện đáng tin cậy. Giá trị hiện có của nghiên cứu là thiết kế bộ nhớ có truy vết, quy trình tích hợp và thích ứng, cùng phân tích thực nghiệm về những điều kiện còn thiếu để đánh giá lợi ích của lịch sử một cách có kiểm soát.
+Trên sáu quỹ đạo trình diễn thuộc ba trạng thái khởi tạo, 12 sự kiện trở lại đĩa được ghép một đối một với 12 mốc chú giải trong dung sai ±20 khung hình. Trong đánh giá vòng kín, SmolVLA gốc thành công ở 0/20 lượt và cấu hình kết hợp thích ứng với bộ nhớ thành công ở 1/20 lượt trên cùng tập trạng thái khởi tạo. Phép so sánh này chỉ ước lượng chênh lệch quan sát được giữa hai cấu hình trong giao thức của khóa luận. Tác động riêng của thông tin lịch sử và khả năng duy trì kỹ năng cơ sở cần các đối chứng bổ sung. Kết quả xác lập cách khảo sát mối liên hệ giữa bằng chứng thị giác, trạng thái tiến độ và hành vi của chính sách, đồng thời cho thấy độ khớp mốc trên quỹ đạo trình diễn có thể đi kèm với lịch sử thiếu trong quá trình thực thi vòng kín.
 
-**Từ khóa:** Vision-Language-Action; SmolVLA; bộ nhớ sự kiện; quan sát một phần; thích ứng hạng thấp; đánh giá robot.
+**Từ khóa:** mô hình thị giác–ngôn ngữ–hành động, SmolVLA, bộ nhớ sự kiện, quan sát một phần, thao tác robot.
 
 # Chương 1. Mở đầu
 
-## 1.1. Bối cảnh nghiên cứu
+## 1.1. Động cơ nghiên cứu
 
-Mô hình thị giác–ngôn ngữ–hành động, gọi tắt là VLA, kết nối quan sát hình ảnh, chỉ dẫn ngôn ngữ và hành động điều khiển robot trong một policy. Khả năng tái sử dụng biểu diễn đã học từ dữ liệu thị giác và ngôn ngữ làm cho hướng tiếp cận này phù hợp với các tác vụ thao tác được mô tả bằng lời. SmolVLA là một đại diện hướng đến mô hình có chi phí triển khai thấp hơn, sử dụng một backbone thị giác–ngôn ngữ cùng action expert để sinh chuỗi hành động [@smolvla2025]. Tuy nhiên, một policy có thể thực hiện thao tác đơn lẻ vẫn chưa chắc xử lý được nhiệm vụ mà quyết định tiếp theo phụ thuộc vào lịch sử.
+Mô hình thị giác–ngôn ngữ–hành động (Vision–Language–Action, VLA) học cách ánh xạ quan sát và chỉ dẫn ngôn ngữ thành hành động của robot. Với các mô hình như SmolVLA, biểu diễn thị giác và ngôn ngữ được kết hợp với một mô-đun chuyên biệt để sinh chuỗi hành động. Khả năng này cho phép cùng một mô hình thực hiện nhiều thao tác được mô tả bằng ngôn ngữ tự nhiên. Trong tác vụ nhiều giai đoạn, điều kiện để chọn đúng hành động còn bao gồm tiến độ tích lũy của quá trình tương tác. Một chuỗi hành động chính xác ở từng giai đoạn vẫn có thể dẫn đến thất bại nếu robot lặp lại giai đoạn đã hoàn tất hoặc dừng trước khi đạt đủ số lần thao tác. [@smolvla2025; @liberomem2025]
 
-Xét yêu cầu nhấc một chiếc bát khỏi đĩa rồi đặt lại đúng ba lần. Sau mỗi lần đặt lại, hình ảnh bát trên đĩa có thể gần giống ban đầu. Nếu chỉ quan sát cảnh hiện tại, hệ thống khó phân biệt đã hoàn thành một, hai hay ba lần. Hành động cần thực hiện vì thế không chỉ phụ thuộc vị trí hiện tại của bát mà còn phụ thuộc những lần tương tác trước đó. Ví dụ này cũng chỉ ra rằng chiều dài trajectory và mức cần thiết của memory là hai thuộc tính khác nhau: một nhiệm vụ dài có thể bộc lộ tiến độ ngay trong cảnh, trong khi một nhiệm vụ lặp ngắn hơn có thể cần lịch sử để phân biệt các tình huống.
+Xét một robot được yêu cầu nhấc bát khỏi đĩa gốc và đặt lại đúng ba lần. Sau một lần đặt lại, quan hệ hình học giữa bát và đĩa có thể gần giống lúc khởi đầu. Khi đã thực hiện một hoặc hai chu kỳ, robot cần tiếp tục. Khi chu kỳ thứ ba đã hoàn tất, robot cần tránh thực hiện thêm một chu kỳ. Khác biệt cần thiết cho quyết định nằm ở lịch sử tương tác. Trong cách nhìn của bài toán quyết định dưới quan sát một phần, trạng thái phục vụ quyết định có thể bao gồm tiến độ mà cảm biến hiện tại chỉ phản ánh gián tiếp. Trường hợp này cho thấy vì sao thời lượng thực thi và mức phụ thuộc vào lịch sử cần được xem xét như hai thuộc tính riêng của tác vụ. [@pomdp1998; @liberomem2025; @robomme2026]
 
-Các nghiên cứu gần đây đã khảo sát nhiều biểu diễn memory. MEM phối hợp lịch sử ảnh ngắn với tóm tắt ngôn ngữ dài, còn MemoryVLA lưu và truy xuất các biểu diễn perceptual và cognitive trong một memory bank [@mem2026; @memoryvla2026]. LIBERO-Mem xây dựng các tình huống thao tác có thông tin quan trọng gắn với lịch sử của thực thể [@liberomem2025]. Những công trình này tạo động lực nghiên cứu, đồng thời cho thấy không thể đánh giá memory chỉ bằng việc thêm một chuỗi văn bản vào instruction rồi quan sát một vài rollout.
+Khóa luận chọn thao tác lặp vì nó cho phép chỉ ra cụ thể thông tin nào bị thiếu và kiểm tra thông tin đó qua các mốc quan sát được. Một chu kỳ có hai mốc có thứ tự là bát rời đĩa và bát trở lại đúng đĩa. Số chu kỳ đã xác nhận là một giả thuyết cụ thể về phần lịch sử liên quan đến quyết định tiếp tục hay dừng. Việc khảo sát yêu cầu một lần và ba lần giúp quan sát cùng dạng thao tác ở hai mức yêu cầu tiến độ. Hai tác vụ vẫn có thể khác nhau về phân phối quỹ đạo và độ khó điều khiển, vì vậy chênh lệch điểm giữa chúng chỉ được diễn giải trong phạm vi cấu hình đã đo. SmolVLA được chọn làm mô hình nền để khảo sát một giao diện văn bản cho lịch sử trong khi giữ kiến trúc dự đoán hành động của mô hình. [@smolvla2025; @smolvlaCheckpoint; @liberomemSource]
 
-## 1.2. Bài toán đặt ra
+## 1.2. Khoảng trống nghiên cứu và định vị đề tài
 
-Khóa luận nghiên cứu cách bổ sung một bộ nhớ sự kiện bên ngoài SmolVLA. Bộ nhớ phải được xây dựng từ quan sát được phép sử dụng, giữ thông tin có ích qua thời gian và tạo đầu vào phù hợp cho policy. Hai yêu cầu cần được giải quyết đồng thời là tính đúng đắn của thông tin được ghi và khả năng policy khai thác thông tin đó. Một hệ thống ghi nhiều sự kiện nhưng thường nhầm lẫn không đương nhiên tốt hơn hệ thống có khả năng từ chối xác nhận khi thiếu bằng chứng.
+Các nghiên cứu về bộ nhớ cho VLA đã khảo sát nhiều cách biểu diễn lịch sử. MEM kết hợp lịch sử video ngắn với bản tóm tắt ngôn ngữ dài. MemoryVLA truy xuất ngữ cảnh từ bộ nhớ đặc trưng tri giác và nhận thức. LIBERO-Mem nhấn mạnh diễn tiến của từng thực thể, còn RoboMME cho thấy hiệu quả của các cách tích hợp bộ nhớ phụ thuộc vào loại tác vụ. Các kết quả này đặt ra câu hỏi cụ thể hơn cho mô hình và tác vụ đang khảo sát: nội dung lịch sử nào liên quan trực tiếp đến quyết định, nội dung đó được suy ra từ bằng chứng nào, và khi nào có thể cấp nó cho chính sách? [@mem2026; @memoryvla2026; @liberomem2025; @robomme2026]
 
-Trong phạm vi hiện tại, bài toán được thu hẹp vào quan hệ giữa một chiếc bát và đĩa gốc của nó. Hệ thống theo dõi các lần bát rời đĩa và quay lại. T1 yêu cầu một lần nhấc–đặt lại; T3 yêu cầu ba lần. Đây là tập con của hướng nghiên cứu về thao tác có lịch sử thực thể, chưa đại diện cho memory nhiều vật thể, quan hệ chứa, thứ tự tương tác phức tạp hoặc chuyển giao sang robot thật.
+Khoảng trống thứ nhất liên quan đến cách biểu diễn tiến độ. Một chính sách có thể học tương quan giữa thời gian đã trôi qua và số thao tác thường hoàn thành trong quỹ đạo trình diễn. Khi robot chờ hoặc thao tác chậm, tương quan này có thể sai lệch. Zhang và An ghi nhận hiện tượng tiến độ ảo trong một số thí nghiệm đếm của RoboMME và khảo sát cách đánh chỉ mục bộ nhớ theo sự kiện. Kết quả của họ củng cố động cơ xem xét bằng chứng thay đổi trạng thái của vật thể. Câu hỏi hẹp của khóa luận là cách biểu diễn trực tiếp mốc rời và trở lại đĩa, ghi rõ thời điểm có thể xác nhận và biểu thị phần lịch sử chưa biết khi theo dõi gián đoạn. Thiết kế này cho phép kiểm tra nội dung nào đã hiện diện trong đầu vào ngay trước một quyết định của SmolVLA. [@clockvla2026; @liberomem2025]
 
-Một khó khăn độc lập với thiết kế memory là tính hợp lệ của phép đo. Policy, simulator, dữ liệu demonstration, bộ tiền xử lý và bộ chấm điểm phải có nguồn gốc rõ ràng. Nếu quy ước ảnh hoặc điều kiện kết thúc khác nhau, chênh lệch success có thể phản ánh thay đổi của đường thực nghiệm thay vì thông tin lịch sử. Vì vậy, xây dựng một phép so sánh có thể kiểm tra lại là một phần của phương pháp nghiên cứu.
+Khoảng trống thứ hai liên quan đến cách đánh giá cơ chế. Sự kiện có thể được nhận diện đúng trên trình diễn nhưng bị bỏ sót khi chính sách tự tạo quỹ đạo có che khuất hoặc thao tác dở dang. Một chính sách cũng có thể giảm sai số dự đoán hành động trên dữ liệu cố định mà vẫn gặp lỗi tích lũy khi điều khiển vòng kín. Nếu bộ nhớ và trọng số chính sách thay đổi đồng thời, chênh lệch thành công còn bao gồm tác động của thích ứng. Vì vậy, nghiên cứu cần đối chiếu độ phù hợp của bản ghi sự kiện, độ nhạy của mô hình với lịch sử và kết quả điều khiển bằng các phép đo tương ứng. Sự phân biệt này đặc biệt quan trọng khi đánh giá một biểu diễn gọn trên một mô hình nền đã huấn luyện. [@mem2026; @memoryvla2026; @robomme2026]
 
-Có thể mô tả bài toán ở mức trừu tượng như sau. Tại thời điểm $t$, môi trường có trạng thái đầy đủ $x_t$, nhưng policy chỉ nhận quan sát được cho phép $o_t$, instruction $ell$ và snapshot lịch sử $m_t$. Mục tiêu của task là số chu kỳ cần hoàn thành $N\in\{1,3\}$. Gọi $z_t$ là số chu kỳ vật lý đã thực hiện và $\hat z_t$ là số chu kỳ writer đã xác nhận. Hai đại lượng này không đồng nhất: $z_t$ thuộc trạng thái mô phỏng và evaluator, còn $\hat z_t$ là ước lượng từ bằng chứng RGB có thể thiếu hoặc sai.
+## 1.3. Mục tiêu và câu hỏi nghiên cứu
 
-Tại mỗi lần truy vấn, policy nhận chuỗi điều kiện $c_t=R(\ell,m_t)$ và sinh một action chunk $A_t$. Yêu cầu thiết kế là duy trì một bộ nhớ có ích cho quyết định nhưng tuân theo ràng buộc thông tin và giao diện:
+Mục tiêu của khóa luận là khảo sát một biểu diễn bộ nhớ sự kiện thị giác cho tiến độ thao tác lặp và xác định điều kiện để đo giá trị của biểu diễn đó đối với SmolVLA. Gọi $o_t$ là quan sát mà chính sách được phép nhận tại bước $t$, $N\in\{1,3\}$ là số chu kỳ theo chỉ dẫn và $\hat z_t$ là số chu kỳ do bộ ghi xác nhận. Tiến độ do bộ chấm độc lập xác định được ký hiệu riêng với $\hat z_t$. Sự phân biệt này cho phép xem độ phù hợp của bộ nhớ là một đại lượng cần đo thay vì một giả định của phép đánh giá.
+
+**RQ1. Biểu diễn và độ phù hợp của bằng chứng.** Có thể xây dựng từ quan sát khả dụng một bộ nhớ sự kiện biểu diễn tiến độ nhấc và đặt lại bát cho SmolVLA như thế nào? Các sự kiện ghi được phù hợp với mốc tiến độ chú giải ở mức nào trên những quỹ đạo khảo sát?
+
+**RQ2. Giá trị đối với điều khiển.** Khi giữ tương đương dữ liệu và ngân sách thích ứng, thông tin lịch sử có cải thiện tỷ lệ hoàn thành tác vụ lặp trong điều khiển vòng kín hay không? T3 là tác vụ trọng tâm vì quyết định tiếp tục hay dừng phụ thuộc vào tiến độ qua nhiều chu kỳ.
+
+**RQ3. Duy trì năng lực cơ sở.** Sau khi thích ứng với dữ liệu tác vụ phụ thuộc lịch sử, chính sách còn duy trì khả năng hoàn thành các tác vụ LIBERO cơ sở đến mức nào dưới cùng giao thức đánh giá?
+
+**RQ4. Điều kiện hiệu lực của kết quả.** Sự thiếu hụt hoặc chậm trễ của bằng chứng sự kiện, khác biệt giữa trình diễn và quỹ đạo do chính sách sinh ra, cùng các điều kiện thực thi ảnh hưởng thế nào đến diễn giải kết quả?
+
+Các câu hỏi xác định những đơn vị bằng chứng khác nhau. RQ1 cần đối chiếu bản ghi với mốc chú giải. RQ2 và RQ3 cần đo hành vi vòng kín với điều kiện đối chứng tương ứng. RQ4 cần phân tích những trường hợp bộ ghi và bộ chấm bất đồng, cùng các yếu tố có thể giải thích bất đồng. Chương 4 trình bày phần bằng chứng đã thu được cho từng câu hỏi và chỉ ra những phép kiểm còn thiếu để nhận diện tác động của lịch sử.
+
+## 1.4. Phạm vi và đóng góp
+
+Phạm vi thực nghiệm giới hạn ở quan hệ giữa một chiếc bát và đĩa gốc trong mô phỏng. T1 yêu cầu một chu kỳ và T3 yêu cầu ba chu kỳ. Giao thức nghiên cứu sử dụng nguồn LIBERO và LIBERO-Mem đã khóa phiên bản, với thiết lập thực thi và tiêu chí kết thúc nêu trong Chương 3. Các điểm báo cáo thuộc hai tác vụ theo giao thức riêng của khóa luận và được đánh dấu là không so sánh trực tiếp với điểm công bố của benchmark. Thử nghiệm trên nhiều thực thể, chuyển giao sang mô hình nền khác và đánh giá trên robot thật nằm ngoài phạm vi bằng chứng hiện tại. [@liberoSource; @liberomemSource]
+
+**Đóng góp thứ nhất là phát biểu bài toán tiến độ dưới quan sát một phần.** Khóa luận sử dụng thao tác lặp để chỉ ra một trường hợp mà cùng dạng quan sát có thể tương ứng với yêu cầu tiếp tục hoặc dừng. Từ đó, nghiên cứu xác định nội dung lịch sử cần khảo sát là các chu kỳ có bằng chứng, phân biệt số chu kỳ bộ nhớ xác nhận với số chu kỳ dùng để chấm điểm. Phát biểu này tạo cơ sở để phân tích tính phù hợp của biểu diễn, mức độ chính sách sử dụng thông tin và khả năng duy trì kỹ năng sau thích ứng.
+
+**Đóng góp thứ hai là biểu diễn bộ nhớ sự kiện có bằng chứng và thời điểm khả dụng.** Phương pháp gắn các chuyển tiếp rời và trở lại với quan hệ bát–đĩa gốc, ghi nhận thời điểm có thể xác nhận và biểu thị khi lịch sử chưa được quan sát đầy đủ. Khóa luận phát biểu và chứng minh hai tính chất trong phạm vi mô hình máy trạng thái và giả thiết về nguồn dữ liệu: quy tắc đếm theo cặp sự kiện và tính không nhìn trước của nội dung được cấp cho chính sách. SmolVLA, bộ phát hiện thị giác và LoRA được kế thừa để khảo sát biểu diễn này trong một mô hình điều khiển. [@smolvla2025; @groundingdino2024; @lora2021]
+
+**Đóng góp thứ ba là khảo sát thực nghiệm từ bản ghi đến hành vi vòng kín.** Khóa luận đối chiếu các sự kiện được xác nhận với mốc chú giải trên quỹ đạo trình diễn, đo độ nhạy của sai số dự đoán đối với đầu vào lịch sử, và phân tích kết quả vòng kín trên cùng tập trạng thái khởi tạo. Một bất đồng quan sát được là lượt duy nhất được chấm thành công vẫn có bản ghi lịch sử chưa đầy đủ. Trường hợp này cho thấy việc chấm đúng tiến độ và việc chính sách nhận được một mô tả đầy đủ về tiến độ là hai vấn đề thực nghiệm cần kiểm tra. Các kết quả hiện tại cho phép mô tả tính khả thi của phương pháp và xác định điều kiện cho phép kiểm định giả thuyết cải thiện, với tác động riêng của bộ nhớ còn là câu hỏi mở. [@artifact2026]
+
+## 1.5. Bố cục khóa luận
+
+Chương 2 trình bày cơ sở về quyết định dưới quan sát một phần và đối chiếu các cách biểu diễn lịch sử trong VLA. Chương 3 xây dựng bộ nhớ sự kiện, phát biểu các tính chất và thiết kế phép đối chứng. Chương 4 phân tích độ phù hợp của sự kiện, kết quả ngoại tuyến và hành vi vòng kín theo các câu hỏi nghiên cứu. Chương 5 tổng hợp các kết luận trong phạm vi bằng chứng và xác định các thí nghiệm cần thiết để kiểm định giả thuyết còn mở.
+
+# Chương 2. Cơ sở lý thuyết và nghiên cứu liên quan
+
+## 2.1. Quyết định phụ thuộc lịch sử dưới quan sát một phần
+
+Một tác vụ có thể kéo dài qua nhiều bước nhưng vẫn cho phép suy ra tiến độ từ cấu hình hiện tại của cảnh. Ngược lại, một tác vụ lặp tương đối ngắn có thể đòi hỏi bộ nhớ nếu vật thể quay về vị trí cũ sau mỗi chu kỳ. Khi đó, quyết định có nên bắt đầu chu kỳ tiếp theo phụ thuộc vào những lần tương tác đã hoàn thành. Vì thế, độ dài quỹ đạo và mức phụ thuộc lịch sử là hai đặc trưng cần phân biệt khi đánh giá mô hình thị giác–ngôn ngữ–hành động.
+
+Gọi $x_t$ là trạng thái đầy đủ, $o_t$ là quan sát mà chính sách nhận được và $a_t$ là hành động tại bước $t$. Với tác vụ lặp, trạng thái dùng để mô hình hóa mục tiêu bao gồm cả trạng thái vật lý và số chu kỳ đã hoàn thành $z_t$. Cảm biến có thể cung cấp thông tin về vị trí vật thể và tư thế robot, trong khi $z_t$ là thuộc tính của diễn biến trước đó. Mô hình quá trình quyết định Markov quan sát một phần (POMDP) cho phép mô tả sự khác biệt này. Ký hiệu $h_t$ cho lịch sử và $b_t$ cho phân phối niềm tin ứng với chỉ dẫn $\ell$ [@pomdp1998].
+
+$$
+\begin{aligned}
+h_t &= (o_0,a_0,\ldots,a_{t-1},o_t),\\
+b_t(B) &= \Pr(x_t\in B\mid h_t,\ell),\qquad B\subseteq\mathcal X,
+\end{aligned}
+$$
+
+trong đó $B$ là một tập đo được của không gian trạng thái $\mathcal X$. Trong một POMDP với mô hình chuyển trạng thái và quan sát đã biết, phân phối niềm tin là thống kê đủ của lịch sử cho bài toán ra quyết định với mô hình đó. Khóa luận khảo sát một đại diện hẹp hơn, $m_t=f(h_t)$, nhằm giữ lại bằng chứng về các chu kỳ tương tác đã quan sát được. Biểu diễn này chỉ được thiết kế để hỗ trợ phân biệt tiến độ trong một họ tác vụ cụ thể. Việc tính được $m_t$ chưa thiết lập rằng nó là thống kê đủ cho điều khiển robot.
+
+Xét hai lịch sử có cùng chỉ dẫn và cùng quan sát tức thời, nhưng có hai tập hành động thích hợp rời nhau. Một chính sách chỉ điều kiện hóa theo $(o_t,\ell)$ sẽ sinh cùng một phân phối hành động trong cả hai trường hợp. Phân phối này không thể đồng thời gán xác suất một cho hai tập rời nhau. Ví dụ, khi bát đã được đặt lại hai lần, mục tiêu ba chu kỳ vẫn yêu cầu một lần nhấc nữa. Sau lần đặt lại thứ ba, việc khởi phát thêm chu kỳ có thể khiến tác vụ thất bại. Đây là lập luận về sự nhập nhằng của quan sát trong trường hợp lý tưởng. Trên dữ liệu thực nghiệm, ảnh, trạng thái robot hoặc nhịp thao tác có thể còn mang dấu vết của tiến độ. Mức chính sách dựa vào các dấu vết ấy là một vấn đề thực nghiệm.
+
+## 2.2. Biểu diễn lịch sử trong các mô hình VLA
+
+Các phương pháp bộ nhớ cho VLA khác nhau ở thông tin được giữ và cách thông tin ấy điều kiện hóa hành động. MEM của Torne và cộng sự phân biệt hai thang thời gian. Bộ mã hóa video giữ ngữ cảnh thị giác gần để hỗ trợ nhận biết diễn biến, còn phần tóm tắt bằng ngôn ngữ giữ thông tin ngữ nghĩa qua các giai đoạn dài hơn của tác vụ. Nhận ra chuyển động đang diễn ra và nhớ một việc đã hoàn thành vì thế có thể cần những khoảng lịch sử khác nhau [@mem2026].
+
+MemoryVLA của Shi và cộng sự lưu các đặc trưng tri giác và nhận thức trong một ngân hàng bộ nhớ. Tại thời điểm quyết định, mô hình truy xuất, hợp nhất đặc trưng lịch sử với đặc trưng hiện tại rồi điều kiện hóa mô-đun sinh hành động. Các thí nghiệm loại bỏ thành phần trong công trình này cho thấy kết quả phụ thuộc vào cách truy xuất, hợp nhất và dung lượng bộ nhớ trong từng thiết lập khảo sát. Những lựa chọn về cách tổ chức lịch sử vì vậy cần được đánh giá cùng yêu cầu của tác vụ [@memoryvla2026].
+
+Chung và cộng sự chuyển trọng tâm sang lịch sử của thực thể trong LIBERO-Mem. Bộ tác vụ làm lộ các tình huống mà quyết định phụ thuộc vào chuyển động, thứ tự, quan hệ hoặc sự che khuất của vật thể. Embodied-SlotSSM biểu diễn diễn biến của các thực thể bằng các trạng thái tiềm ẩn gắn với từng đối tượng. RoboMME mở rộng khảo sát có đối chứng về kiến trúc bộ nhớ bằng 16 tác vụ và 14 biến thể trên cùng mô hình nền $\pi_{0.5}$. Dai và cộng sự nhận thấy tính hữu ích của một biểu diễn phụ thuộc vào loại tác vụ. Kết quả này tạo cơ sở để lựa chọn nội dung bộ nhớ theo biến tiến độ cần suy ra, đồng thời giới hạn việc suy rộng kết quả giữa các họ tác vụ [@liberomem2025; @robomme2026].
+
+| Phương pháp | Nội dung lịch sử | Cách tác động đến quyết định | Câu hỏi liên quan đến khóa luận |
+|---|---|---|---|
+| MEM | Video ngắn và tóm tắt ngôn ngữ | Điều kiện hóa theo hai thang thời gian | Thông tin nào cần giữ qua nhiều giai đoạn? |
+| MemoryVLA | Đặc trưng tri giác và nhận thức | Truy xuất và hợp nhất với ngữ cảnh hiện tại | Chính sách sử dụng biểu diễn lưu trữ như thế nào? |
+| Embodied-SlotSSM | Diễn biến theo từng thực thể | Sinh hành động từ trạng thái tiềm ẩn của đối tượng | Quan hệ nào của vật thể quyết định tiến độ? |
+| Phương pháp của khóa luận | Sự kiện rời và trở về đĩa gốc | Đưa tiến độ đã xác nhận vào chỉ dẫn bằng văn bản | Sự kiện nào có đủ bằng chứng để dùng tại lúc ra quyết định? |
+
+Các biểu diễn video và đặc trưng giữ được nhiều tín hiệu hữu ích cho điều khiển. Khi câu hỏi nghiên cứu tập trung vào một lần tương tác cụ thể, bản ghi sự kiện tường minh cho phép kiểm tra quan sát nào đã được dùng để xác nhận sự kiện và từ lúc nào chính sách mới có thể sử dụng thông tin này. Cách nén đó dựa trên giả định rằng sự kiện được định nghĩa phù hợp với mục tiêu tác vụ. Nếu chọn sai sự kiện hoặc làm mất bằng chứng quan trọng, bản ghi ngắn vẫn có thể dẫn đến quyết định sai.
+
+## 2.3. Khoảng trống nghiên cứu trong tác vụ lặp
+
+Việc một chính sách có bộ nhớ hoàn thành tác vụ lặp chưa cho biết nó đã suy ra tiến độ từ sự kiện hay từ tương quan sẵn có trong dữ liệu. Nếu các quỹ đạo trình diễn có nhịp gần như cố định, thời gian trôi qua có thể dự báo số chu kỳ dù chính sách chưa nhận diện được một chu kỳ đã hoàn tất. Zhang và An kiểm tra trực tiếp cơ chế này trong bản tiền ấn phẩm trên các tác vụ đếm của RoboMME. Khi thêm khoảng dừng hoặc chuyển động không làm thay đổi tiến độ nhưng vẫn đưa các quan sát đó vào bộ nhớ, chính sách được khảo sát có thể dừng sớm vì hành xử như thể tiến độ đã tăng. Tổ chức chỉ mục bộ nhớ theo sự kiện khôi phục một phần hiệu năng trong các điều kiện được thử nghiệm. Công trình cũng chỉ ra rằng phép gộp các đoạn quay về cấu hình cũ có thể vô tình loại cả một lần lặp hợp lệ [@clockvla2026].
+
+Kết quả ấy làm rõ câu hỏi về ngữ nghĩa của một sự kiện. Khi bát trở về đĩa, hai quan sát trước và sau chu kỳ có thể gần nhau, nhưng phần diễn biến giữa chúng quyết định liệu đó là một lần lặp cần ghi nhận. Một khoảng chờ trên đĩa không mang cùng ý nghĩa với chuỗi rời đĩa rồi quay lại. Khóa luận khảo sát bộ nhớ chuyên biệt giữ lại chuỗi bằng chứng này trên SmolVLA. Mỗi lần hoàn thành được xác nhận từ diễn biến của cùng một cặp bát–đĩa. Trạng thái chưa biết được bảo lưu nếu quan sát bị gián đoạn. Thời điểm xảy ra ước lượng và thời điểm đủ bằng chứng để xác nhận được ghi riêng để tránh đưa thông tin có được sau này vào quyết định trước đó.
+
+Khoảng trống thứ nhất trong phạm vi khảo sát là **khả năng xác lập tiến độ sự kiện từ quan sát trực tuyến có thể kiểm tra lại**. Điều này đòi hỏi bằng chứng cho cả nhận dạng thực thể lẫn chuyển tiếp quan hệ với vật đỡ. Grounding DINO cung cấp hộp giới hạn từ ảnh và mô tả ngôn ngữ [@groundingdino2024]. Mỗi hộp cho một ước lượng vị trí đối tượng trên ảnh tại một thời điểm. Diễn giải việc nhấc hoặc đặt lại cần liên kết đối tượng qua thời gian và áp dụng một quy tắc xác nhận. Chương 3 cụ thể hóa yêu cầu đó bằng máy trạng thái và điều kiện về thời điểm sử dụng sự kiện. Độ đúng, độ trễ và mức thiếu quan sát là những thuộc tính thực nghiệm riêng của bản ghi.
+
+Khoảng trống thứ hai là **mức đóng góp của nội dung lịch sử đối với quyết định sau khi đã kiểm soát thích ứng chính sách**. Một biểu diễn có thể ghi đúng tiến độ mà chính sách vẫn bỏ qua, hoặc chính sách có thể được lợi từ dữ liệu tinh chỉnh ngay cả khi thiếu bản ghi lịch sử. Đối chiếu sự kiện với mốc tham chiếu giúp đo chất lượng bản ghi. Đánh giá hành vi khi thay đổi thông tin lịch sử dưới các điều kiện đối chứng phù hợp giúp xác định giá trị sử dụng của bản ghi. Các can thiệp vào nhịp thực hiện để kiểm tra lối tắt theo thời gian là một phép thử tiếp theo đối với phương pháp của khóa luận.
+
+## 2.4. SmolVLA và vai trò của thích ứng
+
+SmolVLA kết hợp mô hình thị giác–ngôn ngữ với mô-đun sinh hành động (action expert). Biểu diễn từ ảnh, trạng thái robot và chỉ dẫn điều kiện hóa việc dự đoán một đoạn hành động liên tục. Mỗi lần dự đoán có thể sinh $H$ hành động, trong khi chính sách nhận quan sát mới sau khi thực thi $s$ hành động đầu. Cơ chế này tạo điều kiện cho điều khiển liên tục với phản hồi định kỳ. Lịch sử các lần tương tác đã xác nhận là biến bổ sung, khác với số bước dự đoán hoặc thực thi giữa hai lần nhận quan sát. Khóa luận chọn SmolVLA vì có thể khảo sát việc truyền biến bổ sung này qua đầu vào ngôn ngữ của một chính sách đã học thao tác. Thực nghiệm sử dụng checkpoint SmolVLA cho LIBERO đã khóa phiên bản [@smolvla2025; @smolvlaCheckpoint].
+
+Việc bổ sung bản ghi vào chỉ dẫn làm thay đổi phân phối đầu vào của mô hình đã huấn luyện. Khóa luận sử dụng thích ứng hạng thấp LoRA để khảo sát khả năng điều kiện hóa hành động theo biểu diễn mới, đồng thời giữ cố định trọng số nền [@lora2021]. Với một ma trận nền $W_0$, trọng số hiệu dụng có dạng $W=W_0+(\alpha/r)BA$, trong đó $A,B$ là hai ma trận được học, $r$ là hạng của phép cập nhật và $\alpha$ là hệ số điều chỉnh. Cập nhật hạng thấp tạo một cách thích ứng với phạm vi tham số xác định. Tác động của cập nhật vẫn cần được kiểm soát khi ước lượng tác động của thông tin lịch sử.
+
+Mục tiêu huấn luyện của SmolVLA kế thừa flow matching [@flowmatching2023; @smolvla2025]. Ở mức khái quát, hàm mục tiêu đo sai lệch giữa trường vector học được $v_{\theta,\phi}$ và trường mục tiêu $u_\tau$ dọc theo đường xác suất nối nhiễu với đoạn hành động tham chiếu.
+
+$$
+\mathcal L_{\mathrm{FM}}
+= \mathbb E_{\tau,A,\epsilon,c}\!
+\left[\left\|v_{\theta,\phi}(A_\tau,\tau,c)-u_\tau(A,\epsilon)\right\|_2^2\right].
+$$
+
+Trong biểu thức này, $\tau$ là tham số thời gian của phép nội suy, $A_\tau$ là mẫu trên đường xác suất và $c$ là điều kiện đầu vào. Sai số ngoại tuyến trên quỹ đạo đã ghi phản ánh chất lượng dự đoán theo phân phối quan sát trong dữ liệu. Trong điều khiển vòng kín, hành động của chính sách làm thay đổi quan sát tiếp theo, đồng thời ảnh hưởng đến bằng chứng mà bộ nhớ có thể thu nhận. Do đó, giảm sai số dự đoán và tăng tỷ lệ thành công là hai giả thuyết phải được kiểm tra bằng những phép đo tương ứng.
+
+Thành phần dữ liệu cũng ảnh hưởng đến việc quy kết kết quả. Nghiên cứu *A Balanced Data Diet* cho thấy cách chọn kinh nghiệm trong học tăng cường có thể làm thay đổi năng lực thu được dưới một ngân sách huấn luyện [@balanceddiet2026]. Đối với bài toán tinh chỉnh có giám sát của khóa luận, hệ quả về thiết kế thí nghiệm là cần khớp dữ liệu và ngân sách giữa các cấu hình so sánh. Việc phối hợp dữ liệu thao tác cơ sở và dữ liệu tác vụ phụ thuộc lịch sử tạo điều kiện khảo sát sự đánh đổi giữa thích ứng và duy trì kỹ năng. Khả năng duy trì kỹ năng cần được đo trực tiếp trên nhóm tác vụ cơ sở.
+
+## 2.5. Tác vụ nghiên cứu và ý nghĩa của các phép đo
+
+LIBERO cung cấp tập tác vụ mô phỏng phục vụ nghiên cứu học chuyển giao ở robot [@libero2023]. LIBERO-Mem đưa thêm các yêu cầu tiến độ và thứ tự gắn với tương tác của vật thể [@liberomem2025]. Trong khóa luận, hai biến thể T1 và T3 giữ cùng dạng thao tác nhấc–đặt lại bát và thay đổi số chu kỳ yêu cầu từ một lên ba. Cặp tác vụ cho phép quan sát cả năng lực thực hiện thao tác cơ sở lẫn hành vi khởi phát, lặp và kết thúc thao tác. T3 cũng kéo dài quỹ đạo và tạo thêm cơ hội tích lũy sai số điều khiển. Vì vậy, chênh lệch T1–T3 tạo tín hiệu về độ khó của tác vụ, còn tác động của lịch sử phải được ước lượng bằng so sánh trong cùng tác vụ.
+
+Ở mức hành vi, tỷ lệ thành công (SR) đo phần các lượt chạy đạt điều kiện hoàn tất. Tỷ lệ hoàn thành mốc (SCR) bổ sung thông tin về tiến độ trước khi thất bại. Việc thực hiện dư chu kỳ phản ánh một dạng sai lệch khác với thất bại khi nhấc hoặc đặt vật. Để diễn giải các chỉ số này, cần đối chiếu tiến độ do bộ đánh giá ghi nhận với tiến độ mà bộ nhớ quan sát được và với chuỗi hành động thực thi. Trên cùng một trạng thái khởi tạo, các cấu hình chính sách được so sánh theo cặp. Khi hai tác vụ chia sẻ trạng thái khởi tạo, phân tích độ bất định cần xét sự phụ thuộc theo nhóm trạng thái. Nhiều khung hình trong cùng một lượt chạy là các quan sát của cùng một quỹ đạo.
+
+Bộ nhớ sự kiện tường minh cho SmolVLA cho phép quan sát những bất đồng giữa tiến độ của tác vụ, tiến độ đã ghi và hành vi của chính sách. Một sự kiện có thể được ghi nhận chậm, bị bỏ lỡ hoặc được ghi đúng nhưng không dẫn đến quyết định phù hợp. Việc phân biệt các khả năng này định hướng thiết kế biểu diễn ở Chương 3 và phân tích bằng chứng thực nghiệm ở Chương 4.
+
+# Chương 3. Bộ nhớ sự kiện thị giác cho SmolVLA
+
+## 3.1. Tiến độ tác vụ và giả thuyết biểu diễn
+
+Tác vụ T1 và T3 yêu cầu robot nhấc bát và đặt lại trên đĩa ban đầu lần lượt một và ba lần. Gọi $N\in\{1,3\}$ là số chu kỳ được yêu cầu và $z_t$ là số chu kỳ đã thực sự hoàn tất đến bước $t$ theo định nghĩa tác vụ. Một cấu hình nhìn thấy bát ở trên đĩa có thể xuất hiện ở nhiều giá trị $z_t$. Trong trường hợp hai lịch sử dẫn đến cùng quan sát tại lúc bát nằm trên đĩa, một chính sách chỉ điều kiện hóa trên quan sát đó và cùng chỉ dẫn sẽ sinh cùng phân phối hành động. Tuy nhiên, vai trò của một chu kỳ tiếp theo thay đổi theo tiến độ. Khi $z_t<N$, chu kỳ tiếp theo có thể đưa tác vụ đến đích. Khi $z_t=N$, một chu kỳ mới có thể gây vượt mục tiêu. Ví dụ này giải thích vì sao số chu kỳ là một biến lịch sử có ý nghĩa cho thiết kế. Tần suất các quan sát tương đương trong các lượt chạy chưa được định lượng.
+
+Nghiên cứu đề xuất biểu diễn lịch sử bằng các sự kiện thay đổi quan hệ giữa bát đích và đĩa gốc. Số chu kỳ được bộ ghi xác nhận, ký hiệu $\hat z_t$, là một đại lượng ước lượng từ quan sát. Biểu diễn còn giữ danh tính cặp vật, tình trạng chu kỳ đang diễn ra và mức đầy đủ của lịch sử. Điều này cho phép mô tả hai trường hợp có cùng $\hat z_t$ nhưng khác nhau về mức độ tin cậy của bằng chứng. Giả thuyết nghiên cứu là biểu diễn sự kiện có thể cung cấp tín hiệu tiến độ hữu ích cho chính sách khi quan sát hiện tại không phân giải được lịch sử. Khả năng ghi nhận sự kiện và khả năng chính sách sử dụng sự kiện là hai vấn đề thực nghiệm riêng.
+
+Tại bước $t$, đặt $o_t=(I_t^{\mathrm{ext}},I_t^{\mathrm{wrist}},p_t)$, với hai ảnh RGB và trạng thái robot $p_t\in\mathbb{R}^8$. Gọi $\ell$ là chỉ dẫn và $a_{t-1}$ là hành động gần nhất đã thực thi. Bộ nhớ $m_t$ cập nhật ở từng bước quan sát, còn chính sách sinh đoạn hành động $A_t$ tại các bước truy vấn.
 
 $$
 \begin{aligned}
 m_t &= U(m_{t-1},o_t,a_{t-1}),\\
-A_t &\sim \pi_{\theta,\phi}(\cdot\mid o_t,c_t),\\
-\operatorname{Tok}(\ell\oplus R(\ell,m_t)) &\le 48.
+c_t &= R(\ell,m_t),\qquad
+A_t\sim \pi_{\theta,\phi}(\cdot\mid o_t,c_t).
 \end{aligned}
 $$
 
-Ở đây $a_{t-1}$ là action đã thực thi trước quan sát hiện tại; $\oplus$ biểu thị phép ghép instruction với memory theo đúng quy ước tiền xử lý; $\operatorname{Tok}$ là phép đếm bằng tokenizer checkpoint. Mọi sự kiện được dùng tại thời điểm $t$ phải có nguồn quan sát hợp lệ và thời điểm sẵn sàng không vượt quá $t$. Việc tăng SR không được giả định từ định nghĩa bài toán; nó là một giả thuyết cần kiểm tra bằng rollout có đối chứng.
+Trong biểu thức này, $U$ là quy tắc ghi sự kiện, $R$ là phép biểu diễn bộ nhớ thành văn bản, $\theta$ là trọng số SmolVLA gốc và $\phi$ là các tham số LoRA được học. Bước khởi tạo chỉ có quan sát đầu tiên. Ở mỗi bước sau, bộ ghi nhận quan sát thu được sau hành động đã thực thi. Hành động còn nằm trong đoạn dự đoán chưa thuộc lịch sử quan sát.
 
-## 1.3. Mục tiêu và câu hỏi nghiên cứu
+## 3.2. Ranh giới giữa quan sát và đánh giá
 
-Mục tiêu tổng quát là khảo sát khả năng hỗ trợ tác vụ chuỗi dài của VLA bằng bộ nhớ sự kiện thị giác. Mục tiêu thực hiện ở giai đoạn này gồm thiết kế bộ nhớ, tích hợp với checkpoint có nguồn gốc xác định, huấn luyện thích ứng nhẹ và thực hiện đánh giá sơ bộ trong mô phỏng.
+Một yêu cầu để kiểm tra giả thuyết biểu diễn là giữ độc lập nguồn thông tin của chính sách với nguồn thông tin dùng để chấm điểm. Bộ ghi chỉ sử dụng ảnh và tín hiệu trạng thái robot có tại thời điểm quan sát để xác nhận sự kiện. Bộ chấm đọc vị từ và tiến độ từ môi trường mô phỏng, dùng chúng để xác định kết quả của quỹ đạo. Nhánh chấm điểm đứng ngoài đường thông tin đi vào chính sách như minh họa ở Hình 3.1. Vì vậy, chênh lệch giữa $\hat z_t$ và tiến độ do môi trường ghi nhận có thể được dùng để phân tích sai số của phép đo.
 
-RQ1 đặt câu hỏi liệu có thể đưa memory từ RGB vào SmolVLA trong khi duy trì ranh giới thông tin và contract của policy. RQ2 xem xét liệu lịch sử giúp xử lý tác vụ lặp tốt hơn khi đã kiểm soát tác động của adaptation. RQ3 kiểm tra khả năng duy trì kỹ năng cơ sở sau thích ứng. RQ4 tìm hiểu những giới hạn do chất lượng writer, quy ước dữ liệu và chi phí thực thi gây ra. Các câu hỏi được tách ra để một bằng chứng về khả năng vận hành không bị diễn giải thành bằng chứng về hiệu quả hay tính tổng quát.
+![Đường thông tin của phương pháp. Bộ nhớ được suy từ quan sát đã nhận, còn tiến độ do môi trường ghi nhận được dành cho đánh giá.](figures/architecture.png)
 
-Trong phạm vi bản thảo này, RQ1 được trả lời ở mức tích hợp cho hai task và có các kiểm tra riêng về writer trên demonstration. RQ2–RQ4 chưa có đủ phép đo để kết luận. Đặc biệt, so sánh B0–F1 hiện có thay đổi đồng thời trọng số adapter và đường perception–memory; đây là phép đo hệ thống tổng hợp, không nhận diện tác động riêng của lịch sử.
+Sự phân tách này đặc biệt quan trọng khi sinh mẫu huấn luyện từ quỹ đạo ghi sẵn. Một quỹ đạo đầy đủ có cả trạng thái sau thời điểm tạo mẫu và kết quả cuối lượt. Khi xây dựng ngữ cảnh cho một mẫu tại bước $t$, bộ ghi được cập nhật theo thứ tự thời gian và chỉ dựa trên tiền tố quan sát đến $t$. Thời điểm đủ bằng chứng cho từng sự kiện được lưu riêng để kiểm tra quy tắc này.
 
-## 1.4. Phạm vi và đóng góp
+## 3.3. Ước lượng quan hệ bát và đĩa gốc
 
-Nghiên cứu sử dụng nguồn task và simulator từ LIBERO cùng nhánh LIBERO-Mem đã được khóa revision [@liberoSource; @liberomemSource]. Giai đoạn V1 thiết lập baseline policy không memory. Phần memory thuộc V2; các kết quả hai giai đoạn không được gộp khi runtime hoặc cadence thực thi khác nhau. Mọi kết quả local trong bản thảo được phân loại là LIBERO-derived và không so ngang với điểm của paper chính thức.
+Giả định đo lường là trong bố trí của T1 và T3, một số thay đổi quan hệ bát và đĩa có thể được phát hiện từ chuyển động tương đối của các hộp giới hạn trong ảnh camera ngoài. Camera cổ tay cung cấp bằng chứng bổ trợ về khả năng quan sát. Đĩa gốc được neo bằng quan sát ở đầu lượt khi quan hệ bát trên đĩa đủ rõ và tay kẹp đã mở. Các quan sát sau phải ghép được với đĩa đã neo. Việc cố định tham chiếu theo thời gian giúp phép đo bám vào ngữ nghĩa “đặt về đĩa ban đầu”, kể cả khi bát xuất hiện gần đĩa khác.
 
-Đóng góp hiện có thứ nhất là một thiết kế tích hợp bộ nhớ sự kiện có bằng chứng và thời điểm khả dụng, gắn với quy tắc xử lý lịch sử chưa đầy đủ. Thứ hai là quy trình nối bộ nhớ với SmolVLA bằng văn bản và thích ứng action expert, có lưu provenance của dữ liệu, tokenizer và adapter. Thứ ba là tập artifact thực nghiệm và cách phân tích giúp phân biệt tiến độ triển khai với mức độ kiểm chứng giả thuyết. Những thành quả này có ý nghĩa ở phương diện thiết kế hệ thống nghiên cứu và thực hành thực nghiệm.
-
-Ở mức thực nghiệm thành phần, audit writer ngày 26/10 ghi nhận 12 lần return trong sáu demonstration được ghép một-một với milestone annotation trong dung sai ±20 frame. Đây là bằng chứng ban đầu rằng pipeline thị giác có thể tạo chuỗi sự kiện đúng thứ tự trong các trajectory đã khảo sát. Các demonstration đều thành công, chỉ đại diện ba trạng thái khởi tạo, và milestone không phải nhãn contact; do đó kết quả này chưa ước lượng được lỗi trên trajectory thất bại hay độ đúng trên phân phối rộng.
-
-Khóa luận kế thừa SmolVLA, Grounding DINO, LoRA, loss huấn luyện và các tài nguyên benchmark. Việc kết hợp chúng không tự chứng minh một nguyên lý memory mới hoặc hiệu năng vượt các công trình liên quan. Đóng góp về cải thiện policy chỉ được xác nhận khi có đối chứng phù hợp. Ở tiến độ hiện tại, kết luận đó vẫn còn mở.
-
-## 1.5. Bố cục khóa luận
-
-Chương 2 trình bày những khái niệm cần thiết và định vị phương pháp trong các nghiên cứu về memory cho robot. Chương 3 mô tả bộ nhớ sự kiện, giao diện policy, dữ liệu thích ứng và protocol đánh giá. Chương 4 trình bày các thí nghiệm có artifact kiểm tra được, phân tích kết quả và chỉ rõ phần chưa đủ bằng chứng. Chương 5 rút ra kết luận ở phạm vi hiện tại và xác định các bước nghiên cứu tiếp theo.
-
-# Chương 2. Cơ sở lý thuyết và nghiên cứu liên quan
-
-## 2.1. VLA và quyết định dưới quan sát một phần
-
-Gọi $x_t$ là trạng thái đầy đủ của môi trường tại thời điểm $t$, $o_t$ là quan sát và $a_t$ là hành động. Trong mô phỏng, $x_t$ có thể bao gồm vị trí, vận tốc, tiếp xúc và các biến của bộ đánh giá. Tuy nhiên, policy không được quyền sử dụng tất cả các biến đó. Đầu vào của policy chỉ gồm những kênh được khai báo, chẳng hạn ảnh camera và proprioception của robot. Sự phân biệt này quan trọng vì dùng biến tiến độ từ evaluator làm memory sẽ thay đổi bản chất bài toán.
-
-Lịch sử quan sát–hành động có thể viết thành $h_t=(o_0,a_0,\ldots,a_{t-1},o_t)$. Một biểu diễn memory $m_t$ được xem là phép nén có chọn lọc của lịch sử đó. Memory có ích nếu giữ thông tin cần cho quyết định mà quan sát hiện tại không biểu đạt đầy đủ. Khóa luận không giả định rằng một bộ đếm chu kỳ là sufficient statistic cho toàn bộ trạng thái môi trường; nó chỉ là biểu diễn chuyên biệt cho tác vụ đang xét.
-
-Hai lịch sử có thể dẫn đến các quan sát gần nhau nhưng đòi hỏi quyết định khác nhau. Trường hợp bát đã quay về đĩa hai lần và ba lần là một ví dụ về thiết kế task như vậy. Dù vậy, sự giống nhau bằng mắt không phải chứng minh hai phân phối quan sát hoàn toàn đồng nhất. Các tín hiệu phụ như tư thế robot hay thời gian có thể tương quan với tiến độ. Một đánh giá memory chặt chẽ cần xem xét khả năng policy sử dụng những tín hiệu đó.
-
-Một mô hình hóa chuẩn cho tình huống này là quá trình quyết định Markov quan sát một phần (POMDP), ký hiệu $\mathcal P=(\mathcal X,\mathcal A,T,\mathcal O,Z,r,\gamma)$. $T(x'\mid x,a)$ mô tả chuyển trạng thái, $Z(o\mid x)$ mô tả quan sát, $r$ là hàm thưởng và $\gamma$ là hệ số chiết khấu. Policy chỉ nhìn thấy lịch sử $h_t=(o_0,a_0,\ldots,a_{t-1},o_t)$ thay vì trạng thái $x_t$. Trong trường hợp tổng quát, phân phối niềm tin $b_t(x)=P(x_t=x\mid h_t)$ là một biểu diễn lịch sử có thể dùng để ra quyết định.
-
-Khóa luận không xây dựng bộ lọc Bayes để ước lượng toàn bộ $b_t$. Thay vào đó, writer duy trì một thống kê sự kiện chuyên biệt $m_t$ về quan hệ bát–đĩa. Vì vậy, $m_t$ chỉ có thể được xem là đủ cho quyết định nếu các thông tin ngoài count không ảnh hưởng đến hành động tối ưu trong phạm vi tác vụ. Điều kiện đó chưa được chứng minh. Định nghĩa memory hẹp giúp tạo giả thuyết có thể kiểm định, nhưng đồng thời giới hạn phạm vi diễn giải.
-
-Có thể diễn đạt mục tiêu của một memory hữu ích bằng mức mất thông tin quyết định:
-
-$$
-\Delta_t = d\!\left(\pi^*(\cdot\mid h_t,\ell),\,\pi_\phi(\cdot\mid o_t,m_t,\ell)\right),
-$$
-
-trong đó $d$ là một độ đo khoảng cách giữa phân phối hành động tối ưu và phân phối policy được triển khai. Nếu lịch sử chứa thông tin không biểu đạt trong $o_t$, một memory thích hợp có thể làm giảm $\Delta_t$. Bản thân thiết kế không đảm bảo điều này: lỗi detector, mất dấu, diễn đạt mơ hồ hoặc policy không hiểu text đều có thể làm khoảng cách tăng. Trong luận văn, SR và các metric thành phần là quan sát thực nghiệm gián tiếp; $\Delta_t$ không được đo trực tiếp.
-
-## 2.2. SmolVLA và thực thi theo action chunk
-
-Trong hệ thống này, policy sinh một ma trận hành động $A_t$ gồm $H$ hàng. Mỗi hàng là lệnh điều khiển tại một bước. Bộ điều khiển chỉ thực thi $s$ hành động đầu, nhận quan sát mới rồi yêu cầu policy dự đoán lại. Vì vậy, $H$ là độ dài dự đoán và $s$ là khoảng thực thi giữa hai lần lập kế hoạch lại. Chúng không phải cùng một đại lượng.
-
-Checkpoint được sử dụng là `lerobot/smolvla_libero` tại revision đã pin [@smolvlaCheckpoint]. Contract local xác định $H=50$, action có bảy chiều và state đầu vào có tám chiều. State gồm vị trí end-effector, biểu diễn quay axis-angle và hai vị trí khớp gripper. Hai camera là `agentview` và `robot0_eye_in_hand`. Những lựa chọn này xuất phát từ checkpoint và processor đang sử dụng, không phải giả định áp dụng cho mọi VLA.
-
-Quy trình tiền xử lý và giải chuẩn hóa hành động do implementation LeRobot tương ứng thực hiện. Adapter của khóa luận giữ nhiệm vụ ánh xạ dữ liệu và kiểm tra contract. Đối với checkpoint này, gripper đi theo dấu native của simulator: giá trị âm mở, giá trị dương đóng. Không được sao chép quy ước dấu của một checkpoint khác chỉ vì các model cùng điều khiển Panda.
-
-Trong thí nghiệm Mem, $s=10$ dù $H=50$. Ở tần số điều khiển mô phỏng 20 Hz, mười action tương ứng nửa giây thời gian mô phỏng. Điều này không có nghĩa toàn hệ thống xử lý trong nửa giây thời gian thực: simulator có thể tạm dừng khi chờ suy luận và perception. Phân biệt này cần được giữ khi trình bày latency và khả năng triển khai.
-
-## 2.3. Các hướng biểu diễn memory
-
-Lịch sử ảnh giữ nhiều thông tin về hình học và động học nhưng tăng chi phí xử lý. Memory đặc trưng nén thông tin vào vector có thể học được; memory ngôn ngữ hoặc sự kiện tạo biểu diễn dễ kiểm tra nhưng có thể mất chi tiết cần cho thao tác. Không có biểu diễn nào mặc nhiên phù hợp với mọi thang thời gian và mọi tác vụ.
-
-MEM phối hợp short-term video memory với long-term language memory. Video encoder nén nhiều quan sát trước khi đưa vào backbone; một policy cấp cao cập nhật bản tóm tắt ngữ nghĩa và chỉ dẫn subtask. Cơ chế nén ngôn ngữ giúp giảm việc mang theo chuỗi instruction lặp lại không còn cần thiết. Thiết kế này gợi ý rằng nên phân biệt sự kiện đã xảy ra với lệnh từng được phát ra [@mem2026].
-
-MemoryVLA sử dụng Perceptual–Cognitive Memory Bank. Quan sát hiện tại tạo truy vấn để lấy ngữ cảnh lịch sử; thông tin được kết hợp bằng gate và hợp nhất khi vượt dung lượng. Memory ở đây nằm trong không gian đặc trưng và được tích hợp vào action expert, khác với giao diện văn bản tường minh của khóa luận. Các ablation về loại memory, chiều dài, retrieval, fusion và consolidation là ví dụ về cách đánh giá từng thành phần thay vì chỉ báo điểm của toàn hệ thống [@memoryvla2026].
-
-LIBERO-Mem nhấn mạnh lịch sử theo thực thể; paper đi kèm khảo sát một hướng slot-centric có mô hình trạng thái theo thời gian. Bộ nhớ của khóa luận không tái hiện kiến trúc này. Nghiên cứu chỉ kế thừa task và động lực cần thông tin lịch sử, sau đó chọn một cơ chế sự kiện nhỏ hơn để khảo sát trên SmolVLA [@liberomem2025].
-
-| Hướng | Thông tin lưu | Cách dùng lịch sử | Liên hệ với khóa luận |
-|---|---|---|---|
-| MEM | Video ngắn và tóm tắt ngôn ngữ | Policy nhiều cấp | Động lực phân biệt thang thời gian và nén sự kiện |
-| MemoryVLA | Đặc trưng perceptual/cognitive | Retrieval, gate, consolidation | Tham khảo thiết kế ablation |
-| LIBERO-Mem và Embodied-SlotSSM | Biểu diễn thực thể theo thời gian | Slot-state-space và relational encoding | Nguồn task và bài toán lịch sử thực thể |
-| Phương pháp của khóa luận | Sự kiện bát–đĩa, count và cờ thiếu lịch sử | Renderer văn bản và action-expert adapter | Thiết kế tường minh, phạm vi hẹp, cần kiểm chứng riêng |
-
-Bảng trên so sánh lựa chọn thiết kế, không phải xếp hạng hiệu năng. Các paper dùng model, dữ liệu, robot và protocol khác với hệ thống local.
-
-Nhìn theo mức độ can thiệp vào policy, các phương pháp trên tạo thành một phổ. Video memory giữ bằng chứng giàu hình học nhưng cần encoder và cơ chế nén; memory đặc trưng có thể học cách truy xuất nhưng đòi hỏi dữ liệu và tính toán để huấn luyện; memory sự kiện tường minh có thể audit bằng con người nhưng phụ thuộc mạnh vào độ đúng của perception và ngôn ngữ hóa. Lựa chọn trong khóa luận ưu tiên khả năng truy nguyên nguồn và thời điểm của một fact. Đổi lại, biểu diễn text làm mất phần lớn hình học và không cung cấp bảo đảm rằng action expert sẽ dùng fact đó.
-
-Khác biệt này dẫn đến yêu cầu so sánh theo hai tầng. Tầng thứ nhất đo writer: sự kiện có được phát hiện đúng thời điểm và có biết từ chối khi không đủ bằng chứng hay không. Tầng thứ hai đo policy: khi cùng nhìn thấy các điều kiện khác nhau, liệu action và success có cải thiện hay không. Một phép thử ở tầng thứ nhất không thay cho tầng thứ hai; rollout thành công ở tầng thứ hai cũng không tự xác nhận mọi event là đúng.
-
-## 2.4. Từ detection đến sự kiện
-
-Grounding DINO là detector nhận mô tả ngôn ngữ và ảnh để xác định đối tượng [@groundingdino2024]. Trong khóa luận, nó là nguồn bounding box cho bát và đĩa. Bounding box là bằng chứng thị giác, không trực tiếp là contact vật lý hay chứng nhận vật đã được đặt đúng. Do đó cần một tầng theo dõi và diễn giải theo thời gian.
-
-Tracker giải quyết câu hỏi đối tượng hiện tại có tương ứng với thực thể được theo dõi trước đó hay không. Trong cảnh có nhiều proposal hoặc bị che khuất, hệ thống cần cho phép trạng thái không xác định. Writer tiếp nhận các tín hiệu đã qua tracker và xác nhận sự kiện khi một cấu hình chuyển trạng thái được quan sát đủ bền vững. Hysteresis yêu cầu có departure mới trước khi ghi nhận return mới; nhiều frame bát nằm yên trên đĩa không được tính thành nhiều chu kỳ.
-
-Điểm detector và các ngưỡng hình học là tham số của estimator. Chúng chưa phải xác suất đã hiệu chỉnh rằng sự kiện đúng. Khi đánh giá writer, cần đối chiếu event với nhãn độc lập theo một quy tắc ghép thời gian đặt trước. Tỷ lệ có suffix memory trong prompt chỉ đo việc cung cấp văn bản, không đo tính đúng đắn của nội dung.
-
-## 2.5. LoRA, mục tiêu huấn luyện và replay
-
-LoRA bổ sung một cập nhật hạng thấp vào ma trận trọng số đã có. Với $W_0$ là trọng số gốc, có thể viết [@lora2021]:
-
-$$
-W = W_0 + \frac{\alpha}{r}BA.
-$$
-
-Ở đây $A$ và $B$ là các ma trận được học, $r$ là hạng và $\alpha$ là hệ số scale. Trọng số nền có thể giữ cố định trong khi tối ưu cập nhật nhỏ hơn. Trong artifact của khóa luận, LoRA tác động vào các phép chiếu query/value thuộc attention của action expert. Đây là lựa chọn thích ứng của hệ thống, không phải một thuật toán LoRA mới.
-
-Flow matching huấn luyện một trường vector theo một đường biến đổi có điều kiện giữa nhiễu và dữ liệu [@flowmatching2023]. Bản thảo sử dụng ký hiệu tổng quát để mô tả mục tiêu:
-
-$$
-\mathcal{L}_{\mathrm{FM}} = \mathbb{E}_{\tau,A,\epsilon}\left[\left\|v_{\theta}(A_{\tau},\tau,c)-u_{\tau}(A,\epsilon)\right\|_2^2\right].
-$$
-
-$c$ chứa các điều kiện quan sát, instruction và memory được phép sử dụng. Công thức nêu vai trò của loss; quá trình huấn luyện thực tế gọi loss của implementation SmolVLA đã pin, không tự thay sampling, masking hay normalizer. Loss trên dữ liệu offline đánh giá dự đoán action ở phân phối đã lưu. Success trong closed loop còn phụ thuộc những trạng thái policy tự tạo ra, nên loss nhỏ hơn không tự suy ra tỷ lệ hoàn thành cao hơn.
-
-Replay trộn dữ liệu thao tác cơ sở với dữ liệu Mem nhằm duy trì tiếp xúc với các kỹ năng ban đầu trong quá trình thích ứng. Recipe hiện dùng phân bổ 50/50 theo domain. Đây là tham số thực nghiệm cần kiểm tra retention, không phải một bảo đảm chống quên.
-
-Một vấn đề liên quan rộng hơn là phân phối kinh nghiệm huấn luyện. SGS trong *A Balanced Data Diet* ưu tiên các cấu hình có mức success trung gian trong RL quy mô lớn [@balanceddiet2026]. Khóa luận không dùng SGS: bộ lấy mẫu của hệ thống là replay có phân tầng domain/task/episode cho SFT. Liên hệ giữa hai hướng nằm ở yêu cầu mô tả phân phối dữ liệu và ngân sách khi so sánh, không ở sự đồng nhất về thuật toán.
-
-## 2.6. Benchmark, metric và đơn vị thống kê
-
-LIBERO cung cấp task, assets và demonstration để nghiên cứu robot learning [@libero2023]. Việc sử dụng tài nguyên chính thức không tự làm mọi cấu hình thực thi trở thành phép tái hiện điểm chính thức. Nếu thay runtime, reset, horizon hoặc điều kiện kết thúc, nghiên cứu phải ghi rõ phạm vi và nhãn so sánh.
-
-Tỷ lệ thành công đo số episode đạt điều kiện cuối. Subgoal Completion Rate, viết tắt SCR, đo phần milestones đã đạt. Overshot phản ánh việc thực hiện dư theo semantics của evaluator. Các đại lượng này bổ sung cho nhau: một episode có thể hoàn thành các milestones nhưng vẫn thất bại vì tiếp tục thực hiện dư chu kỳ.
-
-Đơn vị thống kê cũng phải được xác định. Nhiều frame trong một episode không phải nhiều episode độc lập; hai task dùng chung một trạng thái khởi tạo cũng có thể phụ thuộc. Phép so sánh giữa conditions cần ghép theo task, initial-state hash và policy seed. Khi tổng hợp hai task chung state, uncertainty nên được ước lượng theo nhóm state, giữ các cặp và những lần lặp liên quan trong cùng nhóm. Không sử dụng số lượng frame hay action để làm tăng giả tạo kích thước mẫu.
-
-# Chương 3. Bộ nhớ sự kiện thị giác cho SmolVLA
-
-## 3.1. Phát biểu bài toán và giả định
-
-Tại bước $t$, hệ thống nhận quan sát $o_t=(I_t^{\mathrm{ext}},I_t^{\mathrm{wrist}},p_t)$ gồm hai ảnh RGB và trạng thái robot $p_t\in\mathbb{R}^{8}$. Instruction $\ell$ mô tả task. Bộ nhớ sự kiện được cập nhật theo lịch sử khả dụng:
+Gọi $\mathbf b_t$ và $\mathbf q_t$ là tâm mép dưới hộp giới hạn của bát và đĩa ở bước $t$. Gọi $\mathbf b_0,\mathbf q_0$ là tọa độ tại lúc xác lập mốc tham chiếu, còn $w_b,h_b$ là chiều rộng và chiều cao hộp của bát tại thời điểm đó. Bộ theo dõi dùng ba đại lượng.
 
 $$
 \begin{aligned}
-m_t&=U(m_{t-1},o_t,a_{t-1}),\\
-c_t&=R(\ell,m_t),\qquad A_t\sim\pi_{\theta,\phi}(\cdot\mid o_t,c_t).
+d_t &= (\mathbf b_t-\mathbf q_t)-(\mathbf b_0-\mathbf q_0),\\
+D_t &= \left\|d_t\oslash(w_b,h_b)\right\|_2,\qquad
+L_t = -d_{t,y}/h_b .
 \end{aligned}
 $$
 
-$U$ là writer, $R$ là renderer, $\theta$ biểu diễn checkpoint gốc và $\phi$ là các tham số thích ứng. Tại bước khởi tạo không có action trước đó; writer chỉ đọc quan sát đầu. Từ các bước sau, action đi vào writer phải là action đã thực thi, không phải action còn nằm trong chunk dự đoán. Memory không được chứa ảnh tương lai, nhãn success cuối episode hoặc biến đếm của evaluator.
+Ký hiệu $\oslash$ là phép chia theo từng thành phần. $D_t$ đo độ lệch khỏi quan hệ hình học lúc khởi đầu, đã chuẩn hóa theo kích thước biểu kiến của bát. $L_t$ đo thành phần dịch chuyển hướng lên trên mặt ảnh. Bộ theo dõi kết hợp $D_t$, $L_t$, tỷ lệ kích thước và độ ổn định theo thời gian. Độ mở đo từ hai khớp ngón kẹp bổ sung căn cứ cho việc xác nhận trạng thái nghỉ. Các ngưỡng trong cấu hình nghiên cứu được trình bày ở Bảng 3.1.
 
-Trong T1/T3, mục tiêu thị giác là bát được xác định trong vùng cảnh ban đầu cùng đĩa nâng đỡ nó. Khi bằng chứng không đủ để gán danh tính hoặc xác nhận quan hệ, trạng thái phải giữ chưa biết. Giả định quan trọng là quan hệ nâng và đặt lại có thể được ước lượng từ các biến đổi bounding box và trạng thái mở gripper dưới góc nhìn đang dùng. Đây là giả định của estimator 2D, cần được kiểm chứng; nó không thay thế mô phỏng tiếp xúc 3D.
-
-Ký hiệu $e_j=(\tau_j,\upsilon_j,\eta_j)$ cho sự kiện thứ $j$, trong đó $\tau_j$ là thời điểm xảy ra được ước lượng, $\upsilon_j$ là thời điểm bằng chứng đủ để xác nhận, còn $\eta_j$ là loại sự kiện. Với một episode quan sát đến bước $t$, tập sự kiện mà policy được phép sử dụng là
-
-$$
-\mathcal E_t=\{e_j:\upsilon_j\le t,\;\operatorname{source}(e_j)=\texttt{predicted\_rgb\_tracker}\}.
-$$
-
-Do đó, lịch sử memory có ít nhất ba trạng thái khái niệm: chưa quan sát được support ban đầu; đã quan sát đủ để xác nhận một số return; và lịch sử có khoảng không được quan sát. Trạng thái cuối không thể được rút gọn thành count chính xác nếu một sự kiện có thể xảy ra trong khoảng trống. Cờ `history_complete` và `uncertain_count` được giữ để renderer phân biệt “chưa ghi nhận event” với “đã xác minh chưa có event”.
-
-## 3.2. Kiến trúc và ranh giới thông tin
-
-Hệ thống có ba đường xử lý liên quan nhưng khác chức năng. Đường điều khiển nhận quan sát, dựng prompt và sinh action. Đường bộ nhớ chuyển ảnh thành bằng chứng, cập nhật trạng thái sự kiện và tạo snapshot. Đường đánh giá đọc trạng thái simulator để chấm điểm. Chỉ kết quả từ hai đường đầu được đưa vào policy; thông tin đánh giá được lưu để phân tích sau.
-
-![Kiến trúc đường điều khiển, memory và đánh giá. Hình tự xây dựng từ implementation; nhánh evaluator không cấp progress cho policy.](figures/architecture.png)
-
-Simulator chạy trong process có dependency riêng; detector cũng có process riêng. Policy giao tiếp với simulator bằng request/response có identity và thứ tự bước. Các kênh quan sát được allowlist, còn lỗi worker, timeout hoặc sai contract phải được báo rõ. Việc tách process làm giảm xung đột thư viện nhưng không tự chứng minh tính tương đương của runtime. Manifest của từng run vẫn cần ghi môi trường thực sự đã sử dụng.
-
-Đối với đường F1 hiện tại, writer giữ trạng thái episode và trả snapshot cho renderer. Repository còn có các abstraction store/updater/retriever cho những thiết kế memory trước; sự tồn tại của các lớp này không có nghĩa tất cả đều nằm trên đường thực thi của F1. Mô tả kiến trúc ở đây bám vào đường `LiberoMemRolloutRunner`, visual writer và renderer đã được sử dụng.
-
-## 3.3. Theo dõi bát và đĩa gốc
-
-Detector được pin theo model/revision và cấu hình truy vấn. Tracker không được tự lấy nhãn đối tượng, reward hay subgoal từ simulator làm detection. Bằng chứng gồm bounding box, camera, bước quan sát và hash của frame; thông tin này cho phép phát hiện việc dùng nhầm frame hoặc cache không khớp.
-
-Đĩa gốc được xác lập từ quan sát ban đầu khi quan hệ bát–đĩa đủ rõ và gripper đã mở. Những lần sau, tracker tìm proposal phù hợp với anchor đó, không chọn bất kỳ đĩa nào đang gần bát nhất. Cách gắn anchor giúp diễn đạt đúng yêu cầu “đặt lại đĩa ban đầu”, nhưng chỉ phù hợp với phạm vi cảnh mà các giả định theo dõi còn đúng.
-
-Gọi $b_t$ và $q_t$ là tọa độ tâm mép dưới bounding box của bát và đĩa ở frame hiện tại; $b_0,q_0$ là các tọa độ tại lúc xác lập anchor, và $w_0,h_0$ là kích thước bát ban đầu. Tracker xét biến đổi tương đối:
-
-$$
-d_t=(b_t-q_t)-(b_0-q_0),\qquad D_t=\left\|d_t\oslash(w_0,h_0)\right\|_2,\qquad L_t=-d_{t,y}/h_0.
-$$
-
-$\oslash$ biểu thị phép chia theo từng thành phần. $D_t$ mô tả độ lệch khỏi cấu hình tương đối ban đầu, còn $L_t$ là tín hiệu nâng theo chiều ảnh. Implementation kết hợp các đại lượng này với ràng buộc scale, mức chuyển động giữa các frame và khoảng mở gripper. Các ngưỡng là hyperparameter của writer, không phải tham số contact của benchmark.
-
-Các ngưỡng trong cấu hình writer RGB v3 được tóm tắt ở Bảng 2. Chúng là ngưỡng hình học và detector-score của estimator cụ thể; score detector không được diễn giải thành xác suất đã hiệu chuẩn. Khoảng mở gripper chỉ là điều kiện bổ trợ để xác nhận return, còn vị trí đĩa gốc luôn được neo theo quan sát ban đầu.
-
-| Đại lượng | Quy tắc trong cấu hình | Vai trò và giới hạn |
+| Đại lượng | Quy tắc trong cấu hình | Vai trò trong phép đo |
 |---|---|---|
-| Điểm detection | $s_{det}\ge 0{,}15$ | Lọc proposal; không phải confidence xác suất |
-| Tín hiệu nâng | $L_t\ge 0{,}40$ và không đồng thời ở vùng support | Ứng viên departure trong hệ tọa độ ảnh chuẩn hóa |
-| Gần support gốc | $D_t\le 0{,}30$; tỷ lệ rộng $[0{,}6;1{,}5]$, cao $[0{,}3;1{,}5]$ | Ước lượng quan hệ 2D, không xác nhận tiếp xúc 3D |
-| Ổn định | Dịch chuyển tâm mép dưới $\le0{,}15$ kích thước vật ban đầu | Kiểm tra độ ổn định qua các frame có bằng chứng |
-| Gripper mở | Tổng trị tuyệt đối hai qpos $\ge0{,}055$ m | Aperture đo được, không dùng lệnh mở làm bằng chứng |
-| Xác nhận theo thời gian | 3 quan sát phù hợp liên tiếp | Hysteresis cho initial support, departure và return |
-| Ghép với đĩa gốc | Khoảng cách chuẩn hóa $\le0{,}45$ kích thước anchor | Không tự đổi sang đĩa khác gần bát hơn |
-| Thu nhận anchor | Trong 20 bước đầu | Nếu không đủ căn cứ thì không xác nhận count bằng không |
+| Điểm phát hiện | $s_{\mathrm{det}}\ge 0{,}15$ | Lọc các hộp đề xuất theo điểm của bộ phát hiện |
+| Tín hiệu nâng | $L_t\ge 0{,}40$ và nằm ngoài vùng gần đĩa gốc | Tạo ứng viên rời đĩa |
+| Gần đĩa gốc | $D_t\le 0{,}30$. Tỷ lệ rộng từ $0{,}6$ đến $1{,}5$, cao từ $0{,}3$ đến $1{,}5$ | Tạo ứng viên quay về theo hình học ảnh |
+| Ổn định | Độ dịch chuẩn hóa của tâm mép dưới $\le 0{,}15$ | Xác định bát ổn định so với quan sát gần nhất |
+| Tay kẹp mở | Tổng trị tuyệt đối vị trí hai khớp ngón $\ge 0{,}055$ m | Bổ sung căn cứ để xác nhận bát đã được thả |
+| Xác nhận theo thời gian | Ba quan sát phù hợp liên tiếp | Giảm xác nhận do nhiễu ở một khung ảnh |
+| Ghép đĩa gốc | Độ dịch chuẩn hóa theo kích thước hộp đĩa neo $\le 0{,}45$ | Duy trì cùng đối tượng tham chiếu |
+| Thu nhận mốc đĩa | Trong 20 bước đầu | Giới hạn thời điểm xác lập quan hệ ban đầu |
 
-Những giá trị này được nêu để mô tả chính xác implementation đã audit. Việc thay đổi chúng là một thay đổi phương pháp cần ghi version và đo lại trên validation. Bảng ngưỡng không phải kết quả tuning tối ưu, cũng không chứng minh hệ thống ổn định dưới camera hoặc miền dữ liệu khác.
+Các phép đo trên mặt ảnh là chỉ dấu gián tiếp của quan hệ vật lý trong không gian ba chiều. Điểm phát hiện được dùng như tiêu chí chọn hộp, với ý nghĩa xác suất chưa được hiệu chuẩn. Trong trường hợp có nhiều hộp đề xuất, quan sát gần nhất có thể hỗ trợ ghép danh tính trong một khoảng thời gian giới hạn. Việc xác nhận ở bước hiện tại vẫn đòi hỏi quan sát phù hợp tại chính bước đó. Khi không định danh được bát hoặc không ghép được đĩa gốc, quan hệ ở bước hiện tại được ghi là chưa xác định. Các đặc điểm này giới hạn phạm vi áp dụng ở những cảnh có bố trí và góc nhìn tương tự.
 
-Khi có nhiều proposal cạnh tranh, tracker sử dụng tính liên tục của vị trí đo trước trong một khoảng thời gian giới hạn. Vị trí cũ chỉ hỗ trợ association; nó không được phát lại như một detection hiện tại nếu không có bằng chứng. Trạng thái ambiguous hoặc missing phải được truyền sang writer. Điều này bảo toàn ý nghĩa “đã quan sát”, dù có thể làm giảm số frame cung cấp count đầy đủ.
+## 3.4. Ghi sự kiện và bất biến đếm chu kỳ
 
-## 3.4. Máy trạng thái ghi sự kiện
+Bộ ghi biểu diễn mỗi chu kỳ bằng một sự kiện rời đĩa và một sự kiện quay về theo đúng thứ tự. Quan hệ ban đầu được xác nhận khi bát ở gần đĩa gốc, ổn định và tay kẹp mở qua đủ số quan sát. Sau đó, tín hiệu nâng kéo dài tạo một sự kiện rời đĩa. Khi đã xác nhận sự kiện này, bộ ghi mới xét chuỗi quan sát bát về gần đĩa gốc, ổn định và tay kẹp mở để xác nhận sự kiện quay về. Mỗi lần xác nhận quay về kết thúc chu kỳ đang mở và tăng $\hat z_t$ một đơn vị.
 
-Writer vận hành qua các trạng thái chưa khởi tạo, đã thấy support, ứng viên departure, departure đã xác nhận, ứng viên return và return đã xác nhận. Việc có các trạng thái ứng viên giúp tránh ghi sự kiện chỉ từ một frame nhiễu. Cấu hình được dùng trong artifact training yêu cầu ba frame phù hợp cho bước xác nhận.
+Bộ ghi dùng trạng thái ứng viên để tích lũy bằng chứng. Khi bước quan sát bị bỏ qua hoặc không đủ căn cứ thị giác, ứng viên chưa xác nhận được xóa và cờ lịch sử chưa đầy đủ được đặt. Các sự kiện đã xác nhận được giữ. Nếu một chu kỳ đã mở trước khoảng trống, nó vẫn mở cho đến khi bộ ghi có bằng chứng phù hợp để xác nhận quay về. Số khoảng trống phản ánh mức độ gián đoạn của quan sát. Khi một khoảng trống có thể chứa sự kiện chưa được ghi nhận, từ $\hat z_t$ chưa thể khôi phục chính xác $z_t$. Nếu mọi lần quay về được xác nhận đều tương ứng đúng với các sự kiện thật phân biệt, $\hat z_t$ có thể được diễn giải như một cận dưới của số chu kỳ. Điều kiện đó cần được kiểm tra bằng dữ liệu có nhãn phù hợp.
 
-Khi quan sát ban đầu cho thấy bát trên đĩa ổn định và gripper mở, writer ghi `initial_support_observed`. Sau đó, các tín hiệu nâng bền vững tạo `departed_support`. Chỉ khi đã có departure, một chuỗi quan sát quay lại gần đĩa gốc, ổn định và gripper mở mới tạo `returned_to_support` và tăng counter. Sau return, phải xuất hiện một departure mới trước khi có thể tăng counter tiếp.
+**Mệnh đề 1 (bất biến đếm chu kỳ).** Trong một lượt thực thi với bộ ghi khởi tạo mới và các chuyển trạng thái hoàn tất theo quy tắc trên, mỗi lần tăng $\hat z_t$ đóng đúng một sự kiện rời đĩa đã xác nhận và chưa ghép cặp. Giữa hai lần tăng liên tiếp phải có một sự kiện rời đĩa mới.
 
-Thuật toán sau mô tả logic chính; các ngưỡng và kiểm tra danh tính được thực hiện trong tracker, không được thay bằng pseudocode này khi benchmark.
-
-```text
-Tại mỗi quan sát o_t theo đúng thứ tự:
-    E_t <- phát hiện và liên kết bằng chứng thị giác
-    Nếu mất bằng chứng hoặc bỏ qua bước:
-        đánh dấu history_complete = False
-        xóa ứng viên chưa xác nhận; giữ các sự kiện đã ghi
-    Nếu chưa xác lập support:
-        xác nhận support ban đầu khi đủ bằng chứng ổn định
-    Nếu support đã biết và chưa có departure đang diễn ra:
-        xác nhận departure khi tín hiệu nâng đủ bền vững
-    Nếu đã có departure:
-        xác nhận return khi gần đĩa gốc, ổn định và gripper mở
-        tăng count đúng một lần; kết thúc departure hiện hành
-    Xuất snapshot có evidence và thời điểm khả dụng
-```
-
-Hysteresis làm cho counter không tăng chỉ vì robot đứng yên trên đĩa qua nhiều frame. Tuy nhiên, tính nhất quán của chuyển trạng thái không chứng minh detection đúng. False positive ở perception vẫn có thể dẫn đến event sai. Vì thế, correctness của FSM và fidelity của sự kiện phải được đánh giá bằng các loại bằng chứng khác nhau.
-
-Khi có khoảng quan sát không đủ bằng chứng, writer giữ số return đã xác nhận nhưng đánh dấu lịch sử chưa đầy đủ. Renderer có thể biểu đạt “ít nhất” số return đã ghi hoặc báo count chưa biết. Cách diễn đạt này phản ánh sự thận trọng của estimator; nó chỉ là cận dưới thật nếu các return đã xác nhận đều đúng. Khóa luận chưa có bằng chứng để bảo đảm điều kiện đó cho mọi episode.
-
-**Tính chất 1 (bất biến chu kỳ trong FSM).** Nếu writer bắt đầu ở trạng thái chưa khởi tạo với bộ đếm bằng không và chỉ thay đổi trạng thái theo các nhánh trong thuật toán, mỗi lần tăng `confirmed_cycles` tương ứng với đúng một cặp chuyển trạng thái đã xác nhận gồm departure rồi return. Một return không thể được đếm hai lần nếu giữa hai return không có departure mới.
-
-**Chứng minh.** Xét số bước $t$ và giả sử tính chất đúng trước bước này. Trong mã trạng thái, bộ đếm chỉ tăng trong nhánh `in_progress=True` khi candidate return đạt đủ dwell. Cờ `in_progress` chỉ chuyển từ sai sang đúng khi một candidate departure được xác nhận; sau khi tăng bộ đếm ở return, cờ này được đặt lại sai. Vì vậy, giữa hai lần tăng liên tiếp phải có một departure được xác nhận để bật lại `in_progress`. Các nhánh còn lại không tăng bộ đếm. Mệnh đề đúng ở bước khởi tạo và được bảo toàn qua từng bước, suy ra đúng theo quy nạp. Chứng minh này chỉ là bất biến logic của FSM; nó không chứng minh perception đã gán đúng vật hoặc đúng quan hệ vật lý.
-
-## 3.5. Tính nhân quả và giao diện văn bản
-
-Mỗi sự kiện phân biệt `occurred_at` với `available_at`. Nếu tín hiệu bắt đầu ở frame 10 và cần ba frame để xác nhận, sự kiện có thể được quy về frame 10 nhưng chỉ sẵn sàng sau frame 12. Với query tại bước $q$, quy tắc sử dụng là:
+**Chứng minh.** Gọi $J_t$ là số sự kiện rời đĩa đã xác nhận và $\chi_t\in\{0,1\}$ là cờ cho biết có một chu kỳ đang mở. Ở trạng thái khởi tạo, cả ba biến đều bằng không. Xét đẳng thức bất biến
 
 $$
-t_{\mathrm{occurred}}\le t_{\mathrm{available}}\le q.
+J_t-\hat z_t=\chi_t.
 $$
 
-Việc gán timestamp ngược về thời điểm bắt đầu không cho phép đưa sự kiện vào các prompt trước khi có đủ bằng chứng. Quy tắc này đặc biệt quan trọng khi xây dựng dữ liệu offline, vì toàn bộ trajectory tương lai đã có trên đĩa nhưng không được phép đi vào sample tại thời điểm hiện tại.
+Chuyển xác nhận rời đĩa chỉ xảy ra khi $\chi_t=0$ trước chuyển và làm tăng $J_t$ một đơn vị đồng thời đặt $\chi_t=1$. Chuyển xác nhận quay về chỉ xảy ra khi $\chi_t=1$ trước chuyển và làm tăng $\hat z_t$ một đơn vị đồng thời đặt $\chi_t=0$. Các chuyển còn lại giữ nguyên $J_t$, $\hat z_t$ và $\chi_t$. Do đó đẳng thức đúng sau mọi chuyển theo quy nạp. Vì mỗi lần tăng $\hat z_t$ cần một chu kỳ đang mở và đóng chu kỳ đó, cùng một sự kiện rời đĩa chỉ ghép được với một lần tăng. Bất biến này ràng buộc cấu trúc của dãy sự kiện do bộ ghi tạo ra. Độ đúng của từng sự kiện so với thao tác vật lý còn phụ thuộc phép đo ở Mục 3.3.
 
-Renderer kiểm tra nguồn của snapshot, event được tham chiếu, danh tính object/support và sự thống nhất giữa count với các return events. Trong đường predicted, dữ liệu có nguồn oracle simulator hoặc human annotation không được dùng để tạo fact cho policy. Snapshot chứa dữ liệu đặc quyền không trở thành nguồn hợp lệ chỉ bằng việc bỏ một trường hiển thị.
+## 3.5. Tính không nhìn trước và biểu diễn văn bản
 
-Instruction gốc được giữ làm phần đầu của prompt. Renderer chỉ thêm những fact phù hợp với ngân sách của tokenizer thực tế. Ngân sách được đặt là 48 token cho toàn bộ instruction cộng memory, kể cả quy ước newline và special tokens được áp dụng. Nếu chỉ instruction đã vượt budget, runner dừng thay vì âm thầm cắt nội dung. Nếu memory không đủ chỗ, fact bị loại được ghi trong telemetry.
+Một sự kiện $e_j$ có thời điểm bắt đầu ước lượng $\tau_j$ và thời điểm đủ bằng chứng $\upsilon_j$. Chẳng hạn, nếu bộ ghi dùng ba khung ảnh liên tiếp từ bước 10 để xác nhận quay về, nó có thể gán $\tau_j=10$ và $\upsilon_j=12$. Sự kiện chỉ được sử dụng từ bước 12 trở đi. Tại bước truy vấn $q$, điều kiện thời gian và nguồn bằng chứng được biểu diễn bằng
 
-Một ví dụ khái niệm là instruction yêu cầu ba lần nhấc–đặt lại, đi kèm suffix nói rằng writer đã quan sát hai lần quay về đĩa gốc. Ví dụ này minh họa giao diện; nó không phải bằng chứng rằng policy hiểu suffix hoặc sẽ dừng đúng sau lần thứ ba. Bằng chứng sử dụng hữu ích phải đến từ thí nghiệm có đối chứng.
+$$
+\mathcal{E}_q =
+\{e_j \mid \tau_j\le \upsilon_j\le q,\,
+  \operatorname{source}(e_j)=\mathrm{RGB}\}.
+$$
 
-**Tính chất 2 (không sử dụng thông tin tương lai trong renderer).** Giả sử writer được khởi tạo rỗng; ở bước $t$ chỉ nhận quan sát $o_t$ và action đã thực thi trước đó; mỗi event chỉ được tạo từ evidence có bước quan sát không vượt quá $t$; renderer loại event có `available_at` lớn hơn `as_of_observation` và từ chối nguồn oracle/annotation. Khi đó prompt tại bước $t$ chỉ phụ thuộc vào instruction, chuỗi quan sát đã nhận đến $t$ và các action đã thực thi trước $t$.
+Nhãn nguồn $\mathrm{RGB}$ trong biểu thức chỉ các sự kiện do bộ theo dõi thị giác dự đoán và có căn cứ truy vết được. Bên cạnh thời điểm khả dụng, phép tạo văn bản kiểm tra sự nhất quán giữa danh tính bát, danh tính đĩa, số lần quay về và các sự kiện được tham chiếu. Dữ liệu lấy từ trạng thái đặc quyền của mô phỏng hoặc nhãn gán tay thuộc nguồn đánh giá. Phép tạo ngữ cảnh ở điều kiện F1 từ chối ảnh chụp bộ nhớ mang các nguồn này.
 
-**Chứng minh.** Ở bước đầu, writer không có trạng thái từ episode khác và chỉ có thể tạo event từ bằng chứng của quan sát hiện tại; vì thế snapshot ban đầu không chứa thông tin tương lai. Giả sử snapshot $m_{t-1}$ chỉ phụ thuộc vào quan sát đến $t-1$ và các action đã thực thi trước đó. Quy tắc cập nhật nhận thêm $o_t$ cùng action đã thực thi gần nhất, nên snapshot $m_t$ chỉ phụ thuộc vào lịch sử mở rộng đến $t$. Renderer tiếp tục loại event chưa khả dụng tại `as_of_observation=t`, đồng thời loại nguồn đặc quyền. Do đó prompt $c_t=R(\ell,m_t)$ chỉ phụ thuộc vào $\ell$ và các biến quan sát/hành động thuộc lịch sử đến $t$. Lập luận quy nạp hoàn tất. Điều kiện của mệnh đề cần được duy trì bởi thứ tự gọi runtime và provenance của input; đây không phải chứng minh rằng mọi đường dữ liệu trong repository đều đã được kiểm toán hình thức.
+Chỉ dẫn gốc được giữ nguyên ở đầu ngữ cảnh. Phần bộ nhớ có thể mô tả số lần quay về đã xác nhận, chu kỳ đang mở hoặc lịch sử chưa đầy đủ. Ví dụ, ở bước truy vấn sau khi ghi nhận hai lần quay về trong T3, phần bổ sung có thể nêu rằng bát đã được quan sát quay lại đĩa gốc hai lần. Với lịch sử gián đoạn, cách diễn đạt phải thể hiện tính chưa đầy đủ của bằng chứng. Ngân sách là 48 token cho toàn bộ chỉ dẫn và phần bổ sung theo tokenizer của checkpoint, kể cả ký hiệu xuống dòng và token đặc biệt. Bộ dựng ngữ cảnh bỏ mệnh đề vượt ngân sách và ghi nhận lần bỏ đó. Chỉ dẫn tự vượt ngân sách làm dừng lượt chạy. Phạm vi của 48 token là đầu vào văn bản, còn số bằng chứng lưu trong suốt lượt có thể tăng theo độ dài quỹ đạo.
 
-## 3.6. Dữ liệu, quy ước ảnh và khóa split
+**Mệnh đề 2 (tính không nhìn trước của ngữ cảnh).** Cố định chỉ dẫn, cấu hình, định danh lượt và mọi nguồn ngẫu nhiên dùng để tạo bộ nhớ. Giả sử bộ ghi bắt đầu ở trạng thái mới, mỗi lần cập nhật chỉ nhận quan sát đến bước hiện tại và các hành động đã thực thi, đồng thời mỗi bằng chứng ảnh được ghép với đúng bước quan sát của nó. Giả sử phép tạo văn bản chỉ nhận trạng thái bộ nhớ hiện hành, kiểm tra $\upsilon_j\le q$ và từ chối các nguồn đặc quyền như trên. Khi đó, hai quỹ đạo có cùng tiền tố quan sát và hành động đã thực thi đến bước $q$ sẽ sinh cùng ngữ cảnh $c_q$, bất kể phần tiếp diễn của chúng.
 
-Dữ liệu thích ứng hiện tại ghép demonstration LIBERO-10 với T1/T3 từ bản phát hành của tác giả. Các episode được gán vào train/validation/test theo nhóm trạng thái khởi tạo. Hash được tính trên toàn bộ vector state đã chuẩn hóa về biểu diễn float64 little-endian, nhờ đó các episode có cùng vector không bị tách sang hai split chỉ vì mang task hoặc demo ID khác nhau.
+**Chứng minh.** Cùng quan sát đầu và cùng cấu hình dẫn đến cùng trạng thái bộ nhớ ban đầu. Giả sử hai trạng thái bộ nhớ ở bước $t-1$ bằng nhau với $t\le q$. Hai tiền tố bằng nhau cho cùng $o_t$ và $a_{t-1}$, vì vậy quy tắc cập nhật $U$ cho cùng $m_t$. Quy nạp cho $m_q$ bằng nhau. Phép $R$ áp dụng cùng phép kiểm tra nguồn, thời điểm và ngân sách lên hai bản ghi giống nhau nên trả cùng $c_q$. Tính chất này có điều kiện trên việc cấp đúng bằng chứng quan sát theo thời gian. Nhãn nguồn và thời điểm được dùng để kiểm tra sự tuân thủ điều kiện đó. Độ đúng của nội dung sự kiện và mức độ chính sách sử dụng nội dung cần được xác định qua đánh giá thực nghiệm.
 
-Nhóm state đã dùng phát triển writer phải ở train. Cơ chế grouping làm giảm một loại leakage cụ thể; nó không loại bỏ việc tác giả quan sát test để sửa hệ thống, cũng không chứng minh checkpoint pretrained chưa từng thấy các task hoặc state tương tự. Vì vậy, provenance của split và lịch sử sử dụng dữ liệu cần được báo riêng.
+## 3.6. Dữ liệu và thích ứng chính sách
 
-Quy ước ảnh là một phần của contract dữ liệu. Frame author-refined của Mem và ảnh raw OpenGL từ simulator không được xử lý như cùng nguồn. Đường preparation hiện xác định convention từ source: ảnh refined được lật dọc đúng một lần để trở về raw; ảnh replay derived vốn là raw được giữ nguyên trước processor policy. Phép chuẩn hóa áp dụng cho cả camera `agentview` và `robot0_eye_in_hand`, nhưng không thay bước resize, chuẩn hóa pixel hoặc processor của checkpoint. Writer nhận convention tương ứng riêng cho luồng detector offline và online. Việc một HDF5 có shape hợp lệ chưa chứng minh hình ảnh đi vào model đúng hướng.
+Dữ liệu thích ứng ghép các quỹ đạo mẫu LIBERO-10 với các quỹ đạo T1 và T3 từ bản phát hành của tác giả. Các quỹ đạo có cùng vector trạng thái khởi tạo được xếp vào cùng một nhóm trước khi chia tập. Định danh nhóm được tính từ vector đầy đủ ở biểu diễn float64 little-endian. Các nhóm từng dùng để phát triển bộ ghi được xếp vào tập huấn luyện. Cách chia này kiểm soát trường hợp cùng trạng thái khởi tạo xuất hiện dưới nhiều tên tác vụ hoặc mã quỹ đạo khác nhau. Lịch sử sử dụng tập kiểm tra trong phát triển và khả năng giao thoa với dữ liệu tiền huấn luyện vẫn ảnh hưởng đến diễn giải khả năng khái quát hóa.
 
-Đường dữ liệu derived mới nhằm tạo lại observation từ chính runtime local. Action replay chỉ được chấp nhận làm demonstration nếu outcome mới đáp ứng quy tắc chất lượng đã đặt trước. Không thể lấy nhãn memory của trajectory cũ gắn vào ảnh mới sau khi động lực học đã khác. Generator, kiểm tra terminal, resume, source hash và publication của manifest vì thế thuộc chuỗi nghiệm thu dữ liệu. Ở mốc bản thảo, source cho chuỗi này đã được bổ sung nhưng output version mới chưa hoàn tất; checkpoint được báo cáo ở chương 4 vẫn dùng dữ liệu tác giả.
+Quy ước ảnh được xác định theo nguồn. Đối với hai camera, ảnh tinh chỉnh từ bản phát hành LIBERO-Mem được lật dọc một lần để trở về quy ước ảnh thô, còn ảnh kết xuất thô từ mô phỏng được giữ nguyên trước bộ tiền xử lý SmolVLA. Việc chuẩn hóa hướng ảnh giữ nguyên các phép biến đổi ảnh và quy tắc giải mã hành động của checkpoint. Adapter dùng trong Chương 4 được huấn luyện trên các quỹ đạo từ bản phát hành. Bộ dữ liệu phát lại theo cấu hình mô phỏng cục bộ còn cần hoàn tất kiểm chứng trước khi dùng để đánh giá một adapter mới.
 
-## 3.7. Thích ứng action expert
+Thích ứng được thực hiện bằng LoRA tại các phép chiếu query và value của attention trong mô-đun sinh hành động. Các trọng số nền được giữ cố định, cùng với bộ chuẩn hóa trạng thái và phép giải chuẩn hành động của checkpoint. Mỗi lô tối ưu hóa gồm dữ liệu thao tác cơ sở và dữ liệu T1/T3. Bộ lấy mẫu cân bằng theo tác vụ trong từng miền và chọn quỹ đạo trước khi lấy khung ảnh, nhằm hạn chế ảnh hưởng của chênh lệch độ dài giữa các quỹ đạo. Trộn dữ liệu cơ sở tạo điều kiện khảo sát khả năng duy trì kỹ năng sau thích ứng. Kết luận về khả năng duy trì đòi hỏi đánh giá chính adapter trên các tác vụ cơ sở dưới cùng quy trình.
 
-Hệ thống giữ checkpoint SmolVLA gốc và huấn luyện adapter LoRA ở attention query/value của action expert. Các normalizer và cách giải mã action vẫn thuộc checkpoint gốc. Việc export adapter riêng giúp phân biệt trọng số nền với thay đổi do thích ứng và cho phép kiểm hash từng thành phần khi nạp lại.
+## 3.7. Thiết kế đối chứng
 
-Bộ lấy mẫu chia một optimizer batch giữa base và Mem, sau đó cân bằng task và chọn episode trong từng domain. Việc chọn frame theo episode giúp trajectory dài không tự chiếm toàn bộ xác suất chỉ vì có nhiều frame hơn. Training dùng loss chính thức cùng padding/mask tương ứng, thay vì tự dựng một mục tiêu action khác.
+Các đối chứng được xác định theo câu hỏi mà từng phép so sánh có thể trả lời. B0 là mốc tham chiếu với trọng số gốc. Để đo thay đổi do thích ứng, F0 cần dùng cùng tập quỹ đạo, cách chia, cấu hình, ngân sách huấn luyện và quy tắc chọn checkpoint như F1, với ngữ cảnh huấn luyện và suy luận chỉ chứa chỉ dẫn. F1 bổ sung biểu diễn sự kiện trong cả thích ứng lẫn suy luận. F1-off giữ nguyên trọng số F1 và bỏ phần sự kiện ở thời điểm suy luận.
 
-Trong thiết kế đối chứng, F0 phải được huấn luyện trên cùng demonstration, split và ngân sách nhưng không có memory. F1 dùng memory trong quá trình thích ứng và suy luận. B0 giữ policy gốc. F1-off dùng cùng adapter F1 nhưng bỏ memory khi suy luận. B0–F0 mô tả adaptation; F0–F1 giúp đánh giá hệ thống memory khi adaptation budget được kiểm soát; F1–F1-off đo độ phụ thuộc vào đầu vào memory của cùng checkpoint. Phép so sánh cuối có thể chịu ảnh hưởng out-of-distribution nếu F1 không từng được train với memory off.
-
-Ngay cả F0–F1 cũng cần được diễn giải cẩn thận. F1 nhận thông tin từ detector ngoài backbone cùng một biểu diễn lịch sử. Muốn tách giá trị lịch sử khỏi phần tóm tắt quan sát hiện tại, cần thêm đối chứng current-only; muốn kiểm tra ảnh hưởng của thêm token cần một đối chứng sham phù hợp ngân sách. Những đối chứng này hiện là thiết kế cần thực hiện, không phải kết quả đã có.
-
-Vai trò của từng condition và trạng thái trong snapshot được phân biệt ở Bảng 3. Thiết kế này làm rõ rằng B0–F1 là hiệu ứng tổng hợp; kết luận về memory đòi hỏi F0 được huấn luyện theo cùng dữ liệu và ngân sách. Các điều kiện F0 và F1-off hiện chưa có kết quả rollout được chấp nhận vào bộ evidence chính.
-
-| Condition | Trọng số | Memory khi suy luận | Mục đích phép so sánh | Trạng thái trong bản thảo |
+| Điều kiện | Trọng số | Ngữ cảnh suy luận | Mục đích đánh giá | Bằng chứng hiện có |
 |---|---|---|---|---|
-| B0 | Checkpoint gốc | Tắt | Mốc policy không thích ứng | Đã có 20 episode T1/T3 |
-| F0 | Adapter no-memory được train riêng | Tắt | B0–F0 đo tác động adaptation; F0–F1 là đối chứng chính cho memory | Chưa có run matched |
-| F1 | Checkpoint gốc cộng adapter đã train với memory | RGB event memory | Hệ thống thích ứng có memory | Đã có 20 episode T1/T3 |
-| F1-off | Cùng adapter F1 | Tắt | Đo độ nhạy của cùng trọng số với input memory; có thể OOD do dropout bằng 0 | Chưa được hỗ trợ trong runner đã dùng |
+| B0 | Checkpoint gốc | Chỉ dẫn | Mốc tham chiếu trước thích ứng | 20 lượt T1/T3 |
+| F0 | Adapter huấn luyện đối sánh | Chỉ dẫn | Đối chứng cho thay đổi do thích ứng | Chưa có lượt chạy đối sánh |
+| F1 | Adapter học với bộ nhớ | Chỉ dẫn và sự kiện | Đánh giá phương pháp đề xuất | 20 lượt T1/T3 |
+| F1-off | Cùng adapter F1 | Chỉ dẫn | Đo độ nhạy với việc bỏ phần sự kiện | Chưa có lượt chạy vòng kín |
 
-Để diễn giải F0–F1 như tác động của memory, cần giữ cố định backbone, dataset, split, số bước, checkpoint-selection rule, preprocessing, protocol và ngân sách tuning. Cần đồng thời bảo đảm khác biệt giữa hai nhánh chỉ còn thông tin memory được khảo sát. Nếu F1 bổ sung detector và text summary còn F0 chỉ nhận ảnh, phép so sánh đo lợi ích của toàn pipeline ngoại vi; muốn cô lập “lịch sử” phải thiết kế thêm current-only hoặc sham-memory controls.
+So sánh hiện có B0 với F1 đo chênh lệch khi thay đồng thời trọng số thích ứng và nguồn ngữ cảnh. So sánh F0 với F1 ở cùng ngân sách sẽ thu hẹp câu hỏi về giá trị của việc bổ sung nhánh bộ nhớ. Để nghiên cứu riêng giá trị của thông tin lịch sử, một đối chứng bổ sung có thể cung cấp tóm tắt quan sát hiện tại bằng cùng bộ phát hiện. Một đối chứng khác có thể giữ ngân sách token tương đương và dùng phần bổ sung không mang tín hiệu tiến độ. F1-off có ý nghĩa chẩn đoán độ nhạy của cùng trọng số với ngữ cảnh. Do phần bộ nhớ chưa được bỏ ngẫu nhiên khi huấn luyện F1, việc bỏ phần này lúc suy luận có thể đưa ngữ cảnh ra ngoài phân phối huấn luyện. Các đối chứng này xác định hướng kiểm tra giả thuyết mà các lượt B0 và F1 hiện có chưa phân giải được.
 
-## 3.8. Protocol thực thi và chấm điểm
+## 3.8. Quy trình đánh giá và độ đo
 
-Protocol local giữ Panda với controller OSC_POSE ở 20 Hz, hai camera 256×256 và initial state từ split lock. Sau reset có 20 bước warmup với action đã khai báo; trạng thái tiến độ được làm sạch theo protocol. Policy sinh chunk 50 nhưng chỉ thực thi 10 action trước khi query lại. Trong khoảng đó, writer tiếp nhận từng observation sau action, giúp sự kiện không chỉ được cập nhật ở ranh giới chunk.
+Hai cấu hình đã chạy dùng robot Panda với bộ điều khiển OSC_POSE ở 20 Hz, hai ảnh kích thước $256\times256$ và cùng danh sách trạng thái khởi tạo đã khóa. Mỗi lượt có 20 bước làm nóng theo quy trình trước khi tính các bước của chính sách. SmolVLA dự đoán đoạn $H=50$ hành động và thực thi $s=10$ hành động trước khi truy vấn lại. Bộ ghi cập nhật sau từng hành động, vì sự kiện có thể được xác nhận giữa hai lần truy vấn.
 
-Horizon của mỗi episode là 1.000 policy actions. Thiết kế không dừng sớm ngay khi một milestone hoặc full success tạm thời xuất hiện; episode tiếp tục đến horizon, hoặc dừng khi upstream overshot không thể phục hồi. Thành công được xét ở endpoint theo đồng thời ba điều kiện: đủ milestones, final predicate còn đúng và không overshot. Đây là lựa chọn protocol local, không được gắn nhãn điểm chính thức của paper.
+Mỗi lượt có giới hạn 1.000 hành động do chính sách sinh và dừng sớm khi bộ chấm ghi nhận vượt mục tiêu. Một trạng thái hoàn tất xuất hiện giữa lượt vẫn phải được duy trì theo quy tắc chấm ở thời điểm kết thúc. Quy tắc này giữ yêu cầu kết thúc đúng tiến độ, vốn là phần quan trọng của tác vụ lặp. Bộ chấm đọc tiến độ và vị từ từ bản mã đánh giá LIBERO-Mem đã cố định phiên bản. Kết quả được diễn giải trong phạm vi quy trình mô phỏng cục bộ đã khai báo.
 
-Gọi $K_i$ là số milestones đạt, $K_i^*$ là số cần thiết, $P_i$ là final predicate và $O_i$ là cờ overshot. Các độ đo được diễn đạt:
+Với lượt $i$, gọi $K_i$ là số mốc được bộ chấm xác nhận, $K_i^\star$ là số mốc cần đạt, $P_i$ là vị từ đích tại thời điểm kết thúc và $O_i$ là cờ vượt mục tiêu. Gọi $M$ là số lượt hoàn tất đánh giá trong nhóm đang xét. Các độ đo gồm chỉ báo thành công $S_i$, tỷ lệ hoàn thành mốc $\mathrm{SCR}_i$ và tỷ lệ thành công thực nghiệm $\widehat{\mathrm{SR}}$.
 
 $$
 \begin{aligned}
-S_i&=\mathbf{1}[K_i\ge K_i^*\land P_i\land\neg O_i],\\
-\mathrm{SCR}_i&=\frac{K_i}{K_i^*},\qquad \widehat{\mathrm{SR}}=\frac{1}{N}\sum_{i=1}^{N}S_i.
+S_i &= \mathbf{1}[K_i=K_i^\star\land P_i\land\neg O_i],\\
+\mathrm{SCR}_i &= K_i/K_i^\star,\qquad
+\widehat{\mathrm{SR}} = \frac{1}{M}\sum_{i=1}^{M}S_i.
 \end{aligned}
 $$
 
-Đối với hai task có cùng số episode, macro-average bằng trung bình gộp theo episode. Nếu số episode khác nhau, cần báo rõ hai kiểu trung bình và không đổi cách tổng hợp sau khi thấy kết quả. Run chưa hoàn tất phải báo coverage, không coi episode còn thiếu là failure hay success.
-
-Evaluator lấy predicate và tiến độ từ implementation upstream đã pin. Các counters live/nonlive tích lũy giữa milestones; protocol ghi điều kiện vượt ngưỡng tương ứng, không phải số frame liên tiếp của writer. Gọi evaluator thêm lần nữa chỉ để logging có thể làm thay đổi tiến độ, nên logging phải đọc kết quả đã tính. Sự độc lập giữa writer và evaluator cho phép so sánh hai nguồn đánh giá mà không tạo vòng rò rỉ thông tin.
-
-## 3.9. Giới hạn của phương pháp hiện tại
-
-Phương pháp được thiết kế cho một quan hệ vật–support và các chu kỳ lặp. Nó chưa có đánh giá đầy đủ về đổi danh tính khi nhiều vật giống nhau, thay đổi camera, occlusion dài hoặc support di chuyển. Memory văn bản mất phần lớn thông tin hình học của lịch sử; policy vẫn phải thực hiện thao tác chính xác từ quan sát hiện tại.
-
-Chi phí perception có thể lớn vì detector được gọi theo observation. Số tham số LoRA nhỏ không đồng nghĩa toàn hệ thống có latency thấp. Mặt khác, bộ nhớ lưu event và evidence trong episode, nên không thể suy rằng chi phí lưu trữ luôn hằng số chỉ vì prompt có 48 token. Các giới hạn này cần được đo thay vì loại bỏ bằng mô tả kiến trúc.
-
-Cuối cùng, các kiểm tra contract không bao phủ mọi nhánh của repository. Chẳng hạn adapter hiện còn một nhánh legacy gán gripper state mặc định nếu thiếu field; chưa có bằng chứng nhánh đó được kích hoạt trong các run được báo cáo, nhưng nó ngăn việc tuyên bố toàn codebase tuyệt đối fail-fast. Bản thảo không sửa hoặc hợp thức hóa nhánh này. Các đường sử dụng trong benchmark phải được audit theo artifact thực tế và yêu cầu dừng khi thiếu quan sát bắt buộc.
+$\mathrm{SCR}_i$ phản ánh tiến độ từng phần. $S_i$ còn yêu cầu trạng thái đích hợp lệ ở điểm cuối và dừng trong giới hạn số lần lặp. Hai tác vụ có cùng số lượt trong mỗi cấu hình đã chạy, nên trung bình tỷ lệ thành công theo tác vụ bằng tỷ lệ tính trên tất cả các lượt của cấu hình. Trạng thái khởi tạo được ghép giữa B0 và F1, đồng thời được dùng lại giữa T1 và T3. Cách ghép này cho phép đối chiếu từng trường hợp nhưng tạo phụ thuộc giữa các quan sát chung trạng thái. Việc phân tích vì vậy cần giữ thông tin nhóm trạng thái, số seed và điều kiện dừng của từng lượt.
 
 # Chương 4. Thực nghiệm và thảo luận
 
-## 4.1. Phạm vi bằng chứng thực nghiệm
+## 4.1. Phạm vi suy luận thực nghiệm
 
-Chương này trình bày những artifact đã tồn tại và được rà soát cho bản thảo ngày 12/11/2026. Việc tổng hợp cho bản thảo không chạy thêm policy, simulator hoặc training. Các số liệu mới được tính lại từ log đã lưu, không phải một đợt benchmark mới. Snapshot, đường dẫn input và SHA-256 được lưu cùng tài liệu để người đọc có thể truy vết [@artifact2026].
+Để hỗ trợ điều khiển, một biểu diễn tiến độ cần thỏa mãn ba điều kiện: có thể suy ra từ quan sát khả dụng, đến được chính sách đúng lúc và chứa thông tin mà chính sách có thể sử dụng để chọn hành động. Khóa luận xem xét ba loại bằng chứng: sự phù hợp của sự kiện với mốc tiến độ trong quỹ đạo trình diễn, độ nhạy của sai số dự đoán hành động đối với đầu vào bộ nhớ, và kết quả điều khiển vòng kín. Đối chiếu ba phép đo giúp xác định mắt xích nào đã có bằng chứng và mắt xích nào cần một phép can thiệp riêng.
 
-Bộ thực nghiệm chính là `step5_test_20261109-093744`, gồm hai thư mục condition B0 và F1. Mỗi condition có 20 episode complete, chia đều cho T1 và T3. Từng `summary.json` được đối chiếu checksum đã ghi trong `status.json`; roster task/state/seed cũng được kiểm tra. Phép kiểm này xác nhận tính nhất quán của các artifact được dùng trong bảng, không chứng nhận lại mọi byte của simulator, video hoặc dữ liệu huấn luyện.
+Nguồn phân tích chính gồm phép phát lại sáu quỹ đạo trình diễn ngày 26/10/2026, nhật ký xác thực của mô hình F1 và 40 quỹ đạo điều khiển hoàn tất trong đợt đánh giá ngày 09/11/2026. Với đợt đánh giá vòng kín, số liệu được tính lại từ từng bản tóm tắt quỹ đạo, sau khi đối chiếu tổng kiểm, trạng thái hoàn tất, tác vụ, trạng thái khởi tạo và hạt giống. Danh mục dữ liệu, phiên bản và tổng kiểm được lưu cùng bản ghi thực nghiệm ngày 12/11/2026 [@artifact2026].
 
-Báo cáo freeze V1 vẫn là nguồn lịch sử về giai đoạn không memory. Tuy nhiên, thư mục raw mà báo cáo đó tham chiếu không có episode tại lần rà soát này. Các run khác có tên tương tự không được dùng thay thế. Do đó, chương không sử dụng điểm V1 từ báo cáo cũ làm bảng baseline chính đã xác minh lại. Việc giữ ranh giới này tránh biến một báo cáo tổng hợp thành bằng chứng mạnh hơn những gì còn có thể kiểm tra.
+Đối chứng của phân tích vòng kín là B0 trên chính T1/T3. Kết quả V1 trong phụ lục chỉ cung cấp bối cảnh về chính sách gốc trên các tác vụ khác và với nhịp truy vấn khác. [@artifact2026]
 
-Báo cáo V1 ghi nhận kết quả nội bộ 77/160 thành công (48,13%) trên 40 task với bốn initial state/task, cùng 28/40 (70%) trên tập acceptance 10 task. Đây là mốc lịch sử đã được đóng băng cho V2 theo report và sign-off; báo cáo cũng gắn nhãn `LIBERO-DERIVED` và `NON-COMPARABLE_OFFICIAL_PAPER`. Tại snapshot hiện tại, các đường raw mà report trỏ tới không còn `episode.json` để tái tính các con số. Vì thế, số liệu được nêu như **kết quả được báo cáo trong V1**, không phải phép tính độc lập của bản thảo này. V1 còn thực thi $s=50$, trong khi rollout Mem dùng $s=10$; khác cadence và source/runtime đủ để loại phép trừ hai success rate như một ước lượng tác động memory.
+## 4.2. Mức phù hợp giữa sự kiện thị giác và mốc tiến độ
 
-Tỷ lệ 27,5% được report ghi cho suite LIBERO-10 (11/40) giúp đặt vấn đề về độ khó của các task nhiều giai đoạn, nhưng không tự chứng minh policy “quên tiến độ”. Trong 83 failure của V1, report ghi 71 trường hợp không quy được nguyên nhân gốc dưới mã chẩn đoán đã dùng. Vì vậy, chênh lệch giữa các suite chỉ tạo động lực nghiên cứu; không được trình bày như bằng chứng nhân quả rằng thiếu memory gây ra failure [@artifact2026].
+Để khảo sát RQ1, bộ ghi sự kiện từ RGB được áp dụng trên sáu quỹ đạo trình diễn T1/T3, gồm 1.276 khung hình và ba trạng thái khởi tạo. Với mỗi trạng thái đều có quỹ đạo của cả T1 lẫn T3. Hai quỹ đạo được dùng để phát triển phương pháp và các quỹ đạo bổ sung cũng đã được quan sát trước khi tổng hợp. Phép đo này vì vậy có phạm vi chẩn đoán trên những quỹ đạo đã biết. Nhãn tham chiếu mô tả thời điểm tiến độ tích lũy đạt mốc, nên phù hợp để đối chiếu sự kiện hoàn thành chu kỳ, còn thời điểm tiếp xúc hoặc nhả vật cần một loại nhãn khác.
 
-Ngoài bộ Mem chính, repository còn nhiều baseline và fine-tune runs. Công cụ tài liệu đã đọc 1.520 `episode.json` và lập inventory riêng theo run. Inventory phục vụ kiểm kê tiến độ, không xác nhận mọi run đầy đủ hay so sánh được với nhau. Chẳng hạn việc tồn tại một checkpoint được gọi là no-memory không đủ để nhận nó làm F0 matched nếu nguồn dữ liệu và ngân sách khác F1 hiện tại.
+Mỗi sự kiện đặt lại do bộ ghi xác nhận được ghép với nhiều nhất một mốc tham chiếu, trong dung sai 20 khung hình. Tất cả 12 sự kiện xác nhận đều ghép được với 12 mốc. Độ trễ xác nhận có trung vị 9 khung hình, trung bình xấp xỉ 9,92 khung hình và nằm trong khoảng 6–20 khung hình. Kết quả cho thấy có thể trích xuất một biến tiến độ hữu ích để mô tả những quỹ đạo đã xem từ bằng chứng thị giác. Độ trễ quan sát được cho thấy giữa thời điểm tiến độ thay đổi và thời điểm chính sách có thể nhận bằng chứng về thay đổi đó tồn tại một khoảng chờ cần tính đến.
 
-## 4.2. Kiểm tra thành phần ghi sự kiện trên demonstration
-
-Trước đợt rollout policy tháng 11, writer RGB v3 được kiểm tra riêng trên sáu demonstration T1/T3 ngày 26/10. Tập này bao gồm 1.276 frame và ba initial state, với mỗi state xuất hiện ở cả T1 và T3. Hai demonstration được dùng để phát triển; tập kiểm tra bổ sung cũng đã được quan sát trong quá trình phát triển, do đó không được xem là blind holdout. Annotation milestone chỉ ghi tiến độ tác vụ tích lũy, không gắn nhãn trực tiếp thời điểm grasp, release hoặc tiếp xúc.
-
-Một predicted return được ghép với một milestone annotation khi khoảng cách thời gian không quá 20 frame, theo phép ghép một-một. Trong tập đã xem, 12/12 return dự đoán được ghép và không có return dự đoán dư hoặc milestone chưa ghép. Độ trễ xác nhận có trung vị 9 frame, trung bình xấp xỉ 9,92 frame và khoảng 6–20 frame. Trên 1.172 detection bát được tracker chấp nhận, 1.169 đạt IoU ít nhất 0,5 với box annotation. Đây là các kết quả chẩn đoán có điều kiện trên detection/trajectory đã chọn; chúng không phải ước lượng precision–recall tổng quát.
-
-| Chỉ số chẩn đoán | Kết quả đã lưu | Cách diễn giải |
+| Đại lượng khảo sát | Kết quả quan sát | Phạm vi diễn giải |
 |---|---:|---|
-| Demonstration / initial state / frame | 6 / 3 / 1.276 | Dữ liệu replay thành công, không đại diện nhiều trạng thái |
-| Return annotation / prediction / match | 12 / 12 / 12 | Ghép một-một trong dung sai ±20 frame |
-| False return / missed milestone trong tập replay | 0 / 0 | Không có negative failure trajectory để ước lượng lỗi ngoài tập này |
-| Delay xác nhận | Median 9; range 6–20 frame | Độ trễ so với milestone annotation, không phải latency tính toán |
-| Box detection có IoU $\ge0{,}5$ | 1.169/1.172 (99,74%) | Có điều kiện trên detection được tracker chấp nhận |
-| Frame có grounding / memory text | 1.172/1.276 / 1.258/1.276 | Coverage của pipeline trên demonstration, không phải event accuracy |
-| Prompt dài nhất | 31/48 token | Đếm bằng tokenizer đã pin trong audit |
-| RGB detector end-to-end | Khoảng 999–1.058 ms/frame | Chậm hơn chu kỳ 20 Hz; chưa đạt điều khiển thời gian thực |
+| Quỹ đạo trình diễn / trạng thái / khung hình | 6 / 3 / 1.276 | Các quỹ đạo hoàn thành tác vụ đã được quan sát |
+| Mốc tham chiếu / sự kiện xác nhận / cặp ghép | 12 / 12 / 12 | Ghép một-một trong dung sai ±20 khung hình |
+| Sự kiện dư / mốc bị bỏ sót | 0 / 0 | Tính trên sáu quỹ đạo trình diễn |
+| Độ trễ xác nhận | Trung vị 9, khoảng 6–20 khung hình | So với mốc tham chiếu |
+| Phát hiện bát có IoU $\geq0{,}5$ | 1.169/1.172 (99,74%) | Mẫu số chỉ gồm phát hiện đã được bộ theo dõi chấp nhận |
+| Có định vị vật / có văn bản bộ nhớ | 1.172/1.276 / 1.258/1.276 khung hình | Tỷ lệ có đầu ra ở từng khâu |
+| Lời nhắc dài nhất | 31 trên giới hạn 48 token | Đo bằng bộ tách token đã chọn |
+| Độ trễ xử lý RGB | Khoảng 999–1.058 ms/khung hình | Độ trễ tính toán ở lần đo riêng |
 
-Audit cũng ghi nhận parity của worker perception trên 12 frame đầu/cuối của sáu episode và parity 162 sample giữa predicted-memory index với replay tương ứng. Các phép này kiểm tra việc vận chuyển RGB, detection và prompt theo cùng quy ước trong đúng số frame đã đối chiếu. Chúng không phải rollout policy. Cùng đợt này ghi nhận 49 unit tests cho memory/Mem và 47 regression tests cho phần base; 96 phép kiểm phần mềm không phải 96 policy episode và không chứng nhận fidelity trên mọi scene. Việc replay FSM từ cache mất khoảng 1–2 ms/frame nhưng loại bỏ thời gian detector, vì vậy không được dùng thay latency end-to-end.
+Tỷ lệ khớp hộp giới hạn đo chất lượng định vị có điều kiện trên các phát hiện được chấp nhận. Tỷ lệ này bỏ qua các khung mà đối tượng bị bỏ sót hoặc bị từ chối. Tương tự, việc tạo được văn bản chỉ chứng tỏ biểu diễn có đầu ra tại khung hình đó. Muốn ước lượng mức phù hợp của nội dung bộ nhớ trên phân phối điều khiển, cần cả quỹ đạo thành công lẫn thất bại và nhãn độc lập cho những tình huống như nhấc hụt, đặt lệch đĩa hoặc che khuất kéo dài.
 
-Kết quả cho thấy kiểm tra memory cần tách chất lượng nội dung khỏi chi phí tạo nội dung: bộ đếm có thể khớp milestone trong demonstration, trong khi detector vẫn là nút thắt tốc độ. Các trajectory được chọn đều là demonstration hoàn thành task và không có thiết kế failure-trajectory set; do đó không thể suy ra false-confirmation rate khi vật bị nhấc hụt, đặt sai support hoặc che khuất kéo dài. Hash các manifest, so sánh và report audit được lưu trong snapshot bằng chứng để tái kiểm tra [@artifact2026].
+Phụ lục ghi nguồn dữ liệu, phương pháp đối chiếu và các phép kiểm tính nhất quán của quá trình tạo bản ghi. [@artifact2026]
 
-## 4.3. Môi trường và provenance
+## 4.3. Điều kiện đối chiếu trong mô phỏng
 
-Training run ghi nhận hai GPU Tesla T4. Evaluation run ghi nhận GPU NVIDIA GeForce RTX 4060 Laptop. Simulator evaluation chạy qua WSL trong environment riêng, còn policy dùng Python host Windows và detector dùng một environment Windows riêng. Các thông tin này lấy từ manifest từng run, không lấy giá trị mặc định trong file environment để thay cho runtime đã xảy ra.
+Việc so sánh vòng kín giữa các chính sách đòi hỏi giữ ổn định động lực học, điều kiện quan sát và tiêu chí chấm điểm. Mức độ quy kết còn phụ thuộc vào những thành phần được thay đổi trong phép đối chứng. Hai lần chạy B0/F1 có cùng tổng kiểm của mô hình gốc, cấu hình đánh giá và danh sách trạng thái. Bản ghi nguồn của hai lần chạy khác nhau ở ba tập lệnh khởi chạy hoặc chẩn đoán. Các điểm khớp giúp thu hẹp diễn giải về biến gây nhiễu, còn khác biệt nguồn đặt giới hạn cho phát biểu về độ tương đương của hai lần chạy. Phụ lục chỉ ra vị trí các bản ghi có thể đối chiếu [@artifact2026].
 
-| Thành phần | Phiên bản hoặc lựa chọn được ghi nhận |
+| Điều kiện | Giá trị dùng trong thực nghiệm |
 |---|---|
-| Checkpoint gốc | `lerobot/smolvla_libero`, revision `31d453f7edd78c839a8bbc39744a292686daf0de` |
-| Nguồn Mem | `libero-mem/libero-mem`, revision `0eee0defa4024e51511b6e15a79f30e9620209de` |
-| Simulator | Python 3.8.20, robosuite 1.4.0, MuJoCo 3.2.3, NumPy 1.22.4 |
-| Policy evaluation | Python 3.12.2, torch 2.6.0+cu124, LeRobot 0.6.1, transformers 5.5.4, PEFT 0.19.1 |
-| Training | torch 2.11.0+cu130, LeRobot 0.6.1, transformers 5.5.4, PEFT 0.21.2, accelerate 1.15.0 |
-| Observation | Hai camera 256×256; state 8D; preprocessing theo checkpoint |
-| Control | OSC_POSE,20 Hz; chunk 50; execution horizon 10 |
-| Reset và endpoint | State từ split lock; warmup 20; horizon 1.000; dừng sớm khi overshot |
+| Mô hình gốc | SmolVLA cho LIBERO, cùng phiên bản ở B0 và F1 |
+| Nguồn tác vụ và bộ chấm | LIBERO-Mem tại phiên bản đã khóa |
+| Mô phỏng | Franka Panda trong robosuite 1.4.0, cùng thiết lập động lực học |
+| Đầu vào chính sách | Hai camera 256×256, trạng thái 8 chiều, tiền xử lý theo checkpoint gốc |
+| Điều khiển | OSC_POSE ở 20 Hz trong mô phỏng, dự đoán $H=50$, thực thi $s=10$ |
+| Khởi tạo và điểm cuối | Trạng thái từ danh sách đã khóa, 20 bước làm ấm, tối đa 1.000 hành động chính sách, dừng sớm khi vượt số chu kỳ |
 
-Các bản Python hoặc thư viện khác giữa training, policy và simulator được ghi tường minh. Chúng không tạo thành một stack tái hiện nguyên trạng môi trường tham chiếu Python 3.8.13 của V1. Bởi vậy, các kết quả ở đây được sử dụng cho đánh giá nội bộ dưới cấu hình đã khai báo.
+Huấn luyện sử dụng hai GPU Tesla T4. Phép đánh giá dùng NVIDIA GeForce RTX 4060 Laptop, với mô phỏng chạy trong WSL và suy luận chính sách trên Windows. Những điều kiện này xác định môi trường áp dụng của kết quả. Chu kỳ danh định 20 Hz của bộ điều khiển tương ứng 50 ms mỗi bước mô phỏng. Riêng thời gian xử lý một khung hình RGB trong phép đo chẩn đoán đã xấp xỉ một giây. Thời gian phát lại máy trạng thái từ dữ liệu đã lưu khoảng 1–2 ms mỗi khung hình phản ánh chi phí của một thành phần khác, sau khi đã có kết quả nhận dạng vật. Khi mô phỏng tạm dừng để chờ suy luận, tiến độ mô phỏng và thời gian thực trôi qua là hai đại lượng khác nhau. Một kết luận về khả năng vận hành thời gian thực cần đo trọn chu trình trên cấu hình đã xác định.
 
-Hai manifest B0/F1 có cùng protocol hash, split hash và base checkpoint identity. Source snapshots khác nhau ở ba script launcher/diagnostic; danh sách và hashes nằm trong phụ lục evidence. Không diễn đạt cặp run là toàn bộ mã nguồn giống hệt nhau. Đối với các đường policy/simulator/processor quan trọng, audit và manifests cung cấp căn cứ đối chiếu, nhưng vẫn cần công bố những khác biệt thay vì chỉ ghi một Git commit chung.
+## 4.4. Mẫu nghiên cứu và điều kiện thích ứng
 
-## 4.4. Dữ liệu và cấu hình thích ứng
+Tập dữ liệu huấn luyện kết hợp quỹ đạo thao tác cơ sở LIBERO-10 với quỹ đạo T1/T3 từ nguồn LIBERO-Mem của tác giả. Bảng dưới ghi số quỹ đạo trong danh mục dữ liệu được dùng để huấn luyện F1. Các quỹ đạo có cùng mã băm trạng thái khởi tạo được phân vào cùng một tập. Trong tập kiểm tra T1/T3, 20 tổ hợp tác vụ và trạng thái của mỗi điều kiện tương ứng 10 nhóm trạng thái dùng chung giữa hai tác vụ. Tập này đã được sử dụng trong quá trình phát triển. Vì vậy, số liệu vòng kín phù hợp cho phân tích thăm dò và hình thành giả thuyết kiểm chứng.
 
-Dataset manifest của training chứa 698 demonstration: 500 thuộc 10 task LIBERO-10 và 198 thuộc Mem T1/T3. Split có 558 train, 70 validation và 70 test. Các con số là số episode được manifest liệt kê, không phải số frame độc lập. Manifest hash khớp identity mà training run ghi lại.
-
-| Nhóm dữ liệu | Train | Validation | Test | Tổng |
+| Nhóm dữ liệu | Huấn luyện | Xác thực | Kiểm tra | Tổng |
 |---|---:|---:|---:|---:|
-| Base LIBERO-10 | 400 | 50 | 50 | 500 |
+| Thao tác cơ sở LIBERO-10 | 400 | 50 | 50 | 500 |
 | Mem T1 | 80 | 10 | 10 | 100 |
 | Mem T3 | 78 | 10 | 10 | 98 |
 | Tổng | 558 | 70 | 70 | 698 |
 
-T1/T3 chia sẻ 10 initial-state hashes trong test. Vì vậy,20 task-episodes của một condition chỉ có 10 nhóm state khác nhau. Cách chia split giữ các state trùng nhau trong cùng một tập, nhưng test hiện tại đã được quan sát phục vụ phát triển. Bản thảo gọi đây là kết quả trên split mang tên test trong artifact, không coi nó là holdout xác nhận chưa từng được sử dụng để đưa ra quyết định.
+Lấy mẫu hỗn hợp nhằm đặt ra bài toán duy trì kỹ năng cơ sở (RQ3) trong cùng quá trình thích ứng với tác vụ phụ thuộc lịch sử. Trong mỗi lô cập nhật, số mẫu của hai miền được phân bổ theo tỷ lệ đã chọn. Trong từng miền, tác vụ được chọn luân phiên, sau đó lấy mẫu đều theo quỹ đạo rồi chọn khung hình. Cách này làm giảm ảnh hưởng của độ dài quỹ đạo lên xác suất được chọn. Tỷ lệ lấy mẫu 50/50 là một điều kiện huấn luyện đã quan sát, nên giá trị của việc trộn dữ liệu và lựa chọn tỷ lệ vẫn cần đối chứng riêng.
 
-Artifact F1 là adapter unmerged từ run `mem-adapter-20261105-083543`. Run hoàn tất 3.000 bước, rank LoRA 16, 645.120 tham số được train, learning rate khởi đầu $2\times10^{-5}$ và effective batch 32. Cấu hình có base fraction 0,5, memory dropout 0 và checkpoint/validation mỗi 500 bước. Những giá trị này là recipe đã chạy, chưa được chứng minh tối ưu.
-
-Sampler của training schema v2 bảo đảm mỗi optimizer batch có số mẫu base/Mem theo tỷ lệ đã cấu hình; trong miền mỗi domain, task được chọn theo vòng lặp đã xáo trộn, rồi chọn episode đồng đều và một frame trong episode đó. Cách lấy mẫu giảm ảnh hưởng trực tiếp của độ dài episode lên xác suất chọn trajectory. Nó không làm episode độc lập về thống kê và không chứng minh rằng mixture 50/50 là tối ưu cho adaptation hoặc retention.
-
-Bốn file export được manifest liệt kê đã được hash lại và khớp, gồm trọng số adapter, config, tokenizer và README. Dataset manifest cũng khớp hash training. Lần rà soát không hash lại toàn bộ base weights, raw HDF5 và shards lớn. Không được mở rộng kết quả kiểm bốn file thành khẳng định mọi tài nguyên đều đã được chứng nhận đầy đủ.
-
-| Hạng mục | Cấu hình đã chạy | Vai trò trong phương pháp | Giới hạn diễn giải |
+| Hạng mục | Cấu hình đã sử dụng | Vai trò nghiên cứu | Giới hạn suy luận |
 |---|---|---|---|
-| Vị trí thích ứng | LoRA tại query/value attention của action expert; rank 16; 645.120 tham số trainable | Giữ trọng số VLM và phần nền cố định theo recipe | Không phải thuật toán adaptation mới; chưa so rank hoặc vị trí module |
-| Tối ưu hóa | AdamW; learning rate đầu $2\times10^{-5}$; 100 bước warmup; 3.000 optimizer steps; clip norm 1,0 | Cấu hình tái lập của candidate F1 | Không có sweep để chọn siêu tham số tối ưu |
-| Batch và replay | Effective batch 32 trên 2×Tesla T4; base fraction 0,5; seed 42 | Cân bằng domain và episode trong lúc huấn luyện | Không chứng minh replay bảo toàn kỹ năng |
-| Memory khi train | Memory dropout bằng 0; validation/save mỗi 500 bước | Giữ condition F1 nhất quán với memory input | Bỏ memory ở inference có thể nằm ngoài phân phối train |
-| Export và checkpoint | Adapter unmerged; checkpoint cuối được kiểm ở step 3.000 | Tách file adapter khỏi base weights và kiểm identity | Chưa chứng minh step 3.000 là checkpoint tốt nhất theo rollout |
+| Vị trí thích ứng | LoRA tại phép chiếu query/value của khối sinh hành động, hạng 16, 645.120 tham số được cập nhật | Giữ mô hình nền cố định khi thích ứng | Chỉ khảo sát một vị trí và một hạng |
+| Tối ưu hóa | AdamW, tốc độ học ban đầu $2\times10^{-5}$, làm ấm 100 bước, 3.000 bước cập nhật, chặn chuẩn gradient 1,0 | Cố định ngân sách của F1 | Chưa có khảo sát siêu tham số |
+| Lấy mẫu hỗn hợp | Lô hiệu dụng 32, tỷ lệ dữ liệu cơ sở 0,5, hạt giống 42 | Đặt kỹ năng cơ sở và thích ứng vào cùng bài toán huấn luyện | Mức độ duy trì cần đo bằng điều khiển vòng kín |
+| Bộ nhớ khi huấn luyện | Tỷ lệ bỏ bộ nhớ bằng 0, xác thực và lưu mô hình mỗi 500 bước | Xác định phân phối đầu vào của F1 | Bỏ bộ nhớ khi suy luận có thể thay đổi phân phối |
+| Mô hình được đánh giá | Trọng số LoRA lưu riêng, dùng checkpoint ở bước 3.000 | Cố định phiên bản dùng cho các phép đo | Chưa chọn checkpoint theo tỷ lệ thành công vòng kín |
 
-Nguồn Mem của F1 là dữ liệu tác giả có convention refined được chuyển về raw trước xử lý policy. Một số replay artifact derived đời cũ đã được tạo; summary T3 ghi 78 replay và 73 outcome success. Đây là metadata tạo dữ liệu, không phải success rate của policy và chưa là chứng nhận dataset version mới. Tại snapshot, chưa có chuỗi derived-v1 lock/index/shards/training hoàn chỉnh. Vì vậy, F1 trong chương này không phải model đã thích ứng trên dataset derived mới.
+Tổng kiểm của danh mục dữ liệu khớp với bản ghi huấn luyện, và bốn tệp được liệt kê trong bản xuất F1 có tổng kiểm khớp bản kê. Phép đối chiếu giới hạn ở các tệp đã nêu. Dữ liệu Mem của F1 dùng các quỹ đạo do tác giả công bố, với ảnh được đưa về quy ước gốc trước khi áp dụng tiền xử lý của chính sách. Một đợt tái tạo dữ liệu tại chỗ ghi nhận 73 trên 78 quỹ đạo phát lại T3 đạt điều kiện thành công của đợt phát lại. Các quỹ đạo đó là một nhánh nghiên cứu riêng. Chuỗi xác thực dữ liệu dẫn xuất, lập chỉ mục và huấn luyện trên phiên bản derived-v1 chưa hoàn tất, nên phân tích F1 căn cứ vào tập dữ liệu của tác giả [@artifact2026].
 
-## 4.5. Kết quả offline của adapter
+## 4.5. Độ nhạy ngoại tuyến đối với thông tin bộ nhớ
 
-Tại step 3.000, loss trên Mem validation của cùng adapter là 0,23023575 khi có memory và 0,33553660 khi bỏ memory. Loss trên base là 0,42984212 ở cả hai mode. Bộ Mem validation chứa 4.299 frame-samples và base validation chứa 13.525 frame-samples. Phép đo này so hai chế độ đầu vào của cùng F1, không phải hai model F0/F1 được train độc lập.
+Tại bước 3.000, trên 4.299 mẫu khung hình của tập xác thực Mem, hàm mất mát flow matching của cùng F1 là 0,23023575 khi có bộ nhớ và 0,33553660 khi bỏ bộ nhớ. Trên 13.525 mẫu khung hình của tập xác thực cơ sở, hai chế độ đều cho giá trị 0,42984212. Các khung hình được lấy từ quỹ đạo và có thể phụ thuộc theo thời gian. Phép so sánh giữ cố định trọng số F1 và thay đổi cách cung cấp bộ nhớ ở đầu vào.
 
-![Validation flow loss theo checkpoint, tính từ metrics.jsonl của cùng adapter. Memory on/off là chế độ đánh giá offline; các đường này không biểu diễn success rate.](figures/validation_loss.png)
+![Hàm mất mát flow matching trên tập xác thực theo số bước huấn luyện. Hai chế độ có và bỏ bộ nhớ được đo trên cùng checkpoint ở mỗi bước.](figures/validation_loss.png)
 
-Kết quả cho thấy đầu vào memory liên quan đến loss dự đoán action trong phân phối validation đã lưu. Tuy nhiên, loss nhỏ hơn chưa chứng minh nội dung lịch sử là nguyên nhân của cải thiện closed-loop. Một policy có thể khớp demonstration hơn nhưng vẫn gặp failure khi trajectory của nó rời phân phối demonstration. Cũng chưa có căn cứ gọi step 3.000 là checkpoint tốt nhất theo success, vì chọn checkpoint cuối và chọn theo metric triển khai là hai quy tắc khác nhau.
+Chênh lệch trên tập Mem là bằng chứng rằng cách cung cấp đầu vào bộ nhớ có liên hệ với chất lượng dự đoán hành động trên phân phối xác thực. Do F1 được huấn luyện với tỷ lệ bỏ bộ nhớ bằng 0, phép bỏ bộ nhớ có thể đồng thời loại thông tin tiến độ và đưa đầu vào ra ngoài phân phối huấn luyện. Để tách hai cách giải thích này, một phép thử có kiểm soát cần duy trì định dạng và dung lượng lời nhắc, đồng thời thay đổi có chủ đích thông tin lịch sử mà nó chứa. Mặt khác, một chính sách có sai số dự đoán nhỏ trên quỹ đạo trình diễn vẫn có thể thực thi kém khi các hành động của chính nó làm thay đổi phân phối quan sát.
 
-Base loss giống nhau giữa memory-on/off không chứng minh retention. Nếu base samples không có memory suffix, hai mode có thể tạo cùng đầu vào. Muốn đo retention phải so chính policy đã thích ứng với B0 trong rollout base matched, không so hai lần tính loss của cùng model rồi kết luận kỹ năng được bảo toàn.
+Đối với RQ3, hai giá trị hàm mất mát bằng nhau trên tập cơ sở chỉ phản ánh tính ổn định giữa hai chế độ đầu vào của F1 trong phép đo này. Chẳng hạn, các mẫu cơ sở có thể có cùng đầu vào ở hai chế độ nếu chúng đều không mang hậu tố bộ nhớ. Để ước lượng mức duy trì kỹ năng, phép so sánh cần đặt chính F1 và B0 vào cùng các tác vụ cơ sở, với tiêu chí thành công và ngân sách điều khiển giống nhau.
 
-## 4.6. Kết quả closed-loop sơ bộ
+## 4.6. Kết quả điều khiển vòng kín
 
-Bảng dưới được tính trực tiếp từ 40 summary episode hoàn tất. Mỗi condition dùng 20 task-episodes, policy seed 42 và cùng roster trạng thái. Tất cả mang nhãn CUSTOM_V2_LIBERO_MEM và NON-COMPARABLE_OFFICIAL_PAPER.
+RQ2 đặt vấn đề liệu lịch sử có giúp chính sách hoàn thành tác vụ khi đã kiểm soát thích ứng mô hình. Dữ liệu hiện có đối chiếu B0, tức checkpoint gốc, với F1, tức cấu hình có cả thích ứng và bộ nhớ quan sát trực tuyến. Đây là phép so sánh sơ bộ hai cấu hình nghiên cứu. Mỗi điều kiện dùng cùng 20 tổ hợp tác vụ và trạng thái, với hạt giống chính sách 42. Kết quả áp dụng cho giao thức T1/T3 của khóa luận, với nhãn `CUSTOM_V2_LIBERO_MEM` và `NON-COMPARABLE_OFFICIAL_PAPER`.
 
-| Task | Condition | Success / N | SR | Mean SCR | Overshot / N |
+| Nhiệm vụ | Điều kiện | Thành công / số lượt | SR | SCR trung bình | Vượt số chu kỳ / số lượt |
 |---|---|---:|---:|---:|---:|
 | T1 | B0 | 0/10 | 0% | 0,1000 | 1/10 |
 | T1 | F1 | 0/10 | 0% | 0,1000 | 1/10 |
 | T3 | B0 | 0/10 | 0% | 0,0000 | 0/10 |
 | T3 | F1 | 1/10 | 10% | 0,1667 | 0/10 |
-| Hai task | B0 | 0/20 | 0% | 0,0500 | 1/20 |
-| Hai task | F1 | 1/20 | 5% | 0,1333 | 1/20 |
+| Hai tác vụ | B0 | 0/20 | 0% | 0,0500 | 1/20 |
+| Hai tác vụ | F1 | 1/20 | 5% | 0,1333 | 1/20 |
 
-![Success theo task của B0 và F1 dưới protocol local. Mỗi cột có 10 episode; T1/T3 dùng chung 10 nhóm initial state, một policy seed. Không trình bày như điểm LIBERO-Mem chính thức.](figures/mem_success.png)
+![Tỷ lệ thành công trên T1 và T3 theo giao thức của khóa luận. Mỗi cột biểu diễn 10 quỹ đạo. Hai tác vụ dùng chung các nhóm trạng thái khởi tạo và cùng một hạt giống chính sách.](figures/mem_success.png)
 
-Quan sát trực tiếp là F1 có thêm một episode thành công trên T3. Phần lớn episode ở cả hai điều kiện vẫn thất bại. Chênh lệch macro 5 điểm phần trăm là mô tả trên bộ mẫu này; nó không đủ xác nhận một cải thiện đáng tin cậy, càng không tách được memory khỏi adaptation và perception.
-
-Do hai condition dùng cùng roster, có thể viết chênh lệch success ghép cặp ở mức task–state như:
+Gọi $S_{c,j}$ là chỉ báo thành công của điều kiện $c$ trên tổ hợp tác vụ và trạng thái thứ $j$. Chênh lệch tỷ lệ thành công quan sát được tính theo
 
 $$
-\widehat{\Delta}_{\mathrm{SR}}=\frac{1}{K}\sum_{j=1}^{K}\left(S_{F1,j}-S_{B0,j}\right),\qquad K=20.
+\widehat{\Delta}_{\mathrm{SR}}
+=\frac{1}{M}\sum_{j=1}^{M}\left(S_{F1,j}-S_{B0,j}\right),
+\qquad M=20.
 $$
 
-Từ artifact hiện có, 19 cặp có outcome $(0,0)$ và một cặp có outcome $(0,1)$ theo thứ tự $(B0,F1)$; do đó $\widehat{\Delta}_{\mathrm{SR}}=1/20=0{,}05$. Đây là mô tả ghép cặp, không phải ước lượng có sai số chuẩn đáng tin cậy. Hai task chia sẻ cùng 10 nhóm initial state và chỉ có một seed, nên các episode không thể được coi là 20 quan sát hoàn toàn độc lập. Bản thảo vì thế không gán p-value hoặc khoảng tin cậy cho chênh lệch này.
+Có 19 cặp có kết quả $(0,0)$ và một cặp có kết quả $(0,1)$ theo thứ tự $(B0,F1)$, nên $\widehat{\Delta}_{\mathrm{SR}}=0{,}05$, tức 5 điểm phần trăm. Toàn bộ chênh lệch đến từ một lần thực thi T3. Hai tác vụ chia sẻ 10 nhóm trạng thái và thí nghiệm chỉ dùng một hạt giống, nên báo cáo giới hạn ở thống kê mô tả. Việc ước lượng độ bất định cần thêm biến thiên qua trạng thái và hạt giống, đồng thời giữ cấu trúc ghép cặp.
 
-SCR cung cấp một góc nhìn khác. Trên T1, cả hai conditions đều có một episode đạt milestone nhưng bị overshot nên không thành công ở endpoint. Trên T3, mean SCR của F1 cao hơn B0, cho thấy có một số tiến độ được evaluator ghi nhận. Điều đó vẫn chưa xác định thành phần nào tạo ra khác biệt, và không có lý do để thay metric success bằng SCR chỉ vì SCR thuận lợi hơn.
+SCR ghi nhận mức hoàn thành từng phần. Trên T1, cả B0 và F1 đều có một quỹ đạo đạt mốc tiến độ nhưng tiếp tục đến mức vượt số chu kỳ. Trên T3, SCR trung bình của F1 là 0,1667 trong khi của B0 bằng 0, cho thấy bộ đánh giá ghi nhận thêm tiến độ ở một số lần chạy. Diễn giải này bổ sung cho tỷ lệ thành công, vì tiến độ từng phần và hoàn thành ở điểm cuối là hai tiêu chí khác nhau. Đối chứng F0 thích ứng trên cùng dữ liệu nhưng không có bộ nhớ và phép đánh giá F1 khi thay đổi có kiểm soát đầu vào lịch sử vẫn cần thiết để trả lời RQ2.
 
-## 4.7. Phân tích trace và các trường hợp điển hình
+## 4.7. Bất đồng giữa tiến độ quan sát và tiến độ được chấm
 
-Để tránh lựa chọn ví dụ chỉ theo cảm tính, phần này xem episode thành công duy nhất và các episode có overshot. Phân tích dựa trên summary và memory/prompt trace; chưa thay thế một audit toàn bộ video hoặc annotation sự kiện độc lập.
+Khi chính sách tự sinh quỹ đạo, nó có thể đưa hệ thống đến những tình huống ít gặp trong dữ liệu trình diễn. Trên 20 quỹ đạo F1, 19 trạng thái bộ nhớ cuối báo lịch sử chưa đầy đủ. Trong 1.927 lần gọi chính sách, 1.894 lời nhắc chứa hậu tố bộ nhớ và 1.738 lời nhắc chứa cụm `history incomplete`. Hai số đếm ở cấp lời nhắc lần lượt phản ánh tần suất cung cấp bộ nhớ và tần suất báo lịch sử chưa đầy đủ. Chúng là các phép đo lặp theo thời gian trên cùng quỹ đạo. Độ đúng của từng sự kiện đòi hỏi đối chiếu với nhãn độc lập.
 
-Trong 20 F1 episode, 19 snapshot cuối có cờ lịch sử chưa đầy đủ. Có 1.927 policy query, trong đó 1.894 prompt chứa suffix memory và 1.738 prompt chứa chuỗi `history incomplete`. Các số này cho thấy renderer thường cung cấp một phát biểu về sự không đầy đủ của lịch sử. Chúng không đo event precision/recall và không phải hàng nghìn phép thử độc lập.
+Quỹ đạo T3 thành công duy nhất, `T3_F1_test_state2` khởi tạo từ `demo_29`, là một trường hợp chẩn đoán cho RQ4. Tại bước 1.000, bộ đánh giá ghi đủ ba chu kỳ, điều kiện cuối được thỏa mãn và số chu kỳ không bị vượt. Bộ ghi thị giác cuối chỉ xác nhận hai lần đặt lại và đánh dấu lịch sử chưa đầy đủ. Bất đồng này làm suy yếu cách giải thích rằng chính sách dừng khi bộ đếm thị giác ghi đủ ba chu kỳ. Kết quả vẫn tương thích với nhiều cơ chế, chẳng hạn sử dụng một phần bằng chứng lịch sử, phản ứng với quan sát hiện tại, hoặc hành vi đã thay đổi qua thích ứng trọng số.
 
-Episode `T3_F1_test_state2`, khởi tạo từ `demo_29`, là success duy nhất. Evaluator ghi nhận ba chu kỳ, final predicate thỏa mãn và không overshot ở horizon 1.000. Trong snapshot cuối của writer, số return được xác nhận là hai và `history_complete=False`. Do đó, success này không thể được mô tả là minh chứng writer đã đếm đúng ba rồi policy dừng theo count đó. Có thể có nhiều cơ chế dẫn đến outcome; trace hiện chưa cho phép xác định cơ chế nhân quả.
+Ở `T1_F1_test_state7`, bộ đánh giá ghi một mốc và SCR bằng 1, nhưng dừng quỹ đạo tại bước 266 do vượt số chu kỳ. Bộ ghi thị giác cuối ghi nhận 0 lần đặt lại và lịch sử chưa đầy đủ. B0 cũng có một quỹ đạo T1 vượt số chu kỳ, ở trạng thái 3 và bước 290. Những trường hợp này chỉ ra hai vấn đề khác nhau: hệ thống có thể thực hiện thao tác đạt mốc nhưng không duy trì đúng điểm cuối, và bộ ghi thị giác có thể thiếu bằng chứng để xác nhận mốc mà bộ đánh giá đã ghi nhận. Muốn quy nguyên nhân cần nhãn độc lập theo thời gian và can thiệp riêng lên nội dung bộ nhớ trong khi giữ các điều kiện còn lại ổn định.
 
-Ở `T1_F1_test_state7`, evaluator ghi một milestone và SCR bằng 1 nhưng episode kết thúc do overshot tại bước 266. Writer cuối ghi count 0 với lịch sử chưa đầy đủ. Một trường hợp B0 trên T1 cũng overshot, tại state 3 và bước 290. Hai trường hợp minh họa rằng đạt một trạng thái trung gian không đủ nếu task yêu cầu đúng số chu kỳ và duy trì điều kiện cuối.
+## 4.8. Hiệu lực của kết luận và thiết kế kiểm chứng tiếp theo
 
-Những quan sát trên gợi ý nên ưu tiên đo chất lượng thông tin đi vào policy trước khi chỉ tăng số bước training. Tuy nhiên, không thể từ các cờ incomplete kết luận mọi failure do writer: thao tác cơ sở, domain shift, instruction conditioning và cadence vẫn có thể ảnh hưởng. Muốn quy nguyên nhân cần can thiệp có đối chứng.
+Đối với RQ1, sự phù hợp trong sáu quỹ đạo trình diễn cung cấp bằng chứng về tính khả thi của việc biểu diễn tiến độ bằng sự kiện thị giác. Dấu thời điểm khả dụng cho phép kiểm tra dữ kiện nào đã có thể đưa vào lời nhắc tại từng bước. Khoảng cách giữa kết quả ghép mốc trên trình diễn và tỷ lệ lịch sử chưa đầy đủ trên quỹ đạo F1 đặt ra giới hạn về tính đại diện của phép kiểm chẩn đoán. Một tập nhãn độc lập gồm cả tình huống thất bại, với quy tắc ghép và dung sai đặt trước, cho phép ước lượng riêng xác nhận sai, bỏ sót, độ trễ và tỷ lệ tình huống chưa xác định.
 
-## 4.8. Hiệu lực của kết luận và các nguy cơ sai lệch
+Đối với RQ2, cần giữ dữ liệu, phân hoạch, ngân sách huấn luyện và quy tắc chọn checkpoint giống nhau khi so F0 với F1. Phép thử can thiệp lúc suy luận cần có điều kiện chỉ dùng thông tin hiện tại và điều kiện có cùng định dạng nhưng thay đổi giá trị lịch sử. Hai phép so sánh trả lời các câu hỏi khác nhau: thích ứng với bộ nhớ có tạo lợi ích vòng kín hay không, và chính sách đã thích ứng nhạy thế nào với nội dung cụ thể của bộ nhớ. Một tập trạng thái xác nhận độc lập với phát triển và nhiều hạt giống sẽ cho phép ước lượng chênh lệch ghép cặp cùng độ bất định ở cấp nhóm trạng thái. Chỉ đổi hạt giống trên các trạng thái đã dùng để phát triển không tạo một tập xác nhận độc lập.
 
-Nguy cơ thứ nhất là gộp nhiều thay đổi trong một treatment. B0 và F1 khác cả adapter lẫn memory pipeline. Hiện chưa có F0 matched được nhận vào bộ thực nghiệm này, nên RQ2 chưa được trả lời ở mức đóng góp riêng của lịch sử. F1-off, nếu được bổ sung, cũng cần diễn giải cùng việc `memory_dropout=0` lúc train.
+Đối với RQ3, đánh giá chính F1 trên các tác vụ cơ sở ghép cặp với B0 là cách đo trực tiếp mức duy trì. Nếu mục tiêu là kiểm tra tính không kém hơn, cần xác định trước biên suy giảm có thể chấp nhận được và cỡ mẫu đủ để diễn giải biên đó. Cơ chế chọn lại trọng số B0 cho tác vụ cơ sở chỉ đo chất lượng của một quy tắc định tuyến và không định lượng kỹ năng của F1.
 
-Nguy cơ thứ hai là phụ thuộc giữa các mẫu và sử dụng lại test trong phát triển. Các query thuộc cùng episode chia sẻ trajectory; T1/T3 chia sẻ state. Không được áp dụng một phép tính uncertainty coi tất cả query hoặc40 outcomes của hai conditions là độc lập. Với chỉ 10 state groups và một seed, bản thảo giữ cách báo số đếm mô tả, chưa đưa ra khẳng định ý nghĩa thống kê hay khái quát hóa rộng.
-
-Nguy cơ thứ ba là khác biệt giữa dữ liệu và runtime. Một state vector restore đúng không tự bảo đảm ảnh sau warmup khớp demonstration refined. Replay có thể thay đổi do các thành phần của stack; việc chưa biết nguyên nhân không cho phép suy đoán tác giả dùng asset bí mật. Hướng derived phải công bố rõ biến thể local và đánh giá trực tiếp trong biến thể đó.
-
-Nguy cơ thứ tư là đánh đồng tính hoàn chỉnh của phần mềm với kết luận khoa học. Unit tests kiểm tra invariant đã mã hóa; chúng không chứng minh event grounding đúng trên mọi trajectory hay policy dùng memory hữu ích. Một file status ghi `running` cũng không chứng minh process đang sống. Các run chưa hoàn tất không được đưa vào mẫu kết quả hoàn tất.
-
-Nguy cơ thứ năm là diễn giải sai chi phí. Policy latency theo chunk không bao gồm đầy đủ perception, IPC, rendering và reset. Hệ thống đang dùng suy luận đồng bộ với simulator tạm dừng, nên20 Hz là tần số mô phỏng/controller, không phải tốc độ thực thi end-to-end đã đạt trên phần cứng thật. Chương này chưa đưa ra kết luận về tiết kiệm thời gian hoặc bộ nhớ toàn hệ thống.
-
-## 4.9. Thí nghiệm cần bổ sung
-
-Để trả lời RQ2, ưu tiên hoàn thiện dataset derived version mới và train F0/F1 cùng dữ liệu, split và ngân sách chọn siêu tham số. Trước đánh giá cuối cần khóa checkpoint-selection trên validation, mô tả rõ holdout còn độc lập với phát triển và giữ một roster chung qua conditions. Chỉ đổi seed sau khi đã nhìn nhiều failure của cùng state không khôi phục tính chưa quan sát của test.
-
-Để đánh giá riêng lịch sử, cần current-only summary và một đối chứng lịch sử sai hoặc không liên quan có cùng ngân sách thông tin phù hợp. Phép perturbation phải được khai báo trước; nếu F1-off làm hiệu năng giảm, vẫn cần phân biệt thiếu lịch sử với việc đưa input khác phân phối huấn luyện. Một kết quả âm của đối chứng cũng cần được báo.
-
-Để trả lời RQ3, chính adapter F1 cần được chạy trên base với protocol matched B0. Routing về weights gốc khi gặp base task chỉ đánh giá hệ thống định tuyến; nó không chứng minh adapter giữ kỹ năng. Nếu mục tiêu là non-inferiority, margin chấp nhận suy giảm phải được xác định trước, và không thể coi một kiểm định không có ý nghĩa là bằng chứng hai policy tương đương.
-
-Đối với RQ4, cần một tập event labels độc lập để đo false confirmation, missed event, delay và coverage unknown. Phân tích độ nhạy của các ngưỡng writer thực hiện trên train/validation. Phân tích chi phí cần đo toàn đường thực thi và công bố điều kiện đồng bộ, hardware cùng phân phối độ trễ. Các mục này hiện chưa có số liệu để điền vào bản thảo.
-
-Khi có nhiều seed và đủ state, phép tổng hợp cần giữ pairing theo task/state/seed và cụm theo initial state. Cần đặt trước đại lượng muốn ước lượng, cách xử lý incomplete runs và cách báo uncertainty ở trường hợp toàn success hoặc toàn failure. Điều này quan trọng hơn việc chọn một tên kiểm định nhưng không kiểm tra các giả định của nó.
+Đối với RQ4, ưu tiên can thiệp vào những yếu tố có thể đổi giá trị hoặc thời điểm khả dụng của bằng chứng, gồm quy ước ảnh, độ trễ xác nhận và số hành động giữa hai lần gọi chính sách. Có thể dùng cùng một quỹ đạo để kiểm tra tác động riêng lên chất lượng quan sát trước khi thay đổi các yếu tố đó trong vòng kín. Cần báo cáo cả thời gian mô phỏng và thời gian thực đo trên phần cứng. Thiết kế như vậy gắn mỗi phép đo với một cơ chế sai lệch cụ thể, từ sai số của biểu diễn cho đến hạn chế về cách sử dụng biểu diễn trong điều khiển.
 
 # Chương 5. Kết luận
 
-## 5.1. Thành quả đã đạt được
+## 5.1. Kết luận theo câu hỏi nghiên cứu
 
-Khóa luận đã xây dựng một hướng bổ sung bộ nhớ sự kiện thị giác cho SmolVLA trong tác vụ nhấc và đặt lại bát. Hệ thống liên kết detection với đĩa gốc, ghi nhận departure/return bằng máy trạng thái và đưa snapshot đã kiểm nguồn vào prompt. Các cơ chế thời điểm khả dụng, incomplete history và giới hạn token giúp biểu đạt rõ thông tin nào được sử dụng tại mỗi quyết định.
+Khóa luận nghiên cứu tiến độ thao tác như một thành phần của trạng thái quyết định mà quan sát hiện thời có thể không biểu hiện đầy đủ. Trong bài toán nhấc và đặt lại bát, sự kiện rời đĩa rồi trở lại đĩa gốc cho phép diễn đạt thông tin lịch sử bằng một đơn vị có ý nghĩa đối với yêu cầu tiếp tục hay dừng. Cách phát biểu này liên kết yêu cầu của tác vụ, bằng chứng có thể quan sát và hành vi cần đánh giá ở chính sách điều khiển.
 
-Một quy trình thích ứng action expert bằng LoRA đã được triển khai và tạo ra adapter sau 3.000 bước huấn luyện. Các file export được xác minh theo manifest. Đợt rollout B0/F1 trên T1/T3 đã tạo đủ artifact cho 40 task-episodes, cho phép đối chiếu kết quả với prompt và trạng thái memory. Đây là bằng chứng về việc phương pháp đã được đưa vào một hệ thống thực thi, vượt qua mức chỉ có kiến trúc đề xuất.
+Với **RQ1**, bộ nhớ ghi các cặp sự kiện đã xác nhận, thời điểm khả dụng và tình trạng thiếu lịch sử. Hai tính chất về đếm chu kỳ và tính không nhìn trước được thiết lập dưới các giả thiết của phương pháp. Trên sáu quỹ đạo trình diễn, 12 sự kiện trở lại đĩa ghép được với 12 mốc chú giải trong dung sai ±20 khung hình. Độ đúng trên quỹ đạo thất bại cần được đo riêng.
 
-Ở tầng kiểm tra thành phần, audit demonstration ghi nhận 12/12 return khớp milestone annotation trong dung sai ±20 frame trên sáu episode, nhưng latency detector xấp xỉ một giây mỗi frame và tập đánh giá không gồm failure trajectory. Hai điều kiện này cho thấy một bộ ghi sự kiện có thể được kiểm tra bằng tiêu chí riêng, đồng thời chỉ ra rằng mức khớp trong demo chưa đủ để chứng nhận hiệu năng runtime hay tính đúng trên dữ liệu ngoài mẫu.
+Với **RQ2**, điều kiện có bộ nhớ cho sai số flow matching trên tập xác thực Mem thấp hơn chế độ bỏ thông tin lịch sử của cùng adapter. Trong đánh giá vòng kín, cấu hình kết hợp adapter và bộ nhớ hoàn thành 1/20 lượt, còn SmolVLA gốc hoàn thành 0/20 lượt. Hai điều kiện khác nhau đồng thời về thích ứng trọng số và đầu vào lịch sử, nên chênh lệch quan sát được chỉ mô tả hai cấu hình trên tập trạng thái đã khảo sát. Giả thuyết rằng lịch sử sự kiện tự nó cải thiện khả năng hoàn thành T3 còn mở.
 
-## 5.2. Điều rút ra từ kết quả hiện tại
+Với **RQ3**, việc lấy mẫu hỗn hợp tạo điều kiện để chính sách tiếp tục quan sát các thao tác cơ sở khi thích ứng với tác vụ phụ thuộc lịch sử. Khả năng duy trì kỹ năng cần được xác định bằng kết quả thực thi các tác vụ cơ sở của chính adapter đã đánh giá, trên cùng tập trạng thái và giao thức với mô hình gốc. Kết quả ngoại tuyến hiện tại chỉ mô tả sai số dự đoán trên dữ liệu cố định.
 
-Kết quả hiện tại chưa chứng minh mục tiêu nâng cao hiệu năng đã đạt. F1 có một success trong 20 task-episodes trong khi B0 không có success, nhưng phép so sánh còn gộp adaptation và memory, số nhóm state nhỏ và chỉ có một seed. Không có cơ sở chuyển các con số này thành một cải thiện chính thức trên LIBERO-Mem hoặc một kết luận tổng quát về memory cho VLA.
+Với **RQ4**, bộ ghi báo lịch sử chưa đầy đủ ở cuối 19/20 lượt của cấu hình có bộ nhớ. Trong lượt duy nhất thành công, bộ ghi xác nhận hai chu kỳ và bộ chấm ghi nhận ba. Bất đồng này xác định một hạn chế cần khảo sát khi chuyển từ trình diễn sang quỹ đạo do chính sách sinh ra. Ảnh hưởng của sai lệch bản ghi đến hành vi điều khiển cần được đo bằng can thiệp riêng.
 
-Một kết luận có căn cứ hơn là chất lượng và khả năng sử dụng thông tin memory phải được kiểm tra độc lập với loss huấn luyện. Hầu hết snapshot cuối của F1 báo lịch sử chưa đầy đủ; success duy nhất không đi kèm việc writer đếm đủ các chu kỳ được evaluator ghi nhận. Vì vậy, việc đã tạo prompt, đã giảm loss offline và đã có rollout thành công là ba bằng chứng khác nhau, không thể thay thế cho nhau trong lập luận về hiệu quả của phương pháp.
+## 5.2. Ý nghĩa và phạm vi của đóng góp
 
-Giá trị học thuật hiện có nằm ở cách đặt và làm rõ bài toán, thiết kế biểu diễn sự kiện có truy vết, cùng những phép kiểm giúp tránh kết luận vượt bằng chứng. Giá trị này cần được đánh giá trong phạm vi một khóa luận xây dựng và khảo sát hệ thống; chưa phải chứng minh tính mới toàn cầu hay ưu thế so với các kiến trúc memory lớn.
+Đóng góp học thuật của khóa luận nằm ở cách liên kết biểu diễn tiến độ với bằng chứng có thể kiểm tra. Khi một bản ghi gắn với mốc quan sát và thời điểm khả dụng, có thể xác định một chính sách đã được cung cấp thông tin gì trước quyết định. Khi bộ chấm hoạt động độc lập với bản ghi, có thể quan sát các trường hợp ước lượng tiến độ và kết quả của tác vụ bất đồng. Hai đặc điểm này làm cho giả thuyết về vai trò của bộ nhớ trở thành một đối tượng có thể khảo sát bằng dữ liệu và đối chứng.
 
-Điểm phương pháp luận có thể giữ lại từ nghiên cứu là phân rã đường bằng chứng thành ba tầng: chất lượng perception/event, tác động của memory lên policy khi adaptation được kiểm soát, và duy trì năng lực trên task cơ sở. Chỉ tầng đầu có một phép kiểm định lượng nhỏ đã hoàn tất; tầng thứ hai và thứ ba vẫn mở. Cách phân rã này giúp kết quả âm hoặc chưa rõ được diễn giải như giới hạn của phép đo hiện tại thay vì gán nguyên nhân cho một module chưa được cô lập.
+Độ khớp với mốc chú giải đánh giá bản ghi trên một tập quỹ đạo. Sai số ngoại tuyến đo mức phù hợp của dự đoán với hành động tham chiếu. Tỷ lệ thành công vòng kín đo kết quả khi chính sách tự làm thay đổi quan sát qua hành động. Ba phép đo xác định những khâu khác nhau cần kiểm tra khi kết quả không đồng nhất. Kết luận hiện áp dụng cho quan hệ bát–đĩa và giao thức mô phỏng đã khảo sát.
 
-## 5.3. Hạn chế và hướng phát triển
+## 5.3. Hướng kiểm định tiếp theo
 
-Các hạn chế chính là phạm vi một quan hệ bát–đĩa, thiếu đánh giá event fidelity trên failure trajectories, chưa có F0 matched và retention của adapter hiện tại, cùng khác biệt chưa được đóng hoàn toàn giữa dữ liệu tác giả và runtime local. Bộ detector chưa đạt 20 Hz trên hardware được ghi trong audit; rollout đồng bộ làm simulator tạm dừng và không chứng minh điều khiển thời gian thực. Chuỗi tạo dữ liệu derived mới còn cần export thật và audit hoàn chỉnh trước khi được dùng cho kết luận huấn luyện mới.
+Ưu tiên đầu tiên là kiểm tra bộ ghi trên tập quỹ đạo độc lập có cả thao tác thành công và thất bại. Nhãn cần phân biệt nhấc hụt, che khuất, đặt sai đĩa và quay lại đúng đĩa. Việc báo cáo sự kiện bỏ sót, xác nhận nhầm và độ trễ xác nhận theo loại tình huống sẽ cho biết điều kiện nào làm thông tin tiến độ thiếu tin cậy. Các phép thử chèn khoảng chờ hoặc thay đổi nhịp thao tác có thể khảo sát thêm mức độ tách biệt giữa tiến độ đã xác nhận và thời gian đã trôi qua.
 
-Hướng tiếp theo là hoàn thiện chuỗi dữ liệu có version, xây dựng đối chứng thích ứng không memory trên cùng demonstration, đo chất lượng writer và thực hiện paired evaluation với phạm vi holdout được công bố rõ. Sau khi làm rõ giá trị của lịch sử trong bài toán hẹp, nghiên cứu mới có cơ sở mở rộng sang nhiều thực thể, nhiều backbone hoặc robot thật. Tóm tắt và kết luận cuối cùng sẽ được cập nhật theo kết quả thực nghiệm bổ sung, kể cả khi kết quả đó không xác nhận giả thuyết ban đầu.
+Ưu tiên thứ hai là đánh giá các chính sách trên cùng tập trạng thái giữ riêng và nhiều seed. Một adapter huấn luyện trên cùng dữ liệu và ngân sách nhưng không nhận bộ nhớ cho phép kiểm tra giá trị gia tăng của cấu hình sử dụng lịch sử. Can thiệp vào đầu vào của cùng một adapter, với nội dung đối chứng và ngân sách token tương đương, giúp khảo sát mức độ chính sách dựa vào lịch sử tại thời điểm ra quyết định. Trên các tác vụ cơ sở, cần xác định trước mức suy giảm chấp nhận được và thực hiện so sánh theo cặp với SmolVLA gốc. Khi hiệu lực của các phép đo này được xác lập, có thể kiểm tra khả năng chuyển phương pháp sang nhiều thực thể, mô hình nền khác và robot thật.
