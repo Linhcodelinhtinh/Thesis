@@ -1,0 +1,12 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Đường thông tin của phương pháp. Bộ nhớ được suy từ quan sát đã nhận, còn tiến độ do môi trường ghi nhận được dành cho đánh giá.}}{12}{figure.caption.2}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Hàm mất mát flow matching trên tập xác thực theo số bước huấn luyện. Hai chế độ có và bỏ bộ nhớ được đo trên cùng checkpoint ở mỗi bước.}}{25}{figure.caption.3}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Tỷ lệ thành công trên T1 và T3 theo giao thức của khóa luận. Mỗi cột biểu diễn 10 quỹ đạo. Hai tác vụ dùng chung các nhóm trạng thái khởi tạo và cùng một hạt giống chính sách.}}{27}{figure.caption.4}%
+\addvspace {10\p@ }
+\def \@chapapp {\appendixname }
+\addvspace {10\p@ }
+\providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

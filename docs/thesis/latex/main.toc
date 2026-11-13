@@ -1,0 +1,43 @@
+\contentsline {chapter}{\nonumberline Danh mục ký hiệu và chữ viết tắt}{v}{chapter*.1}%
+\contentsline {chapter}{\numberline {1}Mở đầu}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Động cơ nghiên cứu}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Khoảng trống nghiên cứu và định vị đề tài}{2}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Mục tiêu và câu hỏi nghiên cứu}{2}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Phạm vi và đóng góp}{3}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Bố cục khóa luận}{4}{section.1.5}%
+\contentsline {chapter}{\numberline {2}Cơ sở lý thuyết và nghiên cứu liên quan}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Quyết định phụ thuộc lịch sử dưới quan sát một phần}{5}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Biểu diễn lịch sử trong các mô hình VLA}{6}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Khoảng trống nghiên cứu trong tác vụ lặp}{7}{section.2.3}%
+\contentsline {section}{\numberline {2.4}SmolVLA và vai trò của thích ứng}{8}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Tác vụ nghiên cứu và ý nghĩa của các phép đo}{9}{section.2.5}%
+\contentsline {chapter}{\numberline {3}Bộ nhớ sự kiện thị giác cho SmolVLA}{11}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Tiến độ tác vụ và giả thuyết biểu diễn}{11}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Ranh giới giữa quan sát và đánh giá}{12}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Ước lượng quan hệ bát và đĩa gốc}{13}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Ghi sự kiện và bất biến đếm chu kỳ}{14}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Tính không nhìn trước và biểu diễn văn bản}{15}{section.3.5}%
+\contentsline {section}{\numberline {3.6}Dữ liệu và thích ứng chính sách}{16}{section.3.6}%
+\contentsline {section}{\numberline {3.7}Thiết kế đối chứng}{17}{section.3.7}%
+\contentsline {section}{\numberline {3.8}Quy trình đánh giá và độ đo}{18}{section.3.8}%
+\contentsline {chapter}{\numberline {4}Thực nghiệm và thảo luận}{20}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Phạm vi suy luận thực nghiệm}{20}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Mức phù hợp giữa sự kiện thị giác và mốc tiến độ}{20}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Điều kiện đối chiếu trong mô phỏng}{22}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Mẫu nghiên cứu và điều kiện thích ứng}{23}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Độ nhạy ngoại tuyến đối với thông tin bộ nhớ}{25}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Kết quả điều khiển vòng kín}{26}{section.4.6}%
+\contentsline {section}{\numberline {4.7}Bất đồng giữa tiến độ quan sát và tiến độ được chấm}{27}{section.4.7}%
+\contentsline {section}{\numberline {4.8}Hiệu lực của kết luận và thiết kế kiểm chứng tiếp theo}{28}{section.4.8}%
+\contentsline {chapter}{\numberline {5}Kết luận}{30}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Kết luận theo câu hỏi nghiên cứu}{30}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Ý nghĩa và phạm vi của đóng góp}{31}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Hướng kiểm định tiếp theo}{31}{section.5.3}%
+\contentsline {chapter}{Tài liệu tham khảo}{32}{section*.5}%
+\def \@chapapp {\appendixname }
+\contentsline {chapter}{\numberline {A}Nguồn dữ liệu và chi tiết tái lập}{32}{appendix.A}%
+\contentsline {section}{\numberline {A.1}Cấu hình và bản ghi thực nghiệm}{32}{appendix.A.1}%
+\contentsline {section}{\numberline {A.2}Tệp dữ liệu phân tích và bối cảnh V1}{33}{appendix.A.2}%
+\contentsline {section}{\numberline {A.3}Đối chiếu bản ghi sự kiện thị giác}{33}{appendix.A.3}%
+\contentsline {section}{\numberline {A.4}Tái tổng hợp số liệu}{33}{appendix.A.4}%
+\providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

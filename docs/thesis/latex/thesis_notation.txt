@@ -1,0 +1,6 @@
+khi phát biểu bài toán và các luận điểm, trình bày trong bài, cần nhấn mạnh hơn một chút về việc: nghiên cứu tập trung vào cải thiện và nâng cao performance của những model nhỏ đến rất nhỏ, có nhiều ràng buộc, rào cản và khó khăn khác nhau, ví dụ như smolvla thì bị giới hạn token đầu vào...
+các câu văn đang rất thiếu tính liên kết, không có các từ nối, các liên từ để kết nối giữa các câu khiến các đoạn trình bày thuần văn bản như abstract, kết luận,... đọc bị cực kì máy móc.
+không nên quá stick vào smolvla trong phần phát biểu bài toán, smolvla chỉ là một công cụ được lựa chọn do phù hợp với ngữ cảnh, không phải đối tượng chính hay mục tiêu cuối của nghiên cứu.
+cũng không nên quá stick to suite T1/T3 của libero mem. tôi rất muốn mở rộng ra toàn bộ benchmark này, vì vậy không nên viết theo hướng thesis này chỉ tập trung vào tác vụ gắp bát ở T1/T3. Như thế thì đóng góp và khối lượng công việc được thể hiện sẽ là rất ít.
+bộ nhớ của chúng ta không chỉ đơn thuần là một bản tóm tắt sự kiện mà còn là một bộ nhớ sự kiện - bằng chứng chặt chẽ. Text: Chỉ là giao diện ngôn ngữ đầu ra để giao tiếp với VLA, Chiếu ra văn bản cho VLA Policy với đầu vào điều kiện hóa của là ngôn ngữ. LiberoMemTextRenderer đóng vai trò là một bộ chiếu (projection):
+abstract.tex đã được tôi điều chỉnh theo đúng các mô tả của tôi và mong muốn của tôi, không cần sửa file này nữa
