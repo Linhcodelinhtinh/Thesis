@@ -3,21 +3,21 @@
 
 \section{Phạm vi suy luận thực nghiệm}
 
-Để hỗ trợ điều khiển, một biểu diễn tiến độ cần thỏa mãn ba điều kiện: có thể suy ra từ quan sát khả dụng, đến được chính sách đúng lúc và chứa thông tin mà chính sách có thể sử dụng để chọn hành động. Khóa luận xem xét ba loại bằng chứng: sự phù hợp của sự kiện với mốc tiến độ trong quỹ đạo trình diễn, độ nhạy của sai số dự đoán hành động đối với đầu vào bộ nhớ, và kết quả điều khiển vòng kín. Đối chiếu ba phép đo giúp xác định mắt xích nào đã có bằng chứng và mắt xích nào cần một phép can thiệp riêng.
+Để hỗ trợ điều khiển, một biểu diễn tiến độ cần thỏa mãn ba điều kiện: có thể suy ra từ quan sát khả dụng, đến được chính sách đúng lúc và chứa thông tin mà chính sách có thể sử dụng để chọn hành động. Khóa luận xem xét ba loại bằng chứng: sự phù hợp của sự kiện với mốc tiến độ trong các quỹ đạo thao tác mẫu, độ nhạy của sai số dự đoán hành động đối với đầu vào bộ nhớ, và kết quả điều khiển vòng kín. Đối chiếu ba phép đo giúp xác định mắt xích nào đã có bằng chứng và mắt xích nào cần một phép can thiệp riêng.
 
-Nguồn phân tích chính gồm phép phát lại sáu quỹ đạo trình diễn ngày 26/10/2026, nhật ký xác thực của mô hình F1 và 40 quỹ đạo điều khiển hoàn tất trong đợt đánh giá ngày 09/11/2026. Với đợt đánh giá vòng kín, số liệu được tính lại từ từng bản tóm tắt quỹ đạo, sau khi đối chiếu tổng kiểm, trạng thái hoàn tất, tác vụ, trạng thái khởi tạo và hạt giống. Danh mục dữ liệu, phiên bản và tổng kiểm được lưu cùng bản ghi thực nghiệm ngày 12/11/2026 \cite{artifact2026}.
+Nguồn phân tích chính gồm phép phát lại sáu quỹ đạo thao tác mẫu ngày 26/10/2026, nhật ký xác thực của mô hình F1 và 40 quỹ đạo điều khiển hoàn tất trong đợt đánh giá ngày 09/11/2026. Với đợt đánh giá vòng kín, số liệu được tính lại từ từng bản tóm tắt quỹ đạo, sau khi đối chiếu tổng kiểm, trạng thái hoàn tất, tác vụ, trạng thái khởi tạo và hạt giống. Danh mục dữ liệu, phiên bản và tổng kiểm được lưu cùng bản ghi thực nghiệm ngày 12/11/2026 \cite{artifact2026}.
 
 Đối chứng của phân tích vòng kín là B0 trên chính T1/T3. Kết quả V1 trong phụ lục chỉ cung cấp bối cảnh về chính sách gốc trên các tác vụ khác và với nhịp truy vấn khác. \cite{artifact2026}
 
 \section{Mức phù hợp giữa sự kiện thị giác và mốc tiến độ}
 
-Để khảo sát RQ1, bộ ghi sự kiện từ RGB được áp dụng trên sáu quỹ đạo trình diễn T1/T3, gồm 1.276 khung hình và ba trạng thái khởi tạo. Với mỗi trạng thái đều có quỹ đạo của cả T1 lẫn T3. Hai quỹ đạo được dùng để phát triển phương pháp và các quỹ đạo bổ sung cũng đã được quan sát trước khi tổng hợp. Phép đo này vì vậy có phạm vi chẩn đoán trên những quỹ đạo đã biết. Nhãn tham chiếu mô tả thời điểm tiến độ tích lũy đạt mốc, nên phù hợp để đối chiếu sự kiện hoàn thành chu kỳ, còn thời điểm tiếp xúc hoặc nhả vật cần một loại nhãn khác.
+Để khảo sát RQ1, bộ ghi sự kiện từ RGB được áp dụng trên sáu quỹ đạo thao tác mẫu T1/T3, gồm 1.276 khung hình và ba trạng thái khởi tạo. Với mỗi trạng thái đều có quỹ đạo của cả T1 lẫn T3. Hai quỹ đạo được dùng để phát triển phương pháp và các quỹ đạo bổ sung cũng đã được quan sát trước khi tổng hợp. Phép đo này vì vậy có phạm vi chẩn đoán trên những quỹ đạo đã biết. Nhãn tham chiếu mô tả thời điểm tiến độ tích lũy đạt mốc, nên phù hợp để đối chiếu sự kiện hoàn thành chu kỳ, còn thời điểm tiếp xúc hoặc nhả vật cần một loại nhãn khác.
 
 Mỗi sự kiện đặt lại do bộ ghi xác nhận được ghép với nhiều nhất một mốc tham chiếu, trong dung sai 20 khung hình. Tất cả 12 sự kiện xác nhận đều ghép được với 12 mốc. Độ trễ xác nhận có trung vị 9 khung hình, trung bình xấp xỉ 9,92 khung hình và nằm trong khoảng 6–20 khung hình. Kết quả cho thấy có thể trích xuất một biến tiến độ hữu ích để mô tả những quỹ đạo đã xem từ bằng chứng thị giác. Độ trễ quan sát được cho thấy giữa thời điểm tiến độ thay đổi và thời điểm chính sách có thể nhận bằng chứng về thay đổi đó tồn tại một khoảng chờ cần tính đến.
 
 \begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
 \begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.25\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.35\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.4\textwidth-2\tabcolsep\relax}}
-\caption{Đối chiếu sự kiện thị giác với mốc tiến độ trên quỹ đạo trình diễn}\label{tab:generated4}\\
+\caption{Đối chiếu sự kiện thị giác với mốc tiến độ trên các quỹ đạo mẫu}\label{tab:generated4}\\
 \toprule
 \textbf{Đại lượng khảo sát} & \textbf{Kết quả quan sát} & \textbf{Phạm vi diễn giải} \\
 \midrule\endfirsthead
@@ -25,9 +25,9 @@ Mỗi sự kiện đặt lại do bộ ghi xác nhận được ghép với nhi�
 \textbf{Đại lượng khảo sát} & \textbf{Kết quả quan sát} & \textbf{Phạm vi diễn giải} \\
 \midrule\endhead
 \bottomrule\endfoot
-Quỹ đạo trình diễn / trạng thái / khung hình & 6 / 3 / 1.276 & Các quỹ đạo hoàn thành tác vụ đã được quan sát \\
+Quỹ đạo mẫu / trạng thái / khung hình & 6 / 3 / 1.276 & Các quỹ đạo hoàn thành tác vụ đã được quan sát \\
 Mốc tham chiếu / sự kiện xác nhận / cặp ghép & 12 / 12 / 12 & Ghép một-một trong dung sai ±20 khung hình \\
-Sự kiện dư / mốc bị bỏ sót & 0 / 0 & Tính trên sáu quỹ đạo trình diễn \\
+Sự kiện dư / mốc bị bỏ sót & 0 / 0 & Tính trên sáu quỹ đạo mẫu \\
 Độ trễ xác nhận & Trung vị 9, khoảng 6–20 khung hình & So với mốc tham chiếu \\
 Phát hiện bát có IoU $\geq0{,}5$ & 1.169/1.172 (99,74\%) & Mẫu số chỉ gồm phát hiện đã được bộ theo dõi chấp nhận \\
 Có định vị vật / có văn bản bộ nhớ & 1.172/1.276 / 1.258/1.276 khung hình & Tỷ lệ có đầu ra ở từng khâu \\
@@ -119,7 +119,7 @@ Tại bước 3.000, trên 4.299 mẫu khung hình của tập xác thực Mem, 
 \label{fig:validation_loss}
 \end{figure}
 
-Chênh lệch trên tập Mem là bằng chứng rằng cách cung cấp đầu vào bộ nhớ có liên hệ với chất lượng dự đoán hành động trên phân phối xác thực. Do F1 được huấn luyện với tỷ lệ bỏ bộ nhớ bằng 0, phép bỏ bộ nhớ có thể đồng thời loại thông tin tiến độ và đưa đầu vào ra ngoài phân phối huấn luyện. Để tách hai cách giải thích này, một phép thử có kiểm soát cần duy trì định dạng và dung lượng lời nhắc, đồng thời thay đổi có chủ đích thông tin lịch sử mà nó chứa. Mặt khác, một chính sách có sai số dự đoán nhỏ trên quỹ đạo trình diễn vẫn có thể thực thi kém khi các hành động của chính nó làm thay đổi phân phối quan sát.
+Chênh lệch trên tập Mem là bằng chứng rằng cách cung cấp đầu vào bộ nhớ có liên hệ với chất lượng dự đoán hành động trên phân phối xác thực. Do F1 được huấn luyện với tỷ lệ bỏ bộ nhớ bằng 0, phép bỏ bộ nhớ có thể đồng thời loại thông tin tiến độ và đưa đầu vào ra ngoài phân phối huấn luyện. Để tách hai cách giải thích này, một phép thử có kiểm soát cần duy trì định dạng và dung lượng lời nhắc, đồng thời thay đổi có chủ đích thông tin lịch sử mà nó chứa. Mặt khác, một chính sách có sai số dự đoán nhỏ trên các quỹ đạo thao tác mẫu vẫn có thể thực thi kém khi các hành động của chính nó làm thay đổi phân phối quan sát.
 
 Đối với RQ3, hai giá trị hàm mất mát bằng nhau trên tập cơ sở chỉ phản ánh tính ổn định giữa hai chế độ đầu vào của F1 trong phép đo này. Chẳng hạn, các mẫu cơ sở có thể có cùng đầu vào ở hai chế độ nếu chúng đều không mang hậu tố bộ nhớ. Để ước lượng mức duy trì kỹ năng, phép so sánh cần đặt chính F1 và B0 vào cùng các tác vụ cơ sở, với tiêu chí thành công và ngân sách điều khiển giống nhau.
 
