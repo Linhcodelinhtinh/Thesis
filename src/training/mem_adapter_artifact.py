@@ -1,4 +1,5 @@
 """Unmerged V2 adapters with verified base weights and causal-memory provenance."""
+import hashlib
 import json
 import shutil
 from pathlib import Path
@@ -14,8 +15,16 @@ def verify_files(root, inventory):
     root = Path(root).resolve()
     for name, digest in inventory.items():
         path = (root / name).resolve()
-        if root not in path.parents or sha256_file(path) != digest:
+        if root not in path.parents or not path.is_file():
             raise ValueError("Artifact hash/path mismatch: " + name)
+        actual = sha256_file(path)
+        if actual != digest:
+            # Handle cross-platform line ending differences (Windows CRLF vs Linux LF) for text files
+            content = path.read_bytes()
+            crlf_digest = hashlib.sha256(content.replace(b"\r\n", b"\n").replace(b"\n", b"\r\n")).hexdigest()
+            lf_digest = hashlib.sha256(content.replace(b"\r\n", b"\n")).hexdigest()
+            if digest not in (crlf_digest, lf_digest):
+                raise ValueError("Artifact hash/path mismatch: " + name)
 
 
 def verify_memory_code(provenance):
