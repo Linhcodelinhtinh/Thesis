@@ -4,7 +4,7 @@ import numpy as np
 from src.evaluation.libero_mem_metrics import LiberoMemEvaluator
 from src.evaluation.libero_mem_protocol import load_protocol, task_spec, source_digest
 from src.simulator.libero_mem_loader import LiberoMemBDDLLoader
-from src.training.split_lock import load_split_lock
+from src.training.split_lock import AUTHOR_EVAL_SPLITS, load_split_lock, mem_episode_rows
 
 
 class LiberoMemEnv:
@@ -16,8 +16,10 @@ class LiberoMemEnv:
             raise ValueError("Fixture/fallback simulation is not supported by the benchmark adapter")
         if privileged_oracle:
             raise NotImplementedError("This protocol exposes F0/F1 observations only; no fabricated oracle signals")
-        if split not in ("train", "val", "test") or purpose not in ("evaluation", "demo_replay"):
+        if split not in ("train", "val", "test", *AUTHOR_EVAL_SPLITS) or purpose not in ("evaluation", "demo_replay"):
             raise ValueError("Invalid split/purpose")
+        if split in AUTHOR_EVAL_SPLITS and purpose != "evaluation":
+            raise ValueError("Raw states are reserved for rollout evaluation")
         if split == "train" and purpose != "demo_replay":
             raise ValueError("Training initial states cannot be used for held-out evaluation")
         self.protocol = load_protocol()
@@ -28,8 +30,7 @@ class LiberoMemEnv:
         from src.evaluation.libero_mem_protocol import DEFAULT_PROTOCOL, source_digest
         if self.split_lock["protocol_sha256"] != source_digest(DEFAULT_PROTOCOL):
             raise ValueError("Evaluation protocol differs from split lock")
-        self.episodes = [e for e in self.split_lock["episodes"] if e["domain"] == "mem" and
-                         e["task"] == self.task_name and e["split"] == split]
+        self.episodes = mem_episode_rows(self.split_lock, self.task_name, split)
         if not self.episodes:
             raise ValueError("No locked initial states in requested split")
         self.target_cycles = self.spec["target_cycles"]

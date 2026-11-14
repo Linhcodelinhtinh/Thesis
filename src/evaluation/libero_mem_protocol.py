@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_PROTOCOL = ROOT / "configs/benchmarks/libero_mem_t1_t3_protocol.json"
+SUITE_SOURCE_LOCK = ROOT / "configs/benchmarks/libero_mem_suite_source_v1.json"
 
 
 def source_digest(path):
@@ -24,8 +25,20 @@ def load_protocol(path=DEFAULT_PROTOCOL, source_root=None):
     return protocol
 
 
+def load_suite_source(source_root):
+    """Verify the ten-task source inventory without enabling unverified rollouts."""
+    suite = json.loads(SUITE_SOURCE_LOCK.read_text(encoding="utf-8"))
+    if (suite["stage"] != "source_inventory" or suite["official_paper_comparable"]
+            or [task["index"] for task in suite["tasks"]] != list(range(10))):
+        raise ValueError("Invalid LIBERO-Mem suite source lock")
+    for name, expected in suite["source_text_sha256"].items():
+        if source_digest(Path(source_root) / name) != expected:
+            raise ValueError("Pinned upstream source differs: " + name)
+    return suite
+
+
 def task_spec(protocol, task):
     matches = [s for s in protocol["tasks"] if task in (s["alias"], s["name"])]
     if len(matches) != 1:
-        raise ValueError("This locked protocol supports only T1 and T3")
+        raise ValueError(f"Task {task!r} is absent from {protocol['protocol_id']}")
     return matches[0]

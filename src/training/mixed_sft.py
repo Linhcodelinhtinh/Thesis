@@ -5,11 +5,12 @@ from pathlib import Path
 from src.evaluation.libero_mem_protocol import source_digest
 import h5py
 import numpy as np
-from src.training.split_lock import load_split_lock, locked_episode, content_digest
+from src.training.split_lock import AUTHOR_MEM_SPLIT, evaluation_lock_sha256, load_split_lock, locked_episode, content_digest
 from src.utils.file_hash import sha256_file
 from src.memory.visual_pipeline import TOKENIZER_REVISION, TOKENIZER_SHA256
 
 ARTIFACT = "mixed_base_mem_sft_shards"
+PREDICTED_MEMORY_SOURCES = {"rgb_cycle_v3": "predicted_rgb_v3", "rgb_relations_v1": "predicted_rgb_relations_v1"}
 
 
 def canonical_raw_rgb(images, domain=None, *, source_convention=None):
@@ -36,9 +37,10 @@ def sample_identity(episode, frame):
     return f'{episode["domain"]}/{episode["task"]}/{episode["demo"]}/{frame}'
 
 
-def validate_mixed_dataset(root, *, verify_shards=True):
+def validate_mixed_dataset(root, *, verify_shards=True, manifest_path=None):
     root = Path(root)
-    manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+    path = Path(manifest_path) if manifest_path is not None else root / "manifest.json"
+    manifest = json.loads(path.read_text(encoding="utf-8"))
     if manifest.get("artifact") != ARTIFACT or manifest.get("status") != "complete":
         raise ValueError("Expected a completed mixed SFT shard dataset, not a prompt index")
     split = load_split_lock(root / "split.lock.json")
@@ -48,16 +50,20 @@ def validate_mixed_dataset(root, *, verify_shards=True):
         raise ValueError("Dataset evaluator protocol differs from split lock")
     if manifest["sources"] != split["sources"]:
         raise ValueError("Dataset source provenance differs from split lock")
+    if split.get("mem_split_policy") == AUTHOR_MEM_SPLIT:
+        if (manifest.get("mem_split_policy") != AUTHOR_MEM_SPLIT
+                or manifest.get("evaluation_split_lock_sha256") != evaluation_lock_sha256(split)):
+            raise ValueError("Dataset evaluation lineage differs from split lock")
     if manifest.get("schema_version") != 2 or manifest.get("max_tokens") != 48:
         raise ValueError("Unknown mixed dataset/token contract")
-    if manifest.get("memory_source") not in ("none", "predicted_rgb_v3"):
+    if manifest.get("memory_source") not in {"none", *PREDICTED_MEMORY_SOURCES.values()}:
         raise ValueError("Unknown memory source")
     if (manifest.get("tokenizer_revision") != TOKENIZER_REVISION or
         manifest.get("tokenizer_files_sha256") != {"tokenizer.json": TOKENIZER_SHA256}):
         raise ValueError("Unexpected policy tokenizer provenance")
-    if manifest["memory_source"] == "predicted_rgb_v3":
+    if manifest["memory_source"] in PREDICTED_MEMORY_SOURCES.values():
         provenance = manifest.get("memory_provenance", [])
-        if not provenance or any(p.get("writer") != "rgb_cycle_v3" or
+        if not provenance or any(PREDICTED_MEMORY_SOURCES.get(p.get("writer")) != manifest["memory_source"] or
             any(not p.get(k) for k in ("writer_code_sha256", "writer_config", "detector", "manifest_sha256"))
             for p in provenance):
             raise ValueError("Missing predicted-memory writer/detector provenance")
@@ -83,8 +89,11 @@ def validate_mixed_dataset(root, *, verify_shards=True):
         projection.append({k: e[k] for k in ("domain", "task", "demo", "split", "length", "initial_state_sha256", "source")})
     if seen != {(e["domain"], e["task"], e["demo"]) for e in split["episodes"]}:
         raise ValueError("Prepared dataset omitted episodes from its locked selection")
-    if covered != {(d, s) for d in ("base", "mem") for s in ("train", "val", "test")}:
-        raise ValueError("Both domains need nonempty train/validation/test splits")
+    expected_coverage = {("base", s) for s in ("train", "val", "test")} | {("mem", "train")}
+    if split.get("mem_split_policy") != AUTHOR_MEM_SPLIT:
+        expected_coverage |= {("mem", "val"), ("mem", "test")}
+    if covered != expected_coverage:
+        raise ValueError("Unexpected base/Mem split coverage")
     if content_digest(projection) != manifest["sample_selection_sha256"]:
         raise ValueError("Sample selection/order changed")
     if set(manifest["shards"]) != {e["shard"] for e in manifest["episodes"]}:

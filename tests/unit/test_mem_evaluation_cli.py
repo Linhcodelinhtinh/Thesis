@@ -99,6 +99,7 @@ class FixtureEnv:
 
 
 class FixturePolicy:
+    chunk_size, action_dim = 50, 7
     def reset(self):
         pass
     def predict_action_chunk(self, obs, prompt):

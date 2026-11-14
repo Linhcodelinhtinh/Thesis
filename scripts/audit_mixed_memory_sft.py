@@ -22,6 +22,7 @@ def main():
     a = p.parse_args()
     m = validate_mixed_dataset(a.data_dir)
     roots = dict(base=a.base_root, mem=a.mem_root)
+    source_specs = {(source["domain"], source["path"]): source for source in m["sources"]}
     for source in m["sources"]:
         if sha256_file(roots[source["domain"]]/source["path"]) != source["sha256"]:
             raise ValueError("Original source hash mismatch")
@@ -29,12 +30,21 @@ def main():
     for e in m["episodes"]:
         with h5py.File(roots[e["domain"]]/e["source"], "r") as source, h5py.File(a.data_dir/e["shard"], "r") as prepared:
             old, new = source["data"][e["demo"]], prepared[e["demo"]]
-            n = e["length"]; offset = int(e["domain"] == "base")
+            n = e["length"]
+            offset = int(e["domain"] == "base")
+            source_spec = source_specs[e["domain"], e["source"]]
+            convention = source_spec.get("image_convention")
+            if convention is None:
+                convention = ("raw_opengl" if e["domain"] == "base" else
+                              m["image_contract"]["mem_source"])
+            if new.attrs["source_action_offset"] != offset or n != len(old["actions"]) - offset:
+                raise ValueError("Unexpected source action alignment")
             np.testing.assert_array_equal(new["actions"][:], old["actions"][offset:].astype(np.float32))
             np.testing.assert_array_equal(new["robot_states"][:], old["robot_states"][:n].astype(np.float32))
             for i in sorted({0, n//2, n-1}):
                 for camera in ("agentview_rgb", "eye_in_hand_rgb"):
-                    expected = canonical_raw_rgb(old["obs/"+camera][i:i+1], e["domain"])[0]
+                    expected = canonical_raw_rgb(old["obs/"+camera][i:i+1],
+                                                 source_convention=convention)[0]
                     np.testing.assert_array_equal(new[camera][i], expected)
                 frames_checked += 1
     parity_samples = 0

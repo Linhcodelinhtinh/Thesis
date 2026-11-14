@@ -124,6 +124,7 @@ class SmolVLAAdapter(VLAPolicy):
         adapter_path = None
         self.mem_adapter_manifest = None
         self._memory_contract_verified = False
+        self._instruction_only = None
         if (Path(checkpoint_path) / "mem_adapter_manifest.json").is_file():
             from src.training.mem_adapter_artifact import validate_adapter
             adapter_path = checkpoint_path
@@ -187,11 +188,25 @@ class SmolVLAAdapter(VLAPolicy):
             validate_runtime(self.mem_adapter_manifest, writer, renderer)
             if renderer.tokenizer is not self.tokenizer:
                 raise ValueError("Use the adapter's pinned prompt tokenizer")
+            self._instruction_only = None
             self._memory_contract_verified = True
+
+    def bind_instruction_only_runtime(self, condition, instruction, renderer):
+        from src.training.mem_adapter_artifact import adapter_training_condition
+        manifest = self.mem_adapter_manifest
+        required = {"F0": "no_memory", "F1-off": "memory"}.get(condition)
+        if required is None or manifest is None or adapter_training_condition(manifest) != required:
+            raise ValueError(f"{condition} requires a matching trained adapter")
+        if (renderer.tokenizer is not self.tokenizer or not renderer.strict_tokenizer
+                or renderer.allow_oracle or renderer.max_total_tokens != 48):
+            raise ValueError("Instruction-only runtime requires the pinned adapter tokenizer and budget")
+        self._instruction_only = instruction
+        self._memory_contract_verified = True
 
     def reset(self) -> None:
         """Reset internal action queue and underlying policy recurrent state."""
         self._memory_contract_verified = False
+        self._instruction_only = None
         super().reset()
         if self.policy is not None and hasattr(self.policy, "reset"):
             self.policy.reset()
@@ -297,6 +312,9 @@ class SmolVLAAdapter(VLAPolicy):
         """
         if getattr(self, "mem_adapter_manifest", None) is not None and not self._memory_contract_verified:
             raise RuntimeError("Mem adapter requires a verified online writer/renderer; use the base checkpoint for baseline tasks")
+        expected = getattr(self, "_instruction_only", None)
+        if expected is not None and instruction != expected:
+            raise ValueError("Instruction-only runtime rejects a changed prompt")
         raw_features = self.build_raw_features(obs, instruction)
 
         if self.preprocessor is not None:

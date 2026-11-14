@@ -97,3 +97,27 @@ def test_notebook_code_cells_compile_without_saved_execution():
         if cell["cell_type"] == "code":
             compile("".join(cell["source"]), f"cell_{i}", "exec")
             assert cell["execution_count"] is None and cell["outputs"] == []
+
+
+def test_author_lock_preserves_base_and_uses_all_refined_mem_episodes():
+    from src.training.split_lock import DEFAULT_AUTHOR_MEM_LOCK, AUTHOR_MEM_SPLIT, seal_lock, validate_lock
+    from src.evaluation.mem_eval_io import evaluation_roster
+
+    lock = load_split_lock(DEFAULT_AUTHOR_MEM_LOCK)
+    old = load_split_lock(ROOT / "resources/manifests/libero_mem_t1_t3_base10_split_v1.json")
+    assert lock["mem_split_policy"] == AUTHOR_MEM_SPLIT
+    assert [r for r in lock["episodes"] if r["domain"] == "base"] == [
+        r for r in old["episodes"] if r["domain"] == "base"]
+    refined = [r for r in lock["episodes"] if r["domain"] == "mem"]
+    assert len(refined) == 198 and {r["split"] for r in refined} == {"train"}
+    assert {(r["task"], r["demo"]) for r in refined} == {
+        (r["task"], r["demo"]) for r in old["episodes"] if r["domain"] == "mem"}
+    _, _, unseen = evaluation_roster(DEFAULT_AUTHOR_MEM_LOCK, "unseen", ["T1", "T3"], "all")
+    assert len(unseen) == 40 and len({r["initial_state_sha256"] for r in unseen}) == 20
+    assert [r["raw_index"] for r in unseen] == list(range(100, 120)) * 2
+    with pytest.raises(ValueError, match="roster"):
+        evaluation_roster(DEFAULT_AUTHOR_MEM_LOCK, "val", ["T1"], "all")
+    row = lock["evaluation_rosters"]["unseen"][0]
+    row.update(initial_state=refined[0]["initial_state"], initial_state_sha256=refined[0]["initial_state_sha256"])
+    with pytest.raises(ValueError, match="leakage"):
+        validate_lock(seal_lock({k: v for k, v in lock.items() if k != "lock_sha256"}))

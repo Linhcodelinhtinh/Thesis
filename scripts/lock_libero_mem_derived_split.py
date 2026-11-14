@@ -18,7 +18,7 @@ import h5py
 import numpy as np
 from src.evaluation.libero_mem_protocol import DEFAULT_PROTOCOL, load_protocol, source_digest
 from src.training.memory_data import validate_episode
-from src.training.split_lock import content_digest, load_split_lock, seal_lock, state_digest, validate_lock
+from src.training.split_lock import AUTHOR_MEM_SPLIT, content_digest, load_split_lock, seal_lock, state_digest, validate_lock
 from src.utils.file_hash import sha256_file
 
 
@@ -54,7 +54,9 @@ def build_derived_lock(parent_lock_path, derived_dir, output, source_dir):
         raise ValueError("Derived manifest does not record the pinned simulator runtime")
 
     protocol_tasks = {task["alias"]: task["name"] for task in load_protocol()["tasks"]}
-    expected_runs = {f"{task}/{split}" for task in protocol_tasks for split in ("train", "val", "test")}
+    aliases = {name: alias for alias, name in protocol_tasks.items()}
+    parent_mem = [row for row in parent["episodes"] if row["domain"] == "mem"]
+    expected_runs = {f"{aliases[row['task']]}/{row['split']}" for row in parent_mem}
     runs = manifest.get("runs", {})
     if set(runs) != expected_runs:
         raise ValueError(f"Derived replay inventory is incomplete: missing={sorted(expected_runs-set(runs))}")
@@ -69,7 +71,6 @@ def build_derived_lock(parent_lock_path, derived_dir, output, source_dir):
         if not path.is_file() or sha256_file(path) != digest:
             raise ValueError("Derived artifact differs from its sealed manifest hash: " + name)
 
-    parent_mem = [row for row in parent["episodes"] if row["domain"] == "mem"]
     parent_by_key = {(row["task"], row["demo"]): row for row in parent_mem}
     parent_source_hashes = {row["path"]: row["sha256"] for row in parent["sources"] if row["domain"] == "mem"}
     if manifest.get("parent_mem_sources") != [row for row in parent["sources"] if row["domain"] == "mem"]:
@@ -187,6 +188,8 @@ def build_derived_lock(parent_lock_path, derived_dir, output, source_dir):
                     "domain", "suite", "task", "demo", "source", "initial_state",
                     "initial_state_sha256", "split", "frames") if key in parent_row}
                 derived_row.update(task_alias=task_alias, success=True, image_convention="raw_opengl")
+                if "raw_index" in parent_row:
+                    derived_row["raw_index"] = parent_row["raw_index"]
                 derived_rows.append(derived_row)
 
     mem_sources.append(dict(domain="mem", path="metainfo.json", sha256=artifacts["metainfo.json"],
@@ -194,7 +197,7 @@ def build_derived_lock(parent_lock_path, derived_dir, output, source_dir):
     for task_alias in protocol_tasks:
         if not any(row.get("task_alias") == task_alias and row["split"] == "train" for row in derived_rows):
             raise ValueError(f"No successful derived training demonstrations remain for {task_alias}")
-    for split in ("train", "val", "test"):
+    for split in {row["split"] for row in parent_mem}:
         if not any(row["split"] == split for row in derived_rows):
             raise ValueError(f"No successful derived demonstrations remain in the Mem {split} split")
 
@@ -218,6 +221,9 @@ def build_derived_lock(parent_lock_path, derived_dir, output, source_dir):
         sources=base_sources + mem_sources,
         episodes=parent_base + derived_rows,
     )
+    if parent.get("mem_split_policy") == AUTHOR_MEM_SPLIT:
+        payload.update({key: parent[key] for key in (
+            "mem_split_policy", "raw_revision", "raw_sources", "evaluation_rosters")})
     lock = validate_lock(seal_lock(payload))
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)

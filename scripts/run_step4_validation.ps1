@@ -2,6 +2,7 @@
 # Step 4: Validation Paired Pilot (40 Episodes)
 # Protocol: CUSTOM_V2_LIBERO_MEM / NON-COMPARABLE_OFFICIAL_PAPER
 # Specification: docs/RESULTS_MEM_2_TEST_PLAN.md Section P2
+# Historical v1 replay. Use run_mem_pilot_batch.ps1 for v2 seen/unseen.
 # ==============================================================================
 [CmdletBinding()]
 param (

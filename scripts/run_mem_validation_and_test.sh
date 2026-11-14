@@ -22,19 +22,22 @@ for role in POLICY_PYTHON SIM_PYTHON DETECTOR_PYTHON; do
   fi
 done
 if [[ "${STAGE}" == "all" ]]; then
-  # Test is an explicit later action after selecting a candidate on validation.
+  # Run the test stage after freezing the candidate and analysis protocol.
   bash "${BASH_SOURCE[0]}" smoke "$@"
   bash "${BASH_SOURCE[0]}" validation "$@"
-  echo "Smoke and validation complete. Select the candidate before requesting stage test."
+  echo "Smoke and development evaluation complete. Freeze the candidate and analysis protocol before requesting stage test."
   exit 0
 fi
-split=val
+split=seen
+if [[ "${LEGACY_SPLIT:-0}" == 1 ]]; then split=val; fi
 states=0
 extra=()
 case "${STAGE}" in
   preflight) extra+=(--preflight-only);;
   validation) states=all;;
-  test) split=test; states=all;;
+  test)
+    if [[ "${LEGACY_SPLIT:-0}" == 1 ]]; then split=test; else split=unseen; fi
+    states=all;;
 esac
 output="experiments/evaluation/results_mem_2/${STAGE}_$(date +%Y%m%d_%H%M%S)_$$"
 mkdir -p experiments/evaluation/results_mem_2/launcher_logs
@@ -44,9 +47,9 @@ echo "Policy: ${POLICY_PYTHON}"
 echo "Simulator: ${SIM_PYTHON}"
 echo "Detector: ${DETECTOR_PYTHON}"
 if "${POLICY_PYTHON}" -u scripts/evaluate_mem_adapter.py \
-  --adapter-dir "${ADAPTER_DIR:-experiments/training/results_mem_2/mem-adapter-20261105-083543/pretrained_model}" \
+  --adapter-dir "${ADAPTER_DIR:?Set ADAPTER_DIR to the trained adapter export}" \
   --base-checkpoint "${BASE_CHECKPOINT:-resources/checkpoints/smolvla_libero}" \
-  --split-lock "${SPLIT_LOCK:-experiments/training/results_mem_2/mem-adapter-v1/dataset-split.lock.json}" \
+  --split-lock "${SPLIT_LOCK:-resources/manifests/libero_mem_t1_t3_base10_split_v2.json}" \
   --split "${split}" --states "${states}" --tasks T1 T3 --conditions B0 F1 \
   --policy-seed 42 --output-dir "${output}" \
   --sim-python "${SIM_PYTHON}" --detector-python "${DETECTOR_PYTHON}" "${extra[@]}" "$@" 2>&1 | tee "${console_log}"; then

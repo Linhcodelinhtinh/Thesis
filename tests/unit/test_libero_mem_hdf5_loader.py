@@ -35,12 +35,11 @@ def test_exact_resolution_and_missing_file(fixture_data):
         parser.resolve_hdf5_path("unit")  # no fuzzy alias fallback
 
 
-def test_initial_state_grouping_cross_task_and_missing_state_fails():
-    parser = LiberoMemHDF5Parser()
-    state = np.arange(10, dtype=np.float64)
-    assert parser.is_val_episode("T1_demo_1", state) == parser.is_val_episode("T3_demo_84", state.astype('>f8'))
-    with pytest.raises(ValueError, match="Initial state required"):
-        parser.is_val_episode("demo_1")
+def test_unlocked_refined_loader_does_not_create_a_validation_split(fixture_data):
+    root, task = fixture_data
+    parser = LiberoMemHDF5Parser(root)
+    assert [episode.split for episode in parser.parse_task(task)] == ["train"]
+    assert parser.parse_task(task, split_filter="val") == []
 
 
 def test_metadata_is_not_predicted_evidence_or_fake_oracle(fixture_data):

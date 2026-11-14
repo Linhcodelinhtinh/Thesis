@@ -23,6 +23,7 @@ class UnitEnv:
 
 
 class UnitPolicy:
+    chunk_size, action_dim = 50, 7
     def reset(self):
         self.calls = []
     def predict_action_chunk(self, observation, prompt):
@@ -57,3 +58,17 @@ def test_predicted_rollout_requires_configured_backend():
     runner = LiberoMemRolloutRunner(UnitEnv(), UnitPolicy(), "F1")
     with pytest.raises(ValueError, match="RGB writer_factory"):
         runner.run_episode("unit", "lift bowl")
+
+
+def test_streamed_trace_preserves_records_without_duplicate_summary():
+    records = []
+    def observe(event, **record):
+        if event == "memory":
+            records.append(record)
+    runner = LiberoMemRolloutRunner(UnitEnv(), UnitPolicy(), "F1", execution_horizon=1, max_steps=15,
+        writer_factory=visual_writer_factory(None, "libero_mem_refined"), renderer=LiberoMemTextRenderer(),
+        observer=observe, stream_memory_trace=True)
+    result = runner.run_episode("unit", "lift bowl")
+    assert len(records) == 16
+    assert result.memory_trace == []
+    assert result.final_memory_snapshot == records[-1]["snapshot"]

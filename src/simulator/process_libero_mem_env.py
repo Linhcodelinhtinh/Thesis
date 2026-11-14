@@ -10,7 +10,7 @@ import threading
 import numpy as np
 from src.evaluation.libero_mem_metrics import SubgoalEvaluationResult
 from src.evaluation.libero_mem_protocol import load_protocol, task_spec, ROOT
-from src.training.split_lock import load_split_lock
+from src.training.split_lock import load_split_lock, mem_episode_rows
 from src.simulator.mem_ipc import encode_array, deserialize_obs
 
 
@@ -34,8 +34,7 @@ class ProcessLiberoMemEnv:
         self.protocol = load_protocol()
         self.task_name = task_spec(self.protocol, task_name)["name"]
         self.split_lock = load_split_lock(split_lock)
-        self.episodes = [e for e in self.split_lock["episodes"] if e["domain"] == "mem" and
-                         e["task"] == self.task_name and e["split"] == split]
+        self.episodes = mem_episode_rows(self.split_lock, self.task_name, split)
         self.timeout = timeout_seconds
         self._responses, self._stderr = queue.Queue(), deque(maxlen=60)
         self._lock = threading.Lock()

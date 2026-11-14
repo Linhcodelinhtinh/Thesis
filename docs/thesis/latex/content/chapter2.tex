@@ -1,4 +1,3 @@
-% Generated from THESIS_DRAFT.md.
 \chapter{Cơ sở lý thuyết và nghiên cứu liên quan}
 
 \section{Quyết định phụ thuộc lịch sử dưới quan sát một phần}
@@ -45,15 +44,13 @@ Phương pháp của khóa luận & Sự kiện rời và trở về đĩa gốc
 
 Các biểu diễn video và đặc trưng giữ được nhiều tín hiệu hữu ích cho điều khiển. Khi câu hỏi nghiên cứu tập trung vào một lần tương tác cụ thể, bản ghi sự kiện tường minh cho phép kiểm tra quan sát nào đã được dùng để xác nhận sự kiện và từ lúc nào chính sách mới có thể sử dụng thông tin này. Cách nén đó dựa trên giả định rằng sự kiện được định nghĩa phù hợp với mục tiêu tác vụ. Nếu chọn sai sự kiện hoặc làm mất bằng chứng quan trọng, bản ghi ngắn vẫn có thể dẫn đến quyết định sai.
 
-\section{Khoảng trống nghiên cứu trong tác vụ lặp}
+\section{Trừu tượng hóa lịch sử và tiến trình theo sự kiện}
 
-Việc một chính sách có bộ nhớ hoàn thành tác vụ lặp chưa cho biết nó đã suy ra tiến độ từ sự kiện hay từ tương quan sẵn có trong dữ liệu. Nếu các quỹ đạo thao tác mẫu có nhịp gần như cố định, thời gian trôi qua có thể dự báo số chu kỳ dù chính sách chưa nhận diện được một chu kỳ đã hoàn tất. Zhang và An kiểm tra trực tiếp cơ chế này trong bản tiền ấn phẩm trên các tác vụ đếm của RoboMME. Khi thêm khoảng dừng hoặc chuyển động không làm thay đổi tiến độ nhưng vẫn đưa các quan sát đó vào bộ nhớ, chính sách được khảo sát có thể dừng sớm vì hành xử như thể tiến độ đã tăng. Tổ chức chỉ mục bộ nhớ theo sự kiện khôi phục một phần hiệu năng trong các điều kiện được thử nghiệm. Công trình cũng chỉ ra rằng phép gộp các đoạn quay về cấu hình cũ có thể vô tình loại cả một lần lặp hợp lệ \cite{clockvla2026}.
+Một biểu diễn lịch sử có thể gom những quỹ đạo khác nhau vào cùng một trạng thái nếu các khác biệt giữa chúng không ảnh hưởng tới quyết định đang xét. Chẳng hạn, số lần một quan hệ đã được khôi phục có thể đủ để phân biệt tiếp tục với dừng trong tác vụ lặp. Trong tác vụ đổi chỗ, cùng một bộ đếm không thể thay thế thông tin về danh tính của vật đã được di chuyển. Vì vậy, khả năng nén lịch sử phụ thuộc vào loại quyết định và các thuộc tính mà biểu diễn giữ lại.
 
-Kết quả ấy làm rõ câu hỏi về ngữ nghĩa của một sự kiện. Khi bát trở về đĩa, hai quan sát trước và sau chu kỳ có thể gần nhau, nhưng phần diễn biến giữa chúng quyết định liệu đó là một lần lặp cần ghi nhận. Một khoảng chờ trên đĩa không mang cùng ý nghĩa với chuỗi rời đĩa rồi quay lại. Khóa luận khảo sát bộ nhớ chuyên biệt giữ lại chuỗi bằng chứng này trên SmolVLA. Mỗi lần hoàn thành được xác nhận từ diễn biến của cùng một cặp bát–đĩa. Trạng thái chưa biết được bảo lưu nếu quan sát bị gián đoạn. Thời điểm xảy ra ước lượng và thời điểm đủ bằng chứng để xác nhận được ghi riêng để tránh đưa thông tin có được sau này vào quyết định trước đó.
+Máy trạng thái hữu hạn cung cấp một cách mô tả tiến trình bằng các chuyển tiếp có điều kiện \cite{rewardmachines2018}. Khi dùng cảm biến, sự kiện làm đổi trạng thái phải được suy ra từ chuỗi quan sát. Chẳng hạn, bộ phát hiện thị giác cung cấp vị trí ước lượng trên ảnh \cite{groundingdino2024}. Để xác nhận một quan hệ đã thay đổi, hệ thống cần nối các quan sát của cùng một thực thể và xác định khi nào bằng chứng đủ mạnh. Một khoảng che khuất có thể làm quan hệ hiện tại chưa xác định trong khi sự kiện đã xác nhận vẫn có giá trị lịch sử.
 
-Khoảng trống thứ nhất trong phạm vi khảo sát là \textbf{khả năng xác lập tiến độ sự kiện từ quan sát trực tuyến có thể kiểm tra lại}. Điều này đòi hỏi bằng chứng cho cả nhận dạng thực thể lẫn chuyển tiếp quan hệ với vật đỡ. Grounding DINO cung cấp hộp giới hạn từ ảnh và mô tả ngôn ngữ \cite{groundingdino2024}. Mỗi hộp cho một ước lượng vị trí đối tượng trên ảnh tại một thời điểm. Diễn giải việc nhấc hoặc đặt lại cần liên kết đối tượng qua thời gian và áp dụng một quy tắc xác nhận. Chương 3 cụ thể hóa yêu cầu đó bằng máy trạng thái và điều kiện về thời điểm sử dụng sự kiện. Độ đúng, độ trễ và mức thiếu quan sát là những thuộc tính thực nghiệm riêng của bản ghi.
-
-Khoảng trống thứ hai là \textbf{mức đóng góp của nội dung lịch sử đối với quyết định sau khi đã kiểm soát thích ứng chính sách}. Một biểu diễn có thể ghi đúng tiến độ mà chính sách vẫn bỏ qua, hoặc chính sách có thể được lợi từ dữ liệu tinh chỉnh ngay cả khi thiếu bản ghi lịch sử. Đối chiếu sự kiện với mốc tham chiếu giúp đo chất lượng bản ghi. Đánh giá hành vi khi thay đổi thông tin lịch sử dưới các điều kiện đối chứng phù hợp giúp xác định giá trị sử dụng của bản ghi. Các can thiệp vào nhịp thực hiện để kiểm tra lối tắt theo thời gian là một phép thử tiếp theo đối với phương pháp của khóa luận.
+Nhịp lấy mẫu cũng ảnh hưởng đến diễn giải tiến độ. Các khoảng dừng có thể làm sai suy luận dựa vào thời gian trong tác vụ lặp \cite{clockvla2026}. Việc gắn tiến trình với chuyển tiếp quan sát được cho phép đặt câu hỏi cụ thể hơn về thông tin bị bỏ sót, xác nhận nhầm hoặc đến sau thời điểm chính sách cần quyết định.
 
 \section{SmolVLA và vai trò của thích ứng}
 

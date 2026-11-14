@@ -32,12 +32,11 @@ from src.evaluation.libero_mem_protocol import DEFAULT_PROTOCOL, load_protocol, 
 from src.simulator.libero_mem_env import LiberoMemEnv
 from src.training.libero_mem_hdf5_loader import read_episode_metadata
 from src.training.memory_data import validate_episode
-from src.training.split_lock import content_digest, load_split_lock
+from src.training.split_lock import DEFAULT_AUTHOR_MEM_LOCK, content_digest, load_split_lock
 from src.utils.file_hash import sha256_file
 
 ARTIFACT = "libero_mem_derived_demonstrations"
 DERIVED_PROTOCOL_ID = "libero_mem_derived_data_v1"
-REQUIRED_RUNS = {f"{task}/{split}" for task in ("T1", "T3") for split in ("train", "val", "test")}
 
 
 def atomic_json(path: Path, value):
@@ -159,11 +158,10 @@ def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tasks", nargs="+", choices=("T1", "T3"), default=("T1", "T3"))
     parser.add_argument("--split", choices=("train", "val", "test"), default="train")
-    parser.add_argument("--split-lock", type=Path,
-                        default=ROOT / "experiments/training/results_mem_2/mem-adapter-v1/dataset-split.lock.json")
+    parser.add_argument("--split-lock", type=Path, default=DEFAULT_AUTHOR_MEM_LOCK)
     parser.add_argument("--source-dir", type=Path, default=ROOT / "data/libero_mem")
-    parser.add_argument("--output-dir", type=Path, default=ROOT / "data/libero_mem_derived_v1")
-    parser.add_argument("--staging-dir", type=Path, default=Path("/var/tmp/libero_mem_derived_staging_v1"))
+    parser.add_argument("--output-dir", type=Path, default=ROOT / "data/libero_mem_derived_v2")
+    parser.add_argument("--staging-dir", type=Path, default=Path("/var/tmp/libero_mem_derived_staging_v2"))
     parser.add_argument("--resume", action="store_true", default=True)
     parser.add_argument("--no-resume", dest="resume", action="store_false")
     parser.add_argument("--max-episodes", type=int)
@@ -547,6 +545,11 @@ def run_task(task_alias: str, args, parent_lock, generator_hash, runtime, code_h
 def main():
     args = parse_args()
     parent_lock = load_split_lock(args.split_lock)
+    aliases = {spec["name"]: spec["alias"] for spec in load_protocol()["tasks"]}
+    required_runs = {f"{aliases[row['task']]}/{row['split']}" for row in parent_lock["episodes"]
+                     if row["domain"] == "mem"}
+    if any(f"{task}/{args.split}" not in required_runs for task in args.tasks):
+        raise ValueError("Requested split is absent from the refined replay roster")
     runtime = runtime_provenance()
     code_hashes = code_provenance()
     generator_hash = code_hashes["scripts/generate_derived_demonstrations.py"]
@@ -577,7 +580,7 @@ def main():
             raise
         manifest["artifacts"] = output_artifacts(args.output_dir)
         manifest["status"] = "complete" if (
-            set(manifest["runs"]) == REQUIRED_RUNS and
+            set(manifest["runs"]) == required_runs and
             all(run.get("status") == "complete" and run.get("selection_complete")
                 for run in manifest["runs"].values())) else "partial"
         manifest["updated_at"] = datetime.now(timezone.utc).isoformat()

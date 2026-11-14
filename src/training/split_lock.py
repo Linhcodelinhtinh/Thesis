@@ -7,6 +7,9 @@ from pathlib import Path
 import numpy as np
 
 SPLITS = ("train", "val", "test")
+AUTHOR_MEM_SPLIT = "libero_mem_refined_train_raw_eval_v2"
+AUTHOR_EVAL_SPLITS = ("seen", "unseen")
+DEFAULT_AUTHOR_MEM_LOCK = Path(__file__).resolve().parents[2] / "resources/manifests/libero_mem_t1_t3_base10_split_v2.json"
 
 
 def state_digest(state):
@@ -47,7 +50,62 @@ def validate_lock(lock):
             raise ValueError("Writer development state cannot be held out")
     if not seen:
         raise ValueError("Empty split lock")
+    if lock.get("mem_split_policy") == AUTHOR_MEM_SPLIT:
+        _validate_author_mem_split(lock, groups)
     return lock
+
+
+def _validate_author_mem_split(lock, groups):
+    mem = [row for row in lock["episodes"] if row["domain"] == "mem"]
+    tasks = {row["task"] for row in mem}
+    raw_sources = {row["path"]: row["sha256"] for row in lock["raw_sources"]}
+    if (not tasks or set(raw_sources) != {task + "_demo.hdf5" for task in tasks}
+            or not lock["raw_revision"]):
+        raise ValueError("Incomplete LIBERO-Mem raw source inventory")
+    for row in mem:
+        index = row["raw_index"]
+        if (row["split"] != "train" or type(index) is not int or not 0 <= index < 100
+                or row["demo"] != f"demo_{index + 1}"):
+            raise ValueError("Author-refined Mem rows must be train-only and map to raw indices 0..99")
+    rosters = lock["evaluation_rosters"]
+    if set(rosters) != set(AUTHOR_EVAL_SPLITS):
+        raise ValueError("Expected exact seen and unseen raw rosters")
+    mem_states = {(row["task"], row["raw_index"]): row["initial_state_sha256"] for row in mem}
+    seen_groups = set()
+    for split, start in (("seen", 0), ("unseen", 100)):
+        rows = rosters[split]
+        if len(rows) != 20 * len(tasks) or {row["task"] for row in rows} != tasks:
+            raise ValueError(f"Incomplete LIBERO-Mem raw {split} roster")
+        for task in tasks:
+            task_rows = [row for row in rows if row["task"] == task]
+            if [row["raw_index"] for row in task_rows] != list(range(start, start + 20)):
+                raise ValueError(f"Unexpected raw {split} indices for {task}")
+            state_groups = set()
+            for row in task_rows:
+                index = row["raw_index"]
+                group = row["initial_state_sha256"]
+                if (row["domain"] != "mem" or row["source"] != task + "_demo.hdf5"
+                        or row["demo"] != f"demo_{index + 1}"
+                        or state_digest(row["initial_state"]) != group or group in state_groups):
+                    raise ValueError(f"Invalid or duplicate raw {split} initial state")
+                state_groups.add(group)
+                if split == "seen":
+                    if mem_states.get((task, index), group) != group:
+                        raise ValueError("Seen raw state differs from refined training state")
+                    seen_groups.add(group)
+                elif group in groups or group in seen_groups:
+                    raise ValueError("Raw unseen initial-state leakage")
+
+
+def mem_episode_rows(lock, task, split):
+    rows = lock["evaluation_rosters"][split] if split in AUTHOR_EVAL_SPLITS and (
+        lock.get("mem_split_policy") == AUTHOR_MEM_SPLIT
+    ) else [row for row in lock["episodes"] if row["split"] == split]
+    return [row for row in rows if row["domain"] == "mem" and row["task"] == task]
+
+
+def evaluation_lock_sha256(lock):
+    return lock.get("parent_lock_sha256", lock["lock_sha256"])
 
 
 def load_split_lock(path):

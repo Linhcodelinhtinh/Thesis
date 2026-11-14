@@ -32,6 +32,8 @@ def main():
         "resources/manifests/libero_10_sft_sources.json", "resources/manifests/libero_10_sft_pilot7_sources.json",
         "resources/manifests/libero_mem_t1_t3_base7_split_v1.json", "docs/V2_MEMORY_SFT_KAGGLE.md",
         "resources/manifests/libero_mem_t1_t3_base10_split_v1.json",
+        "resources/manifests/libero_mem_t1_t3_base10_split_v2.json",
+        "configs/benchmarks/libero_mem_suite_source_v1.json",
         "docs/MEMORY_WRITER_V3_T1_T3.md",
         "docs/LIBERO_MEM_FINETUNE_DATA_PROTOCOL.md", "configs/benchmarks/libero_mem_t1_t3_protocol.json",
         "notebooks/kaggle_libero_mem_finetune.ipynb", "notebooks/kaggle_mem_adapter_v1.ipynb",

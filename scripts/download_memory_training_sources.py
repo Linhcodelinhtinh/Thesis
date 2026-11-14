@@ -10,7 +10,7 @@ sys.path.insert(0, str(ROOT))
 from src.utils.file_hash import sha256_file
 
 
-def source_inventory(base_root, mem_root, base_only=False):
+def source_inventory(base_root, mem_root, base_only=False, *, raw_root=None, raw_only=False):
     """Resolve only the reviewed, pinned source inventories (no network calls)."""
     inventory = json.loads((ROOT / "resources/manifests/libero_10_sft_sources.json").read_text(encoding="utf-8"))
     sources = [dict(repo="yifengzhu-hf/LIBERO-datasets",
@@ -18,12 +18,22 @@ def source_inventory(base_root, mem_root, base_only=False):
                     relative=r["task_suite"] + "/" + r["task_name"] + "_demo.hdf5",
                     sha256=r["sha256"], size_bytes=r["file_size_bytes"], root=str(base_root))
                for r in inventory["demonstrations"]]
+    if raw_only:
+        sources = []
     if not base_only:
-        mem = json.loads((ROOT / "resources/manifests/libero_mem_planning_sources.json").read_text(encoding="utf-8"))["annotated_dataset"]
+        mem_sources = json.loads((ROOT / "resources/manifests/libero_mem_planning_sources.json").read_text(encoding="utf-8"))
+    if not base_only and not raw_only:
+        mem = mem_sources["annotated_dataset"]
         sources += [dict(repo="libero-mem/LIBERO-Mem", revision=mem["revision"],
                          relative=r["path"], sha256=r["upstream_sha256"],
                          size_bytes=r["size_bytes"], root=str(mem_root))
                     for r in mem["selected_pilot_files"]]
+    if raw_root is not None and not base_only:
+        raw = mem_sources["raw_dataset"]
+        sources += [dict(repo="libero-mem/LIBERO-Mem-Raw", revision=raw["revision"],
+                         relative=r["path"], sha256=r["upstream_sha256"],
+                         size_bytes=r["size_bytes"], root=str(raw_root))
+                    for r in raw["selected_pilot_files"]]
     return sources
 
 
@@ -41,6 +51,9 @@ def plan_sources(sources, input_root=None):
                 raise ValueError("Invalid source destination: " + str(destination))
             if input_root is not None:
                 candidates = sorted(p for p in Path(input_root).rglob(Path(source["relative"]).name) if p.is_file())
+                if source["repo"] in ("libero-mem/LIBERO-Mem", "libero-mem/LIBERO-Mem-Raw"):
+                    # Refined and raw releases share basenames but have distinct sizes.
+                    candidates = [p for p in candidates if p.stat().st_size == source["size_bytes"]]
             if len(candidates) > 1:
                 raise ValueError("Ambiguous attached source; attach only one copy: " + source["relative"])
             origin = "attached" if candidates else "download"
@@ -76,13 +89,17 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--base-root", type=Path, default=ROOT / "resources/demonstrations")
     p.add_argument("--mem-root", type=Path, default=ROOT / "data/libero_mem")
-    p.add_argument("--base-only", action="store_true")
+    p.add_argument("--raw-root", type=Path, default=ROOT / "data/libero_mem_raw")
+    group = p.add_mutually_exclusive_group()
+    group.add_argument("--base-only", action="store_true")
+    group.add_argument("--raw-only", action="store_true")
     p.add_argument("--workers", type=int, default=3)
     p.add_argument("--input-root", type=Path, help="Reuse exact raw files attached to Kaggle via verified symlinks")
     p.add_argument("--plan-only", action="store_true", help="Identify sources and download volume without downloading")
     p.add_argument("--report", type=Path, help="Write the source plan / verified provenance receipt")
     a = p.parse_args()
-    plan = plan_sources(source_inventory(a.base_root, a.mem_root, a.base_only), a.input_root)
+    plan = plan_sources(source_inventory(a.base_root, a.mem_root, a.base_only,
+                                         raw_root=a.raw_root, raw_only=a.raw_only), a.input_root)
     if not a.plan_only:
         with ThreadPoolExecutor(max_workers=a.workers) as pool:
             list(pool.map(materialize_source, plan["sources"]))

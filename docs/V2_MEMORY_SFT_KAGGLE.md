@@ -1,9 +1,9 @@
 # V2 memory SFT trên Kaggle 2×T4
 
-> **Workflow hiện hành — 06/11/2026:** dùng [Mem adapter riêng](MEM_ADAPTER_V1.md)
-> và `notebooks/kaggle_mem_adapter_v1.ipynb`: full 10 task base + T1/T3, causal RGB
-> writer v3, LoRA attention q/v, export **unmerged adapter**. Hướng dẫn đó ghi cách
-> chuẩn bị trực tiếp trên Kaggle, train/resume và bind memory khi inference.
+> **Workflow 13/11/2026:** `notebooks/kaggle_mem_adapter_v1.ipynb` dùng khóa v2
+> với 198 demo refined T1/T3 và replay từ mười tác vụ base. Notebook huấn luyện
+> cặp F0/F1, dùng writer quan hệ cho F1 và xuất hai adapter chưa merge.
+> [Bàn giao P5–P6](thesis/P5_P6_HANDOFF_2026-11-13.md).
 > Các lệnh, LR 1e-4, dropout 0.2, writer legacy và merged export bên dưới thuộc
 > pipeline lịch sử; không áp dụng chúng mặc định cho adapter mới.
 

@@ -2,6 +2,7 @@
 # LIBERO-Mem-Derived Benchmark Suite Runner (v1.0)
 # Track: CUSTOM_V2_LIBERO_MEM_DERIVED / NON-COMPARABLE_OFFICIAL_PAPER
 # Specification: docs/LIBERO_MEM_DERIVED_SPEC.md
+# Historical v1 evaluation on the refined split. The v2 derived branch uses the parent author-state lock.
 # ==============================================================================
 [CmdletBinding()]
 param (

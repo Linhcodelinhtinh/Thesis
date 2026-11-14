@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from types import SimpleNamespace
 import pytest
-from src.training.mem_adapter_artifact import verify_files, validate_runtime
+from src.training.mem_adapter_artifact import verify_files, validate_runtime, validate_matched_adapters
 from src.utils.file_hash import sha256_file
 
 
@@ -35,6 +35,35 @@ def test_online_tracker_and_detector_must_match_training(monkeypatch):
     writer.tracker.detector.provenance = {"revision": "changed"}
     with pytest.raises(ValueError, match="detector"):
         validate_runtime(manifest, writer, renderer)
+
+
+def test_f0_and_f1_must_use_the_same_training_schedule():
+    common = dict(data_manifest_sha256="data", assets_lock_sha256="assets",
+                  effective_batch_size=32, trainable_modules={"q": 16}, mixed_replay={"seed": 42})
+    f0 = {"run": dict(common, arguments={"condition": "no_memory", "seed": 42})}
+    f1 = {"run": dict(common, arguments={"condition": "memory", "seed": 42})}
+    validate_matched_adapters(f0, f1)
+    f1["run"]["arguments"]["seed"] = 43
+    with pytest.raises(ValueError, match="Unmatched"):
+        validate_matched_adapters(f0, f1)
+
+
+def test_instruction_only_ablation_binds_the_requested_weights():
+    from src.models.smolvla.adapter import SmolVLAAdapter
+
+    policy = SmolVLAAdapter()
+    policy.tokenizer = object()
+    policy.mem_adapter_manifest = {"run": {"arguments": {"condition": "memory"}}}
+    renderer = SimpleNamespace(tokenizer=policy.tokenizer, strict_tokenizer=True,
+                               allow_oracle=False, max_total_tokens=48)
+    with pytest.raises(ValueError, match="matching trained adapter"):
+        policy.bind_instruction_only_runtime("F0", "instruction", renderer)
+    policy.bind_instruction_only_runtime("F1-off", "instruction", renderer)
+    with pytest.raises(ValueError, match="changed prompt"):
+        policy.preprocess({}, "instruction Memory: injected fact")
+    policy.reset()
+    with pytest.raises(RuntimeError, match="verified"):
+        policy.preprocess({}, "instruction")
 
 
 def test_real_peft_export_stays_unmerged_and_reloads(tmp_path, monkeypatch):

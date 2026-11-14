@@ -72,7 +72,7 @@ class GroundingDinoDetector:
         x1, y1, x2, y2 = region
         cropped = image[y1:y2, x1:x2]
         query = "a metal bowl." if label == "bowl" else "a white plate."
-        inputs = self.processor(images=Image.fromarray(cropped), text=query, return_tensors="pt").to(self.device)
+        inputs = self.processor(images=Image.fromarray(cropped), text=query, padding=True, return_tensors="pt").to(self.device)
         with torch.inference_mode():
             outputs = self.model(**inputs)
         result = self.processor.post_process_grounded_object_detection(

@@ -1,0 +1,105 @@
+{
+  "protocol_id": "libero_mem_suite_source_v1",
+  "classification": "CUSTOM_V2_LIBERO_MEM",
+  "official_paper_comparable": false,
+  "stage": "source_inventory",
+  "upstream_revision": "0eee0defa4024e51511b6e15a79f30e9620209de",
+  "upstream_repository": "https://github.com/libero-mem/libero-mem",
+  "source_text_sha256": {
+    "libero/libero/envs/problems/libero_kitchen_tabletop_manipulation.py": "55c40b80775adb6d6d84b0af2f37376dab68ab5f0182f4eb2201e5c6145c2c90",
+    "libero/libero/envs/bddl_base_domain.py": "cc8a9a060a507bd139b9351f75a71d4e95396fa07ccf4d3250a07fc977d9b3d3",
+    "libero/libero/envs/env_wrapper.py": "c2f5631a0bd1c7d8890949512ddcaf8afffe3ec314813b2d67d10c8820c0d6d1",
+    "libero/libero/envs/predicates/base_predicates.py": "319137e95330dbb22a266a8dceb8110f18413c2bf17461550222228c4bc310a1",
+    "libero/libero/envs/object_states/base_object_states.py": "ca6f53123336b6487bdb4feb02534ddb3a0627a4b847fe89da4460520ef01366",
+    "scripts/mem_3_refine_demonstration.py": "40f408d8dbfc28b24d7a857166ddeda08bfee9e40976599c79226f6b6b57b66a",
+    "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_1_pick_up_the_bowl_and_place_it_back_on_the_plate.bddl": "6548e9c3b65ccad256766eb75faa0a0117391dd2b7260eb2088d40a324c6146c",
+    "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_3_lift_the_bowl_and_place_it_back_on_the_plate_3_times.bddl": "ac165850c39856f128a9ae28cf3e6fc6bada99aa015348362137ed4307359dc8",
+    "libero/libero/benchmark/libero_suite_task_map.py": "1d81c748f8e2940adf3753f7bf38e64955704ca8edf9ba96d003dcb85935d21e",
+    "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_2_lift_the_bottle_and_put_it_down_on_the_plate.bddl": "e2856c65e0671671f035f9e8563b81e77e5d8debf2ce18875501bc8aaf2effd8",
+    "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_4_pick_up_the_bottle_and_put_it_down_the_plate_3_times.bddl": "161723a4e4f1e635a1707c6fb1774e0a1c5a7e0adff3a7be2c72049455283f65",
+    "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_5_lift_the_bowl_and_place_it_back_on_the_plate_5_times.bddl": "9de5a1a4681c3a2cbef4c7cb82c564d0f83e2407dfcc2fe4516e4401cc26ef7b",
+    "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_6_pick_up_the_bowl_and_place_it_on_the_plate_7_times.bddl": "c9e977056143c5bddeb22a98bbe2803c07c7743257359b6237df7b7bdeb0922f",
+    "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_7_swap_the_2_bowls_on_their_plates_using_the_empty_plate.bddl": "efbb7ba0384fdceb43c6abf6ba8172eeae0613aae478e5e791af5711927bb355",
+    "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_8_rotate_the_3_bowls_on_their_plates_from_left_to_right_using_the_empty_plate.bddl": "c1cdc6c544b1e7ed82f1576e81981b206de88f35a9bcb2c7565da8f8f0a9160f",
+    "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_9_put_the_cream_cheese_in_the_nearest_basket_and_place_that_basket_in_the_center.bddl": "8f45362506199bea2b0be29d112de094bff35e465ddb6c1fd560346e91f2b32d",
+    "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_10_put_the_cream_cheese_in_the_nearest_basket_and_place_the_empty_basket_in_the_center.bddl": "dd4a0e9b7ec2f3bf63693303c6351b2665be60fb49dee20fdfe10a414da39fe7"
+  },
+  "tasks": [
+    {
+      "alias": "T1",
+      "index": 0,
+      "name": "KITCHEN_SCENE1_1_pick_up_the_bowl_and_place_it_back_on_the_plate",
+      "bddl": "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_1_pick_up_the_bowl_and_place_it_back_on_the_plate.bddl",
+      "goal_operator": "sequence"
+    },
+    {
+      "alias": "T2",
+      "index": 1,
+      "name": "KITCHEN_SCENE1_2_lift_the_bottle_and_put_it_down_on_the_plate",
+      "bddl": "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_2_lift_the_bottle_and_put_it_down_on_the_plate.bddl",
+      "goal_operator": "sequence"
+    },
+    {
+      "alias": "T3",
+      "index": 2,
+      "name": "KITCHEN_SCENE1_3_lift_the_bowl_and_place_it_back_on_the_plate_3_times",
+      "bddl": "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_3_lift_the_bowl_and_place_it_back_on_the_plate_3_times.bddl",
+      "goal_operator": "sequence"
+    },
+    {
+      "alias": "T4",
+      "index": 3,
+      "name": "KITCHEN_SCENE1_4_pick_up_the_bottle_and_put_it_down_the_plate_3_times",
+      "bddl": "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_4_pick_up_the_bottle_and_put_it_down_the_plate_3_times.bddl",
+      "goal_operator": "sequence"
+    },
+    {
+      "alias": "T5",
+      "index": 4,
+      "name": "KITCHEN_SCENE1_5_lift_the_bowl_and_place_it_back_on_the_plate_5_times",
+      "bddl": "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_5_lift_the_bowl_and_place_it_back_on_the_plate_5_times.bddl",
+      "goal_operator": "sequence"
+    },
+    {
+      "alias": "T6",
+      "index": 5,
+      "name": "KITCHEN_SCENE1_6_pick_up_the_bowl_and_place_it_on_the_plate_7_times",
+      "bddl": "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_6_pick_up_the_bowl_and_place_it_on_the_plate_7_times.bddl",
+      "goal_operator": "sequence"
+    },
+    {
+      "alias": "T7",
+      "index": 6,
+      "name": "KITCHEN_SCENE1_7_swap_the_2_bowls_on_their_plates_using_the_empty_plate",
+      "bddl": "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_7_swap_the_2_bowls_on_their_plates_using_the_empty_plate.bddl",
+      "goal_operator": "or"
+    },
+    {
+      "alias": "T8",
+      "index": 7,
+      "name": "KITCHEN_SCENE1_8_rotate_the_3_bowls_on_their_plates_from_left_to_right_using_the_empty_plate",
+      "bddl": "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_8_rotate_the_3_bowls_on_their_plates_from_left_to_right_using_the_empty_plate.bddl",
+      "goal_operator": "sequence"
+    },
+    {
+      "alias": "T9",
+      "index": 8,
+      "name": "KITCHEN_SCENE1_9_put_the_cream_cheese_in_the_nearest_basket_and_place_that_basket_in_the_center",
+      "bddl": "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_9_put_the_cream_cheese_in_the_nearest_basket_and_place_that_basket_in_the_center.bddl",
+      "goal_operator": "or"
+    },
+    {
+      "alias": "T10",
+      "index": 9,
+      "name": "KITCHEN_SCENE1_10_put_the_cream_cheese_in_the_nearest_basket_and_place_the_empty_basket_in_the_center",
+      "bddl": "libero/libero/bddl_files/libero_mem/KITCHEN_SCENE1_10_put_the_cream_cheese_in_the_nearest_basket_and_place_the_empty_basket_in_the_center.bddl",
+      "goal_operator": "or"
+    }
+  ],
+  "dataset": {
+    "repository": "https://huggingface.co/datasets/libero-mem/LIBERO-Mem",
+    "revision": "6df130c05b82e09294fa9534e84a069687b72d33",
+    "metadata_source": "https://huggingface.co/api/datasets/libero-mem/LIBERO-Mem/tree/6df130c05b82e09294fa9534e84a069687b72d33?recursive=false&expand=false"
+  },
+  "runtime_reference": "libero_mem_t1_t3_v1"
+}

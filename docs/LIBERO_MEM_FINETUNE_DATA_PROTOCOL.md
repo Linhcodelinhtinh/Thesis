@@ -1,6 +1,11 @@
 # Mixed SmolVLA fine-tuning: data and evaluator contract
 
-> **Current usage (2026-11-06):** [MEM_ADAPTER_V1.md](MEM_ADAPTER_V1.md) documents
+> The 80/10/10 Mem assignments and commands on this page describe the historical
+> split. New T1/T3 experiments use all released refined demos for training and
+> the author raw rosters for seen and unseen rollouts.
+> [Current split and retraining plan](thesis/IMPLEMENTATION_AND_WRITING_ROADMAP_2026-11-13.md#11-giao-thức-split-v2).
+
+> **Workflow as of 2026-11-06:** [MEM_ADAPTER_V1.md](MEM_ADAPTER_V1.md) documents
 > the separate, unmerged Mem adapter and `kaggle_mem_adapter_v1.ipynb` workflow.
 > It expands replay to all ten base tasks, preserves previous state assignments
 > in `libero_mem_t1_t3_base10_split_v1.json`, and uses predicted RGB v3 memory on
@@ -173,14 +178,13 @@ preparation Python with h5py/numpy/ijson/tokenizers/huggingface-hub installed.
 
 ```text
 python scripts/download_memory_training_sources.py
-python scripts/lock_memory_sft_split.py --base-root resources/demonstrations --base-inventory resources/manifests/libero_10_sft_pilot7_sources.json --output resources/manifests/libero_mem_t1_t3_base7_split_v1.json
 python scripts/prepare_mixed_memory_sft.py --split-lock resources/manifests/libero_mem_t1_t3_base7_split_v1.json --tokenizer-path TOKENIZER --output-dir experiments/training/libero10base7_mem_t1t3_f0_v1
 python scripts/validate_mixed_memory_sft.py --data-dir experiments/training/libero10base7_mem_t1t3_f0_v1
 python scripts/package_memory_sft.py
 ```
 
-To expand replay to all ten base tasks, finish the pinned downloads, omit `--base-inventory`,
-and create a **new** split/artifact version. Never overwrite the pilot lock.
+The bundled v1 lock reproduces this pilot. To build the current ten-task replay
+corpus, use the bundled v2 lock and the preparation commands in the thesis handoff.
 
 For F1, run `prepare_libero_mem_sft.py` separately for both exact task names from
 the protocol, with the same `--split-lock`, pinned detector and tokenizer.

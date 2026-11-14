@@ -14,10 +14,14 @@ Bản thảo khảo sát tiến độ thao tác dưới quan sát một phần, 
 1. [Kế hoạch toàn bộ khóa luận và ranh giới đóng góp](WRITING_PLAN.md).
 2. [Ma trận hoàn thiện, bằng chứng và phần phải hoãn](STATUS_AND_CLAIMS.md).
 3. [Ghi chú đọc tài liệu và lựa chọn định dạng](REFERENCE_REVIEW.md).
-4. [Bản thảo nội dung 5 chương](THESIS_DRAFT.md).
 5. [Nguồn LaTeX](latex/main.tex), [thư mục bằng chứng](evidence/snapshot.json), [danh mục tài liệu](latex/references.bib).
 
-`THESIS_DRAFT.md` là nguồn nội dung chính; LaTeX được sinh từ nguồn này bởi `tools/build_latex.py`. Chỉ chỉnh nội dung ở Markdown rồi sinh lại để tránh hai bản khác nhau. Khung bìa, định dạng và phụ lục LaTeX nằm riêng trong `latex/`.
+Nguồn nội dung chính là LaTeX. Bản Markdown là bản lịch sử. Công cụ xuất Markdown chỉ ghi vào thư mục thử nghiệm mới. Khung bìa, định dạng và phụ lục LaTeX nằm riêng trong `latex/`.
+
+[Bàn giao P0–P2 và lệnh chạy tiếp](P0_P2_HANDOFF_2026-11-13.md).
+[Bàn giao P3–P4 và lệnh audit, chuẩn bị dữ liệu](P3_P4_HANDOFF_2026-11-13.md).
+[Bàn giao P5–P6 theo dung lượng hiện có](P5_P6_HANDOFF_2026-11-13.md).
+[Roadmap và trạng thái các gate](IMPLEMENTATION_AND_WRITING_ROADMAP_2026-11-13.md).
 
 ## Quy ước sử dụng số liệu
 
@@ -37,7 +41,6 @@ Từ thư mục gốc repository, dùng Python cho công cụ tài liệu; khôn
 ```powershell
 python -X utf8 docs/thesis/tools/collect_evidence.py
 python -X utf8 docs/thesis/tools/make_figures.py
-python -X utf8 docs/thesis/tools/build_latex.py
 python -X utf8 docs/thesis/tools/validate_draft.py
 ```
 

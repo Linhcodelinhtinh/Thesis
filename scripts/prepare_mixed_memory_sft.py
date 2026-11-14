@@ -8,14 +8,16 @@ No perception/model/simulator dependencies are needed to prepare F0 data.
 import argparse
 from collections import Counter, defaultdict
 import json
+import math
 from pathlib import Path
 import shutil
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from src.training.split_lock import load_split_lock, content_digest, state_digest
-from src.training.mixed_sft import ARTIFACT, canonical_raw_rgb, verify_shard_contract, validate_mixed_dataset
+from src.training.split_lock import AUTHOR_MEM_SPLIT, evaluation_lock_sha256, load_split_lock, content_digest, state_digest
+from src.training.mixed_sft import (ARTIFACT, PREDICTED_MEMORY_SOURCES, canonical_raw_rgb,
+                                    verify_shard_contract, validate_mixed_dataset)
 from src.training.memory_data import validate_episode
 from src.training.libero_mem_hdf5_loader import read_episode_metadata
 from src.memory.visual_pipeline import load_prompt_tokenizer, TOKENIZER_REVISION, TOKENIZER_SHA256
@@ -27,14 +29,22 @@ def load_memory_indices(paths, lock):
     samples, provenance = {}, []
     for root in paths:
         m = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
-        if m.get("status") != "complete" or m.get("writer") != "rgb_cycle_v3" or m.get("stream") != "predicted_memory":
-            raise ValueError("Memory must come from a completed RGB v3 predicted index")
+        if m.get("status") != "complete" or m.get("writer") not in ("rgb_cycle_v3", "rgb_relations_v1") or m.get("stream") != "predicted_memory":
+            raise ValueError("Memory must come from a completed, versioned RGB predicted index")
         if m.get("split_lock_sha256") != lock["lock_sha256"]:
             raise ValueError("Generate memory indices using the same --split-lock first")
+        if m["writer"] == "rgb_relations_v1":
+            from src.memory.relation_pipeline import relation_source_hashes
+            if m["writer_code_sha256"] != relation_source_hashes(ROOT):
+                raise ValueError("Relation index was produced by a different writer/projection implementation")
+            if sha256_file(root / "index_contract.json") != m["index_contract_sha256"]:
+                raise ValueError("Relation index contract checksum mismatch")
         expected_convention = lock.get("mem_image_convention", "libero_mem_refined")
         if (m.get("tokenizer_revision") != TOKENIZER_REVISION or m.get("max_total_tokens") != 48 or
             m.get("obs_action_offset") != 0 or m.get("image_convention") != expected_convention):
             raise ValueError("Memory tokenizer/alignment/image contract differs")
+        if set(m["artifacts_sha256"]) != {"samples.jsonl", "memory_trace.jsonl", "detections.jsonl"}:
+            raise ValueError("Incomplete prompt index artifact inventory")
         for name, digest in m["artifacts_sha256"].items():
             if sha256_file(root / name) != digest:
                 raise ValueError("Corrupt memory index artifact: " + name)
@@ -51,7 +61,7 @@ def load_memory_indices(paths, lock):
         provenance.append(dict(manifest_sha256=sha256_file(root / "manifest.json"),
             writer=m["writer"], writer_code_sha256=m["writer_code_sha256"],
             writer_config=m["writer_config"], detector=m["detector"], tokenizer_revision=m["tokenizer_revision"]))
-    for field in ("writer_code_sha256", "writer_config", "detector", "tokenizer_revision"):
+    for field in ("writer", "writer_code_sha256", "writer_config", "detector", "tokenizer_revision"):
         if provenance and any(p[field] != provenance[0][field] for p in provenance):
             raise ValueError("Memory indices differ in " + field)
     return samples, provenance
@@ -60,6 +70,12 @@ def load_memory_indices(paths, lock):
 def prepare(args):
     import h5py
     import numpy as np
+    min_free_gib = getattr(args, "min_free_gib", 0)
+    rgb_compression = getattr(args, "rgb_compression", "lzf")
+    if not math.isfinite(min_free_gib) or min_free_gib < 0:
+        raise ValueError("--min-free-gib must be nonnegative and finite")
+    compression = ({"compression": "gzip", "compression_opts": 1}
+                   if rgb_compression == "gzip" else {"compression": "lzf"})
     lock = load_split_lock(args.split_lock)
     if lock["protocol_sha256"] != source_digest(DEFAULT_PROTOCOL):
         raise ValueError("Split lock was generated for a different evaluator protocol")
@@ -77,12 +93,19 @@ def prepare(args):
     if out.exists():
         raise FileExistsError("Use a fresh output directory; completed data is immutable")
     (out / "shards").mkdir(parents=True)
+
+    def require_space(next_write_bytes=0):
+        if min_free_gib and shutil.disk_usage(out).free < min_free_gib * 1024**3 + next_write_bytes:
+            raise OSError("Output volume reached its free-space reserve. "
+                          "This shard build is incomplete; use a fresh path after making room.")
+
+    require_space()
     shutil.copy2(args.split_lock, out / "split.lock.json")
     shutil.copy2(DEFAULT_PROTOCOL, out / "protocol.json")
     manifest = dict(schema_version=2, artifact=ARTIFACT, status="preparing",
         classification="CUSTOM_V2_SFT_NOT_OFFICIAL_LIBERO_SCORE", max_tokens=48,
         split_lock_sha256=lock["lock_sha256"], sources=lock["sources"],
-        memory_source="predicted_rgb_v3" if memory_provenance else "none",
+        memory_source=PREDICTED_MEMORY_SOURCES[memory_provenance[0]["writer"]] if memory_provenance else "none",
         memory_provenance=memory_provenance, tokenizer_revision=TOKENIZER_REVISION,
         tokenizer_files_sha256={"tokenizer.json": TOKENIZER_SHA256},
         image_contract=dict(base="raw OpenGL RGB",
@@ -95,12 +118,16 @@ def prepare(args):
         retention_replay_tasks=sorted({e["task"] for e in lock["episodes"] if e["domain"] == "base"}),
         preparation_code_sha256={name: sha256_file(ROOT / name) for name in
             ("scripts/prepare_mixed_memory_sft.py", "src/training/mixed_sft.py", "src/training/split_lock.py")},
-        episodes=[], shards={})
+        rgb_storage_compression=rgb_compression, episodes=[], shards={})
+    if lock.get("mem_split_policy") == AUTHOR_MEM_SPLIT:
+        manifest.update(mem_split_policy=AUTHOR_MEM_SPLIT,
+                        evaluation_split_lock_sha256=evaluation_lock_sha256(lock))
     groups = defaultdict(list)
     for e in lock["episodes"]:
         groups[e["domain"], e["source"]].append(e)
     with (out / "samples.jsonl").open("w", encoding="utf-8") as audit:
         for (domain, source), episodes in sorted(groups.items()):
+            require_space()
             task = episodes[0]["task"]
             relative = "shards/" + domain + "__" + task + ".hdf5"
             meta = read_episode_metadata(args.mem_root / "metainfo.json", task, [e["demo"] for e in episodes]) if domain == "mem" else None
@@ -145,8 +172,9 @@ def prepare(args):
                     for camera in ("agentview_rgb", "eye_in_hand_rgb"):
                         data = g["obs/" + camera]
                         shape = (n,) + data.shape[1:]
-                        ds = target.create_dataset(camera, shape=shape, dtype="uint8", chunks=(1,)+shape[1:], compression="lzf")
+                        ds = target.create_dataset(camera, shape=shape, dtype="uint8", chunks=(1,)+shape[1:], **compression)
                         for begin in range(0, n, 32):
+                            require_space(min(32, n-begin) * math.prod(shape[1:]) + 1024**2)
                             ds[begin:begin+32] = canonical_raw_rgb(
                                 data[begin:min(begin+32,n)], source_convention=image_convention)
                     target.create_dataset("robot_states", data=robot[:n])
@@ -167,9 +195,13 @@ def prepare(args):
     manifest["sample_selection_sha256"] = content_digest(projection)
     manifest["audit_sha256"] = sha256_file(out / "samples.jsonl")
     manifest["counts"] = {d:{s:sum(e["length"] for e in manifest["episodes"] if e["domain"]==d and e["split"]==s) for s in ("train","val","test")} for d in ("base","mem")}
+    require_space()
+    from src.evaluation.mem_eval_io import write_json
     manifest["status"] = "complete"
-    (out / "manifest.json").write_text(json.dumps(manifest, indent=2)+"\n", encoding="utf-8")
-    validate_mixed_dataset(out, verify_shards=False)
+    temporary_manifest = out / "manifest.pending.json"
+    write_json(temporary_manifest, manifest)
+    validate_mixed_dataset(out, verify_shards=False, manifest_path=temporary_manifest)
+    temporary_manifest.replace(out / "manifest.json")
     print(json.dumps(manifest["counts"], indent=2))
 
 
@@ -181,6 +213,10 @@ def main():
     p.add_argument("--tokenizer-path", type=Path, required=True)
     p.add_argument("--memory-index", type=Path, nargs="*", default=[])
     p.add_argument("--output-dir", type=Path, required=True)
+    p.add_argument("--rgb-compression", choices=("lzf", "gzip"), default="lzf",
+                   help="Lossless HDF5 image compression; gzip uses level 1")
+    p.add_argument("--min-free-gib", type=float, default=0,
+                   help="Stop before the output volume reaches this free-space reserve")
     prepare(p.parse_args())
 
 

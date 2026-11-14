@@ -1,17 +1,16 @@
-% Generated from THESIS_DRAFT.md.
 \chapter{Kết luận}
 
 \section{Kết luận theo câu hỏi nghiên cứu}
 
 Khóa luận nghiên cứu tiến độ thao tác như một thành phần của trạng thái quyết định mà quan sát hiện thời có thể không biểu hiện đầy đủ. Trong bài toán nhấc và đặt lại bát, sự kiện rời đĩa rồi trở lại đĩa gốc cho phép diễn đạt thông tin lịch sử bằng một đơn vị có ý nghĩa đối với yêu cầu tiếp tục hay dừng. Cách phát biểu này liên kết yêu cầu của tác vụ, bằng chứng có thể quan sát và hành vi cần đánh giá ở chính sách điều khiển.
 
-Với \textbf{RQ1}, bộ nhớ ghi các cặp sự kiện đã xác nhận, thời điểm khả dụng và tình trạng thiếu lịch sử. Hai tính chất về đếm chu kỳ và tính không nhìn trước được thiết lập dưới các giả thiết của phương pháp. Trên sáu quỹ đạo trình diễn, 12 sự kiện trở lại đĩa ghép được với 12 mốc chú giải trong dung sai ±20 khung hình. Độ đúng trên quỹ đạo thất bại cần được đo riêng.
+Với \textbf{RQ2}, bộ nhớ ghi các cặp sự kiện đã xác nhận, thời điểm khả dụng và tình trạng thiếu lịch sử. Hai tính chất về đếm chu kỳ và tính không nhìn trước được thiết lập dưới các giả thiết của phương pháp. Trên sáu quỹ đạo mẫu, 12 sự kiện trở lại đĩa ghép được với 12 mốc chú giải trong dung sai ±20 khung hình. Độ đúng trên quỹ đạo thất bại cần được đo riêng.
 
-Với \textbf{RQ2}, điều kiện có bộ nhớ cho sai số flow matching trên tập xác thực Mem thấp hơn chế độ bỏ thông tin lịch sử của cùng adapter. Trong đánh giá vòng kín, cấu hình kết hợp adapter và bộ nhớ hoàn thành 1/20 lượt, còn SmolVLA gốc hoàn thành 0/20 lượt. Hai điều kiện khác nhau đồng thời về thích ứng trọng số và đầu vào lịch sử, nên chênh lệch quan sát được chỉ mô tả hai cấu hình trên tập trạng thái đã khảo sát. Giả thuyết rằng lịch sử sự kiện tự nó cải thiện khả năng hoàn thành T3 còn mở.
+Với \textbf{RQ1}, điều kiện có bộ nhớ cho sai số flow matching trên tập xác thực Mem thấp hơn chế độ bỏ thông tin lịch sử của cùng adapter. Trong đánh giá vòng kín, cấu hình kết hợp adapter và bộ nhớ hoàn thành 1/20 lượt, còn SmolVLA gốc hoàn thành 0/20 lượt. Hai điều kiện khác nhau đồng thời về thích ứng trọng số và đầu vào lịch sử, nên chênh lệch quan sát được chỉ mô tả hai cấu hình trên tập trạng thái đã khảo sát. Giả thuyết rằng lịch sử sự kiện tự nó cải thiện khả năng hoàn thành T3 còn mở.
 
-Với \textbf{RQ3}, việc lấy mẫu hỗn hợp tạo điều kiện để chính sách tiếp tục quan sát các thao tác cơ sở khi thích ứng với tác vụ phụ thuộc lịch sử. Khả năng duy trì kỹ năng cần được xác định bằng kết quả thực thi các tác vụ cơ sở của chính adapter đã đánh giá, trên cùng tập trạng thái và giao thức với mô hình gốc. Kết quả ngoại tuyến hiện tại chỉ mô tả sai số dự đoán trên dữ liệu cố định.
+Với \textbf{RQ3}, việc chuyển sang dạng tác vụ hoặc mô hình khác vẫn cần được kiểm định. Về kỹ năng cơ sở, việc lấy mẫu hỗn hợp tạo điều kiện để chính sách tiếp tục quan sát các thao tác cơ sở khi thích ứng với tác vụ phụ thuộc lịch sử. Khả năng duy trì kỹ năng cần được xác định bằng kết quả thực thi các tác vụ cơ sở của chính adapter đã đánh giá, trên cùng tập trạng thái và giao thức với mô hình gốc. Kết quả ngoại tuyến hiện tại chỉ mô tả sai số dự đoán trên dữ liệu cố định.
 
-Với \textbf{RQ4}, bộ ghi báo lịch sử chưa đầy đủ ở cuối 19/20 lượt của cấu hình có bộ nhớ. Trong lượt duy nhất thành công, bộ ghi xác nhận hai chu kỳ và bộ chấm ghi nhận ba. Bất đồng này xác định một hạn chế cần khảo sát khi chuyển từ trình diễn sang quỹ đạo do chính sách sinh ra. Ảnh hưởng của sai lệch bản ghi đến hành vi điều khiển cần được đo bằng can thiệp riêng.
+Với \textbf{RQ2}, bộ ghi báo lịch sử chưa đầy đủ ở cuối 19/20 lượt của cấu hình có bộ nhớ. Trong lượt duy nhất thành công, bộ ghi xác nhận hai chu kỳ và bộ chấm ghi nhận ba. Bất đồng này xác định một hạn chế cần khảo sát khi chuyển từ quỹ đạo mẫu sang quỹ đạo do chính sách sinh ra. Ảnh hưởng của sai lệch bản ghi đến hành vi điều khiển cần được đo bằng can thiệp riêng.
 
 \section{Ý nghĩa và phạm vi của đóng góp}
 

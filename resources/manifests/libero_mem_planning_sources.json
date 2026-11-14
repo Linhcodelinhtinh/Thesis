@@ -61,7 +61,19 @@
   "raw_dataset": {
     "repository": "https://huggingface.co/datasets/libero-mem/LIBERO-Mem-Raw",
     "revision": "61917674055e8b1cbbfd22c1b54c28d20c1a1584",
-    "inspection_scope": "Revision metadata only; not the default proposed input"
+    "metadata_source": "https://huggingface.co/api/datasets/libero-mem/LIBERO-Mem-Raw/tree/61917674055e8b1cbbfd22c1b54c28d20c1a1584",
+    "selected_pilot_files": [
+      {
+        "path": "KITCHEN_SCENE1_1_pick_up_the_bowl_and_place_it_back_on_the_plate_demo.hdf5",
+        "size_bytes": 24662872,
+        "upstream_sha256": "23230bd34e291d321158822c4f5b24c7830ec5c049dab72a79a814538a864f2d"
+      },
+      {
+        "path": "KITCHEN_SCENE1_3_lift_the_bowl_and_place_it_back_on_the_plate_3_times_demo.hdf5",
+        "size_bytes": 37695016,
+        "upstream_sha256": "7794c587646c3bb28fcf146c5673625fd1d354ef3c820f86192d563776581bdb"
+      }
+    ]
   },
   "paper": {
     "url": "https://arxiv.org/html/2511.11478v1",

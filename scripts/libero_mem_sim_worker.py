@@ -26,6 +26,11 @@ def main():
     def info_dict(info):
         return {k: asdict(v) if k == "eval_result" else v for k, v in info.items()}
 
+    def policy_observation(obs):
+        # Joint positions are recorded by the replay generator in-process.
+        # The policy IPC contract predates that field and does not consume it.
+        return serialize_obs({key: value for key, value in obs.items() if key != "robot0_joint_pos"})
+
     env, previous_id = None, 0
     send(dict(status="ready", protocol_version=1))
     try:
@@ -49,12 +54,12 @@ def main():
                     if env is None:
                         raise RuntimeError("Environment not initialized")
                     obs = env.reset(initial_state_id=request["initial_state_id"])
-                    out = dict(observation=serialize_obs(obs), info=info_dict(env.last_info))
+                    out = dict(observation=policy_observation(obs), info=info_dict(env.last_info))
                 elif command == "step":
                     if env is None:
                         raise RuntimeError("Environment not initialized")
                     obs, reward, done, info = env.step(decode_array(request["action"]))
-                    out = dict(observation=serialize_obs(obs), reward=float(reward), done=bool(done), info=info_dict(info))
+                    out = dict(observation=policy_observation(obs), reward=float(reward), done=bool(done), info=info_dict(info))
                 elif command == "close":
                     send(dict(id=request_id, status="ok"))
                     break

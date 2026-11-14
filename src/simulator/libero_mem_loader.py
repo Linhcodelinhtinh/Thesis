@@ -8,7 +8,7 @@ import sys
 import types
 import subprocess
 
-from src.evaluation.libero_mem_protocol import load_protocol, task_spec, ROOT
+from src.evaluation.libero_mem_protocol import load_protocol, load_suite_source, task_spec, ROOT
 
 LIBERO_MEM_ROOT = ROOT / "external/libero-mem"
 
@@ -41,9 +41,11 @@ class LiberoMemBDDLLoader:
         self.protocol = load_protocol(source_root=self.libero_root)
 
     def resolve_bddl_path(self, task_name):
-        return self.libero_root / task_spec(self.protocol, task_name)["bddl"]
+        return self.libero_root / task_spec(load_suite_source(self.libero_root), task_name)["bddl"]
 
     def create_env(self, task_name):
+        # Only the pilot has a verified rollout/evaluator and initial-state contract.
+        task_spec(self.protocol, task_name)
         try:
             revision = subprocess.check_output(
                 ["git", "-C", str(self.libero_root), "rev-parse", "HEAD"],

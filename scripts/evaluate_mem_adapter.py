@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Custom V2 LIBERO-Mem B0/F1 evaluation; not an official paper score."""
+"""Evaluate the versioned V2 SmolVLA pilot treatments."""
 from __future__ import annotations
 import argparse
 import csv
@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import random
 import shlex
+import shutil
 import subprocess
 import sys
 import traceback
@@ -22,17 +23,20 @@ from src.evaluation.mem_eval_io import EpisodeRecorder, evaluation_roster, write
 from src.evaluation.libero_mem_protocol import DEFAULT_PROTOCOL, source_digest
 from src.simulator.process_libero_mem_env import ProcessLiberoMemEnv, wsl_path
 from src.training.mem_adapter_artifact import validate_adapter, verify_files
+from src.training.split_lock import AUTHOR_EVAL_SPLITS, AUTHOR_MEM_SPLIT, DEFAULT_AUTHOR_MEM_LOCK
 from src.utils.file_hash import sha256_file
+from src.evaluation.mem_conditions import CLI_CONDITIONS, condition_spec
 
 
 def parse_args(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--adapter-dir", type=Path, default=ROOT / "experiments/training/results_mem_2/mem-adapter-20261105-083543/pretrained_model")
+    p.add_argument("--adapter-dir", type=Path)
+    p.add_argument("--f0-adapter-dir", type=Path)
     p.add_argument("--base-checkpoint", type=Path, default=ROOT / "resources/checkpoints/smolvla_libero")
-    p.add_argument("--split-lock", type=Path, default=ROOT / "experiments/training/results_mem_2/mem-adapter-v1/dataset-split.lock.json")
-    p.add_argument("--split", choices=["val", "test"], default="val")
+    p.add_argument("--split-lock", type=Path, default=DEFAULT_AUTHOR_MEM_LOCK)
+    p.add_argument("--split", choices=[*AUTHOR_EVAL_SPLITS, "val", "test"], default="seen")
     p.add_argument("--tasks", nargs="+", choices=["T1", "T3"], default=["T1", "T3"])
-    p.add_argument("--conditions", nargs="+", choices=["B0", "F1"], default=["B0", "F1"])
+    p.add_argument("--conditions", nargs="+", choices=CLI_CONDITIONS, default=["B0"])
     p.add_argument("--states", default="0", help="Comma-separated indices within each locked split, or all")
     p.add_argument("--policy-seed", type=int, default=42)
     p.add_argument("--output-dir", type=Path, required=True, help="New, nonexistent run directory")
@@ -42,18 +46,27 @@ def parse_args(argv=None):
     p.add_argument("--use-wsl", action="store_true", help="Windows policy -> WSL simulator; omit when already in WSL")
     p.add_argument("--wsl-distro", default="Ubuntu-24.04")
     p.add_argument("--save-video", action=argparse.BooleanOptionalAction, default=True)
+    p.add_argument("--stream-memory-trace", action="store_true",
+                   help="Keep the per-step trace in JSONL only, with a final snapshot in the summary")
     p.add_argument("--preflight-only", action="store_true", help="Verify files, source and environments; no policy rollout")
     p.add_argument("--runtime-check", action="store_true", help="Real load/reset and two actions per condition/task; diagnostic only, no score")
+    p.add_argument("--resume", action="store_true", help="Resume interrupted evaluation in output-dir, skipping completed episodes")
     p.add_argument("--worker-timeout", type=int, default=300)
     p.add_argument("--git-executable", default=os.environ.get("MEM_EVAL_GIT", "git"),
                    help="Git used for read-only provenance; git.exe can speed up WSL /mnt source checks")
     a = p.parse_args(argv)
+    if "F0" in a.conditions and not a.f0_adapter_dir:
+        p.error("F0 requires --f0-adapter-dir")
+    if any(condition_spec(name).weights == "memory" for name in a.conditions) and not a.adapter_dir:
+        p.error("Memory-trained conditions require --adapter-dir")
     if "F1" in a.conditions and not a.detector_python:
         p.error("F1 requires --detector-python in a separate environment")
     if len(set(a.conditions)) != len(a.conditions) or a.worker_timeout < 1:
         p.error("Conditions must be distinct and timeout positive")
     if a.runtime_check and (a.preflight_only or a.states != "0"):
         p.error("Runtime check requires --states 0 and cannot combine with --preflight-only")
+    if a.runtime_check and a.split == "unseen":
+        p.error("Use seen states for runtime checks")
     return a
 
 
@@ -79,7 +92,7 @@ def check_environments(args, protocol):
         if sim["packages"][package] != protocol["runtime"][package]:
             raise ValueError(f"Simulator {package}: expected {protocol['runtime'][package]}, found {sim['packages'][package]}")
     required = ["torch", "lerobot", "transformers", "tokenizers"]
-    if "F1" in args.conditions:
+    if any(condition_spec(name).weights != "base" for name in args.conditions):
         required.append("peft")
     if args.save_video:
         required += ["imageio", "imageio-ffmpeg"]
@@ -146,19 +159,30 @@ def report(output, rows, expected, status):
     pairs = {}
     for r in rows:
         pairs.setdefault((r["task"], r["initial_state_sha256"]), {})[r["condition"]] = r
-    matched = [p for p in pairs.values() if set(p) == {"B0", "F1"}]
+    matched = [p for p in pairs.values() if {"B0", "F1"} <= p.keys()]
     lines += ["", f"Complete B0/F1 pairs: {len(matched)}.",
               "T1/T3 can share initial states; task-episodes are not independent state samples."]
     if matched:
         delta = sum(int(p["F1"]["success"]) - int(p["B0"]["success"]) for p in matched) / len(matched)
         lines.append(f"Descriptive paired delta SR: {delta:+.3f}. No confidence interval claimed.")
+    primary = [p for p in pairs.values() if {"F0", "F1"} <= p.keys()]
+    if primary:
+        by_task = {}
+        for pair in primary:
+            by_task.setdefault(pair["F1"]["task"], []).append(
+                int(pair["F1"]["success"]) - int(pair["F0"]["success"]))
+        macro = sum(sum(deltas) / len(deltas) for deltas in by_task.values()) / len(by_task)
+        lines.append(f"Observed F1/F0 pairs: {len(primary)}. Task-macro paired delta SR: {macro:+.3f}.")
     (output / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def check_runtime_episode(env, policy, renderer, factory, recorder, row):
+def check_runtime_episode(env, policy, renderer, factory, recorder, row, condition):
     """Two real actions solely to probe interfaces; never a shortened score."""
     import numpy as np
+    from src.evaluation.libero_mem_rollout import action_shape, bind_instruction_only
+    expected_shape = action_shape(policy, env)
     policy.reset()
+    bind_instruction_only(policy, condition, row["instruction"], renderer)
     obs = env.reset(initial_state_id=row["state_idx"])
     writer = factory(episode_id="runtime_check", target_object_id="bowl_A", support_id="plate_A") if factory else None
     if writer is not None:
@@ -175,7 +199,7 @@ def check_runtime_episode(env, policy, renderer, factory, recorder, row):
         if rendered.tokenizer_truncated:
             raise ValueError("Runtime probe instruction exceeds token budget")
         chunk = policy.predict_action_chunk(obs, rendered.text)
-        if not isinstance(chunk, np.ndarray) or chunk.shape != (50, 7) or not np.isfinite(chunk).all():
+        if not isinstance(chunk, np.ndarray) or chunk.shape != expected_shape or not np.isfinite(chunk).all():
             raise ValueError("Runtime probe returned invalid action chunk")
         recorder("query", step=step, prompt=rendered.text, chunk=chunk, render=rendered)
         last_action = chunk[0]
@@ -189,10 +213,28 @@ def check_runtime_episode(env, policy, renderer, factory, recorder, row):
 def main(argv=None):
     args = parse_args(argv)
     output = args.output_dir.absolute()
-    output.mkdir(parents=True, exist_ok=False)
-    manifest = dict(classification="CUSTOM_V2_LIBERO_MEM", comparability="NON-COMPARABLE_OFFICIAL_PAPER",
-        status="preflight", timestamp=datetime.now(timezone.utc).isoformat(), arguments=vars(args))
     rows, expected, runtime_checks = [], 0, 0
+    if args.resume and output.exists():
+        manifest_path = output / "run_manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else dict(
+            classification="CUSTOM_V2_LIBERO_MEM", comparability="NON-COMPARABLE_OFFICIAL_PAPER")
+        manifest.update(status="resumed", timestamp=datetime.now(timezone.utc).isoformat(), arguments=vars(args))
+        summary_path = output / "summary.csv"
+        if summary_path.exists():
+            with summary_path.open("r", encoding="utf-8") as f:
+                for r in csv.DictReader(f):
+                    r["success"] = r["success"].lower() == "true"
+                    r["overshot"] = r["overshot"].lower() == "true"
+                    r["scr"] = float(r["scr"])
+                    r["steps"] = int(r["steps"])
+                    r["policy_ms"] = float(r["policy_ms"])
+                    r["wall_time_s"] = float(r["wall_time_s"])
+                    r["state_idx"] = int(r["state_idx"])
+                    rows.append(r)
+    else:
+        output.mkdir(parents=True, exist_ok=False)
+        manifest = dict(classification="CUSTOM_V2_LIBERO_MEM", comparability="NON-COMPARABLE_OFFICIAL_PAPER",
+            status="preflight", timestamp=datetime.now(timezone.utc).isoformat(), arguments=vars(args))
     def phase(name):
         manifest["phase"] = name
         manifest["updated_at"] = datetime.now(timezone.utc).isoformat()
@@ -214,6 +256,9 @@ def main(argv=None):
         manifest.update(code_identity(output, args.git_executable), roster=roster, expected_episodes=expected,
                         protocol=protocol, protocol_sha256=source_digest(DEFAULT_PROTOCOL),
                         split_lock_sha256=lock["lock_sha256"], split_lock_file_sha256=sha256_file(args.split_lock))
+        if lock.get("mem_split_policy") == AUTHOR_MEM_SPLIT:
+            manifest.update(mem_split_policy=AUTHOR_MEM_SPLIT,
+                            evaluation_state_source="LIBERO-Mem-Raw", raw_revision=lock["raw_revision"])
         write_json(output / "split.lock.json", lock)
         import yaml
         base_spec = yaml.safe_load((ROOT / "resources/manifests/models/smolvla_libero.yaml").read_text())
@@ -231,12 +276,43 @@ def main(argv=None):
         verify_files(assets, {name.replace("\\", "/"): digest for name, digest in asset_lock["files"].items()})
         load_prompt_tokenizer(assets / "backbone")
         manifest["local_assets_lock_sha256"] = sha256_file(assets / "assets.json")
-        adapter = None
-        if "F1" in args.conditions:
-            adapter = validate_adapter(args.adapter_dir, args.base_checkpoint)
-            manifest["adapter_manifest_sha256"] = sha256_file(args.adapter_dir / "mem_adapter_manifest.json")
-            write_json(output / "adapter_manifest.json", adapter)
-            verify_files(args.detector_model, adapter["memory_provenance"][0]["detector"]["files"])
+        from dataclasses import asdict
+        from src.training.mem_adapter_artifact import adapter_training_condition, validate_matched_adapters
+        adapters = {}
+        manifest["treatments"] = {}
+        for condition in args.conditions:
+            spec = condition_spec(condition)
+            treatment = manifest["treatments"][condition] = asdict(spec)
+            if spec.weights == "base":
+                treatment["weight_identity"] = base_files
+                continue
+            directory = args.f0_adapter_dir if condition == "F0" else args.adapter_dir
+            adapter = validate_adapter(directory, args.base_checkpoint)
+            if adapter_training_condition(adapter) != spec.weights:
+                raise ValueError(f"{condition} received the wrong adapter training condition")
+            author_lock = lock.get("mem_split_policy") == AUTHOR_MEM_SPLIT
+            author_adapter = adapter["run"].get("mem_split_policy") == AUTHOR_MEM_SPLIT
+            if author_lock != author_adapter or (
+                    author_lock and adapter["run"].get("evaluation_split_lock_sha256") != lock["lock_sha256"]):
+                raise ValueError(f"{condition} adapter was trained under a different evaluation lock")
+            adapters[condition] = (directory, adapter)
+            treatment["weight_identity"] = adapter["adapter_files"]["adapter_model.safetensors"]
+            copied_manifest = output / f"adapter_manifest_{condition}.json"
+            shutil.copyfile(directory / "mem_adapter_manifest.json", copied_manifest)
+            if json.loads(copied_manifest.read_text(encoding="utf-8")) != adapter:
+                raise ValueError(f"{condition} adapter manifest changed during preflight")
+            treatment["adapter_manifest_sha256"] = sha256_file(copied_manifest)
+            if condition == "F1":
+                memory_contract = adapter["memory_provenance"][0]
+                if memory_contract["writer"] == "rgb_relations_v1":
+                    treatment.update(memory_source=memory_contract["writer"],
+                                     projection=memory_contract["writer_config"]["projection"],
+                                     projection_strategy=memory_contract["writer_config"]["strategy"])
+                manifest["adapter_manifest_sha256"] = treatment["adapter_manifest_sha256"]
+                write_json(output / "adapter_manifest.json", adapter)
+                verify_files(args.detector_model, adapter["memory_provenance"][0]["detector"]["files"])
+        if "F0" in adapters and "F1" in adapters:
+            validate_matched_adapters(adapters["F0"][1], adapters["F1"][1])
         manifest["environments"] = check_environments(args, protocol)
         manifest["status"] = "preflight_passed"
         write_json(output / "run_manifest.json", manifest)
@@ -254,6 +330,9 @@ def main(argv=None):
         from src.memory.visual_pipeline import visual_writer_factory, load_prompt_tokenizer
         from src.perception.object_tracker import TrackerConfig
         from src.perception.process_detector import ProcessVisualDetector
+        from src.perception.relation_detector import ProcessRelationDetector
+        from src.evaluation.libero_mem_protocol import load_suite_source
+        from src.memory.relation_pipeline import relation_pipeline
 
         if not torch.cuda.is_available():
             raise RuntimeError("CUDA policy runtime required; no CPU fallback")
@@ -267,22 +346,27 @@ def main(argv=None):
             detector = None
             try:
                 phase(f"Loading {condition} policy")
+                if condition in adapters:
+                    directory, adapter = adapters[condition]
+                    policy.load(str(directory), base_checkpoint=str(args.base_checkpoint), device="cuda", strict=True)
+                    factory, tokenizer = None, policy.tokenizer
+                else:
+                    policy.load(str(args.base_checkpoint), device="cuda", strict=True)
+                    factory = None
+                    tokenizer = load_prompt_tokenizer(ROOT / "experiments/training/assets_mem_adapter_v1/backbone")
                 if condition == "F1":
-                    policy.load(str(args.adapter_dir), base_checkpoint=str(args.base_checkpoint), device="cuda", strict=True)
                     contract = adapter["memory_provenance"][0]
                     launcher = detector_launcher(args.detector_python, output)
                     manifest["detector_launcher_sha256"] = sha256_file(launcher) if launcher.endswith(".sh") else None
                     write_json(output / "run_manifest.json", manifest)
                     phase("Loading F1 detector")
-                    detector = ProcessVisualDetector(launcher, args.detector_model, device="cuda", timeout_seconds=args.worker_timeout)
-                    factory = visual_writer_factory(detector, "libero_raw", TrackerConfig(**contract["writer_config"]))
-                    tokenizer = policy.tokenizer
-                else:
-                    policy.load(str(args.base_checkpoint), device="cuda", strict=True)
-                    factory = None
-                    tokenizer = load_prompt_tokenizer(ROOT / "experiments/training/assets_mem_adapter_v1/backbone")
+                    detector_type = (ProcessRelationDetector if contract["writer"] == "rgb_relations_v1"
+                                     else ProcessVisualDetector)
+                    detector = detector_type(launcher, args.detector_model, device="cuda", timeout_seconds=args.worker_timeout)
+                    if contract["writer"] == "rgb_cycle_v3":
+                        factory = visual_writer_factory(detector, "libero_raw", TrackerConfig(**contract["writer_config"]))
                 import inspect
-                base_policy = policy.policy.get_base_model() if condition == "F1" else policy.policy
+                base_policy = policy.policy.get_base_model() if condition in adapters else policy.policy
                 policy_source = Path(inspect.getfile(type(base_policy)))
                 processor_source = Path(inspect.getfile(type(policy.env_preprocessor)))
                 manifest.setdefault("loaded_policies", {})[condition] = dict(
@@ -294,6 +378,10 @@ def main(argv=None):
                 del base_policy
                 renderer = LiberoMemTextRenderer(tokenizer=tokenizer, strict_tokenizer=True, max_total_tokens=48, allow_oracle=False)
                 for task in args.tasks:
+                    if condition == "F1" and contract["writer"] == "rgb_relations_v1":
+                        suite = load_suite_source(source)
+                        factory, renderer = relation_pipeline(suite, task, detector, "libero_raw", tokenizer,
+                                                              contract["writer_config"]["strategy"])
                     phase(f"Starting {condition} {task} simulator")
                     env = ProcessLiberoMemEnv(task_name=task, split_lock=args.split_lock, split=args.split,
                         python_executable=args.sim_python, use_wsl=args.use_wsl,
@@ -301,6 +389,18 @@ def main(argv=None):
                     try:
                         for row in [r for r in roster if r["task"] == task]:
                             ep_id = f"{task}_{condition}_{args.split}_state{row['state_idx']}"
+                            ep_dir = output / "episodes" / ep_id
+                            status_file = ep_dir / "status.json"
+                            if args.resume and any(r["episode_id"] == ep_id for r in rows) and status_file.exists():
+                                try:
+                                    status_data = json.loads(status_file.read_text(encoding="utf-8"))
+                                    if status_data.get("status") == "complete":
+                                        print(f"{ep_id}: already completed (success={status_data.get('success')}), skipping...", flush=True)
+                                        continue
+                                except Exception:
+                                    pass
+                            if ep_dir.exists():
+                                shutil.rmtree(ep_dir)
                             phase(f"Running {ep_id}")
                             metadata = dict(row, episode_id=ep_id, condition=condition, policy_seed=args.policy_seed)
                             recorder = EpisodeRecorder(output / "episodes" / ep_id, metadata, args.save_video,
@@ -311,14 +411,15 @@ def main(argv=None):
                                 torch.manual_seed(args.policy_seed)
                                 torch.cuda.manual_seed_all(args.policy_seed)
                                 if args.runtime_check:
-                                    check_runtime_episode(env, policy, renderer, factory, recorder, row)
+                                    check_runtime_episode(env, policy, renderer, factory, recorder, row, condition)
                                     runtime_checks += 1
                                     print(f"{ep_id}: runtime check passed (two actions; no score)", flush=True)
                                     continue
                                 runner = LiberoMemRolloutRunner(env, policy, condition=condition,
                                     execution_horizon=protocol["rollout"]["execution_horizon"],
                                     max_steps=protocol["rollout"]["horizon_policy_actions"],
-                                    renderer=renderer, writer_factory=factory, observer=recorder)
+                                    renderer=renderer, writer_factory=factory, observer=recorder,
+                                    stream_memory_trace=args.stream_memory_trace)
                                 result = runner.run_episode(ep_id, row["instruction"], row["state_idx"])
                                 recorder.finish(result=result)
                             except BaseException as exc:
@@ -329,6 +430,9 @@ def main(argv=None):
                                 steps=result.total_steps, policy_ms=result.avg_latency_ms, wall_time_s=result.total_wall_time_s)
                             report(output, rows, expected, "running")
                             print(f"{ep_id}: success={result.success} SCR={result.scr:.3f} overshot={result.overshot}", flush=True)
+                            gc.collect()
+                            if torch.cuda.is_available():
+                                torch.cuda.empty_cache()
                     finally:
                         env.close()
             finally:

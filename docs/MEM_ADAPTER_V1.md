@@ -1,5 +1,8 @@
 # V2 isolated Mem adapter, expanded data
 
+> Hướng dẫn dưới đây ghi lại adapter RGB v3 với split lịch sử. Cặp F0/F1 mới
+> dùng toàn bộ refined T1/T3 và roster raw seen/unseen. [Lệnh P5–P6 hiện hành](thesis/P5_P6_HANDOFF_2026-11-13.md).
+
 This is a custom V2 training system, not an official LIBERO score. V1 baseline
 execution still loads the original checkpoint without an adapter. No training
 or rollout improvement is claimed by the implementation alone.

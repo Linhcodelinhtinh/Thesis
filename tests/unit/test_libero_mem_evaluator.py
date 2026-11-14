@@ -4,7 +4,7 @@ from pathlib import Path
 from types import SimpleNamespace
 import pytest
 from src.evaluation.libero_mem_metrics import LiberoMemEvaluator
-from src.evaluation.libero_mem_protocol import load_protocol, task_spec
+from src.evaluation.libero_mem_protocol import SUITE_SOURCE_LOCK, load_protocol, load_suite_source, task_spec
 
 ROOT=Path(__file__).resolve().parents[2]
 
@@ -85,3 +85,37 @@ def test_protocol_is_explicitly_custom_and_excludes_unsupported_tasks():
     assert task_spec(p,'T1')['target_cycles']==1
     assert task_spec(p,'T3')['target_cycles']==3
     with pytest.raises(ValueError):task_spec(p,'T10')
+
+
+def test_full_suite_source_inventory_keeps_or_tasks_distinct_from_pilot_protocol():
+    suite = load_suite_source(ROOT / "external/libero-mem")
+    assert len({task["name"] for task in suite["tasks"]}) == 10
+    assert {task["alias"] for task in suite["tasks"] if task["goal_operator"] == "or"} == {
+        "T7", "T9", "T10"
+    }
+    assert task_spec(suite, "T10")["index"] == 9
+    with pytest.raises(ValueError, match="Unknown or mislabeled"):
+        load_protocol(SUITE_SOURCE_LOCK)
+
+
+def test_upstream_or_restricts_next_goal_to_a_compatible_branch():
+    e = upstream_fixture()
+    source = ROOT / "external/libero-mem/libero/libero/envs/bddl_base_domain.py"
+    method = next(node for node in ast.walk(ast.parse(source.read_text(encoding="utf-8")))
+                  if isinstance(node, ast.FunctionDef) and node.name == "is_subgoal_trajectory_possible")
+    scope = {}
+    exec(compile(ast.Module(body=[method], type_ignores=[]), str(source), "exec"), scope)
+    e.is_subgoal_trajectory_possible = scope[method.name].__get__(e)
+    first_a, first_b = ["and", ["in", "object", "a"]], ["and", ["in", "object", "b"]]
+    end_a, end_b = ["and", ["on", "a", "center"]], ["and", ["on", "b", "center"]]
+    e.parsed_problem = {"goal_state": [["or", ["sequence", first_a, end_a],
+                                        ["sequence", first_b, end_b]]]}
+    e._satisfied_subgoals.append(first_a)
+    e._sub_goal_live_time = 6
+    e._sub_goal_nonlive_time = 16
+    e._eval_predicate = lambda predicate: predicate == end_b[1]
+    assert not e._check_success(inc=False)
+    assert e._satisfied_subgoals == [first_a]
+    e._eval_predicate = lambda predicate: predicate == end_a[1]
+    assert e._check_success(inc=True)
+    assert e._satisfied_subgoals == [first_a, end_a]

@@ -136,7 +136,7 @@ def test_derived_hdf5_loader_integration():
         with open(meta_path, "w", encoding="utf-8") as f:
             json.dump(metainfo, f)
 
-        parser = LiberoMemHDF5Parser(data_dir=data_dir, val_ratio=0.5, seed=42)
+        parser = LiberoMemHDF5Parser(data_dir=data_dir)
         episodes = list(parser.iter_task(task_name))
         assert len(episodes) == 2
         for ep in episodes:

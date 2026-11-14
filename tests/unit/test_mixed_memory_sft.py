@@ -102,16 +102,19 @@ def test_mem_image_conversion_is_exactly_one_vertical_flip():
         canonical_raw_rgb(raw.astype(float), "mem")
 
 
-def make_dataset(root):
+def make_dataset(root, author_split=False):
     (root/"shards").mkdir()
     rows, episodes, shards = [], [], {}
     for d in ("base", "mem"):
         name = f"shards/{d}__task.hdf5"
         with h5py.File(root/name,"w") as f:
-            for i,s in enumerate(("train","val","test")):
-                key=f"demo_{i}"; n=4
+            splits = ("train",) if author_split and d == "mem" else ("train", "val", "test")
+            for i,s in enumerate(splits):
+                key=f"demo_{i+1}"; n=4
                 row=dict(domain=d,task="task",demo=key,split=s,source=d+".hdf5",frames=n,
                          initial_state_sha256=state_digest([i, d=="mem"]))
+                if author_split and d == "mem":
+                    row["raw_index"] = i
                 rows.append(row)
                 episodes.append(dict(row,length=n,shard=name,memory_frames=0))
                 g=f.create_group(key)
@@ -125,7 +128,18 @@ def make_dataset(root):
                 g.attrs["split"]=s
         shards[name]=sha256_file(root/name)
     (root/"protocol.json").write_text("{}")
-    lock=seal_lock(dict(episodes=rows,sources=[],protocol_sha256=sha256_file(root/"protocol.json")))
+    payload = dict(episodes=rows, sources=[], protocol_sha256=sha256_file(root/"protocol.json"))
+    if author_split:
+        from src.training.split_lock import AUTHOR_MEM_SPLIT
+        rosters = {}
+        for split, start in (("seen", 0), ("unseen", 100)):
+            rosters[split] = [dict(domain="mem", task="task", source="task_demo.hdf5",
+                demo=f"demo_{i+1}", raw_index=i, initial_state=[i, True],
+                initial_state_sha256=state_digest([i, True])) for i in range(start, start + 20)]
+        payload.update(mem_split_policy=AUTHOR_MEM_SPLIT, raw_revision="unit fixture",
+                       raw_sources=[dict(path="task_demo.hdf5", sha256="unit fixture")],
+                       evaluation_rosters=rosters)
+    lock=seal_lock(payload)
     (root/"split.lock.json").write_text(json.dumps(lock))
     (root/"samples.jsonl").write_text("unit fixture")
     projection=[{k:e[k] for k in ("domain","task","demo","split","length","initial_state_sha256","source")} for e in episodes]
@@ -133,7 +147,10 @@ def make_dataset(root):
            tokenizer_revision=TOKENIZER_REVISION,tokenizer_files_sha256={"tokenizer.json":TOKENIZER_SHA256},
            episodes=episodes,shards=shards,split_lock_sha256=lock["lock_sha256"],
            sample_selection_sha256=content_digest(projection),audit_sha256=sha256_file(root/"samples.jsonl"),
-           counts={d:{s:4 for s in ("train","val","test")} for d in ("base","mem")})
+           counts={d:{s:sum(e["length"] for e in episodes if e["domain"] == d and e["split"] == s)
+                      for s in ("train","val","test")} for d in ("base","mem")})
+    if author_split:
+        m.update(mem_split_policy=lock["mem_split_policy"], evaluation_split_lock_sha256=lock["lock_sha256"])
     (root/"manifest.json").write_text(json.dumps(m))
     return m
 
@@ -157,8 +174,8 @@ def test_memory_changes_only_mem_text_and_preserves_f0_targets(tmp_path):
     m=make_dataset(tmp_path)
     path=tmp_path/"shards/mem__task.hdf5"
     with h5py.File(path,"r+") as f:
-        f["demo_0/prompts"][0]="instruction; unit fixture history"
-        f["demo_0/has_memory"][0]=True
+        f["demo_1/prompts"][0]="instruction; unit fixture history"
+        f["demo_1/has_memory"][0]=True
     next(e for e in m["episodes"] if e["domain"]=="mem" and e["split"]=="train")["memory_frames"]=1
     m["shards"]["shards/mem__task.hdf5"]=sha256_file(path)
     m["memory_source"]="predicted_rgb_v3"
@@ -179,6 +196,17 @@ def test_memory_changes_only_mem_text_and_preserves_f0_targets(tmp_path):
         assert BalancedReplaySampler(f0,32).indices() == BalancedReplaySampler(f1,32).indices()
     finally:
         f0.close();f1.close()
+
+
+def test_author_split_shards_use_base_only_validation(tmp_path):
+    make_dataset(tmp_path, author_split=True)
+    manifest = validate_mixed_dataset(tmp_path)
+    assert manifest["counts"]["mem"] == {"train": 4, "val": 0, "test": 0}
+    with h5py.File(tmp_path / "shards/mem__task.hdf5") as shard:
+        assert list(shard) == ["demo_1"]
+    validation = MemoryDataset(tmp_path, "val")
+    assert len(validation) == 4
+    assert {row["domain"] for row in validation.episodes} == {"base"}
 
 
 @pytest.mark.parametrize("mutation",["omitted","wrong_count","wrong_shard","corrupt","wrong_source"])

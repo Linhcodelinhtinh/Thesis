@@ -30,9 +30,9 @@ def validate_inputs(args):
     root = Path(args.data_dir)
     manifest = json.loads((root / "manifest.json").read_text())
     if manifest.get("schema_version") == 2:
-        from src.training.mixed_sft import validate_mixed_dataset
+        from src.training.mixed_sft import PREDICTED_MEMORY_SOURCES, validate_mixed_dataset
         manifest = validate_mixed_dataset(root)
-        if args.condition == "memory" and manifest["memory_source"] != "predicted_rgb_v3":
+        if args.condition == "memory" and manifest["memory_source"] not in PREDICTED_MEMORY_SOURCES.values():
             raise ValueError("F1 requires predicted-memory shards; this dataset is ready for no_memory only")
         if args.condition == "memory":
             from src.training.mem_adapter_artifact import verify_memory_code
@@ -200,13 +200,17 @@ def train(args):
                 "official_policy_source_sha256": sha256(inspect.getfile(SmolVLAPolicy)),
                 "normalization": "unchanged original checkpoint", "precision": "FP32 weights, FP16 AMP + GradScaler"}
     run_info["padding_keys_read_by_policy"] = padding_keys
-    run_info["memory_provenance"] = manifest.get("memory_provenance", [])
+    run_info["memory_provenance"] = manifest.get("memory_provenance", []) if args.condition == "memory" else []
     if replay_sampler is not None:
         run_info["mixed_replay"] = dict(base_fraction=replay_sampler.actual_base_fraction,
             balancing="domain per optimizer batch; shuffled task round-robin; uniform episode then frame",
             epoch0_schedule_sha256=replay_sampler.schedule_sha256(),
             sample_selection_sha256=manifest["sample_selection_sha256"],
             split_lock_sha256=manifest["split_lock_sha256"], protocol_sha256=source_digest(Path(args.data_dir)/"protocol.json"))
+        if "mem_split_policy" in manifest:
+            run_info.update(mem_split_policy=manifest["mem_split_policy"],
+                            evaluation_split_lock_sha256=manifest["evaluation_split_lock_sha256"],
+                            validation_scope="base_replay_only")
     if accelerator.is_main_process:
         write_json(out / "run_config.json", run_info)
         (out / "environment_packages.txt").write_text("\n".join(sorted(
@@ -223,6 +227,8 @@ def train(args):
                     raise ValueError("Resume implementation differs: " + key)
         expected = {k: v for k, v in vars(args).items() if k not in {"resume", "output_dir", "data_dir", "assets_dir"}}
         saved_args = dict(saved["training_arguments"])
+        saved_args.setdefault("export_only", False)
+        saved_args.setdefault("validation_max_batches", 0)
         if expected.get("steps", 0) >= saved_args.get("steps", 0):
             saved_args["steps"] = expected["steps"]
         if saved_args != expected:
@@ -336,7 +342,7 @@ def train(args):
                             f.write(json.dumps(row) + "\n")
                 if step % args.eval_every == 0 or step == args.steps:
                     validate()
-                if step % args.save_every == 0 or step == args.steps:
+                if not args.export_only and (step % args.save_every == 0 or step == args.steps):
                     checkpoint(batch_index + 1)
                 if step >= args.steps:
                     break
@@ -374,9 +380,12 @@ def main():
     p.add_argument("--eval-every", type=int, default=500)
     p.add_argument("--validation-max-batches", type=int, default=0, help="0=full validation; >0 is a labeled smoke-test subset")
     p.add_argument("--resume")
+    p.add_argument("--export-only", action="store_true", help="Keep only the final policy export and logs")
     args = p.parse_args()
-    if args.export_format == "adapter" and (args.adaptation != "expert_lora" or args.condition != "memory"):
-        p.error("Mem adapter export requires expert_lora and condition=memory")
+    if args.export_only and args.resume:
+        p.error("--export-only cannot resume a training snapshot")
+    if args.export_format == "adapter" and args.adaptation != "expert_lora":
+        p.error("Unmerged adapter export requires expert_lora")
     if any(getattr(args, n) < 1 for n in ["expected_gpus", "batch_size", "accumulation", "steps", "rank", "log_every", "save_every", "eval_every"]):
         p.error("GPU/batch/step/interval values must be positive")
     if not 0 <= args.memory_dropout < 1 or args.lr <= 0 or args.warmup_steps < 0 or args.validation_max_batches < 0:

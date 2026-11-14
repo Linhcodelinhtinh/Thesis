@@ -3,6 +3,7 @@
 # Step 5: Final Held-Out Test Evaluation (40 Episodes)
 # Protocol: CUSTOM_V2_LIBERO_MEM / NON-COMPARABLE_OFFICIAL_PAPER
 # Specification: docs/RESULTS_MEM_2_TEST_PLAN.md Section P3
+# Historical v1 replay on refined development states. Use run_mem_validation_and_test.sh for raw unseen.
 # ==============================================================================
 set -euo pipefail
 

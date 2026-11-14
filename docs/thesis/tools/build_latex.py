@@ -3,16 +3,11 @@
 This is not a general Markdown renderer. Unknown heading/image constructs fail
 loudly so that generated source cannot silently omit manuscript content.
 """
+import argparse
 from pathlib import Path
 import re
-import shutil
 
 BASE = Path(__file__).resolve().parents[1]
-TEX = BASE / "latex"
-(TEX / "content").mkdir(exist_ok=True)
-(TEX / "assets").mkdir(exist_ok=True)
-source_logo = BASE.parent / "format_reference/format latex/image/UET.png"
-shutil.copyfile(source_logo, TEX / "assets/UET.png")
 
 
 def escape(text):
@@ -116,13 +111,25 @@ def convert(text, abstract=False):
     return "\n".join(result) + "\n"
 
 
-text = (BASE / "THESIS_DRAFT.md").read_text(encoding="utf-8")
-parts = re.split(r"(?m)(?=^# Chương \d+\.)", text)
-if len(parts) != 6:
-    raise ValueError("Expected abstract and exactly five chapters")
-for i, section in enumerate(parts):
-    target = TEX / "content" / ("abstract.tex" if i == 0 else f"chapter{i}.tex")
-    target.write_text("% Generated from THESIS_DRAFT.md.\n" + convert(section, abstract=i == 0), encoding="utf-8")
-if table_index != len(CAPTIONS):
-    raise ValueError("Update table captions after changing manuscript tables")
-print(f"Generated abstract, 5 chapters, {table_index} tables, and copied template logo.")
+def main():
+    parser = argparse.ArgumentParser(description="Export the historical Markdown to a scratch directory")
+    parser.add_argument("--output-dir", required=True, type=Path)
+    args = parser.parse_args()
+    target = args.output_dir.resolve()
+    canonical = (BASE / "latex").resolve()
+    if target == canonical or canonical in target.parents:
+        parser.error("Export target must be outside the canonical LaTeX tree")
+    text = (BASE / "THESIS_DRAFT.md").read_text(encoding="utf-8")
+    parts = re.split(r"(?m)(?=^# Chương \d+\.)", text)
+    if len(parts) != 6:
+        raise ValueError("Expected historical abstract and five chapters")
+    chapters = [convert(part) for part in parts[1:]]
+    if table_index != len(CAPTIONS):
+        raise ValueError("Update table captions after changing manuscript tables")
+    target.mkdir(parents=True, exist_ok=False)
+    for i, chapter in enumerate(chapters, 1):
+        (target / f"chapter{i}.tex").write_text(chapter, encoding="utf-8")
+
+
+if __name__ == "__main__":
+    main()

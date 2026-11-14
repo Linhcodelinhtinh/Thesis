@@ -15,12 +15,34 @@ import time
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 import numpy as np
 
+from src.evaluation.mem_conditions import condition_spec
+
 from src.interfaces.libero_mem_text import LiberoMemTextRenderer
 from src.memory.event_writer import LiberoMemEventWriter
 from src.memory.libero_mem_oracle import LiberoMemOracleWriter
 
 if TYPE_CHECKING:
     from src.simulator.libero_mem_env import LiberoMemEnv
+
+
+def action_shape(policy, env):
+    chunk_size, action_dim = policy.chunk_size, policy.action_dim
+    if min(chunk_size, action_dim) < 1:
+        raise ValueError("Invalid policy action contract")
+    if hasattr(env, "protocol"):
+        protocol = env.protocol
+        if (chunk_size != protocol["rollout"]["action_chunk"] or
+                action_dim != len(protocol["reset"]["warmup_action"])):
+            raise ValueError("Policy action contract differs from the locked simulator protocol")
+    return chunk_size, action_dim
+
+
+def bind_instruction_only(policy, condition, instruction, renderer):
+    adapted = getattr(policy, "mem_adapter_manifest", None) is not None
+    if condition == "F1-off" or (condition == "F0" and adapted):
+        policy.bind_instruction_only_runtime(condition, instruction, renderer)
+    elif adapted and condition != "F1":
+        raise ValueError(f"{condition} cannot use an adapted checkpoint")
 
 
 @dataclass
@@ -44,6 +66,7 @@ class RolloutResult:
     prompt_history: List[str] = field(default_factory=list)
     memory_trace: List[Dict[str, Any]] = field(default_factory=list)
     evaluator_provenance: Dict[str, Any] = field(default_factory=dict)
+    final_memory_snapshot: Optional[Dict[str, Any]] = None
 
 
 class LiberoMemRolloutRunner:
@@ -59,6 +82,7 @@ class LiberoMemRolloutRunner:
         renderer: Optional[LiberoMemTextRenderer] = None,
         writer_factory=None,
         observer=None,
+        stream_memory_trace: bool = False,
     ) -> None:
         self.env = env
         self.policy = policy_adapter
@@ -67,16 +91,19 @@ class LiberoMemRolloutRunner:
         self.max_steps = max_steps
         self.writer_factory = writer_factory
         self.observer = observer
-        if condition not in ("B0", "F0", "F1", "O1"):
-            raise ValueError("Unknown memory condition")
-        if not 1 <= execution_horizon <= 50 or max_steps < 1:
+        if stream_memory_trace and observer is None:
+            raise ValueError("Streaming memory trace requires an episode recorder")
+        self.stream_memory_trace = stream_memory_trace
+        self.treatment = condition_spec(condition)
+        self.action_shape = action_shape(policy_adapter, env)
+        if not 1 <= execution_horizon <= self.action_shape[0] or max_steps < 1:
             raise ValueError("Invalid execution horizon/step budget")
         if renderer is not None:
             self.renderer = renderer
         else:
             self.renderer = LiberoMemTextRenderer(
-                max_total_tokens=48,
-                allow_oracle=(condition == "O1"),
+                max_total_tokens=self.treatment.text_budget,
+                allow_oracle=self.treatment.allow_oracle,
                 tokenizer=getattr(policy_adapter, "tokenizer", None),
                 strict_tokenizer=condition in ("F1", "O1"),
             )
@@ -92,6 +119,11 @@ class LiberoMemRolloutRunner:
             raise ValueError("F1 requires an explicit RGB writer_factory with the online camera convention")
         if getattr(self.env, "use_real_sim", None) is False:
             raise RuntimeError("Benchmark runner refuses the simulator's kinematic fixture/fallback mode")
+        if self.condition == "F0" and hasattr(self.env, "protocol") and not getattr(
+                self.policy, "mem_adapter_manifest", None):
+            raise ValueError("F0 requires a trained no-memory adapter")
+        if not self.treatment.allow_oracle and self.renderer.allow_oracle:
+            raise ValueError("This treatment forbids privileged memory")
         if hasattr(self.env, "protocol"):
             protocol = self.env.protocol["rollout"]
             if self.max_steps != protocol["horizon_policy_actions"] or self.execution_horizon != protocol["execution_horizon"]:
@@ -100,6 +132,7 @@ class LiberoMemRolloutRunner:
         if hasattr(self.policy, "reset") and callable(self.policy.reset):
             self.policy.reset()
 
+        bind_instruction_only(self.policy, self.condition, instruction, self.renderer)
         obs = self.env.reset(initial_state_id=initial_state_id)
         if self.observer is not None:
             self.observer("observation", step=0, observation=obs, info=getattr(self.env, "last_info", {}))
@@ -134,11 +167,12 @@ class LiberoMemRolloutRunner:
         def update_writer(index, frame, executed):
             started = time.perf_counter()
             snapshot = writer.step(index, frame, executed)
-            memory_trace.append({"step": index, "snapshot": snapshot.to_dict(),
-                                 "signals": writer.last_signals,
-                                 "writer_ms": (time.perf_counter() - started) * 1000.0})
+            record = {"step": index, "snapshot": snapshot.to_dict(), "signals": writer.last_signals,
+                      "writer_ms": (time.perf_counter() - started) * 1000.0}
+            if not self.stream_memory_trace:
+                memory_trace.append(record)
             if self.observer is not None:
-                self.observer("memory", **memory_trace[-1])
+                self.observer("memory", **record)
 
         # Initial step 0 observation ingestion
         if self.condition == "F1" and writer is not None:
@@ -157,7 +191,7 @@ class LiberoMemRolloutRunner:
                 mem_snapshot = oracle_writer.get_snapshot()
 
             # 2. Render prompt
-            mem_enabled = self.condition in ("F1", "O1")
+            mem_enabled = self.treatment.memory_source != "none"
             render_res = self.renderer.render(instruction, mem_snapshot, enabled=mem_enabled)
             if getattr(render_res, "tokenizer_truncated", False):
                 raise ValueError("Instruction exceeds the pinned tokenizer budget")
@@ -172,7 +206,7 @@ class LiberoMemRolloutRunner:
                     "Mock or fallback execution is strictly forbidden in benchmark runs per AGENTS.md Rule 2."
                 )
             chunk = self.policy.predict_action_chunk(obs, active_prompt)
-            if not isinstance(chunk, np.ndarray) or chunk.shape != (50, 7) or not np.isfinite(chunk).all():
+            if not isinstance(chunk, np.ndarray) or chunk.shape != self.action_shape or not np.isfinite(chunk).all():
                 raise ValueError(
                     f"Invalid action chunk returned by policy: shape={getattr(chunk, 'shape', None)}, "
                     f"finite={np.isfinite(chunk).all() if isinstance(chunk, np.ndarray) else False}"
@@ -241,6 +275,7 @@ class LiberoMemRolloutRunner:
             termination_reason=term_reason,
             prompt_history=prompt_history,
             memory_trace=memory_trace,
+            final_memory_snapshot=writer.get_snapshot().to_dict() if writer is not None else None,
             evaluator_provenance={key: info[key] for key in
                 ("protocol_id", "split_lock_sha256", "source_demo", "initial_state_sha256") if key in info},
         )

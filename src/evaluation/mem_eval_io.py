@@ -8,7 +8,7 @@ import re
 import numpy as np
 
 from src.evaluation.libero_mem_protocol import load_protocol, task_spec, source_digest, DEFAULT_PROTOCOL, ROOT
-from src.training.split_lock import load_split_lock
+from src.training.split_lock import AUTHOR_EVAL_SPLITS, AUTHOR_MEM_SPLIT, load_split_lock, mem_episode_rows
 from src.utils.file_hash import sha256_file
 
 
@@ -37,8 +37,11 @@ def evaluation_roster(split_lock, split, tasks, states, source_root=None):
     lock = load_split_lock(split_lock)
     if lock["protocol_sha256"] != source_digest(DEFAULT_PROTOCOL):
         raise ValueError("Split lock references another protocol")
-    if split not in ("val", "test") or len(tasks) != len(set(tasks)):
-        raise ValueError("Use distinct tasks and a held-out split")
+    splits = AUTHOR_EVAL_SPLITS if lock.get("mem_split_policy") == AUTHOR_MEM_SPLIT else ("val", "test")
+    if splits == AUTHOR_EVAL_SPLITS and "parent_lock_sha256" in lock:
+        raise ValueError("Use the parent author-state lock for evaluation")
+    if split not in splits or len(tasks) != len(set(tasks)):
+        raise ValueError(f"Use distinct tasks and a roster in {splits}")
     roster = []
     for alias in tasks:
         spec = task_spec(protocol, alias)
@@ -51,18 +54,20 @@ def evaluation_roster(split_lock, split, tasks, states, source_root=None):
         instruction = " ".join(clauses[0].split())
         if not instruction:
             raise ValueError("Empty BDDL instruction")
-        episodes = [e for e in lock["episodes"] if e["domain"] == "mem" and
-                    e["task"] == spec["name"] and e["split"] == split]
+        episodes = mem_episode_rows(lock, spec["name"], split)
         if not episodes:
-            raise ValueError("No held-out episodes for " + alias)
+            raise ValueError("No locked evaluation episodes for " + alias)
         indices = list(range(len(episodes))) if states == "all" else [int(s) for s in states.split(",")]
         if not indices or len(indices) != len(set(indices)) or any(i < 0 or i >= len(episodes) for i in indices):
             raise ValueError("Invalid or repeated split state indices for " + alias)
         for index in indices:
             row = episodes[index]
-            roster.append(dict(task=spec["alias"], task_name=spec["name"], state_idx=index,
+            entry = dict(task=spec["alias"], task_name=spec["name"], state_idx=index,
                 split=split, source_demo=row["demo"], initial_state_sha256=row["initial_state_sha256"],
-                instruction=instruction, bddl=spec["bddl"], bddl_text_sha256=source_digest(bddl)))
+                instruction=instruction, bddl=spec["bddl"], bddl_text_sha256=source_digest(bddl))
+            if "raw_index" in row:
+                entry.update(raw_index=row["raw_index"], source_raw_hdf5=row["source"])
+            roster.append(entry)
     return protocol, lock, roster
 
 

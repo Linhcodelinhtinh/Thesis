@@ -5,7 +5,6 @@ exo_boxes and subgoal labels never enter predicted-memory observations. No
 quaternions, camera frames or oracle predicates are fabricated.
 """
 from dataclasses import dataclass
-import hashlib
 from pathlib import Path
 from typing import Optional
 import h5py
@@ -46,11 +45,9 @@ def read_episode_metadata(path, task_name, demo_keys):
 
 
 class LiberoMemHDF5Parser:
-    def __init__(self, data_dir=None, val_ratio=.1, seed=42, split_lock=None):
+    def __init__(self, data_dir=None, split_lock=None, metainfo_path=None):
         self.data_dir = Path(data_dir) if data_dir is not None else DEFAULT_DATA_DIR
-        if not 0 < val_ratio < 1:
-            raise ValueError("val_ratio must lie between zero and one")
-        self.val_ratio, self.seed = val_ratio, seed
+        self.metainfo_path = Path(metainfo_path) if metainfo_path is not None else self.data_dir / "metainfo.json"
         from src.training.split_lock import load_split_lock
         self.split_lock = load_split_lock(split_lock) if split_lock is not None else None
 
@@ -63,17 +60,6 @@ class LiberoMemHDF5Parser:
         if not candidate.is_file():
             raise FileNotFoundError(f"Exact author demonstration file not found: {candidate}")
         return candidate
-
-    def is_val_episode(self, episode_id, initial_state=None):
-        if initial_state is None:
-            raise ValueError("Initial state required for a split; episode-name splitting leaks T1/T3 states")
-        # Canonical dtype/endian, independent of task ID so T1/T3 repeats stay together.
-        state = np.asarray(initial_state, dtype="<f8")
-        if state.ndim != 1 or not len(state) or not np.isfinite(state).all():
-            raise ValueError("Invalid initial state")
-        key = hashlib.sha256(state.tobytes()).hexdigest()
-        value = hashlib.sha256(f"{self.seed}:{key}".encode()).hexdigest()
-        return int(value[:16], 16) / 2**64 < self.val_ratio
 
     def iter_task(self, task_name, max_episodes=None, split_filter=None, demo_ids=None):
         path = self.resolve_hdf5_path(task_name)
@@ -91,7 +77,7 @@ class LiberoMemHDF5Parser:
                 demos = [key for key in demos if key in requested]
             if max_episodes is not None:
                 demos = demos[:max_episodes]
-            metadata = read_episode_metadata(self.data_dir / "metainfo.json", task, demos)
+            metadata = read_episode_metadata(self.metainfo_path, task, demos)
             for demo in demos:
                 meta = metadata[demo]
                 if not meta.get("task_description") or "initial_state" not in meta:
@@ -102,7 +88,7 @@ class LiberoMemHDF5Parser:
                     from src.training.split_lock import locked_episode
                     split = locked_episode(self.split_lock, "mem", task, demo, initial)["split"]
                 else:
-                    split = "val" if self.is_val_episode(episode_id, initial) else "train"
+                    split = "train"
                 if split_filter is not None and split_filter != split:
                     continue
                 group = file[f"data/{demo}"]

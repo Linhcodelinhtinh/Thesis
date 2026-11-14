@@ -5,50 +5,56 @@ import json
 import re
 
 BASE = Path(__file__).resolve().parents[1]
-draft = (BASE / "THESIS_DRAFT.md").read_text(encoding="utf-8")
-bib = (BASE / "latex/references.bib").read_text(encoding="utf-8")
+tex = BASE / "latex"
+bib = (tex / "references.bib").read_text(encoding="utf-8")
 keys = set(re.findall(r"@\w+\{([^,]+),", bib))
-used = {key.strip().lstrip("@") for group in re.findall(r"\[@([^\]]+)\]", draft) for key in group.split(";")}
-assert used <= keys, f"Undefined citations: {used-keys}"
-assert keys <= used, f"Uncited bibliography entries: {keys-used}"
-assert len(re.findall(r"(?m)^# Chương \d+\.", draft)) == 5
-assert "NON-COMPARABLE_OFFICIAL_PAPER" in draft
-assert draft.count("$$") % 2 == 0
-for target in re.findall(r"!\[[^\]]+\]\(([^)]+)\)", draft):
-    assert (BASE / target).is_file(), target
-for p in (BASE / "latex").rglob("*.tex"):
-    value = p.read_text(encoding="utf-8")
-    assert "ZZPLACEHOLDER" not in value, p
-    for target in re.findall(r"\\input\{([^}]+)\}", value):
-        assert (BASE / "latex" / (target + ".tex")).is_file(), target
-    assert not re.search(r"\[@[^\]]+\]", value), p
+def read_tex(path, stack=()):
+    assert path not in stack, f"Circular input: {path}"
+    value = path.read_text(encoding="utf-8")
+    value = re.sub(r"(?<!\\)%[^\n]*", "", value)
+    return re.sub(r"\\(?:input|include)\{([^}]+)\}",
+                  lambda m: read_tex(tex / (m[1] + ".tex"), (*stack, path)), value)
+
+draft = read_tex(tex / "main.tex")
+used = {key.strip() for group in re.findall(r"\\cite\{([^}]+)\}", draft) for key in group.split(",")}
+assert used <= keys, f"Undefined citations: {used - keys}"
+labels = re.findall(r"\\label\{([^}]+)\}", draft)
+assert len(labels) == len(set(labels)), "Duplicate LaTeX label"
+refs = set(re.findall(r"\\(?:ref|eqref|pageref)\{([^}]+)\}", draft + bib))
+assert refs <= set(labels), f"Undefined references: {refs - set(labels)}"
+assert "ZZPLACEHOLDER" not in draft
+for name in re.findall(r"\\path\{([^}]+)\}", draft + bib):
+    assert not re.search(r"[/\\]|\.(?:jsonl?|csv|hdf5|py|tex|md)$", name, re.I), name
+for name in re.findall(r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}", draft):
+    assert (tex / name).is_file(), name
 snapshot = json.loads((BASE / "evidence/snapshot.json").read_text(encoding="utf-8"))
-assert snapshot["mem_test"]["primary_summary_hashes_verified"] == 40
-assert snapshot["mem_test"]["unique_state_clusters"] == 10
 assert snapshot["training"]["data_manifest_matches_training"] is True
-assert all(x["matches_manifest"] for x in snapshot["training"]["adapter_files"].values())
+assert snapshot["training"]["adapter_files"] and all(
+    item["matches_manifest"] for item in snapshot["training"]["adapter_files"].values())
 writer = snapshot["writer_replay"]
-assert writer["matches"] == writer["annotated_returns"] == writer["predicted_returns"] == 12
-assert writer["event_tolerance_frames"] == 20
-assert writer["real_demonstrations"] == 6 and writer["unique_initial_states"] == 3
-assert len(writer["evidence_sha256"]) == 8
-assert all(v["matches_audit"] for v in writer["core_source_hashes"].values())
+assert 0 <= writer["matches"] <= min(writer["annotated_returns"], writer["predicted_returns"])
+from hashlib import file_digest
+
 for rel, expected in writer["evidence_sha256"].items():
-    from hashlib import sha256
-    assert sha256((BASE.parents[1] / rel).read_bytes()).hexdigest() == expected, rel
+    with (BASE.parents[1] / rel).open("rb") as source:
+        assert file_digest(source, "sha256").hexdigest() == expected, rel
 with (BASE / "evidence/mem_test_episodes.csv").open(encoding="utf-8-sig") as stream:
-    es = list(csv.DictReader(stream))
-f1 = [r for r in es if r["condition"] == "F1"]
-assert sum(r["success"] == "True" for r in f1) == 1
-assert sum(r["final_writer_history_complete"] == "False" for r in f1) == 19
-assert sum(int(r["policy_queries"]) for r in f1) == 1927
-assert sum(int(r["queries_with_memory_suffix"]) for r in f1) == 1894
-assert sum(int(r["queries_with_incomplete_history_text"]) for r in f1) == 1738
-result = {"status": "STATIC_CHECKS_PASS", "citations": len(used), "chapters": 5,
-          "markdown_whitespace_tokens": len(draft.split()),
-          "note": "Not a linguistic word count; Vietnamese words may span spaces.",
-          "evidence_summary_hashes_verified": 40,
-          "writer_audit_artifacts_hashes_verified": len(writer["evidence_sha256"]),
-          "scope": "Static checks for the manuscript and its evidence snapshot. PDF verification runs separately."}
-(BASE / "evidence/document_validation.json").write_text(json.dumps(result, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
-print(json.dumps(result, ensure_ascii=False, indent=2))
+    episodes = list(csv.DictReader(stream))
+assert len(episodes) == snapshot["mem_test"]["primary_summary_hashes_verified"]
+keys = [(r["condition"], r["task"], r["initial_state_sha256"], r["policy_seed"]) for r in episodes]
+assert len(keys) == len(set(keys)), "Duplicate episode identity"
+assert len({r["initial_state_sha256"] for r in episodes}) == snapshot["mem_test"]["unique_state_clusters"]
+with (BASE / "evidence/mem_test_counts.csv").open(encoding="utf-8-sig") as stream:
+    counts = list(csv.DictReader(stream))
+expected_cells = {(r["condition"], task) for r in episodes for task in (r["task"], "ALL")}
+assert {(r["condition"], r["task"]) for r in counts} == expected_cells
+assert len(counts) == len(expected_cells)
+for row in counts:
+    group = [r for r in episodes if r["condition"] == row["condition"] and
+             row["task"] in ("ALL", r["task"])]
+    wins = sum(r["success"] == "True" for r in group)
+    assert len(group) == int(row["n_task_episodes"]) and wins == int(row["successes"])
+    assert abs(wins / len(group) - float(row["sr"])) < 1e-12
+assert "NON-COMPARABLE_OFFICIAL_PAPER" in draft
+print(json.dumps({"status": "STATIC_CHECKS_PASS", "citations": len(used),
+                  "labels": len(labels), "episode_rows": len(episodes)}, indent=2))

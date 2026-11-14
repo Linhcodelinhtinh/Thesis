@@ -2,6 +2,7 @@
 # Step 5: Final Held-Out Test Evaluation (40 Episodes)
 # Protocol: CUSTOM_V2_LIBERO_MEM / NON-COMPARABLE_OFFICIAL_PAPER
 # Specification: docs/RESULTS_MEM_2_TEST_PLAN.md Section P3
+# Historical v1 replay on refined development states. Use run_mem_pilot_batch.ps1 for raw unseen.
 # ==============================================================================
 [CmdletBinding()]
 param (
