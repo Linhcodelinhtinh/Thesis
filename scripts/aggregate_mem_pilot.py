@@ -38,7 +38,7 @@ def aggregate(batches, lock, roster, seeds, split):
         if (manifest["classification"] != "CUSTOM_V2_LIBERO_MEM"
                 or manifest["comparability"] != "NON-COMPARABLE_OFFICIAL_PAPER"
                 or manifest["status"] not in ("complete", "failed")
-                or args["runtime_check"] or args["preflight_only"]
+                or args["runtime_check"] or args["preflight_only"] or args.get("decision_mode")
                 or seed not in seeds or args["split"] != split
                 or manifest["protocol_sha256"] != source_digest(DEFAULT_PROTOCOL)
                 or manifest["split_lock_sha256"] != lock["lock_sha256"]):

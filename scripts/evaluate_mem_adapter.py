@@ -26,6 +26,9 @@ from src.training.mem_adapter_artifact import validate_adapter, verify_files
 from src.training.split_lock import AUTHOR_EVAL_SPLITS, AUTHOR_MEM_SPLIT, DEFAULT_AUTHOR_MEM_LOCK
 from src.utils.file_hash import sha256_file
 from src.evaluation.mem_conditions import CLI_CONDITIONS, condition_spec
+from src.evaluation.memory_supervisor import (
+    DEFAULT_DECISION_PROTOCOL, execution_treatment, load_decision_protocol,
+)
 
 
 def parse_args(argv=None):
@@ -51,6 +54,9 @@ def parse_args(argv=None):
     p.add_argument("--preflight-only", action="store_true", help="Verify files, source and environments; no policy rollout")
     p.add_argument("--runtime-check", action="store_true", help="Real load/reset and two actions per condition/task; diagnostic only, no score")
     p.add_argument("--resume", action="store_true", help="Resume interrupted evaluation in output-dir, skipping completed episodes")
+    p.add_argument("--decision-mode", choices=("text", "shadow", "event", "periodic"),
+                   help="Opt into the separate F1 execution protocol on seen states")
+    p.add_argument("--decision-exposure", choices=("projected", "snapshot"), default="projected")
     p.add_argument("--worker-timeout", type=int, default=300)
     p.add_argument("--git-executable", default=os.environ.get("MEM_EVAL_GIT", "git"),
                    help="Git used for read-only provenance; git.exe can speed up WSL /mnt source checks")
@@ -67,6 +73,10 @@ def parse_args(argv=None):
         p.error("Runtime check requires --states 0 and cannot combine with --preflight-only")
     if a.runtime_check and a.split == "unseen":
         p.error("Use seen states for runtime checks")
+    if a.decision_mode and (a.conditions != ["F1"] or a.split != "seen" or a.runtime_check):
+        p.error("Decision evaluation requires F1 on seen states and a full rollout")
+    if a.decision_exposure != "projected" and a.decision_mode not in ("shadow", "event"):
+        p.error("Snapshot exposure requires the shadow or event mode")
     return a
 
 
@@ -213,11 +223,25 @@ def check_runtime_episode(env, policy, renderer, factory, recorder, row, conditi
 def main(argv=None):
     args = parse_args(argv)
     output = args.output_dir.absolute()
+    decision_protocol = load_decision_protocol() if args.decision_mode else None
+    execution = (execution_treatment(decision_protocol, args.decision_mode, args.decision_exposure)
+                 if decision_protocol else None)
+    previous_manifest = None
     rows, expected, runtime_checks = [], 0, 0
     if args.resume and output.exists():
         manifest_path = output / "run_manifest.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else dict(
             classification="CUSTOM_V2_LIBERO_MEM", comparability="NON-COMPARABLE_OFFICIAL_PAPER")
+        previous_args = manifest.get("arguments", {})
+        if execution or previous_args.get("decision_mode"):
+            current_args = json.loads(json.dumps(vars(args), default=str))
+            if ({k: v for k, v in previous_args.items() if k != "resume"}
+                    != {k: v for k, v in current_args.items() if k != "resume"}
+                    or manifest.get("decision_protocol_sha256") != source_digest(DEFAULT_DECISION_PROTOCOL)
+                    or any(sha256_file(ROOT / name) != digest
+                           for name, digest in manifest.get("source_sha256", {}).items())):
+                raise ValueError("Decision resume requires identical arguments, protocol and source files")
+            previous_manifest = manifest.copy()
         manifest.update(status="resumed", timestamp=datetime.now(timezone.utc).isoformat(), arguments=vars(args))
         summary_path = output / "summary.csv"
         if summary_path.exists():
@@ -246,6 +270,14 @@ def main(argv=None):
         write_json(output / "run_manifest.json", manifest)
         print("Preflight: source, checkpoint, split and environments", flush=True)
         protocol, lock, roster = evaluation_roster(args.split_lock, args.split, args.tasks, args.states)
+        if decision_protocol:
+            if (protocol["protocol_id"] != decision_protocol["parent_protocol_id"]
+                    or protocol["rollout"]["execution_horizon"] != decision_protocol["parent_execution_horizon"]
+                    or protocol["rollout"]["horizon_policy_actions"] != decision_protocol["policy_actions"]
+                    or lock["lock_sha256"] != decision_protocol["split_lock_sha256"]):
+                raise ValueError("Decision execution protocol differs from its locked parent")
+            manifest.update(decision_protocol=decision_protocol,
+                            decision_protocol_sha256=source_digest(DEFAULT_DECISION_PROTOCOL))
         source = ROOT / "external/libero-mem"
         revision = git_read(args.git_executable, source, "rev-parse", "HEAD").strip()
         changes = git_read(args.git_executable, source, "diff", "--name-only", "HEAD", "--",
@@ -253,7 +285,10 @@ def main(argv=None):
         if revision != protocol["upstream_revision"] or changes:
             raise ValueError("Mem source checkout must match pinned revision without library modifications")
         expected = len(roster) * len(args.conditions)
-        manifest.update(code_identity(output, args.git_executable), roster=roster, expected_episodes=expected,
+        code = code_identity(output, args.git_executable)
+        if previous_manifest and code["source_sha256"] != previous_manifest.get("source_sha256"):
+            raise ValueError("Decision resume requires identical source inventory")
+        manifest.update(code, roster=roster, expected_episodes=expected,
                         protocol=protocol, protocol_sha256=source_digest(DEFAULT_PROTOCOL),
                         split_lock_sha256=lock["lock_sha256"], split_lock_file_sha256=sha256_file(args.split_lock))
         if lock.get("mem_split_policy") == AUTHOR_MEM_SPLIT:
@@ -290,6 +325,8 @@ def main(argv=None):
             adapter = validate_adapter(directory, args.base_checkpoint)
             if adapter_training_condition(adapter) != spec.weights:
                 raise ValueError(f"{condition} received the wrong adapter training condition")
+            if execution and adapter["memory_provenance"][0]["writer"] != "rgb_relations_v1":
+                raise ValueError("Decision execution requires an F1 checkpoint trained with rgb_relations_v1")
             author_lock = lock.get("mem_split_policy") == AUTHOR_MEM_SPLIT
             author_adapter = adapter["run"].get("mem_split_policy") == AUTHOR_MEM_SPLIT
             if author_lock != author_adapter or (
@@ -298,6 +335,9 @@ def main(argv=None):
             adapters[condition] = (directory, adapter)
             treatment["weight_identity"] = adapter["adapter_files"]["adapter_model.safetensors"]
             copied_manifest = output / f"adapter_manifest_{condition}.json"
+            if previous_manifest and sha256_file(directory / "mem_adapter_manifest.json") != (
+                    previous_manifest.get("treatments", {}).get(condition, {}).get("adapter_manifest_sha256")):
+                raise ValueError("Decision resume requires the same checkpoint receipt")
             shutil.copyfile(directory / "mem_adapter_manifest.json", copied_manifest)
             if json.loads(copied_manifest.read_text(encoding="utf-8")) != adapter:
                 raise ValueError(f"{condition} adapter manifest changed during preflight")
@@ -314,6 +354,8 @@ def main(argv=None):
         if "F0" in adapters and "F1" in adapters:
             validate_matched_adapters(adapters["F0"][1], adapters["F1"][1])
         manifest["environments"] = check_environments(args, protocol)
+        if previous_manifest and manifest["environments"] != previous_manifest.get("environments"):
+            raise ValueError("Decision resume requires the same runtime environments")
         manifest["status"] = "preflight_passed"
         write_json(output / "run_manifest.json", manifest)
         if args.preflight_only:
@@ -338,6 +380,8 @@ def main(argv=None):
             raise RuntimeError("CUDA policy runtime required; no CPU fallback")
         manifest["cuda"] = dict(torch=torch.__version__, cuda=torch.version.cuda,
                                 devices=[torch.cuda.get_device_name(i) for i in range(torch.cuda.device_count())])
+        if previous_manifest and manifest["cuda"] != previous_manifest.get("cuda"):
+            raise ValueError("Decision resume requires the same CUDA runtime and devices")
         manifest["status"] = "running"
         write_json(output / "run_manifest.json", manifest)
         # Only one policy resident at a time, leaving memory for the detector.
@@ -400,9 +444,13 @@ def main(argv=None):
                                 except Exception:
                                     pass
                             if ep_dir.exists():
+                                if execution:
+                                    raise ValueError(f"Preserve the existing attempt {ep_dir}. Retry it in a new run directory.")
                                 shutil.rmtree(ep_dir)
                             phase(f"Running {ep_id}")
                             metadata = dict(row, episode_id=ep_id, condition=condition, policy_seed=args.policy_seed)
+                            if execution:
+                                metadata["decision_arm"] = execution.arm
                             recorder = EpisodeRecorder(output / "episodes" / ep_id, metadata, args.save_video,
                                                        fps=protocol["simulation"]["control_freq"])
                             try:
@@ -419,7 +467,7 @@ def main(argv=None):
                                     execution_horizon=protocol["rollout"]["execution_horizon"],
                                     max_steps=protocol["rollout"]["horizon_policy_actions"],
                                     renderer=renderer, writer_factory=factory, observer=recorder,
-                                    stream_memory_trace=args.stream_memory_trace)
+                                    stream_memory_trace=args.stream_memory_trace, execution_treatment=execution)
                                 result = runner.run_episode(ep_id, row["instruction"], row["state_idx"])
                                 recorder.finish(result=result)
                             except BaseException as exc:

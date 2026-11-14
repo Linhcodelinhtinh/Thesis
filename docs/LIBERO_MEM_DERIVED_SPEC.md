@@ -12,6 +12,11 @@ The published source and local runtime do not establish that released demonstrat
 
 Nondeterministic physics can still support an informative comparison. Report the pinned runtime and fixed reset states, repeat rollouts, and use paired per-state comparisons with uncertainty. Policy seeds and repeated runs on one state are not new independent scene states. T1 and T3 share the same initial-state vectors, so their state-level observations are correlated.
 
+### Task suite policy: exclusion of T2/T4, prioritization of T7 -> T9/T10
+- **Exclusion of T2/T4 (Bottle tasks):** Tasks T2 and T4 are permanently excluded from the primary train and evaluation suite of `mem-derived`. Simulation nondeterminism and contact settling cause severe resting pose variation for tall cylindrical bottles (tilting past 90 degrees, rolling, sliding). When the physical pose of the target object itself diverges, the robot fails at low-level grasp contact mechanics; the experiment becomes dominated by grasp-physics adaptability rather than testing memory mechanism efficacy. In addition, T2/T4 duplicate the 1- and 3-cycle counting logic of T1/T3 without introducing new memory dimensions.
+- **Prioritization of T7 (Object Relations):** Primary suite extension prioritizes T7 (`swap_the_2_bowls_on_their_plates_using_the_empty_plate`). Bowls have flat, stable bases that avoid bottle-tilt grasp confounders, directly stressing multi-instance tracking, origin binding, and relational memory.
+- **Resource Management (T9/T10):** T2/T4 local files are pruned to free storage and host memory, enabling the acquisition and staging of T7, followed sequentially by T9/T10 (`put_the_cream_cheese_in_the_nearest_basket...` for Object Occlusion / containment reasoning with stable objects).
+
 ## Environment and task contract
 
 Policy inference runs on the Windows policy environment; simulation runs in the isolated WSL reference environment. The current simulator lock is Python 3.8.x, robosuite 1.4.0, MuJoCo 3.2.3, NumPy 1.22.4, BDDL 1.0.1 and robomimic 0.2.0. Robot/controller/cameras are Panda with the default gripper, `OSC_POSE`, 20 Hz, two 256×256 cameras (`agentview`, `robot0_eye_in_hand`) and native action shape 7. Exact controller parameters, source hashes and reset behavior are recorded in [the evaluator protocol](../configs/benchmarks/libero_mem_t1_t3_protocol.json).

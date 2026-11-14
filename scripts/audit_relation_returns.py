@@ -1,4 +1,13 @@
-"""Compare relation-writer returns with released T1–T4 development milestones."""
+"""Compare relation-writer returns with development milestones.
+
+Primary suite notice:
+T1 and T3 are the primary active single-object bowl return benchmarks.
+T2 and T4 (bottle tasks) are DEPRECATED and EXCLUDED from the primary mem-derived
+train/evaluate suite: simulation physics nondeterminism causes bottle resting pose
+uncertainty (tilting, tipping, rolling), which confounds memory evaluation with
+low-level grasp-physics contact adaptability. Primary prioritization shifts to T7
+(Object Relations with bowls), followed by T9/T10 (containment/occlusion).
+"""
 import argparse
 import json
 from pathlib import Path
@@ -49,8 +58,12 @@ def main():
         task, demo = key.rsplit("_demo_", 1)
         matched_task = re.match(r"KITCHEN_SCENE1_([1-4])_", task)
         if not matched_task:
-            raise ValueError("Milestone parser currently supports the released T1–T4 labels")
+            raise ValueError("Milestone parser currently supports released return milestone labels (T1/T3 primary, T2/T4 deprecated)")
         task_number = int(matched_task[1])
+        if task_number in (2, 4):
+            report.setdefault("notes", []).append(
+                f"Task {task} (bottle) is excluded from primary mem-derived evaluation due to grasp-physics confounders."
+            )
         label = "bowl 1" if task_number in (1, 3) else "bottle 1"
         with args.metainfo.open("rb") as stream:
             labels = next(row["exo_boxes"] for name, row in ijson.kvitems(stream, task, use_float=True)

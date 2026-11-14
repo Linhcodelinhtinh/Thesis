@@ -32,6 +32,8 @@ Mốc rà soát: **12/11/2026**, theo [snapshot máy đọc được](evidence/s
 
 ## 3. Những cập nhật quan trọng so với tài liệu cũ
 
+Cập nhật 14/11 về cơ chế quyết định. D0–D2 có code và replay lịch query trên quỹ đạo mẫu T1/T3. Replay hỗ trợ mô tả độ trễ, độ bao phủ mốc writer và số query dự kiến. Tác động lên lựa chọn hành động, tỷ lệ thành công và hiệu quả dưới cùng compute cần rollout F1 quan hệ với các arm đối sánh. [Bàn giao quyết định](MEMORY_DECISION_HANDOFF_2026-11-14.md).
+
 1. `THESIS_READINESS_AUDIT_2026-10-28.md` và phần chính của `thesis_completeness.md` không còn là trạng thái hiện hành. Câu “toàn bộ rào cản đã đóng” mạnh hơn bằng chứng; ngược lại, “ready to train” đã lạc hậu vì hiện có training artifact thật.
 2. `RESULTS_MEM_2_TEST_PLAN.md` ghi chưa có rollout hoàn tất vào 07/11. Run 09/11 hiện có đủ B0/F1. Cần dùng trạng thái mới này khi viết, nhưng không suy rằng F0/F1-off đã chạy.
 3. T1 là nhấc và đặt lại cùng bát một lần; T3 là ba lần. Không phải swap ba bát. Protocol local dùng 1.000 policy actions, H=50, s=10, warmup 20; không dùng horizon 150/300 hoặc s50 từ tài liệu cũ cho run mới.
@@ -81,6 +83,7 @@ Tại step 3000, validation Mem flow loss của cùng F1 là **0,23023575** khi 
 | “Source đã bổ sung đường derived và cần kiểm export thực.” | “Dataset derived đã hoàn tất và model đã được train trên nó.” |
 | “Kết quả có provenance trong phạm vi artifact đã kiểm.” | “100% reproducible, 100% fair, tương đương runtime tác giả.” |
 | “Các failure gợi ý cần kiểm tra grounding/interface/data mismatch.” | “Failure do quên tiến độ, do attention dilution, hoặc do tác giả có cấu hình bí mật.” |
+| “T2/T4 bị loại khỏi suite chính do bất định tư thế chai khiến thí nghiệm bị chi phối bởi thích ứng grasp physics; ưu tiên T7 và hướng đến T9/T10.” | “Đánh giá T2/T4 là đủ để kết luận về khả năng thích ứng của memory trên vật thể mới (thực tế bị confound bởi physics tiếp xúc chai đổ).” |
 
 ## 6. Điều kiện mở lại các mục đang hoãn
 

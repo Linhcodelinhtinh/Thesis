@@ -1,0 +1,18 @@
+{
+  "classification": "AUTHOR_RELEASE_METADATA",
+  "repository": "libero-mem/LIBERO-Mem",
+  "revision": "6df130c05b82e09294fa9534e84a069687b72d33",
+  "task": "T7",
+  "path": "KITCHEN_SCENE1_7_swap_the_2_bowls_on_their_plates_using_the_empty_plate_demo.hdf5",
+  "size_bytes": 23366117457,
+  "sha256": "8cbe1c2e7b5d1664fdc7e08c773aa0beabbc4ba5079bf47d4a10f9e6c9190757",
+  "provenance": "Hugging Face dataset paths metadata at the pinned revision (Git LFS SHA-256)",
+  "verified": "remote_metadata_only",
+  "raw_source": {
+    "repository": "libero-mem/LIBERO-Mem-Raw",
+    "revision": "61917674055e8b1cbbfd22c1b54c28d20c1a1584",
+    "path": "KITCHEN_SCENE1_7_swap_the_2_bowls_on_their_plates_using_the_empty_plate_demo.hdf5",
+    "size_bytes": 48758920,
+    "sha256": "257f2a48d7c127c1abe45d0feea0f146e1a01165693be5f535fef3a2dd48d71c"
+  }
+}

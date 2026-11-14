@@ -2,16 +2,16 @@
 
 Ngày 13/11/2026. Đi kèm [định vị nghiên cứu và bộ RQ](RESEARCH_REFRAME_2026-11-13.md). Đây là backlog nội bộ: tên module/đường dẫn dùng để giao việc và review code, không được chép vào nội dung luận văn hoặc phụ lục.
 
-Trạng thái sau khi chuẩn bị P5–P6 ngày 13/11/2026. V1 là baseline lịch sử đã khóa. Các thay đổi về memory, dữ liệu đối sánh và đánh giá trong kế hoạch này thuộc V2. Lệnh theo thứ tự phụ thuộc và vị trí artifact nằm trong [bàn giao P5–P6](P5_P6_HANDOFF_2026-11-13.md).
+Trạng thái sau khi chuẩn bị P5–P6, bổ sung kế hoạch tích hợp quyết định ngày 14/11/2026. V1 là baseline lịch sử đã khóa. Các thay đổi về memory, dữ liệu đối sánh và đánh giá trong kế hoạch này thuộc V2. Lệnh theo thứ tự phụ thuộc và vị trí artifact nằm trong [bàn giao P5–P6](P5_P6_HANDOFF_2026-11-13.md). Thiết kế, interface và nghiệm thu cơ chế mới nằm trong [kế hoạch tích hợp memory vào quyết định](MEMORY_DECISION_INTEGRATION_PLAN_2026-11-14.md).
 
 ## 1. Hiện trạng đã đối chiếu và hệ quả
 
 | Thành phần | Hiện trạng thấy trong nguồn/tập bằng chứng | Việc tiếp theo |
 |---|---|---|
-| P0 · Bản viết và protocol | LaTeX là nguồn biên tập chính. Đường build mặc định bảo toàn abstract. Protocol phân tích có version, roster xác nhận còn trống. | Khóa holdout và tiêu chí phân tích trước khi xem kết quả xác nhận. |
+| P0 · Bản viết và protocol | LaTeX là nguồn biên tập chính. Đường build mặc định bảo toàn abstract. Protocol v2 đã khóa roster unseen gồm 20 cụm state trên T1/T3. | Chốt estimator, checkpoint và ngân sách trước xác nhận. Các cơ chế quyết định mới cần protocol phân tích riêng. |
 | P1 · Dữ liệu và runtime | Khóa v2 xác minh 198 demo Mem refined và 500 demo LIBERO cơ sở. Mỗi roster raw seen/unseen có 20 episode/task. Giao thức vòng kín T1/T3 mang nhãn `NON-COMPARABLE_OFFICIAL_PAPER`. | Audit alignment sau khi tạo shards. Dùng seen để phát triển và khóa checkpoint, seed, phương pháp phân tích trước lượt unseen. |
 | P2 · Điều kiện và adapter | CLI có F0 và F1-off. Smoke thật hai action đã chạy B0/F1/F1-off trên T1/T3. Export lịch sử 5.000 bước qua kiểm artifact và dùng `rgb_cycle_v3`. | Chạy smoke với F0/F1 mới; đóng competence gate bằng lượt hoàn tất. |
-| P3–P4 · Memory và projection | Writer `rgb_relations_v1` và profile có cho cả mười task. T1 GPU ghi 1 lần đặt lại, T3 từ cache ghi 2/3, parity IPC 4 frame T1. T2/T4 có HDF5 đã kiểm hash. | Audit writer T3/T2/T4 trên GPU với mốc độc lập. Mở rộng theo họ task khi có dữ liệu và evaluator. |
+| P3–P4 · Memory và projection | Writer `rgb_relations_v1` và profile có cho các họ task. T1 GPU ghi 1 lần đặt lại, T3 từ cache ghi 2/3, parity IPC 4 frame T1. Loại T2/T4 khỏi bộ train/eval chính vì bất định tư thế chai khiến thí nghiệm bị chi phối bởi thích ứng grasp physics hơn là bộ nhớ; ưu tiên T7 (quan hệ/danh tính bát), dọn dẹp dung lượng và hướng đến T9/T10 (che khuất/vật chứa). | Audit GPU T1/T3; ưu tiên tích hợp và audit T7 (quan hệ 2 bát/đĩa). Giải phóng dữ liệu T2/T4 để đủ chỗ tải và triển khai T7 rồi T9/T10. |
 | P5 · Dung lượng | Ổ D còn 16,55 GiB lúc đo. Lấy 96 frame mỗi nguồn của khóa v2 ước tính RGB trong shards cần 11,70 GiB với gzip lossless. | Dùng chung một bộ shards. Đo lại sau khi tạo index và ghi checkpoint/ZIP sang volume đủ chỗ. |
 | P6 · Đánh giá | B0 đã qua smoke hai action thật trên raw seen của T1 và T3 theo khóa v2. Chưa có cặp checkpoint mới. Pilot lịch sử B0 0/20 và F1 1/20 vẫn là mốc chẩn đoán. | Chạy E0/E1 trước lô chính. Báo bounds của lượt thiếu và CI theo cụm khi đã kiểm phương pháp phân tích. |
 | Backbone thứ hai | Có code MiniVLA và manifest ứng viên. | Kiểm contract chính thức, gồm gripper, rồi smoke thật trước khi đưa vào so sánh. |
@@ -44,7 +44,7 @@ Khóa v2 lưu roster raw riêng khỏi inventory SFT. Unseen có 20 cụm initia
 
 `Khóa v2 đã kiểm → E0/E1 development → index refined T1/T3 → shards và alignment audit → smoke train/reload F0/F1 → train hai arm từ SmolVLA gốc → seen ghép cặp → đóng băng protocol → E2 unseen → P7`.
 
-E1 cho T2/T4 có thể chạy độc lập và đo khả năng chuyển từ bát sang chai. Khi đủ chỗ cho một HDF5, ưu tiên audit offline T7 rồi T10 để kiểm identity và containment. E2 xác nhận cần roster độc lập đã khóa và kế hoạch phân tích được duyệt. Đánh giá vòng kín ngoài T1/T3 cần evaluator và runtime tương ứng. Có thể sửa chương 1–3 song song; chương 4–5 chốt theo bằng chứng đã hoàn tất.
+Loại bỏ T2/T4 khỏi luồng train/evaluate chính của mem-derived: khi môi trường mô phỏng bất định dẫn đến tư thế của chính vật cần gắp (chai rượu) bị nghiêng/đổ khác biệt sau reset/warmup, thất bại của policy bị chi phối bởi khả năng thích nghi tiếp xúc vật lý (grasp-physics adaptation) thay vì phản ánh hiệu quả của bộ nhớ. Ưu tiên trực tiếp chuyển sang T7 (hoán đổi 2 bát giữa các đĩa: hình học bát tiếp xúc ổn định, trực tiếp kiểm tra Object Relations và multi-instance tracking). Sau khi ưu tiên T7, giải phóng bộ nhớ và dung lượng lưu trữ (xóa/loại bỏ HDF5 T2/T4) để hướng đến T9/T10 (kiểm tra Object Occlusion và containment reasoning). E2 xác nhận cần roster độc lập đã khóa và kế hoạch phân tích được duyệt. Có thể sửa chương 1–3 song song; chương 4–5 chốt theo bằng chứng đã hoàn tất.
 
 ## 3. P0 — Bảo toàn nội dung và chốt thiết kế nghiên cứu
 
@@ -135,15 +135,15 @@ T3	OM + OS	Nhấc bowl và đặt lại lên plate 3 lần	Đếm số lần pic
 T4	OM + OS	Nhấc bottle và đặt xuống plate 3 lần	Đếm interaction history
 T5	OM + OS	Nhấc bowl và đặt lại lên plate 5 lần	Long-term interaction counting
 T6	OM + OS	Nhấc bowl và đặt lên plate 7 lần	Duy trì bộ đếm qua chuỗi dài
-T7	OM + OR	Hoán đổi 2 bowls giữa các plates theo rotation rule	Theo dõi object identity và thứ tự di chuyển
+T7	OM + OR	Hoán đổi 2 bowls giữa các plates qua đĩa trống	Theo dõi object identity và thứ tự di chuyển
 T8	OM + OR	Hoán đổi 3 bowls giữa các plates theo rotation rule	Multi-object relational tracking
-T9	OM + OO	Đặt bowl vào basket gần nhất, sau đó di chuyển basket chứa bowl vào giữa	Nhớ basket nào đang chứa bowl
-T10	OM + OO	Đặt bowl vào basket gần nhất, sau đó di chuyển basket rỗng vào giữa	Phân biệt basket đã chứa bowl và basket chưa chứa bow
+T9	OM + OO	Đặt hộp cream cheese vào basket gần nhất, sau đó di chuyển basket chứa hộp vào giữa	Nhớ basket nào đang chứa hộp
+T10	OM + OO	Đặt hộp cream cheese vào basket gần nhất, sau đó di chuyển basket rỗng vào giữa	Phân biệt basket chứa hộp và basket rỗng
 | Chặng | Công việc thực chất | Gate trước policy evaluation |
 |---|---|---|
-| A: T1–T6 | Generalize support departure/return cho bát/chai; bỏ phụ thuộc target count trong writer; kiểm đếm dài | Precision/recall/timing trên state chưa dùng tune, cả failure và boundary cases; đúng mục tiêu số lần theo instruction |
-| B: T7/T8 | Multi-instance tracking, origin binding, identity qua giao cắt, relation transitions và grounding tên trong prompt | Phân biệt được các entity bằng evidence; ambiguous được giữ; báo ID switches và relation accuracy |
-| C: T9/T10 | Containment qua quá trình đưa vật vào giỏ, continuity của container, evidence về giỏ chưa chứa/rỗng | Không đồng nhất invisible với absent; nhãn độc lập; target-object và container binding đúng qua che khuất |
+| A: T1, T3 (loại T2/T4) | Duy trì đếm chu kỳ bát (T1, T3); loại trừ T2/T4 khỏi luồng chính vì tính bất định vật lý của chai gây sai lệch tư thế ban đầu và chi phối kết quả bởi thích ứng grasp cơ học; kiểm soát sai số tích lũy trên chuỗi lặp dài (T5/T6 mở rộng sau) | Precision/recall/timing trên state chưa dùng tune, cả failure và boundary cases; đúng mục tiêu số lần theo instruction |
+| B: T7 (ưu tiên hàng đầu) / T8 | Multi-instance tracking, origin binding, identity qua giao cắt và hoán đổi đĩa (T7: 2 bowls/3 plates qua đĩa trống); kiểm riêng lỗi danh tính và lỗi thực thi grasp trên rollout thật | Phân biệt được các entity bằng evidence; ambiguous được giữ; báo ID switches và relation accuracy |
+| C: T9/T10 (hướng đến sau T7) | Giải phóng dung lượng từ T2/T4 để nạp T9/T10; kiểm tra containment khi đưa cream cheese vào giỏ, continuity của container, phân biệt giỏ chứa vật vs giỏ rỗng | Không đồng nhất invisible với absent; nhãn độc lập; target-object và container binding đúng qua che khuất |
 
 Các module tri giác hiện có gồm `src/perception/object_tracker.py`, `visual_evidence.py`, detector và `src/memory/visual_pipeline.py`. Những primitive mới cần source riêng có phạm vi rõ; không đổi tên bowl thành object rồi coi đã tổng quát.
 
@@ -160,7 +160,7 @@ Trước huấn luyện, thống kê instruction length của cả mười task.
 
 **Tối ưu latency:** đo từng stage rồi chọn detector cadence/ROI reuse/caching giữa frame theo evidence thật. Không coi nội suy hoặc tracker prediction là detection mới. Giảm tần suất phải đo lại missed-event, delay và quyết định; không chỉ throughput. Triển khai async chỉ sau khi có watermark thời điểm khả dụng và xử lý kết quả cũ/đến sai thứ tự.
 
-**Phạm vi triển khai theo dung lượng hiện tại:** T1/T3 cho vòng kín. T2/T4 đã có HDF5 và dùng cho audit offline; chỉ mục no-memory T4 đọc được 303 frame và xác nhận đường đọc nguồn. T5–T10 chưa có nguồn local. Khi có chỗ, dùng từng HDF5 chính thức và lưu hash, metadata, manifest, trace, nhãn và báo cáo trước khi chuyển nguồn sang ổ khác. Ưu tiên T7 rồi T10 để kiểm hai họ còn thiếu. Profile hoặc audit offline chỉ hỗ trợ claim ở cấp phương pháp/writer tương ứng. Để báo kết quả policy trên họ mới cần thêm khóa trạng thái, smoke runtime, evaluator đúng ngữ nghĩa và xử lý Or.
+**Phạm vi triển khai và giải phóng dung lượng:** T1/T3 cho vòng kín hiện tại. T2/T4 bị loại bỏ khỏi luồng train/evaluate chính của mem-derived do rủi ro bất định mô phỏng làm lệch tư thế gắp chai (biến gây nhiễu vật lý). Dữ liệu và chỉ mục T2/T4 được dọn dẹp để giải phóng bộ nhớ RAM và dung lượng đĩa cục bộ (~16.55 GiB). Dung lượng giải phóng được ưu tiên tuyệt đối cho việc tải và thiết lập T7 (Object Relations với 2 bát). Sau T7, tiếp tục giải phóng tài nguyên trung gian để hướng đến T9/T10 (Object Occlusion / containment reasoning). Profile hoặc audit offline chỉ hỗ trợ claim ở cấp phương pháp/writer tương ứng. Để báo kết quả policy trên họ mới cần thêm khóa trạng thái, smoke runtime, evaluator đúng ngữ nghĩa và xử lý Or.
 
 ## 8. P5 — Dữ liệu và huấn luyện đối sánh
 
@@ -191,7 +191,7 @@ Recipe chính giữ 3.000 bước, seed 42 và batch hiệu dụng 32 cho cặp 
 | Chiến dịch | Mốc hiện tại | Gate, code hoặc evidence còn thiếu |
 |---|---|---|
 | E0 · competence/runtime | B0 v2 chạy hai action thật trên một state seen mỗi task. Một run cũ dừng detector `MemoryError` sau 5/40; lượt 5k ghi `running`, chưa có summary lúc rà soát. | Chạy lượt development T1/T3 hoàn tất, ghi số primitive và điểm quyết định đạt được, latency toàn hệ, taxonomy lỗi và tiêu chí go/no-go. Streaming giảm RAM của trace ở runner, detector vẫn cần chẩn đoán nếu tái lỗi. |
-| E1 · writer (RQ2) | Có script chấm mốc đặt lại T1–T4 từ nguồn tác giả. | GPU T3, T2, T4; roster và nhãn độc lập cho quỹ đạo do policy sinh, gồm failure. Báo precision/recall, độ trễ, unknown; thêm nhãn identity/relation/containment cho T7/T10 khi có nguồn. |
+| E1 · writer (RQ2) | Có script chấm mốc đặt lại T1/T3; loại T2/T4 khỏi kế hoạch writer chính do bất định vật lý chai; ưu tiên mở rộng sang T7. | GPU T1/T3 và ưu tiên T7 (quan hệ/danh tính); dọn dẹp tài nguyên để chuẩn bị cho T9/T10. Roster và nhãn độc lập cho quỹ đạo do policy sinh, gồm failure. Báo precision/recall, độ trễ, unknown, và relation accuracy. |
 | E2 · đối sánh vòng kín (RQ1/RQ3) | Khóa đã xác minh 40 lượt raw unseen mỗi arm trên 20 cụm state. Wrapper và aggregator hỗ trợ hai roster. | Chạy smoke và seen với cặp F0/F1 P5. Chốt phân tích rồi chạy 40 task/state mỗi arm mỗi seed. Báo counts, macro delta, latency và lượt thiếu. Cần triển khai bootstrap 20 cụm và xem lại cỡ mẫu trước claim xác nhận. |
 | E3 · ngân sách token (RQ1) | Projection có budget và telemetry. | Thiếu runner sweep budget, roster cố định và báo cáo decision-fact survival, SR, token/padding/chi phí. Giữ nguyên instruction và tokenizer. |
 | E4 · evidence/noise/delay (RQ2) | Writer có uncertainty và nguồn evidence. | Thiếu code can thiệp availability/noise có log delivery; cần risk–coverage, false confirmation, lỗi hành vi, latency. |
@@ -210,6 +210,23 @@ Thiết kế can thiệp:
 - Current-only: bỏ lịch sử nhưng giữ detector/current fact, kiểm phần này không ngầm chứa counter/cached history.
 
 Nhãn oracle chỉ đi vào chiến dịch chẩn đoán riêng. Không đưa số O-diag vào bảng thành tích predicted memory. Không coi failed oracle diagnostic tự động chứng minh memory không hữu ích: trước hết kiểm khả năng đọc định dạng và năng lực vận động.
+
+### 9.1. Tích hợp cơ chế quyết định từ memory
+
+Cập nhật ngày 14/11/2026. D0–D2 đã có đường chạy development trong CLI và runner. Replay đã chạy trên 198 quỹ đạo mẫu T1/T3, gồm 42.857 frame. P5 đã dựng và audit bộ shards chung 11,83 GiB. Smoke vòng kín còn phụ thuộc checkpoint F1 dùng writer quan hệ từ P5. [Thiết kế và ma trận đối chứng](MEMORY_DECISION_INTEGRATION_PLAN_2026-11-14.md). [Bàn giao triển khai và lệnh chạy](MEMORY_DECISION_HANDOFF_2026-11-14.md).
+
+| Gói | Việc kế tiếp | Gate còn mở |
+|---|---|---|
+| D0–D1 | Protocol seen, schema nhãn, fact refs và shadow đã có. Kiểm parity prompt/chunk/action/RNG bằng unit fixture. | F1 quan hệ cho smoke thật và nhãn điểm quyết định |
+| D2 | Requery một đề xuất, lịch đối chứng, giới hạn query và trace abstention đã tích hợp. | Pilot vòng kín để đo trigger, số query, chi phí và success |
+| D3 | Có phép kiểm offline ba giá trị cho intent đã gán nhãn. | Bộ đọc vật đích/hiệu ứng, nhãn độc lập và ngưỡng false accept/false reject/coverage trên development |
+| D4 | Sinh K ứng viên và chọn theo memory | Kiểm queue/cache/RNG của policy, parity K=1 và khả năng tập ứng viên chứa hành động đúng |
+| D5 | T7 raw đã kiểm SHA-256 và khóa 120 state. Replay xác nhận cả hai nhánh Or, có kiểm RGB. | Audit writer/danh tính, competence của policy và protocol vòng kín riêng |
+| D6 | Probe offline, aggregator ghép cặp, bounds lượt thiếu và bootstrap theo state. | Nhãn, risk–coverage–cost vòng kín và protocol xác nhận trước unseen |
+
+Primary F1–F0 của P6 đo recipe memory đối sánh. Các arm supervisor đo tác động của thời điểm và quyền thực thi với cùng F1. Khi supervisor đọc toàn snapshot, báo quyền truy cập thông tin bổ sung so với prompt. Thêm phép kiểm dùng cùng tập fact cho cả policy và supervisor. ROI conditioning hoặc critic được mở theo kết quả phân tích lỗi.
+
+D1/D2 dùng lớp chiếu metadata riêng, đã kiểm hash writer/renderer với hai index hiện có. Lịch theo evidence có 1.864 query dự kiến ở T1 và 3.546 ở T3. Lịch cố định 8 action cho 1.874 và 3.550 query trên cùng trace. Chênh lệch compute thực tế cần đo lại trên từng arm. Hai thiếu hụt kỹ thuật chính ở D3/D4 là bộ đọc hiệu ứng action và parity queue/cache/RNG khi sinh nhiều đề xuất. Protocol development ghi abstention là thất bại hoàn thành và dùng evaluator hiện có cho success.
 
 ## 10. P7 — Báo cáo và sửa luận văn
 
@@ -253,12 +270,12 @@ Nghiệm thu bản viết: citation/label đầy đủ; không có local path tr
 | M5 | 1–2 tuần điều phối/phân tích + compute | P6, main evaluation và thí nghiệm cơ chế |
 | M6 | 4–7 ngày | P7, bản viết và PDF hoàn chỉnh |
 
-Với dung lượng hiện tại, ưu tiên cặp đối sánh, audit chất lượng evidence và một phép kiểm thông tin trên T1/T3. T2/T4 giúp kiểm writer với vật thể khác. T7/T10 là mốc audit offline tiếp theo khi có dung lượng. M3 toàn suite và các đối sánh backbone vẫn là các mốc mở rộng. Giới hạn claim policy theo task, backbone và giao thức đã đo.
+Với dung lượng hiện tại, ưu tiên cặp đối sánh F0/F1, audit chất lượng evidence và kiểm tra thông tin trên T1/T3. Loại bỏ hoàn toàn T2/T4 khỏi luồng chính vì tính bất định vật lý của chai làm sai lệch tư thế gắp, khiến thí nghiệm bị chi phối bởi độ thích nghi grasp hơn là hiệu quả bộ nhớ. Ưu tiên cao nhất cho T7 để kiểm tra quan hệ/danh tính đa vật thể với hình học bát ổn định. Giải phóng bộ nhớ RAM và dung lượng đĩa cục bộ sau khi dọn dẹp T2/T4, sau đó hướng đến T9/T10 để khảo sát năng lực suy luận che khuất/vật chứa. M3 toàn suite và các đối sánh backbone vẫn là các mốc mở rộng. Giới hạn claim policy theo task, backbone và giao thức đã đo.
 
 ## 12. Định nghĩa hoàn thành
 
 - Các RQ có hypothesis, metric, đối chứng, điều kiện bác bỏ và kết luận tương ứng.
-- Mốc P5–P6 cần cặp F0/F1 từ 198 refined demo, alignment audit, smoke thật trên seen và lượt ghép cặp unseen T1/T3 có mẫu số đầy đủ hoặc trạng thái thiếu được công bố. E1 báo riêng phạm vi writer trên T2/T4 và các họ bổ sung.
+- Mốc P5–P6 cần cặp F0/F1 từ 198 refined demo, alignment audit, smoke thật trên seen và lượt ghép cặp unseen T1/T3 có mẫu số đầy đủ hoặc trạng thái thiếu được công bố. E1 loại bỏ T2/T4 và chuyển trọng tâm sang T7 (quan hệ đa bát), tiếp nối bởi T9/T10 sau khi giải phóng tài nguyên.
 - Mốc toàn suite cần nguồn chính thức, khóa trạng thái, evaluator/runtime và lượt hợp lệ cho từng task. Nguồn, asset và policy phải qua kiểm provenance.
 - Mọi kết quả primary đến từ real rollout có identity và protocol; custom results được ghi đúng phạm vi.
 - Core method có logic dùng chung thật; evidence/uncertainty tham gia quyết định cập nhật và projection.

@@ -1,0 +1,21 @@
+{
+  "protocol_id": "libero_mem_decision_dev_v1",
+  "stage": "development",
+  "parent_protocol_id": "libero_mem_t1_t3_v1",
+  "split": "seen",
+  "split_lock_sha256": "8275e468382835c06f9cc738361df26b7452965850878e7ca882f392c9ca4165",
+  "annotation_state_indices": {
+    "development": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "calibration": [12, 13, 14, 15, 16, 17, 18, 19]
+  },
+  "parent_execution_horizon": 10,
+  "policy_actions": 1000,
+  "max_policy_queries": 125,
+  "periodic_prefix_actions": 8,
+  "minimum_prefix_actions": 2,
+  "semantic_persistence_observations": 2,
+  "descriptive_bootstrap": {"resamples": 10000, "seed": 42},
+  "abstention": "terminate_episode_as_failure",
+  "modes": ["text", "shadow", "event", "periodic"],
+  "exposures": ["projected", "snapshot"]
+}

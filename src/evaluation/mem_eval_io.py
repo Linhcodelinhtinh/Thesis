@@ -124,6 +124,8 @@ class EpisodeRecorder:
             self._line("actions.jsonl", payload)
         elif event == "memory":
             self._line("memory_trace.jsonl", payload)
+        elif event == "decision":
+            self._line("decisions.jsonl", payload)
         else:
             raise ValueError("Unknown recorder event " + event)
 
@@ -152,6 +154,7 @@ class EpisodeRecorder:
         inventory = {p.name: sha256_file(p) for p in self.directory.iterdir() if p.is_file() and p.name != "status.json"}
         write_json(self.directory / "status.json", dict(**self.metadata,
             status="failed" if failure or (result is None and not diagnostic) else "diagnostic_complete" if diagnostic else "complete", error=failure or None,
+            termination_reason=result.termination_reason if result is not None else None,
             logging_errors=close_errors, files_sha256=inventory))
         if close_errors:
             raise RuntimeError("Episode artifact finalization failed: " + "; ".join(close_errors))

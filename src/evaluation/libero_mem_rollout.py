@@ -4,18 +4,21 @@ Adheres strictly to docs/V2_LIBERO_MEM_IMPLEMENTATION_PLAN.md Section 10 & 11:
 - Evaluates policy in closed loop with execution horizon s (default 10).
 - Supports B0/F0 (memory off), F1 (predicted memory), and O1 (privileged oracle).
 - Memory writer updates at every observation step t using obs[t] and executed a[t-1].
-- Requeries policy only at query boundaries (every s steps).
+- Requeries policy every s steps in the parent protocol.
+- Supports a separate, opt-in decision execution treatment for relation memory.
 - Records comprehensive latency, token usage, SCR progress, and overshoot.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import hashlib
 import time
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 import numpy as np
 
 from src.evaluation.mem_conditions import condition_spec
+from src.evaluation.memory_supervisor import MemorySupervisor
 
 from src.interfaces.libero_mem_text import LiberoMemTextRenderer
 from src.memory.event_writer import LiberoMemEventWriter
@@ -67,6 +70,7 @@ class RolloutResult:
     memory_trace: List[Dict[str, Any]] = field(default_factory=list)
     evaluator_provenance: Dict[str, Any] = field(default_factory=dict)
     final_memory_snapshot: Optional[Dict[str, Any]] = None
+    decision_metrics: Optional[Dict[str, Any]] = None
 
 
 class LiberoMemRolloutRunner:
@@ -83,6 +87,7 @@ class LiberoMemRolloutRunner:
         writer_factory=None,
         observer=None,
         stream_memory_trace: bool = False,
+        execution_treatment=None,
     ) -> None:
         self.env = env
         self.policy = policy_adapter
@@ -94,6 +99,7 @@ class LiberoMemRolloutRunner:
         if stream_memory_trace and observer is None:
             raise ValueError("Streaming memory trace requires an episode recorder")
         self.stream_memory_trace = stream_memory_trace
+        self.execution_treatment = execution_treatment
         self.treatment = condition_spec(condition)
         self.action_shape = action_shape(policy_adapter, env)
         if not 1 <= execution_horizon <= self.action_shape[0] or max_steps < 1:
@@ -115,7 +121,8 @@ class LiberoMemRolloutRunner:
         initial_state_id: int = 0,
     ) -> RolloutResult:
         """Run a single closed-loop episode."""
-        if self.condition == "F1" and self.writer_factory is None:
+        predicted_memory = self.treatment.memory_source == "predicted_rgb_v3"
+        if predicted_memory and self.writer_factory is None:
             raise ValueError("F1 requires an explicit RGB writer_factory with the online camera convention")
         if getattr(self.env, "use_real_sim", None) is False:
             raise RuntimeError("Benchmark runner refuses the simulator's kinematic fixture/fallback mode")
@@ -141,7 +148,7 @@ class LiberoMemRolloutRunner:
         writer: Optional[LiberoMemEventWriter] = None
         oracle_writer: Optional[LiberoMemOracleWriter] = None
 
-        if self.condition == "F1":
+        if predicted_memory:
             writer = self.writer_factory(
                 episode_id=episode_id,
                 target_object_id="bowl_A",
@@ -163,29 +170,60 @@ class LiberoMemRolloutRunner:
         prompt_history: List[str] = []
         latencies_ms: List[float] = []
         memory_trace: List[Dict[str, Any]] = []
+        treatment = self.execution_treatment
+        supervisor = None
+        prefix_limit = self.execution_horizon
+        abstained = False
+        requery_count = 0
+        triggered_checks = 0
+        supervisor_ms = 0.0
+        writer_total_ms = 0.0
+        detector_calls = 0
+        if treatment is not None:
+            from src.interfaces.relation_memory_text import RelationMemoryRenderer
+            from src.memory.relation_memory import RelationMemoryWriter
+            if not isinstance(writer, RelationMemoryWriter) or not isinstance(self.renderer, RelationMemoryRenderer):
+                raise ValueError("Decision treatment requires the relation writer and renderer")
+            if self.observer is None:
+                raise ValueError("Decision treatment requires a trace recorder")
+            if treatment.mode in ("shadow", "event"):
+                supervisor = MemorySupervisor(treatment)
+            if treatment.mode == "periodic":
+                prefix_limit = treatment.periodic_prefix
 
         def update_writer(index, frame, executed):
+            nonlocal writer_total_ms, detector_calls
             started = time.perf_counter()
             snapshot = writer.step(index, frame, executed)
-            record = {"step": index, "snapshot": snapshot.to_dict(), "signals": writer.last_signals,
-                      "writer_ms": (time.perf_counter() - started) * 1000.0}
+            writer_ms = (time.perf_counter() - started) * 1000.0
+            if treatment is not None:
+                writer_total_ms += writer_ms
+                detector_calls += int("visual_evidence" not in frame)
+            record = {"step": index, "snapshot": snapshot.to_dict(),
+                      "signals": writer.last_signals, "writer_ms": writer_ms}
             if not self.stream_memory_trace:
                 memory_trace.append(record)
             if self.observer is not None:
                 self.observer("memory", **record)
+            return snapshot, record["snapshot"]
 
         # Initial step 0 observation ingestion
-        if self.condition == "F1" and writer is not None:
-            update_writer(0, obs, None)
+        if predicted_memory:
+            snapshot, raw_snapshot = update_writer(0, obs, None)
         elif self.condition == "O1" and oracle_writer is not None:
             if "oracle_signals" not in obs:
                 raise ValueError("O1 requires measured reset oracle_signals; initial support cannot be fabricated")
             oracle_writer.step(0, obs["oracle_signals"])
 
         while step < self.max_steps and not done:
+            if treatment is not None and len(latencies_ms) >= treatment.max_queries:
+                abstained = True
+                self.observer("decision", step=step, decision="abstain", reason="query_budget_exhausted",
+                              queries=len(latencies_ms))
+                break
             # 1. Retrieve current memory snapshot
             mem_snapshot = None
-            if self.condition == "F1" and writer is not None:
+            if predicted_memory:
                 mem_snapshot = writer.get_snapshot()
             elif self.condition == "O1" and oracle_writer is not None:
                 mem_snapshot = oracle_writer.get_snapshot()
@@ -197,6 +235,13 @@ class LiberoMemRolloutRunner:
                 raise ValueError("Instruction exceeds the pinned tokenizer budget")
             active_prompt = render_res.text
             prompt_history.append(active_prompt)
+            query_id = len(latencies_ms)
+            query_metadata = {}
+            if supervisor is not None:
+                started = time.perf_counter()
+                context = supervisor.bind(query_id, instruction, snapshot, raw_snapshot, self.renderer, render_res)
+                supervisor_ms += (time.perf_counter() - started) * 1000
+                query_metadata["decision_context"] = context.trace()
 
             # 3. Query policy (fail-fast: mock/fallback execution strictly forbidden)
             t_policy_start = time.perf_counter()
@@ -213,12 +258,15 @@ class LiberoMemRolloutRunner:
                 )
             t_policy_end = time.perf_counter()
             latencies_ms.append((t_policy_end - t_policy_start) * 1000.0)
+            if treatment is not None:
+                query_metadata.update(query_id=query_id, prefix_limit=prefix_limit,
+                                      chunk_sha256=hashlib.sha256(chunk.tobytes()).hexdigest())
             if self.observer is not None:
                 self.observer("query", step=step, prompt=active_prompt, chunk=chunk,
-                              render=render_res, policy_ms=latencies_ms[-1])
+                              render=render_res, policy_ms=latencies_ms[-1], **query_metadata)
 
             # 4. Execute action chunk for execution_horizon steps
-            for action_idx in range(self.execution_horizon):
+            for action_idx in range(prefix_limit):
                 if step >= self.max_steps or done:
                     break
 
@@ -226,18 +274,35 @@ class LiberoMemRolloutRunner:
                 obs, reward, done, info = self.env.step(action)
                 if self.observer is not None:
                     self.observer("action", step=step, action=action, chunk_index=action_idx,
-                                  reward=reward, done=done)
+                                  reward=reward, done=done, **({"query_id": query_id} if treatment else {}))
                 last_action = action
                 step += 1
                 if self.observer is not None:
                     self.observer("observation", step=step, observation=obs, info=info)
 
                 # Update writer between chunk steps
-                if self.condition == "F1" and writer is not None:
-                    update_writer(step, obs, last_action)
+                if predicted_memory:
+                    snapshot, raw_snapshot = update_writer(step, obs, last_action)
                 elif self.condition == "O1" and oracle_writer is not None:
                     oracle_signals = info.get("oracle_signals", {})
                     oracle_writer.step(step, oracle_signals)
+
+                if supervisor is not None and not done and step < self.max_steps:
+                    started = time.perf_counter()
+                    changes = supervisor.evaluate(instruction, snapshot, raw_snapshot, self.renderer)
+                    elapsed_ms = (time.perf_counter() - started) * 1000
+                    supervisor_ms += elapsed_ms
+                    if changes:
+                        triggered_checks += 1
+                        early = action_idx + 1 < prefix_limit
+                        requery = early and treatment.mode == "event"
+                        self.observer("decision", step=step, query_id=query_id,
+                                      decision="requery" if requery else "continue",
+                                      reason="semantic_change" if early else "normal_query_boundary",
+                                      prefix_actions=action_idx + 1, changes=changes, supervisor_ms=elapsed_ms)
+                        if requery:
+                            requery_count += 1
+                            break
 
         total_wall_time = time.perf_counter() - start_time
         avg_latency = float(np.mean(latencies_ms)) if latencies_ms else 0.0
@@ -249,14 +314,14 @@ class LiberoMemRolloutRunner:
                 "Synthesizing dummy timeout or falling back is strictly forbidden per AGENTS.md Rule 10."
             )
 
-        success = eval_res.full_success
+        success = eval_res.full_success and not abstained
         scr = eval_res.scr
         completed_sg = eval_res.completed_subgoals
         total_sg = eval_res.total_subgoals
         overshot = eval_res.overshot
         confirmed_cycles = eval_res.confirmed_cycles
         target_cycles = eval_res.target_cycles
-        term_reason = eval_res.termination_reason
+        term_reason = "decision_abstention" if abstained else eval_res.termination_reason
 
         return RolloutResult(
             episode_id=episode_id,
@@ -276,6 +341,11 @@ class LiberoMemRolloutRunner:
             prompt_history=prompt_history,
             memory_trace=memory_trace,
             final_memory_snapshot=writer.get_snapshot().to_dict() if writer is not None else None,
+            decision_metrics=(dict(queries=len(latencies_ms), early_requeries=requery_count,
+                                   triggered_checks=triggered_checks, supervisor_ms=supervisor_ms,
+                                   abstained=abstained, policy_total_ms=sum(latencies_ms),
+                                   writer_total_ms=writer_total_ms, detector_calls=detector_calls)
+                              if treatment is not None else None),
             evaluator_provenance={key: info[key] for key in
                 ("protocol_id", "split_lock_sha256", "source_demo", "initial_state_sha256") if key in info},
         )

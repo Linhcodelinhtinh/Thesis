@@ -233,3 +233,20 @@ This document records the architectural and design decisions for **VLA Policy Ev
   Adapter memory-off ablation is not yet supported. Report routed-base regression,
   adapter retention and Mem improvement as separate measurements. T2/T4 remain
   outside the supported writer profile. These are custom V2 experiments.
+
+---
+
+## 2026-11-14: Exclusion of T2/T4 from Primary Mem-Derived Suite, Prioritization of T7, and Progression to T9/T10
+- **Context**:
+  The suite originally contemplated testing T2 and T4 (wine bottle pick-and-place tasks with 1 and 3 returns) as an extension from bowl tasks (T1/T3). However, local diagnostic replays and MuJoCo simulation analysis (`LIBERO_MEM_AUTHOR_RUNTIME.md`) revealed that the wine bottle's tall, cylindrical geometry is physically unstable during simulator reset, contact warmup, and settling. The bottle frequently tilts past 90 degrees, rolls, or settles into unpredictable resting poses.
+- **Problem Statement & Core Scientific Confounder**:
+  When simulation nondeterminism leads to variations in the physical resting pose of the target object itself, the policy fails at the low-level contact/grasp stage (gripper slippage, collision, or miss). Consequently, episode outcomes become dominated by low-level grasp-physics adaptability rather than isolating the true effectiveness or causal contribution of the memory mechanism. Furthermore, T2 and T4 duplicate the single-object pick-and-place counting logic of T1/T3 without expanding into new memory dimensions.
+- **Decision**:
+  1. **Exclude T2 and T4 permanently from the primary train and evaluate task suite of `mem-derived`**.
+  2. **Prioritize T7 (`swap_the_2_bowls_on_their_plates_using_the_empty_plate`)**: T7 uses bowls with stable flat bases, eliminating bottle-tilt grasp confounders while directly exercising Object Relations (OR) and multi-instance identity tracking under rotation rules.
+  3. **Reclaim local memory and disk storage**: Delete and prune T2/T4 raw HDF5 files, intermediate indices, and cached traces to alleviate local drive constraints (~16.55 GiB free on D:).
+  4. **Progress sequentially to T9/T10 (`put_the_cream_cheese_in_the_nearest_basket...`)**: Utilize the freed storage to stage and audit T9/T10, testing Object Occlusion (OO) and containment reasoning (object permanence) with stable objects (cream cheese box and baskets).
+- **Consequences**:
+  - Eliminates grasp-physics false negatives from the core memory evaluation signal.
+  - Aligns research focus directly with structural memory capabilities (relations and occlusion) rather than low-level physical contact robustness.
+  - Updates all roadmaps, handoff documents, and audit scripts to remove assumptions of running T2/T4.

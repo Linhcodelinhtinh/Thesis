@@ -22,6 +22,8 @@ Nguồn nội dung chính là LaTeX. Bản Markdown là bản lịch sử. Công
 [Bàn giao P3–P4 và lệnh audit, chuẩn bị dữ liệu](P3_P4_HANDOFF_2026-11-13.md).
 [Bàn giao P5–P6 theo dung lượng hiện có](P5_P6_HANDOFF_2026-11-13.md).
 [Roadmap và trạng thái các gate](IMPLEMENTATION_AND_WRITING_ROADMAP_2026-11-13.md).
+[Kế hoạch tích hợp memory vào quyết định, ngày 14/11/2026](MEMORY_DECISION_INTEGRATION_PLAN_2026-11-14.md).
+[Bàn giao triển khai, bằng chứng và lệnh chạy](MEMORY_DECISION_HANDOFF_2026-11-14.md).
 
 ## Quy ước sử dụng số liệu
 

@@ -248,19 +248,24 @@ Các câu hỏi phản biện cần trả lời trước khi viết “đóng g�
 
 ## 7. Thiết kế thực nghiệm để trả lời các RQ
 
-### 7.1. Trục coverage
+### 7.1. Trục coverage và phân bổ tài nguyên
 
-Đích chính là toàn bộ T1–T10 của LIBERO-Mem ở code revision `0eee0defa4024e51511b6e15a79f30e9620209de`. Mapping dưới đây dựa trên task map/BDDL của bản mã đã khóa; không sao chép tên minh họa khi khác release.
+Đích thiết kế là khảo sát các chiều năng lực bộ nhớ của LIBERO-Mem ở code revision `0eee0defa4024e51511b6e15a79f30e9620209de`. Dưới góc độ kiểm định khoa học và ràng buộc tài nguyên thực tế, bộ task được tái cấu trúc như sau:
 
-| Nhóm | Tác vụ | Năng lực cần kiểm tra |
-|---|---|---|
-| T1/T2 | Nhấc–đặt bát/chai một lần | Phân biệt chưa làm và đã làm khi cảnh gần như cũ |
-| T3/T4 | Ba chu kỳ với bát/chai | Tiến độ lặp và chuyển primitive giữa loại vật |
-| T5/T6 | Bát năm/bảy chu kỳ | Lịch sử dài hơn, sai số tích lũy, dừng đúng số lần |
-| T7/T8 | Hoán đổi hai bát/quay vòng ba bát | Identity xuyên tương tác, origin binding và quan hệ nhiều vật |
-| T9/T10 | Đưa cream cheese vào giỏ, chọn giỏ đã chứa/giỏ rỗng | Containment, object permanence và bằng chứng phủ định |
+| Nhóm | Tác vụ | Năng lực kiểm tra | Quyết định trong suite chính |
+|---|---|---|---|
+| T1 | Nhấc–đặt bát 1 lần | Phân biệt chưa làm vs đã làm khi cảnh gần như cũ | Bộ task chính (OM cơ sở, hình học bát ổn định) |
+| T3 | Ba chu kỳ nhấc–đặt bát | Tiến độ lặp và đếm chu kỳ thao tác | Bộ task chính (OM + OS, hình học bát ổn định) |
+| T2/T4 | Nhấc–đặt chai 1 lần / 3 lần | Đếm chu kỳ thao tác trên chai | **Loại khỏi train/evaluate chính**: Bất định mô phỏng làm lệch/đổ tư thế chai, khiến thí nghiệm bị chi phối bởi thích ứng grasp physics hơn là bộ nhớ |
+| T7 | Hoán đổi 2 bát qua đĩa trống | Identity xuyên tương tác, origin binding và quan hệ nhiều vật | **Ưu tiên hàng đầu (OM + OR)**: Bát tiếp xúc ổn định, cô lập được năng lực bộ nhớ quan hệ |
+| T8 | Quay vòng 3 bát qua đĩa trống | Multi-object relational tracking mở rộng | Mở rộng sau T7 |
+| T9/T10 | Đưa cream cheese vào giỏ, chọn giỏ chứa / giỏ rỗng | Containment, object permanence và bằng chứng phủ định | **Hướng đến sau T7 (OM + OO)**: Giải phóng bộ nhớ/đĩa từ T2/T4 để nạp và triển khai |
+| T5/T6 | Bát 5 và 7 chu kỳ | Lịch sử dài hơn, sai số tích lũy, dừng đúng số lần | Mở rộng kiểm tra trần đếm dài |
 
-T7/T8 là phép thử bắt buộc để vượt khỏi “counter”. T9/T10 buộc giải quyết “không thấy” khác “không có”. Cần audit Sequence/Or và call schedule evaluator riêng, không bê nguyên protocol counter T1/T3 sang mọi task.
+**Lập luận loại trừ T2/T4 và ưu tiên T7 -> T9/T10:**
+- *Nhiễu động lực học gắp (Grasp-physics confounder):* Khi môi trường mô phỏng có tính bất định (physics nondeterminism, contact dynamics sau reset/warmup), tư thế của chính vật thể dạng trụ cao như chai rượu trong T2/T4 dễ bị nghiêng, lệch góc hoặc đổ ngang (đã được ghi nhận trong `LIBERO_MEM_AUTHOR_RUNTIME.md` và kiểm tra replay). Khi tư thế của chính vật cần gắp đã bị sai lệch, policy thất bại ngay ở khâu tiếp cận và gắp vật lý (low-level grasp failure). Khi đó, kết quả thực nghiệm bị chi phối nặng nề bởi khả năng thích nghi tiếp xúc cơ học (grasp-physics adaptation) chứ không phản ánh được hiệu quả của cơ chế bộ nhớ (memory mechanism). Thêm vào đó, T2/T4 chỉ lặp lại logic đếm chu kỳ đơn vật thể đã có ở T1/T3.
+- *Ưu tiên T7 (Object Relations):* T7 sử dụng bát với bề mặt phẳng ổn định, hạn chế tối đa rủi ro lệch tư thế do mô phỏng. T7 đưa vào thách thức bản chất của bộ nhớ: hoán đổi 2 bát giữa các đĩa theo quy tắc xoay vòng, đòi hỏi theo dõi danh tính vật thể, đĩa xuất phát, đĩa trống và thứ tự chuyển dời. Đây là bài kiểm tra cốt lõi để vượt khỏi cơ chế "counter" đơn giản.
+- *Giải phóng bộ nhớ và hướng đến T9/T10:* Dọn dẹp các tệp HDF5 và dữ liệu đệm T2/T4 để giải phóng bộ nhớ RAM và dung lượng đĩa cục bộ (~16,55 GiB). Dung lượng thu hồi được dùng để tải T7, sau đó mở rộng tuần tự tới T9/T10 để khảo sát năng lực suy luận che khuất (Object Occlusion / containment) và tính vĩnh cửu của vật thể (object permanence) với hộp phô mai và giỏ chứa có hình học tiếp xúc ổn định. Cần audit Sequence/Or và call schedule evaluator riêng cho các tác vụ này.
 
 Bao phủ mười task trong cùng benchmark kiểm tính đa dạng yêu cầu memory. Nó chưa chứng minh tổng quát ngoài benchmark. Một tập chuyển giao ở benchmark thứ hai là mục tiêu mở rộng sau core; không bắt buộc nhân đôi toàn bộ ma trận trước khi chốt các RQ chính.
 

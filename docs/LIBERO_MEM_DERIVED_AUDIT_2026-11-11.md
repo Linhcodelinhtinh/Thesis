@@ -16,6 +16,9 @@ Repo tác giả [ghi nhận replay có thể khác dù cố định initial stat
 
 ## 2. Fine-tune với dữ liệu có chai đổ
 
+> [!IMPORTANT]
+> **Cập nhật quyết định phạm vi task (14/11/2026):** Loại bỏ dứt điểm T2/T4 (nhóm chai) khỏi bộ task train/evaluate chính của mem-derived. Lập luận cốt lõi: khi môi trường mô phỏng bất định dẫn đến tư thế của chính vật cần gắp đã khác (chai bị đổ nghiêng hoặc trượt góc), thí nghiệm dễ bị chi phối bởi khả năng thích nghi grasp với physics hơn là hiệu quả của memory. Thay vào đó, ưu tiên cao nhất cho T7 (hoán đổi 2 bát giữa các đĩa: hình học tiếp xúc ổn định, cô lập được năng lực bộ nhớ quan hệ và theo dõi danh tính đa thực thể), sau đó giải phóng dung lượng đĩa và RAM từ T2/T4 để hướng tới T9/T10 (kiểm tra suy luận che khuất và containment với hộp phô mai và giỏ chứa).
+
 Nếu môi trường derived giữ cơ chế settling đó, training demonstration thu/replay trong cùng môi trường là lựa chọn hợp lý để giảm lệch phân phối. Giữ ba nhánh: B0 frozen; F0 fine-tuned không memory; F1 fine-tuned có memory, F0/F1 khởi đầu cùng checkpoint. B0–F0 đo adaptation; F0–F1 đo tác động của hệ thống memory khi dữ liệu/ngân sách được kiểm soát. B0–F1 hiện chỉ đo tổng thay đổi của adaptation và memory/perception.
 
 Replay action cũ chỉ tạo demonstration phù hợp nếu trajectory mới thật sự giải quyết task. Khi physics/contact khác, action cũ có thể trở thành target không phù hợp: phải kiểm tra outcome, alignment, các lần overshoot và thống kê toàn bộ episode bị loại theo quy tắc cố định. Nếu phải thu lại demonstration, lưu provenance rõ. Không dùng outcome của policy ứng viên để chọn test states.
