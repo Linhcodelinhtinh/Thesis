@@ -20,6 +20,29 @@ action_decoder: "extra_action_tokenizer"
 action_bins: 256
 action_range: [-1.0, 1.0]
 
+official_inference_contract:
+  source_revision: "0822b36227b5a771be4eb2680e34c559734c8fdc"
+  source_files:
+    - "prismatic/models/load.py"
+    - "prismatic/models/vlas/openvla.py"
+    - "prismatic/vla/action_tokenizer.py"
+    - "experiments/robot/libero/run_libero_eval.py"
+  image_path:
+    libero_runner: "np.flipud -> PIL RGB -> 224x224 LANCZOS"
+    model: "vision_backbone.get_image_transform()"
+    primary_camera: "agentview_image"
+    wrist_camera_default: false
+    observation_history_default: 1
+  prompt: "Prismatic prompt builder; lower-cased task instruction; 'What action should the robot take to ...?'"
+  state_or_proprioception: "Not consumed by the official Prismatic predict_action call."
+  action:
+    dimension_from: "dataset_statistics.json:libero_90.action.q01"
+    training_dimension: 7
+    per_timestep_action_tokens: 7
+    output_steps: 1
+    unnormalization: "q01/q99 with dataset action mask"
+    libero_gripper_postprocess: "[0,1] -> [-1,+1], sign-binarize, then invert for Prismatic"
+
 camera_mapping:
   agentview: "image_primary"
   robot0_eye_in_hand: "image_wrist"
@@ -42,6 +65,62 @@ hardware_requirements:
   min_vram_gb: 4
   recommended_device: "cuda"
 
-gripper_action_polarity: "DIRECT"
+gripper_action_polarity: "INVERTED_RLDS_TO_ROBOSUITE"
 
-metadata_notes: "MiniVLA 0.5B (Qwen2.5-0.5B + SigLIP-224px) trained on LIBERO-90 with extra_action_tokenizer."
+# This candidate is inventory-only until the exact official runtime is wired
+# and its input/action contract is verified in the isolated MiniVLA env.
+evaluation_status: "BLOCKED_OFFICIAL_CONTRACT_AUDIT"
+checkpoint_selection:
+  status: "UNRESOLVED"
+  official_config_resume_pointer: "checkpoints/step-060000-epoch-26-loss=0.1209.pt"
+  candidates:
+    - path: "checkpoints/step-060000-epoch-26-loss=0.1209.pt"
+      size_bytes: 5554882540
+      sha256: "2baadbf79018194cb7fc38924b68f869b23c3abffb7f7b0d2304d3eab84707c1"
+    - path: "checkpoints/step-122500-epoch-55-loss=0.0743.pt"
+      size_bytes: 5554882540
+      sha256: "0aded761f878fba6c851f816da1c2b31e2bc86ce3666c262264783a2314bbc7f"
+  selection_rule: "Use an explicitly documented evaluation checkpoint; filesystem mtime is not a selection rule."
+
+official_code_audit:
+  repository: "https://github.com/Stanford-ILIAD/openvla-mini"
+  revision: "0822b36227b5a771be4eb2680e34c559734c8fdc"
+  source_files:
+    experiments/robot/libero/run_libero_eval.py:
+      git_blob_sha1: "df337899ad2b34fc2f2e3dc72586c8beda7929ad"
+      sha256: "c16b1e5b71848926e7d2208a427c0f2baea69c8b89d64fc21ed02d8bcd8b1eec"
+    experiments/robot/libero/libero_utils.py:
+      git_blob_sha1: "a7d582bcbe98105fff3a132e2247eec8b9289414"
+      sha256: "de3fb092f526f044a7ea4ddad8cb666a3ab022b69159c7e040fcd16d4eaa8865"
+    experiments/robot/robot_utils.py:
+      git_blob_sha1: "51f136f51799e69cd47c40811a627ebde8f7af98"
+      sha256: "678b6f208e16d78e2837c08235fc16639bd80a29a2ff4f6407ac1ea4668a2a54"
+    experiments/robot/openvla_utils.py:
+      git_blob_sha1: "7105be5f0f1fbf14f25761e770640b6f5f58289b"
+      sha256: "f248dbaf846afb1c9782cec38ed7cafbfa17053eb35ae4cfa9027fea5862b6c3"
+    prismatic/vla/action_tokenizer.py:
+      git_blob_sha1: "edf5c26cf7bb0f17148318284d82ba021b016b3a"
+      sha256: "5eac3e42e624d399b9abcecba9ad174a2bdb8c95327a8f3a1ae428e7e2ddbe49"
+    prismatic/models/vlas/openvla.py:
+      git_blob_sha1: "5de71db03f3d070679586f5dcbb8ff11e8b8de39"
+    prismatic/models/load.py:
+      git_blob_sha1: "12ab9a03da4b39e493bc1f8a028a27016ce8db08"
+    prismatic/extern/hf/modeling_prismatic.py:
+      git_blob_sha1: "4a26c487190fa2359007b30a78094a6c432d6519"
+    prismatic/extern/hf/processing_prismatic.py:
+      git_blob_sha1: "c7ae121b87a8aa76ee63ea2cde9a033d264f4d06"
+
+contract_findings:
+  status: "BLOCKED"
+  official_loader: "prismatic.models.load.load_vla loads the official Prismatic checkpoint and action tokenizer."
+  official_image_path: "LIBERO runner flips image vertically and resizes with PIL LANCZOS; OpenVLA then uses the checkpoint backbone image transform."
+  official_prompt_path: "OpenVLA.predict_action uses the Prismatic prompt builder and lower-cased task instruction."
+  official_action_path: "Action dimension comes from pinned dataset statistics; q01/q99 unnormalization uses the recorded mask. LIBERO runner then maps the gripper from [0,1] to [-1,+1], binarizes, and inverts it for Prismatic."
+  local_adapter_mismatches:
+    - "Uses mtime to pick a checkpoint when multiple .pt files exist."
+    - "Reimplements the model loader and calls load_state_dict(strict=False)."
+    - "Uses a custom prompt and bilinear image resize without the official vertical flip or backbone transform."
+    - "Postprocessor only optionally negates the gripper; it does not reproduce the official normalize, binarize, and invert sequence."
+  vq_candidate: "Separate codebook and checkpoint audit required; no local VQ checkpoint directory is present."
+
+metadata_notes: "MiniVLA 0.5B (Qwen2.5-0.5B + DINOv2/SigLIP 224px) trained on LIBERO-90 with extra_action_tokenizer. Checkpoint hashes are verified, but no evaluation checkpoint is selected; adapter remains blocked pending official loader, prompt, image transform and gripper postprocessing parity."

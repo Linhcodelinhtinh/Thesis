@@ -4,10 +4,65 @@
 
 Để hỗ trợ điều khiển, một biểu diễn tiến độ cần thỏa mãn ba điều kiện: có thể suy ra từ quan sát khả dụng, đến được chính sách đúng lúc và chứa thông tin mà chính sách có thể sử dụng để chọn hành động. Khóa luận xem xét ba loại bằng chứng: sự phù hợp của sự kiện với mốc tiến độ trong các quỹ đạo thao tác mẫu, độ nhạy của sai số dự đoán hành động đối với đầu vào bộ nhớ, và kết quả điều khiển vòng kín. Đối chiếu ba phép đo giúp xác định mắt xích nào đã có bằng chứng và mắt xích nào cần một phép can thiệp riêng.
 
-Nguồn phân tích chính gồm phép phát lại sáu quỹ đạo thao tác mẫu ngày 26/10/2026, nhật ký xác thực của mô hình F1 và 40 quỹ đạo điều khiển hoàn tất trong đợt đánh giá ngày 09/11/2026. Với đợt đánh giá vòng kín, số liệu được tính lại từ từng bản tóm tắt quỹ đạo, sau khi đối chiếu tổng kiểm, trạng thái hoàn tất, tác vụ, trạng thái khởi tạo và hạt giống. Danh mục dữ liệu, phiên bản và tổng kiểm được lưu cùng bản ghi thực nghiệm ngày 12/11/2026 \cite{artifact2026}.
+Nguồn phân tích gồm một pilot cũ với sáu quỹ đạo thao tác mẫu, adapter F1 lịch sử và 40 quỹ đạo điều khiển T1/T3 hoàn tất ngày 09/11/2026; cùng các artifact development V2 được tạo đến ngày 15/11/2026. Bản cập nhật bổ sung runtime check và bốn episode E0 B0/F0 trên seen state. Các đợt dùng phiên bản writer, split và mục đích khác nhau, nên được báo riêng, không gộp thành một kết quả. Các bảng provenance trong Phụ lục phân biệt checksum, nguồn và phạm vi của từng đợt.
 
-Đối chứng của phân tích vòng kín là B0 trên chính T1/T3. Kết quả V1 trong phụ lục chỉ cung cấp bối cảnh về chính sách gốc trên các tác vụ khác và với nhịp truy vấn khác. \cite{artifact2026}
+Đối chứng của pilot vòng kín là B0 trên chính T1/T3. Kết quả V1 trong phụ lục chỉ cung cấp bối cảnh về chính sách gốc trên các tác vụ khác và với nhịp truy vấn khác.
 
+% claim-id: v2-data
+\section{Artifact development của giao thức V2}
+
+Khóa split V2 xác minh 198 quỹ đạo refined T1/T3 và 500 quỹ đạo LIBERO cơ sở. Toàn bộ 198 quỹ đạo Mem được giữ cho huấn luyện; phía cơ sở có 400 quỹ đạo huấn luyện, 50 quỹ đạo xác thực và 50 quỹ đạo dành riêng cho kiểm tra duy trì kỹ năng. Roster raw dùng riêng cho rollout: seen phục vụ phát triển và unseen gồm 20 nhóm trạng thái dùng chung giữa T1/T3. Các nhóm unseen không trùng với tiền tố 100 state raw đầu của Mem hoặc các state cơ sở trong khóa. Đây là khóa dữ liệu, chưa phải kết quả của chính sách được huấn luyện trên tập này.
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{>{\raggedright\arraybackslash}p{.27\textwidth}>{\raggedright\arraybackslash}p{.31\textwidth}>{\raggedright\arraybackslash}p{.32\textwidth}}
+\caption{Tình trạng artifact dữ liệu và phân tích V2 tại ngày 15/11/2026}\label{tab:v2-artifacts}\\
+\toprule
+\textbf{Artifact} & \textbf{Kết quả kiểm tra} & \textbf{Phạm vi diễn giải} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Artifact} & \textbf{Kết quả kiểm tra} & \textbf{Phạm vi diễn giải} \\
+\midrule\endhead
+\bottomrule\endfoot
+Khóa nguồn và split & 698 quỹ đạo; 598 train (198 Mem + 400 cơ sở), 50 validation cơ sở, 50 base-retention & State/hash và assignment được khóa; chưa có model mới \\
+Shards đối sánh & 180.447 cặp observation--action; 11,83 GiB; 1.396 mẫu parity qua audit & F0/F1 có cùng đầu vào dữ liệu nếu được huấn luyện theo recipe đã khóa \\
+Replay decision T1 & 100 quỹ đạo; 42.857 frame gộp T1/T3; 68/100 mốc tác giả khớp; lịch query 1.504 / 1.864 / 1.874 & Lịch theo evidence so với lịch gốc và lịch cố định 8 action trên đường quan sát đã ghi \\
+Replay decision T3 & 98 quỹ đạo; 126/294 mốc tác giả khớp; lịch query 2.845 / 3.546 / 3.550 & Kết quả replay không phải policy rollout hoặc nhãn độc lập \\
+T7 nguồn refined & SHA-256 local khớp LFS OID; 88 demo, 35.637 hành động & Writer audit trên demonstration không đo competence policy \\
+T7 writer RGB & 425 mẫu demo 1; 0 prompt có fact memory; relation unknown & Phép đo một demo; chưa có nhãn blind identity/relation \\
+T9 writer RGB & 356 mẫu demo 1; 0 prompt có fact memory; relation unknown & Phép đo một demo train; chưa có nhãn blind identity/containment \\
+T7 detector RGB & IoU 0,5: bowl P/R 0,893/0,747; plate 0,971/0,646 & 425 frame train; đối chiếu exo-box theo frame, không phải relation accuracy \\
+T8--T10 author-action replay & T9/T10 terminal; T8 ba milestone, không terminal; action/state khớp, robot-state drift đầu tại bước 219 & Một demo/task; nguyên nhân T8 chưa rõ; không phải policy score \\
+F0 V2 no-memory & Artifact 5.000 bước đã có; manifest và weight identity được kiểm & Adapter F0 hiện hữu; chưa có F1 V2 cùng corpus/writer \\
+Runtime check V2 & B0/F0, T1/T3, seen state 0; 4/4 checks, hai action mỗi check & Nạp model/reset/action thành công; không chấm điểm \\
+E0 pilot V2 & B0/F0 trên T1/T3, một state/task; 4/4 episode đủ 1.000 action; 0/4 success & Custom development; không phải memory effect hoặc điểm official \\
+\end{longtable}
+\endgroup
+
+% claim-id: decision-replay
+
+Các bộ shards đã qua alignment audit trên toàn bộ 180.447 cặp, gồm 1.396 mẫu so parity giữa collator và adapter. Artifact F0 V2 no-memory đã tồn tại và qua strict reload, runtime check; chưa có F1 V2 tương thích writer relation nên không có cặp F0/F1, memory competence smoke hoặc lượt confirmatory unseen. Pilot E0 bổ sung bốn lượt B0/F0 trên một state seen mỗi task; mọi lượt chạy đủ horizon nhưng hoàn thành 0 subgoal. Đây là kiểm tra development, không thay thế phép đánh giá matched. Checkpoint F1 dùng trong pilot lịch sử được huấn luyện bằng writer khác và bị từ chối ở cổng kiểm hash cho cơ chế quyết định. Vì vậy kết luận về D1/D2 vẫn giới hạn ở replay offline và kiểm tra phần mềm.
+
+Replay lịch query dùng 198 trajectory mẫu của tác giả, tổng 42.857 frame. Mốc writer khớp 68/100 ở T1 và 126/294 ở T3; median delay trên các mốc ghép là 9 frame. Số query theo thứ tự trong bảng là lịch gốc, lịch theo thay đổi evidence và lịch cố định 8 action. Lịch evidence tạo 653 query sớm dự kiến ở T1 và 1.272 ở T3; đây là dự báo trên trace đã ghi. Thời gian wall-clock, sai số quyết định và success trong vòng kín chưa được đo bằng các lịch đó.
+
+% claim-id: t7-source
+T7 có hai mức xác nhận nguồn khác nhau. Khóa raw lưu 120 state từ revision của kho dữ liệu raw; file refined local gồm 88 quỹ đạo và đã được kiểm SHA-256 theo LFS OID. Replay action trong simulator khóa đã kiểm tra timing của hai nhánh Or, kể cả trường hợp bộ đếm được cập nhật trong bước môi trường. Các lượt đó xác minh hành vi evaluator trên action tác giả; chúng không đánh giá policy, writer identity hoặc khả năng hoán đổi bát trong vòng kín.
+
+% claim-id: t7-writer
+Audit RGB relation writer trên \texttt{demo\_1} tạo index hoàn chỉnh cho 425 mẫu nhưng không cấp fact memory ở bất kỳ mẫu nào. Hai relation states đều \texttt{unknown} trong 425 bước; 2.125 object-status ghi nhận 92 trạng thái \texttt{tracked}, 648 \texttt{ambiguous} và 1.385 \texttt{unknown}. Trong 20 quan sát đầu, detector chỉ trả hai hộp plate ở mỗi frame, trong khi task profile có ba plate. Tracker chỉ khởi tạo anchor plate khi đủ ba đối tượng cùng được phát hiện trong cửa sổ đầu; điều kiện này không xuất hiện ở demo đã audit. Đối chiếu với exo-box annotations phát hành ở IoU 0,5 cho bowl precision/recall 0,893/0,747 và plate 0,971/0,646 trên 425 ảnh; 425 hash khung hình đều khớp nguồn refined. Đây là đánh giá hộp 2D theo frame của một demo train, không phải identity/relation accuracy hoặc đánh giá trên frame độc lập. Chưa có nhãn blind để xác nhận identity hoặc relation, và một demo không đại diện cho 88 quỹ đạo của nguồn.
+
+% claim-id: t9-writer
+T9 refined source tại revision đã khóa khớp local SHA-256 receipt. Trên \texttt{demo\_1}, index RGB relation writer hoàn chỉnh gồm 356 quan sát nhưng không cấp fact memory ở bất kỳ quan sát nào; relation state duy trì \texttt{unknown} trong cả 356 bước. Kết quả này chỉ mô tả đầu ra writer trên một demo train, không đo độ đúng của identity hoặc containment và không phải điểm policy. Chưa có nhãn blind để đánh giá liên hệ hộp cream cheese với giỏ qua che khuất.
+
+% claim-id: t8-writer
+T8 refined source tại revision đã khóa khớp local SHA-256 receipt. Trên \texttt{demo\_1}, index RGB relation writer hoàn chỉnh gồm 613 quan sát nhưng không cấp fact memory ở bất kỳ quan sát nào; relation state duy trì \texttt{unknown} trong cả 613 bước. Kết quả này chỉ mô tả đầu ra writer trên một demo train, không đo độ đúng identity hoặc quan hệ qua ba bát, và không phải điểm policy.
+
+% claim-id: t10-writer
+T10 refined source tại revision đã khóa khớp local SHA-256 receipt. Trên \texttt{demo\_1}, index RGB relation writer hoàn chỉnh gồm 309 quan sát nhưng không cấp fact memory ở bất kỳ quan sát nào; relation state duy trì \texttt{unknown} trong cả 309 bước và 927 quan sát identity đều \texttt{unknown}. Kết quả này chỉ mô tả đầu ra writer trên một demo train, không đo độ đúng identity hoặc containment qua che khuất, và không phải điểm policy.
+
+% claim-id: task-runtime-replay
+Một phép kiểm riêng phát lại author actions của \texttt{demo\_1} trên T8, T9 và T10 qua environment helper, state initializer, action transform và evaluator được đối chiếu với revision LIBERO-Mem đã pin. T9 và T10 đều ghi hai milestone, terminal return/done là true và không overshot. Với T8, raw actions sau transform trùng chính xác 613 action trong refined HDF5; initial state raw cũng trùng metainfo refined. So với robot states đã ghi, replay còn trong dung sai chẩn đoán $10^{-5}$ đến bước 218 và lần đầu vượt dung sai ở bước 219. Lượt replay ghi ba sequence milestones nhưng terminal return/done đều false, trong khi metainfo refined ghi \texttt{success=true} cho cùng state. Kết quả này thu hẹp sai khác vào diễn tiến trạng thái mô phỏng sau bước 219 nhưng chưa xác định nguyên nhân; T8 vẫn chưa qua gate evaluator. Hai report T8 được dẫn trong Phụ lục~\ref{app:provenance}. Đây là một author-action trajectory mỗi task; không chạy policy, không đánh giá relation/containment accuracy và không đo tác động của bộ nhớ.
+
+% claim-id: legacy-writer
 \section{Mức phù hợp giữa sự kiện thị giác và mốc tiến độ}
 
 Để khảo sát RQ2, bộ ghi sự kiện từ RGB được áp dụng trên sáu quỹ đạo thao tác mẫu T1/T3, gồm 1.276 khung hình và ba trạng thái khởi tạo. Với mỗi trạng thái đều có quỹ đạo của cả T1 lẫn T3. Hai quỹ đạo được dùng để phát triển phương pháp và các quỹ đạo bổ sung cũng đã được quan sát trước khi tổng hợp. Phép đo này vì vậy có phạm vi chẩn đoán trên những quỹ đạo đã biết. Nhãn tham chiếu mô tả thời điểm tiến độ tích lũy đạt mốc, nên phù hợp để đối chiếu sự kiện hoàn thành chu kỳ, còn thời điểm tiếp xúc hoặc nhả vật cần một loại nhãn khác.
@@ -37,11 +92,11 @@ Lời nhắc dài nhất & 31 trên giới hạn 48 token & Đo bằng bộ tác
 
 Tỷ lệ khớp hộp giới hạn đo chất lượng định vị có điều kiện trên các phát hiện được chấp nhận. Tỷ lệ này bỏ qua các khung mà đối tượng bị bỏ sót hoặc bị từ chối. Tương tự, việc tạo được văn bản chỉ chứng tỏ biểu diễn có đầu ra tại khung hình đó. Muốn ước lượng mức phù hợp của nội dung bộ nhớ trên phân phối điều khiển, cần cả quỹ đạo thành công lẫn thất bại và nhãn độc lập cho những tình huống như nhấc hụt, đặt lệch đĩa hoặc che khuất kéo dài.
 
-Phụ lục ghi nguồn dữ liệu, phương pháp đối chiếu và các phép kiểm tính nhất quán của quá trình tạo bản ghi. \cite{artifact2026}
+Phụ lục ghi nguồn public, revision, hash và phương pháp đối chiếu các artifact được dùng trong chương này.
 
 \section{Điều kiện đối chiếu trong mô phỏng}
 
-Việc so sánh vòng kín giữa các chính sách đòi hỏi giữ ổn định động lực học, điều kiện quan sát và tiêu chí chấm điểm. Mức độ quy kết còn phụ thuộc vào những thành phần được thay đổi trong phép đối chứng. Hai lần chạy B0/F1 có cùng tổng kiểm của mô hình gốc, cấu hình đánh giá và danh sách trạng thái. Bản ghi nguồn của hai lần chạy khác nhau ở ba tập lệnh khởi chạy hoặc chẩn đoán. Các điểm khớp giúp thu hẹp diễn giải về biến gây nhiễu, còn khác biệt nguồn đặt giới hạn cho phát biểu về độ tương đương của hai lần chạy. Phụ lục mô tả quy trình đối chiếu bản ghi \cite{artifact2026}.
+Việc so sánh vòng kín giữa các chính sách đòi hỏi giữ ổn định động lực học, điều kiện quan sát và tiêu chí chấm điểm. Mức độ quy kết còn phụ thuộc vào những thành phần được thay đổi trong phép đối chứng. Hai lần chạy B0/F1 có cùng tổng kiểm của mô hình gốc, cấu hình đánh giá và danh sách trạng thái. Bản ghi nguồn của hai lần chạy khác nhau ở ba tập lệnh khởi chạy hoặc chẩn đoán. Các điểm khớp giúp thu hẹp diễn giải về biến gây nhiễu, còn khác biệt nguồn đặt giới hạn cho phát biểu về độ tương đương của hai lần chạy. Phụ lục~\ref{app:provenance} mô tả định danh nguồn và phạm vi đối chiếu.
 
 \begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
 \begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.31\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.69\textwidth-2\tabcolsep\relax}}
@@ -66,7 +121,7 @@ Huấn luyện sử dụng hai GPU Tesla T4. Phép đánh giá dùng NVIDIA GeFo
 
 \section{Mẫu nghiên cứu và điều kiện thích ứng}
 
-Tập dữ liệu huấn luyện kết hợp quỹ đạo thao tác cơ sở LIBERO-10 với quỹ đạo T1/T3 từ nguồn LIBERO-Mem của tác giả. Bảng dưới ghi số quỹ đạo trong danh mục dữ liệu được dùng để huấn luyện F1. Các quỹ đạo có cùng mã băm trạng thái khởi tạo được phân vào cùng một tập. Trong tập kiểm tra T1/T3, 20 tổ hợp tác vụ và trạng thái của mỗi điều kiện tương ứng 10 nhóm trạng thái dùng chung giữa hai tác vụ. Tập này đã được sử dụng trong quá trình phát triển. Vì vậy, số liệu vòng kín phù hợp cho phân tích thăm dò và hình thành giả thuyết kiểm chứng.
+F1 trong bảng này là adapter lịch sử được đánh giá ở pilot, huấn luyện trên một phiên bản split trước V2. Bảng ghi số quỹ đạo trong danh mục dữ liệu của checkpoint đó, không phải số lượng của corpus mới trong Bảng~\ref{tab:v2-artifacts}. Các quỹ đạo có cùng mã băm trạng thái khởi tạo được phân vào cùng một tập. Trong pilot vòng kín T1/T3, 20 tổ hợp tác vụ và trạng thái của mỗi điều kiện tương ứng 10 nhóm trạng thái dùng chung giữa hai tác vụ. Tập này đã được sử dụng trong quá trình phát triển, nên số liệu chỉ có vai trò thăm dò.
 
 \begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
 \begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.29\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}}
@@ -105,7 +160,7 @@ Mô hình được đánh giá & Trọng số LoRA lưu riêng, dùng checkpoint
 \end{longtable}
 \endgroup
 
-Tổng kiểm của danh mục dữ liệu khớp với bản ghi huấn luyện, và bốn tệp được liệt kê trong bản xuất F1 có tổng kiểm khớp bản kê. Phép đối chiếu giới hạn ở các tệp đã nêu. Dữ liệu Mem của F1 dùng các quỹ đạo do tác giả công bố, với ảnh được đưa về quy ước gốc trước khi áp dụng tiền xử lý của chính sách. Một đợt tái tạo dữ liệu tại chỗ ghi nhận 73 trên 78 quỹ đạo phát lại T3 đạt điều kiện thành công của đợt phát lại. Các quỹ đạo đó là một nhánh nghiên cứu riêng. Chuỗi xác thực dữ liệu dẫn xuất, lập chỉ mục và huấn luyện trên phiên bản derived-v1 chưa hoàn tất, nên phân tích F1 căn cứ vào tập dữ liệu của tác giả \cite{artifact2026}.
+Tổng kiểm của danh mục dữ liệu khớp với bản ghi huấn luyện, và bốn tệp được liệt kê trong bản xuất F1 lịch sử có tổng kiểm khớp bản kê. Phép đối chiếu giới hạn ở các tệp đã nêu. Dữ liệu Mem của checkpoint này dùng quỹ đạo do tác giả công bố, với ảnh được đưa về quy ước gốc trước tiền xử lý của policy. Một đợt tái tạo dữ liệu tại chỗ ghi nhận 73/78 quỹ đạo phát lại T3 đạt điều kiện thành công của đợt replay; đây là nhánh nghiên cứu riêng. Bộ shards V2 được mô tả ở trên có alignment audit, nhưng chưa được dùng để huấn luyện checkpoint có trong pilot này. Định danh dữ liệu và giới hạn đối chiếu được liệt kê trong Phụ lục~\ref{app:provenance}.
 
 \section{Độ nhạy ngoại tuyến đối với thông tin bộ nhớ}
 
@@ -122,6 +177,7 @@ Chênh lệch trên tập Mem là bằng chứng rằng cách cung cấp đầu 
 
 Về khả năng duy trì kỹ năng trong RQ3, hai giá trị hàm mất mát bằng nhau trên tập cơ sở chỉ phản ánh tính ổn định giữa hai chế độ đầu vào của F1 trong phép đo này. Chẳng hạn, các mẫu cơ sở có thể có cùng đầu vào ở hai chế độ nếu chúng đều không mang hậu tố bộ nhớ. Để ước lượng mức duy trì kỹ năng, phép so sánh cần đặt chính F1 và B0 vào cùng các tác vụ cơ sở, với tiêu chí thành công và ngân sách điều khiển giống nhau.
 
+% claim-id: pilot-policy
 \section{Kết quả điều khiển vòng kín}
 
 RQ1 đặt vấn đề liệu lịch sử có giúp chính sách hoàn thành tác vụ khi đã kiểm soát thích ứng mô hình. Dữ liệu hiện có đối chiếu B0, tức checkpoint gốc, với F1, tức cấu hình có cả thích ứng và bộ nhớ quan sát trực tuyến. Đây là phép so sánh sơ bộ hai cấu hình nghiên cứu. Mỗi điều kiện dùng cùng 20 tổ hợp tác vụ và trạng thái, với hạt giống chính sách 42. Kết quả áp dụng cho giao thức T1/T3 của khóa luận, với nhãn \path{CUSTOM_V2_LIBERO_MEM} và \path{NON-COMPARABLE_OFFICIAL_PAPER}.
@@ -164,6 +220,32 @@ Có 19 cặp có kết quả $(0,0)$ và một cặp có kết quả $(0,1)$ the
 
 SCR ghi nhận mức hoàn thành từng phần. Trên T1, cả B0 và F1 đều có một quỹ đạo đạt mốc tiến độ nhưng tiếp tục đến mức vượt số chu kỳ. Trên T3, SCR trung bình của F1 là 0,1667 trong khi của B0 bằng 0, cho thấy bộ đánh giá ghi nhận thêm tiến độ ở một số lần chạy. Diễn giải này bổ sung cho tỷ lệ thành công, vì tiến độ từng phần và hoàn thành ở điểm cuối là hai tiêu chí khác nhau. Đối chứng F0 thích ứng trên cùng dữ liệu nhưng không có bộ nhớ và phép đánh giá F1 khi thay đổi có kiểm soát đầu vào lịch sử vẫn cần thiết để trả lời RQ1.
 
+\subsection{Pilot E0 V2 trên một state mỗi task}
+
+Để kiểm tra competence và runtime sau khi tìm thấy artifact F0 V2 no-memory, chạy B0 và F0 trên cùng state seen đầu tiên của T1 và T3, với policy seed 42. Mỗi episode thực hiện đủ 1.000 policy actions. Bốn episode đều dừng ở horizon, không hoàn thành subgoal và không overshoot. Thời gian suy luận trung bình là thời gian gọi policy được đo riêng; wall time bao trùm toàn bộ episode.
+
+\begingroup\footnotesize\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{>{\raggedright\arraybackslash}p{.09\textwidth}>{\raggedright\arraybackslash}p{.12\textwidth}>{\raggedright\arraybackslash}p{.18\textwidth}>{\raggedright\arraybackslash}p{.11\textwidth}>{\raggedright\arraybackslash}p{.24\textwidth}>{\raggedright\arraybackslash}p{.18\textwidth}}
+\caption{Pilot development E0 V2 với B0/F0 trên seen state 0}\label{tab:e0-v2-pilot}\\
+\toprule
+\textbf{Task} & \textbf{Điều kiện} & \textbf{Thành công; overshot} & \textbf{SCR} & \textbf{Suy luận policy/query} & \textbf{Wall time/episode} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Task} & \textbf{Điều kiện} & \textbf{Thành công; overshot} & \textbf{SCR} & \textbf{Suy luận policy/query} & \textbf{Wall time/episode} \\
+\midrule\endhead
+\bottomrule\endfoot
+T1 & B0 & 0/1; 0/1 & 0,000 & 652,60 ms & 202,25 s \\
+T1 & F0 & 0/1; 0/1 & 0,000 & 707,72 ms & 208,46 s \\
+T3 & B0 & 0/1; 0/1 & 0,000 & 596,03 ms & 202,04 s \\
+T3 & F0 & 0/1; 0/1 & 0,000 & 673,31 ms & 205,23 s \\
+\end{longtable}
+\endgroup
+
+Các summary xác nhận 0/1 subgoal trên T1 và 0/3 trên T3 ở cả hai điều kiện. B0 là checkpoint gốc; F0 là adapter đã thích ứng nhưng không nhận memory. Mỗi điều kiện chỉ có một initial-state group, hai task có cùng state hash, và không có memory trace hoặc decision metric. Do đó, bảng chỉ xác nhận một pilot phát triển custom với nhãn \path{NON-COMPARABLE_OFFICIAL_PAPER}; nó không đo tác động của memory, không ước lượng hiệu quả trên split, và không được gộp vào bảng B0/F1 lịch sử.
+
+% claim-id: image-preprocessing-parity
+Audit riêng về hướng ảnh đối chiếu manifest dữ liệu F0, mã collator đã ghi trong artifact và adapter dùng ở rollout. Ảnh Mem refined được hoàn nguyên về raw OpenGL khi chuẩn bị shards; cả collator huấn luyện lẫn adapter đánh giá dùng bước \mbox{\texttt{LiberoProcessorStep}} của LeRobot 0.6.1, bước này lật hai chiều không gian ảnh. Vì vậy không tìm thấy sai khác hướng ở pipeline đã khai báo. Manifest F0 ghi phiên bản thư viện nhưng không lưu hash file processor từ môi trường huấn luyện, nên phép đối chiếu này không khẳng định hai cài đặt giống nhau từng byte. Nó cũng không giải thích nguyên nhân các lượt E0 không hoàn thành tác vụ.
+
 \section{Bất đồng giữa tiến độ quan sát và tiến độ được chấm}
 
 Khi chính sách tự sinh quỹ đạo, nó có thể đưa hệ thống đến những tình huống ít gặp trong dữ liệu thao tác mẫu. Trên 20 quỹ đạo F1, 19 trạng thái bộ nhớ cuối báo lịch sử chưa đầy đủ. Trong 1.927 lần gọi chính sách, 1.894 lời nhắc chứa hậu tố bộ nhớ và 1.738 lời nhắc chứa cụm \path{history incomplete}. Hai số đếm ở cấp lời nhắc lần lượt phản ánh tần suất cung cấp bộ nhớ và tần suất báo lịch sử chưa đầy đủ. Chúng là các phép đo lặp theo thời gian trên cùng quỹ đạo. Độ đúng của từng sự kiện đòi hỏi đối chiếu với nhãn độc lập.
@@ -180,5 +262,5 @@ Trong lượt T1 của F1 bị vượt số chu kỳ, bộ đánh giá ghi một
 
 Về khả năng duy trì kỹ năng trong RQ3, đánh giá chính F1 trên các tác vụ cơ sở ghép cặp với B0 là cách đo trực tiếp mức duy trì. Nếu mục tiêu là kiểm tra tính không kém hơn, cần xác định trước biên suy giảm có thể chấp nhận được và cỡ mẫu đủ để diễn giải biên đó. Cơ chế chọn lại trọng số B0 cho tác vụ cơ sở chỉ đo chất lượng của một quy tắc định tuyến và không định lượng kỹ năng của F1.
 
-Đối với RQ2, ưu tiên can thiệp vào những yếu tố có thể đổi giá trị hoặc thời điểm khả dụng của bằng chứng, gồm quy ước ảnh, độ trễ xác nhận và số hành động giữa hai lần gọi chính sách. Có thể dùng cùng một quỹ đạo để kiểm tra tác động riêng lên chất lượng quan sát trước khi thay đổi các yếu tố đó trong vòng kín. Cần báo cáo cả thời gian mô phỏng và thời gian thực đo trên phần cứng. Thiết kế như vậy gắn mỗi phép đo với một cơ chế sai lệch cụ thể, từ sai số của biểu diễn cho đến hạn chế về cách sử dụng biểu diễn trong điều khiển.
+Đối với RQ2, cần tách các yếu tố có thể làm đổi giá trị hoặc thời điểm khả dụng của bằng chứng: quy ước ảnh, độ trễ xác nhận và số hành động giữa hai lần gọi chính sách. Trên cùng quỹ đạo, đo trước tác động lên quan sát rồi kiểm tra trong vòng kín; báo cả thời gian mô phỏng và thời gian thực. Cách này gắn mỗi phép đo với sai lệch cụ thể, từ lỗi biểu diễn đến hạn chế khi chính sách sử dụng bộ nhớ.
 

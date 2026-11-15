@@ -55,8 +55,8 @@ ax.grid(axis="y", alpha=.2)
 fig.tight_layout()
 save(fig, "mem_success")
 
-fig, ax = plt.subplots(figsize=(9, 5.5))
-ax.set(xlim=(0, 10), ylim=(0, 6.1))
+fig, ax = plt.subplots(figsize=(10.8, 6.3))
+ax.set(xlim=(0, 12), ylim=(0, 8))
 ax.axis("off")
 
 
@@ -71,27 +71,63 @@ def arrow(start, end, label="", position=None, color="#546773", style="-"):
         ax.text(*position, label, ha="center", va="center", fontsize=8, color=color)
 
 
-box(.15, 3.1, 2.05, 1.1, "Simulator\nT1/T3 + controller")
-box(3.15, 3.1, 2.0, 1.1, "Allowlist\nRGB + proprioception")
-box(6.2, 3.1, 1.35, 1.1, "SmolVLA\n+ LoRA")
-box(8.4, 3.1, 1.35, 1.1, "Action chunk\nH=50, s=10")
-box(.15, .35, 2.05, 1.05, "Evaluator\nSR / SCR / overshot", "#f4eee4")
-box(3.15, .35, 2.0, 1.05, "Detector + tracker\nBằng chứng RGB")
-box(5.7, .35, 1.65, 1.05, "Event writer\nCausal snapshot")
-box(8.05, .35, 1.7, 1.05, "Renderer\n≤48 token")
-arrow((2.3, 3.65), (3.05, 3.65))
-arrow((5.25, 3.65), (6.1, 3.65))
-arrow((7.65, 3.65), (8.3, 3.65))
-arrow((4.15, 3.0), (4.15, 1.5), "Ảnh + gripper", (4.85, 2.25))
-arrow((5.25, .875), (5.6, .875))
-arrow((7.45, .875), (7.95, .875))
-arrow((8.9, 1.5), (6.9, 3.0), "Instruction + memory", (8.65, 2.45))
-arrow((1.175, 3.0), (1.175, 1.5), "Trạng thái\nđặc quyền", (2.0, 2.2), color="#a66c33", style="--")
-ax.plot([9.08, 9.08, 1.175, 1.175], [4.3, 5.1, 5.1, 4.8], color="#546773")
-arrow((1.175, 4.8), (1.175, 4.3))
-ax.text(5.15, 5.35, "Thực thi action rồi nhận quan sát kế tiếp", ha="center", fontsize=10)
-ax.text(.2, 5.9, "Đường điều khiển và memory trong một episode", fontsize=12, weight="bold")
-ax.text(.18, -.15, "Evaluator chỉ chấm điểm; không đưa progress vào prompt.", fontsize=9, color="#8b5a2b")
+box(.3, 6.0, 1.65, .95, "Mô phỏng\nrobot + camera")
+box(2.35, 6.0, 1.9, .95, "Quan sát RGB\n+ proprioception")
+box(4.65, 6.0, 1.9, .95, "Evidence và\nidentity tracking")
+box(6.95, 6.0, 1.8, .95, "Memory state\nvalidity + history")
+box(9.15, 6.0, 1.7, .95, "Projection\n≤48 tokens")
+box(9.15, 3.75, 1.7, .95, "VLA policy\nbackbone + adapter")
+box(6.95, 3.75, 1.7, .95, "Action proposal\nchunk")
+box(4.65, 3.75, 1.9, .95, "Supervisor\ncontinue / requery / abstain", "#eaf1f2")
+box(2.35, 3.75, 1.9, .95, "Controller\nOSC + gripper")
+box(9.3, .55, 2.0, .95, "Evaluator\nSR / SCR / endpoint", "#f4eee4")
+arrow((2.0, 6.47), (2.3, 6.47))
+arrow((4.3, 6.47), (4.6, 6.47))
+arrow((6.6, 6.47), (6.9, 6.47))
+arrow((8.8, 6.47), (9.1, 6.47))
+arrow((10.0, 5.9), (10.0, 4.75), "Instruction + selected facts", (10.8, 5.35))
+arrow((9.1, 4.22), (8.7, 4.22))
+arrow((6.9, 4.22), (6.6, 4.22))
+arrow((4.6, 4.22), (4.3, 4.22))
+arrow((7.85, 5.9), (5.8, 4.8), "Fact/version changes", (6.35, 5.25), color="#287f83")
+# Route executed control around the diagram so the feedback path does not cross nodes.
+arrow((3.3, 3.7), (3.3, 2.05))
+ax.plot([3.3, .08, .08], [2.05, 2.05, 6.48], color="#546773", lw=1.1)
+arrow((.08, 6.48), (.28, 6.48))
+ax.text(5.7, 1.78, "Hành động đã thi hành → quan sát tiếp theo", ha="center", fontsize=8, color="#546773")
+ax.plot([1.1, 1.1, 9.2], [5.95, .95, .95], color="#a66c33", lw=1.1, linestyle="--")
+arrow((9.2, .95), (9.3, .95), color="#a66c33", style="--")
+ax.text(5.1, 1.08, "Trạng thái đặc quyền, chỉ cho evaluator", ha="center", fontsize=8, color="#a66c33")
+ax.text(.25, 7.45, "Bộ nhớ sự kiện có bằng chứng và điều phối truy vấn", fontsize=12, weight="bold")
+ax.text(9.2, .15, "Evaluator chỉ chấm; không cấp nhãn cho policy.", fontsize=8, color="#8b5a2b")
 fig.tight_layout()
 save(fig, "architecture")
-print("Generated 3 figures in PNG and SVG from local evidence/source architecture.")
+
+fig, axes = plt.subplots(1, 3, figsize=(10, 3.8), sharey=True)
+panels = [
+    ("OM / OS · Chu kỳ", [(1.0, "rời đĩa", "#477a99", "top"), (3.0, "quay về", "#287f83", "bottom"),
+                           (4.1, "evidence sẵn có", "#287f83", "top")], 5.4,
+     "Query sau khi evidence\nđã bền qua quan sát"),
+    ("OR · Danh tính", [(1.0, "quan hệ A→P", "#477a99", "top"), (2.5, "mất dấu", "#a66c33", "bottom"),
+                         (4.0, "ID chưa rõ", "#a66c33", "top")], 5.4,
+     "Không gán lại ID khi\nbằng chứng chưa phân giải"),
+    ("OO · Vật chứa", [(1.0, "vào giỏ", "#477a99", "top"), (2.4, "bị che", "#a66c33", "bottom"),
+                        (4.2, "giỏ dịch chuyển", "#287f83", "top")], 5.4,
+     "Quan hệ hiện tại có thể\nunknown khi vật bị che"),
+]
+for ax, (title, events, query_x, note) in zip(axes, panels):
+    ax.set(xlim=(0, 6), ylim=(0, 3.2), title=title, xlabel="Chỉ số quan sát (sơ đồ)")
+    ax.set_yticks([])
+    ax.spines["left"].set_visible(False)
+    ax.axhline(1.55, color="#788995", lw=1.2)
+    for x, label, color, side in events:
+        ax.plot([x, x], [1.35, 1.75], color=color, lw=2)
+        ax.scatter([x], [1.55], color=color, s=30, zorder=3)
+        ax.text(x, 2.0 if side == "top" else .95, label, ha="center", va="center", fontsize=8, color=color)
+    ax.axvline(query_x, color="#1b6e75", ls="--", lw=1.2)
+    ax.text(query_x, 2.7, "policy query", ha="center", fontsize=8, color="#1b6e75")
+    ax.text(3, .25, note, ha="center", va="center", fontsize=8)
+fig.suptitle("Thời điểm xảy ra, evidence khả dụng và query (minh họa khái niệm)", fontsize=11, weight="bold")
+fig.tight_layout(rect=(0, 0, 1, .91))
+save(fig, "memory_timeline")
+print("Generated architecture and timeline schematics plus two figures from local pilot evidence.")

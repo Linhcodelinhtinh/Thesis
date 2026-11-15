@@ -1,5 +1,6 @@
-% Generated from THESIS_DRAFT.md.
-\chapter{Bộ nhớ sự kiện thị giác cho SmolVLA}
+\chapter{Bộ nhớ sự kiện có bằng chứng cho chính sách thao tác}
+
+% claim-id: method-contract
 
 \section{Tiến độ tác vụ và giả thuyết biểu diễn}
 
@@ -17,7 +18,36 @@ A_t\sim \pi_{\theta,\phi}(\cdot\mid o_t,c_t).
 \end{aligned}
 \end{equation}
 
-Trong biểu thức này, $U$ là quy tắc ghi sự kiện, $R$ là phép biểu diễn bộ nhớ thành văn bản, $\theta$ là trọng số SmolVLA gốc và $\phi$ là các tham số LoRA được học. Bước khởi tạo chỉ có quan sát đầu tiên. Ở mỗi bước sau, bộ ghi nhận quan sát thu được sau hành động đã thực thi. Hành động còn nằm trong đoạn dự đoán chưa thuộc lịch sử quan sát.
+Trong biểu thức này, $U$ là quy tắc ghi sự kiện, $R$ là phép biểu diễn bộ nhớ thành văn bản, $\theta$ là trọng số backbone và $\phi$ là tham số thích ứng nếu có. SmolVLA là hiện thực được dùng trong các phép đo T1/T3 của luận văn. Bước khởi tạo chỉ có quan sát đầu tiên. Ở mỗi bước sau, bộ ghi nhận quan sát thu được sau hành động đã thực thi. Hành động còn nằm trong đoạn dự đoán chưa thuộc lịch sử quan sát.
+
+Trạng thái bộ nhớ tách danh tính và nguồn gốc của thực thể, quan hệ hiện tại, sự kiện đã xác nhận, mức quan sát được và bằng chứng hỗ trợ từng kết luận. Trạng thái một sự kiện có thể là ứng viên, được hỗ trợ, chưa biết hoặc mâu thuẫn; điểm của bộ phát hiện không được diễn giải như xác suất nếu chưa hiệu chuẩn. Quan hệ hiện tại có thể mất hiệu lực khi đối tượng bị che khuất hoặc xuất hiện bằng chứng trái ngược, trong khi một sự kiện lịch sử đã xác nhận vẫn được giữ. Mọi nội dung chiếu cho policy phải truy về evidence có sẵn trước thời điểm truy vấn. Đây là khung dữ liệu chung; bộ phát hiện, cách gắn danh tính và vị từ quan hệ vẫn phụ thuộc vào họ tác vụ.
+
+Các hồ sơ tác vụ xác định primitive lịch sử cần theo dõi trên toàn bộ LIBERO-Mem. Bảng~\ref{tab:memory-task-families} mô tả phạm vi của thiết kế; việc khai báo hồ sơ không đồng nghĩa đã kiểm chứng chất lượng perception hoặc điều khiển trên từng tác vụ.
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{>{\raggedright\arraybackslash}p{.12\textwidth}>{\raggedright\arraybackslash}p{.28\textwidth}>{\raggedright\arraybackslash}p{.52\textwidth}}
+\caption{Primitive lịch sử theo mười tác vụ LIBERO-Mem}\label{tab:memory-task-families}\\
+\toprule
+\textbf{Tác vụ} & \textbf{Nhu cầu lịch sử} & \textbf{Primitive cần biểu diễn} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Tác vụ} & \textbf{Nhu cầu lịch sử} & \textbf{Primitive cần biểu diễn} \\
+\midrule\endhead
+\bottomrule\endfoot
+T1 & OM & Một chu kỳ nhấc và đặt bát về đĩa gốc \\
+T2 & OM & Trạng thái tương tác của chai và đĩa \\
+T3 & OM, OS & Đếm ba chu kỳ nhấc và đặt bát \\
+T4 & OM, OS & Đếm tương tác với chai \\
+T5 & OM, OS & Duy trì bộ đếm qua năm chu kỳ \\
+T6 & OM, OS & Duy trì bộ đếm qua bảy chu kỳ \\
+T7 & OM, OR & Theo dõi hai bát qua ba đĩa và các lần hoán đổi \\
+T8 & OM, OR & Theo dõi ba bát qua chuỗi xoay vị trí \\
+T9 & OM, OO & Gắn hộp phô mai với giỏ đang chứa hộp khi giỏ được di chuyển \\
+T10 & OM, OO & Phân biệt giỏ chứa hộp với giỏ rỗng sau khi di chuyển \\
+\end{longtable}
+\endgroup
+
+Ở mức khung, bộ đếm chu kỳ, thứ tự sự kiện, ghép danh tính và quan hệ chứa dùng chung nguyên tắc: cập nhật từ quan sát mới và hành động đã thực thi, giữ phần chưa biết khi evidence không phân giải được, và cấp cho policy các fact còn hợp lệ. Phần hiện thực trong luận văn khảo sát sâu T1/T3; T7 có dữ liệu nguồn và audit runtime của evaluator cùng một demo writer diagnostic; T8, T9 và T10 mỗi task có một demo writer diagnostic nhưng chưa có nhãn độc lập. T2/T4/T5/T6/T8/T10 chưa có đánh giá policy được nghiệm thu. Do đó, khung primitive không được dùng để tuyên bố đã tổng quát hóa qua toàn suite.
 
 \section{Ranh giới giữa quan sát và đánh giá}
 
@@ -32,7 +62,7 @@ Một yêu cầu để kiểm tra giả thuyết biểu diễn là giữ độc 
 
 Sự phân tách này đặc biệt quan trọng khi sinh mẫu huấn luyện từ quỹ đạo ghi sẵn. Một quỹ đạo đầy đủ có cả trạng thái sau thời điểm tạo mẫu và kết quả cuối lượt. Khi xây dựng ngữ cảnh cho một mẫu tại bước $t$, bộ ghi được cập nhật theo thứ tự thời gian và chỉ dựa trên tiền tố quan sát đến $t$. Thời điểm đủ bằng chứng cho từng sự kiện được lưu riêng để kiểm tra quy tắc này.
 
-\section{Ước lượng quan hệ bát và đĩa gốc}
+\section{Profile đếm chu kỳ cho T1 và T3}
 
 Giả định đo lường là trong bố trí của T1 và T3, một số thay đổi quan hệ bát và đĩa có thể được phát hiện từ chuyển động tương đối của các hộp giới hạn trong ảnh camera ngoài. Camera cổ tay cung cấp bằng chứng bổ trợ về khả năng quan sát. Đĩa gốc được neo bằng quan sát ở đầu lượt khi quan hệ bát trên đĩa đủ rõ và tay kẹp đã mở. Các quan sát sau phải ghép được với đĩa đã neo. Việc cố định tham chiếu theo thời gian giúp phép đo bám vào ngữ nghĩa “đặt về đĩa ban đầu”, kể cả khi bát xuất hiện gần đĩa khác.
 
@@ -105,6 +135,13 @@ Chỉ dẫn gốc được giữ nguyên ở đầu ngữ cảnh. Phần bộ nh
 
 \textbf{Chứng minh.} Cùng quan sát đầu và cùng cấu hình dẫn đến cùng trạng thái bộ nhớ ban đầu. Giả sử hai trạng thái bộ nhớ ở bước $t-1$ bằng nhau với $t\le q$. Hai tiền tố bằng nhau cho cùng $o_t$ và $a_{t-1}$, vì vậy quy tắc cập nhật $U$ cho cùng $m_t$. Quy nạp cho $m_q$ bằng nhau. Phép $R$ áp dụng cùng phép kiểm tra nguồn, thời điểm và ngân sách lên hai bản ghi giống nhau nên trả cùng $c_q$. Tính chất này có điều kiện trên việc cấp đúng bằng chứng quan sát theo thời gian. Nhãn nguồn và thời điểm được dùng để kiểm tra sự tuân thủ điều kiện đó. Độ đúng của nội dung sự kiện và mức độ chính sách sử dụng nội dung cần được xác định qua đánh giá thực nghiệm.
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{../figures/memory_timeline.png}
+\caption{Minh họa khái niệm cho bộ nhớ chu kỳ (OM/OS), danh tính và quan hệ (OR), cùng quan hệ vật chứa khi che khuất (OO). Trục là chỉ số quan sát sơ đồ: sự kiện có thể xảy ra trước khi bằng chứng đủ để cấp cho chính sách; thời điểm query biểu thị lúc thông tin có thể được tiêu thụ. Hình không phải trace hoặc số đo thực nghiệm.}
+\label{fig:memory_timeline}
+\end{figure}
+
 \section{Dữ liệu và thích ứng chính sách}
 
 Dữ liệu thích ứng ghép các quỹ đạo mẫu LIBERO-10 với các quỹ đạo T1 và T3 từ bản phát hành của tác giả. Các quỹ đạo có cùng vector trạng thái khởi tạo được xếp vào cùng một nhóm trước khi chia tập. Định danh nhóm được tính từ vector đầy đủ ở biểu diễn float64 little-endian. Các nhóm từng dùng để phát triển bộ ghi được xếp vào tập huấn luyện. Cách chia này kiểm soát trường hợp cùng trạng thái khởi tạo xuất hiện dưới nhiều tên tác vụ hoặc mã quỹ đạo khác nhau. Lịch sử sử dụng tập kiểm tra trong phát triển và khả năng giao thoa với dữ liệu tiền huấn luyện vẫn ảnh hưởng đến diễn giải khả năng khái quát hóa.
@@ -127,14 +164,22 @@ Các đối chứng được xác định theo câu hỏi mà từng phép so s�
 \textbf{Điều kiện} & \textbf{Trọng số} & \textbf{Ngữ cảnh suy luận} & \textbf{Mục đích đánh giá} & \textbf{Bằng chứng hiện có} \\
 \midrule\endhead
 \bottomrule\endfoot
-B0 & Checkpoint gốc & Chỉ dẫn & Mốc tham chiếu trước thích ứng & 20 lượt T1/T3 \\
-F0 & Adapter huấn luyện đối sánh & Chỉ dẫn & Đối chứng cho thay đổi do thích ứng & Chưa có lượt chạy đối sánh \\
-F1 & Adapter học với bộ nhớ & Chỉ dẫn và sự kiện & Đánh giá phương pháp đề xuất & 20 lượt T1/T3 \\
-F1-off & Cùng adapter F1 & Chỉ dẫn & Đo độ nhạy với việc bỏ phần sự kiện & Chưa có lượt chạy vòng kín \\
+B0 & Checkpoint gốc & Chỉ dẫn & Mốc tham chiếu trước thích ứng & Pilot T1/T3, 20 lượt \\
+F0 & Adapter huấn luyện đối sánh & Chỉ dẫn & Đối chứng cho thay đổi do thích ứng & Chưa có lượt ghép cặp trong corpus v2 \\
+F1 & Adapter học với bộ nhớ & Chỉ dẫn và sự kiện & Đánh giá phương pháp đề xuất & Pilot lịch sử; chưa có export từ corpus v2 \\
+F1-off & Cùng adapter F1 & Chỉ dẫn & Đo độ nhạy với việc bỏ phần sự kiện & Chưa có lượt vòng kín đủ điều kiện \\
 \end{longtable}
 \endgroup
 
 So sánh hiện có B0 với F1 đo chênh lệch khi thay đồng thời trọng số thích ứng và nguồn ngữ cảnh. So sánh F0 với F1 ở cùng ngân sách sẽ thu hẹp câu hỏi về giá trị của việc bổ sung nhánh bộ nhớ. Để nghiên cứu riêng giá trị của thông tin lịch sử, một đối chứng bổ sung có thể cung cấp tóm tắt quan sát hiện tại bằng cùng bộ phát hiện. Một đối chứng khác có thể giữ ngân sách token tương đương và dùng phần bổ sung không mang tín hiệu tiến độ. F1-off có ý nghĩa chẩn đoán độ nhạy của cùng trọng số với ngữ cảnh. Do phần bộ nhớ chưa được bỏ ngẫu nhiên khi huấn luyện F1, việc bỏ phần này lúc suy luận có thể đưa ngữ cảnh ra ngoài phân phối huấn luyện. Các đối chứng này xác định hướng kiểm tra giả thuyết mà các lượt B0 và F1 hiện có chưa phân giải được.
+
+\section{Điều phối truy vấn theo thay đổi của bộ nhớ}
+
+Một treatment phát triển tách cách policy được huấn luyện khỏi quyền và thời điểm dùng thông tin khi chạy. Tại mỗi truy vấn, bộ ghi lại fact cùng phiên bản đã được chiếu vào prompt. Sau mỗi hành động đã thực thi, hệ cập nhật bộ nhớ và so nghĩa của các fact liên quan với ngữ cảnh của truy vấn đang mở. Thay đổi chỉ tạo đề xuất truy vấn lại khi tồn tại qua số quan sát tối thiểu và xuất hiện sau một tiền tố thực thi tối thiểu. Việc làm mới evidence cho cùng một nghĩa không tự tạo trigger. Cách này giữ rõ thời điểm một sự kiện có thể ảnh hưởng đến quyết định mà không thay đổi writer.
+
+Protocol development khóa 20 nhóm trạng thái seen, tách 12 nhóm để phát triển và 8 nhóm để hiệu chỉnh. Mỗi tập policy query tối đa 125 lần; đối chứng theo lịch cố định thực thi 8 hành động trước mỗi query, trong khi treatment theo sự kiện cần ít nhất 2 hành động và yêu cầu thay đổi tồn tại qua 2 quan sát. Khi hết ngân sách query, lượt dừng với trạng thái abstain và được tính là không hoàn thành. Các ngưỡng này là thông số development, chưa phải ngưỡng xác nhận. Closed-loop smoke cần checkpoint F1 huấn luyện bằng writer quan hệ tương ứng; do đó các phép đo hiện tại chỉ đánh giá replay trên quỹ đạo đã ghi và kiểm tra phần mềm.
+
+Một bộ kiểm ba giá trị cho intent đã gán nhãn trả về supported, violated hoặc unknown. Với tác vụ đếm, phép kiểm cần target và intent từ nhãn độc lập; nó không suy luận target từ reward, predicate hoặc hành động controller. Bộ kiểm hiện ở chế độ phân tích và chưa có quyền loại đề xuất trong runner. Sinh nhiều chunk chỉ được mở sau khi bộ đọc đề xuất đạt gate và adapter chứng minh được parity khi khôi phục hàng đợi, cache cùng trạng thái ngẫu nhiên. Vì vậy, luận văn không xem selector nhiều ứng viên là kết quả đã triển khai.
 
 \section{Quy trình đánh giá và độ đo}
 

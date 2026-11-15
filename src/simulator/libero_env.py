@@ -448,12 +448,32 @@ class LiberoEnv:
         import robosuite
 
         py_version = sys.version_info
-        is_py38 = (py_version.major == 3 and py_version.minor == 8)
+        is_py_reference = (py_version.major, py_version.minor, py_version.micro) == (3, 8, 13)
         robosuite_ver = getattr(robosuite, "__version__", "unknown")
         is_rs_140 = (robosuite_ver == "1.4.0")
         is_linux = (sys.platform.startswith("linux"))
 
-        is_official_reference_stack = (is_py38 and is_rs_140 and is_linux)
+        try:
+            import bddl
+            bddl_ver = getattr(bddl, "__version__", None)
+            if not bddl_ver:
+                from importlib.metadata import version as distribution_version
+                bddl_ver = distribution_version("bddl")
+        except Exception:
+            bddl_ver = "unknown"
+        try:
+            from importlib.metadata import version as distribution_version
+            robomimic_ver = distribution_version("robomimic")
+        except Exception:
+            robomimic_ver = "unknown"
+        numpy_ver = getattr(np, "__version__", "unknown")
+        is_other_pins = (
+            bddl_ver == "1.0.1"
+            and robomimic_ver == "0.2.0"
+            and numpy_ver == "1.22.4"
+        )
+
+        is_official_reference_stack = (is_py_reference and is_rs_140 and is_linux and is_other_pins)
 
         if is_official_reference_stack and self.is_strict_mode:
             execution_tier = "STRICT-LIBERO-CERTIFIED"
@@ -470,6 +490,9 @@ class LiberoEnv:
             "python_version": f"{py_version.major}.{py_version.minor}.{py_version.micro}",
             "platform": platform.platform(),
             "robosuite_version": robosuite_ver,
+            "bddl_version": bddl_ver,
+            "robomimic_version": robomimic_ver,
+            "numpy_version": numpy_ver,
             "backend": os.environ.get("MUJOCO_GL", "default"),
             "num_steps_wait": self.num_steps_wait,
         }

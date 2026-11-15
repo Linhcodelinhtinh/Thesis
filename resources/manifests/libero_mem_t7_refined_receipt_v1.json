@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "classification": "AUTHOR_RELEASE_LOCAL_SHA256_RECEIPT",
+  "repository": "libero-mem/LIBERO-Mem",
+  "revision": "6df130c05b82e09294fa9534e84a069687b72d33",
+  "sha256": {
+    "KITCHEN_SCENE1_7_swap_the_2_bowls_on_their_plates_using_the_empty_plate_demo.hdf5": "8cbe1c2e7b5d1664fdc7e08c773aa0beabbc4ba5079bf47d4a10f9e6c9190757",
+    "metainfo.json": "2afe9bc01f9579d4adeec63a6cf012f8560de3b5a4b7d5a96c0643c94777ad0c"
+  },
+  "local_verification": {
+    "task_file_size_bytes": 23366117457,
+    "task_file_sha256_verified": true,
+    "task_hdf5_episode_count": 88,
+    "task_hdf5_action_count": 35637,
+    "metainfo_sha256_source": "resources/manifests/libero_mem_planning_sources.json"
+  }
+}

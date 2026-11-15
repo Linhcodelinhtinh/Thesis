@@ -737,7 +737,7 @@ Dựa trên kiến trúc chính thức của Stanford-ILIAD `openvla-mini`:
 - **Candidate B (`minivla_libero90`)**:
   - Checkpoint: `Stanford-ILIAD/minivla-libero90-prismatic`
   - Backbone: Qwen2.5 0.5B + SigLIP-224px (Prismatic VLM framework).
-  - **Action Interface**: Mô hình **không sử dụng continuous 7D action head**. Thay vào đó, mô hình sử dụng `extra_action_tokenizer` (dành riêng 256 token đặc biệt trong từ vựng cho action bins). Mô hình sinh tuần tự 7 action tokens theo cơ chế autoregressive cho mỗi bước điều khiển. Các token sau đó được action tokenizer giải mã thành giá trị liên tục trong khoảng $[-1, 1]$ và unnormalize dựa trên bảng thống kê huấn luyện (`dataset_statistics.json`).
+  - **Action Interface**: Mô hình **không sử dụng continuous 7D action head**. Thay vào đó, mô hình sử dụng `extra_action_tokenizer` (dành riêng 256 token đặc biệt trong từ vựng cho action bins). `OpenVLA.predict_action` sinh theo `action_dim` lấy từ statistics, giải mã token rồi unnormalize q01/q99 theo dimension mask. Runner LIBERO sau đó ánh xạ gripper [0,1] sang [-1,+1], binarize bằng dấu và đảo dấu cho Prismatic. Input chính là ảnh agentview đã flip dọc/resize LANCZOS, rồi qua image transform của backbone; wrist mặc định tắt. Đây là contract của source pin `0822b36227b5a771be4eb2680e34c559734c8fdc`, không phải contract đã được adapter nội bộ nghiệm thu.
   - Manifest file: `resources/manifests/models/minivla_libero90.yaml`.
 - **Candidate C (`minivla_vq_libero90`)**:
   - Checkpoint: `Stanford-ILIAD/minivla-vq-libero90-prismatic`
@@ -746,7 +746,14 @@ Dựa trên kiến trúc chính thức của Stanford-ILIAD `openvla-mini`:
   - Manifest file: `resources/manifests/models/minivla_vq_libero90.yaml`.
 - **Quy ước Gripper (Gripper Polarity)**:
   - Tuyệt đối không mặc định quy ước $+1=\text{open}, -1=\text{close}$ cho mọi model.
-  - Chiều điều khiển và ngưỡng đóng/mở của gripper phải được xác minh trực tiếp từ bảng thống kê chuẩn hóa (`dataset_statistics`) và logic giải mã của action tokenizer trong từng checkpoint cụ thể.
+  - Official Prismatic LIBERO path: map model gripper [0,1] to [-1,+1], binarize with `np.sign`, then invert for the LIBERO controller. The manifest records `INVERTED_RLDS_TO_ROBOSUITE`; this does not make the local adapter eligible until it reproduces the full path.
+
+### Phase 9 candidate gate update (2026-11-15)
+
+- Candidate B checkpoint bytes match both files in the pinned Hub snapshot. The release contains two valid `.pt` files; the stored `pretrained_checkpoint` value is the training resume pointer to step 60,000 and does not document an evaluation selection. Do not select by filesystem mtime.
+- The local adapter does not use the official `prismatic.models.load.load_vla` path, and its custom loader calls `load_state_dict(strict=False)`. Its prompt, image preprocessing and gripper postprocessing also differ from the official inference/evaluation path. `MiniVLAAdapter.load()` now fails closed until an official-runtime implementation and parity audit exist.
+- Candidate C is not evaluation-ready: no local VQ checkpoint or codebook revision/hash is present.
+- Source-level details, checkpoint hashes, and the scope of the offline audit are recorded in `experiments/audits/minivla-contract-audit-20261115/report.json`. No MiniVLA rollout or model training was performed.
 
 ## 11.3. Cấu trúc Module Triển khai
 ```text

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "classification": "AUTHOR_RELEASE_LOCAL_SHA256_RECEIPT",
+  "task": "T9",
+  "source_kind": "raw",
+  "repository": "libero-mem/LIBERO-Mem-Raw",
+  "revision": "61917674055e8b1cbbfd22c1b54c28d20c1a1584",
+  "source_metadata_url": "https://huggingface.co/api/datasets/libero-mem/LIBERO-Mem-Raw/paths-info/61917674055e8b1cbbfd22c1b54c28d20c1a1584",
+  "sha256": {
+    "KITCHEN_SCENE1_9_put_the_cream_cheese_in_the_nearest_basket_and_place_that_basket_in_the_center_demo.hdf5": "16ddf346d85a647d3611cb37b2b68fd82b32e6d456359b332ed0268a4db5cf2a"
+  },
+  "local_verification": {
+    "task_file_path": "D:\\Thesis_26\\data\\libero_mem_raw\\KITCHEN_SCENE1_9_put_the_cream_cheese_in_the_nearest_basket_and_place_that_basket_in_the_center_demo.hdf5",
+    "task_file_size_bytes": 25979784,
+    "task_file_sha256_verified": true,
+    "verification_time_utc": "2026-11-14T22:06:53.554524+00:00"
+  }
+}

@@ -229,9 +229,17 @@ def test_execution_environment_provenance_labeling(libero_env):
     assert "is_official_reference_stack" in meta
     assert "is_benchmark_comparable" in meta
 
-    # On Windows host (Python 3.12, WGL), runs MUST be labeled NON-COMPARABLE
+    # Only the exact pinned Linux reference stack can be certified comparable.
     import sys
-    if sys.platform == "win32" or sys.version_info.major != 3 or sys.version_info.minor != 8:
+    reference_stack = (
+        sys.platform == "linux"
+        and tuple(sys.version_info[:3]) == (3, 8, 13)
+        and meta["robosuite_version"] == "1.4.0"
+        and meta["bddl_version"] == "1.0.1"
+        and meta["robomimic_version"] == "0.2.0"
+        and meta["numpy_version"] == "1.22.4"
+    )
+    if not reference_stack:
         assert meta["execution_tier"] == "HOST-SMOKE-ONLY (NON-COMPARABLE)"
         assert meta["is_official_reference_stack"] is False
         assert meta["is_benchmark_comparable"] is False

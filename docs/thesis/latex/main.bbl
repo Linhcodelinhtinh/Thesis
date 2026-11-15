@@ -1,0 +1,164 @@
+\begin{thebibliography}{10}
+
+\bibitem{pomdp1998}
+Leslie~Pack Kaelbling, Michael~L. Littman, and Anthony~R. Cassandra.
+\newblock Planning and acting in partially observable stochastic domains.
+\newblock {\em Artificial Intelligence}, 101(1--2):99--134, 1998.
+\newblock \url{https://doi.org/10.1016/S0004-3702(98)00023-X}.
+
+\bibitem{liberomem2025}
+Nhat Chung, Taisei Hanyu, Toan Nguyen, Huy Le, Frederick Bumgarner, Duy Minh~Ho
+  Nguyen, Khoa Vo, Kashu Yamazaki, Chase Rainwater, Tung Kieu, Anh Nguyen, and
+  Ngan Le.
+\newblock Rethinking progression of memory state in robotic manipulation: An
+  object-centric perspective.
+\newblock arXiv:2511.11478v3, 2025.
+\newblock \url{https://arxiv.org/abs/2511.11478v3}. Phiên bản paper tách
+  biệt với revision code sử dụng trong thực nghiệm.
+
+\bibitem{robomme2026}
+Yinpei Dai, Hongze Fu, Jayjun Lee, Yuejiang Liu, Haoran Zhang, Jianing Yang,
+  Chelsea Finn, Nima Fazeli, and Joyce Chai.
+\newblock {RoboMME}: Benchmarking and understanding memory for robotic
+  generalist policies.
+\newblock In {\em Proceedings of the 43rd International Conference on Machine
+  Learning}, volume 306 of {\em Proceedings of Machine Learning Research},
+  pages 22396--22450, 2026.
+\newblock \url{https://proceedings.mlr.press/v306/dai26c.html}.
+
+\bibitem{smolvla2025}
+Mustafa Shukor, Dana Aubakirova, Francesco Capuano, Pepijn Kooijmans, Steven
+  Palma, Adil Zouitine, Michel Aractingi, Caroline Pascal, Martino Russi,
+  Andres Marafioti, Simon Alibert, Matthieu Cord, Thomas Wolf, and Remi Cadene.
+\newblock {SmolVLA}: A vision-language-action model for affordable and
+  efficient robotics.
+\newblock arXiv:2506.01844v1, 2025.
+\newblock \url{https://arxiv.org/abs/2506.01844v1}.
+
+\bibitem{mem2026}
+Marcel Torne, Karl Pertsch, Homer Walke, Kyle Vedder, Suraj Nair, Brian Ichter,
+  Allen~Z. Ren, Haohuan Wang, Jiaming Tang, Kyle Stachowicz, Karan Dhabalia,
+  Michael Equi, Quan Vuong, Jost~Tobias Springenberg, Sergey Levine, Chelsea
+  Finn, and Danny Driess.
+\newblock {MEM}: Multi-scale embodied memory for vision language action models.
+\newblock arXiv:2603.03596v2, 2026.
+\newblock \url{https://arxiv.org/abs/2603.03596v2}. Phiên bản PDF do tác
+  giả khóa luận cung cấp.
+
+\bibitem{memoryvla2026}
+Hao Shi, Bin Xie, Yingfei Liu, Lin Sun, Fengrong Liu, Tiancai Wang, Erjin Zhou,
+  Haoqiang Fan, Xiangyu Zhang, and Gao Huang.
+\newblock {MemoryVLA}: Perceptual-cognitive memory in vision-language-action
+  models for robotic manipulation.
+\newblock ICLR 2026; bản arXiv:2508.19236v2, 2026.
+\newblock \url{https://arxiv.org/abs/2508.19236v2}. Dùng phiên bản PDF
+  trong bộ tài liệu tham chiếu.
+
+\bibitem{clockvla2026}
+Chubin Zhang and Bo~An.
+\newblock Is your robot's memory just a clock? temporal shortcuts in
+  memory-augmented {VLA} policies.
+\newblock arXiv:2611.14488v1, 2026.
+\newblock \url{https://arxiv.org/abs/2611.14488v1}.
+
+\bibitem{liberoSource}
+{Lifelong Robot Learning contributors}.
+\newblock {LIBERO}: Mã nguồn benchmark được khóa phiên bản.
+\newblock GitHub source repository, 2026.
+\newblock Revision \path{8f1084e3132a39270c3a13ebe37270a43ece2a01}; truy cập
+  11/11/2026.
+  \url{https://github.com/Lifelong-Robot-Learning/LIBERO/tree/8f1084e3132a39270c3a13ebe37270a43ece2a01}.
+
+\bibitem{liberomemSource}
+{LIBERO-Mem contributors}.
+\newblock {LIBERO-Mem}: Mã nguồn task và evaluator được sử dụng.
+\newblock GitHub source repository, 2026.
+\newblock Revision \path{0eee0defa4024e51511b6e15a79f30e9620209de}; truy cập
+  11/11/2026.
+  \url{https://github.com/libero-mem/libero-mem/tree/0eee0defa4024e51511b6e15a79f30e9620209de}.
+
+\bibitem{groundingdino2024}
+Shilong Liu, Zhaoyang Zeng, Tianhe Ren, Feng Li, Hao Zhang, Jie Yang, Qing
+  Jiang, Chunyuan Li, Jianwei Yang, Hang Su, Jun Zhu, and Lei Zhang.
+\newblock Grounding {DINO}: Marrying {DINO} with grounded pre-training for
+  open-set object detection.
+\newblock arXiv:2303.05499v5, 2024.
+\newblock \url{https://arxiv.org/abs/2303.05499v5}.
+
+\bibitem{lora2021}
+Edward~J. Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean
+  Wang, Lu~Wang, and Weizhu Chen.
+\newblock {LoRA}: Low-rank adaptation of large language models.
+\newblock arXiv:2106.09685v1, 2021.
+\newblock \url{https://arxiv.org/abs/2106.09685v1}.
+
+\bibitem{smoLSTM2026}
+Jan-Gerrit Habekost, Parsa~Mastouri Kashani, Connor G\"ade, Matthias Kerzel,
+  Philipp Allgeuer, Cornelius Weber, Stefan Wermter, and Jae~Hee Lee.
+\newblock {SmoLSTM}: A compact vision-language-action model with recurrent
+  memory that persists.
+\newblock arXiv:2609.22854v1, 2026.
+\newblock \url{https://arxiv.org/abs/2609.22854v1}.
+
+\bibitem{rewardmachines2018}
+Rodrigo~Toro Icarte, Toryn Klassen, Richard Valenzano, and Sheila McIlraith.
+\newblock Using reward machines for high-level task specification and
+  decomposition in reinforcement learning.
+\newblock In {\em Proceedings of the 35th International Conference on Machine
+  Learning}, volume~80 of {\em Proceedings of Machine Learning Research}, pages
+  2107--2116, 2018.
+\newblock \url{https://proceedings.mlr.press/v80/icarte18a.html}.
+
+\bibitem{imep2026}
+Keyuan Luo, Yi~Xie, Wanyun Ling, Yuanzhe Li, Ziyue Li, and Zhuoqi Zeng.
+\newblock Beyond success rate: Interventional evaluation of memory in
+  vision-language-action systems.
+\newblock arXiv:2610.23372v1, 2026.
+\newblock \url{https://arxiv.org/abs/2610.23372v1}.
+
+\bibitem{smolvlaCheckpoint}
+{LeRobot contributors}.
+\newblock {lerobot/smolvla\_libero}: Checkpoint và bộ xử lý.
+\newblock Hugging Face model repository, 2026.
+\newblock Revision \path{31d453f7edd78c839a8bbc39744a292686daf0de}; truy cập
+  11/11/2026.
+  \url{https://huggingface.co/lerobot/smolvla_libero/tree/31d453f7edd78c839a8bbc39744a292686daf0de}.
+
+\bibitem{flowmatching2023}
+Yaron Lipman, Ricky T.~Q. Chen, Heli Ben-Hamu, Maximilian Nickel, and Matt Le.
+\newblock Flow matching for generative modeling.
+\newblock arXiv:2210.02747v2, 2023.
+\newblock \url{https://arxiv.org/abs/2210.02747v2}.
+
+\bibitem{balanceddiet2026}
+Octi Zhang, Mateo~Guaman Castro, Patrick Yin, Ignacio Dagnino, Abhishek Gupta,
+  Rosario Scalise, and Byron Boots.
+\newblock A balanced data diet: Addressing the exploration bottleneck in
+  mega-scale {RL} for robot control.
+\newblock CoRL 2026; bản arXiv:2610.12465v1, 2026.
+\newblock \url{https://arxiv.org/abs/2610.12465v1}. Dùng phiên bản PDF
+  trong bộ tài liệu tham chiếu.
+
+\bibitem{libero2023}
+Bo~Liu, Yifeng Zhu, Chongkai Gao, Yihao Feng, Qiang Liu, Yuke Zhu, and Peter
+  Stone.
+\newblock {LIBERO}: Benchmarking knowledge transfer for lifelong robot
+  learning.
+\newblock arXiv:2306.03310v1, 2023.
+\newblock \url{https://arxiv.org/abs/2306.03310v1}.
+
+\bibitem{liberomemData}
+{LIBERO-Mem contributors}.
+\newblock {LIBERO-Mem}: Demonstration dataset.
+\newblock Hugging Face dataset repository, 2026.
+\newblock Revision 6df130c05b82e09294fa9534e84a069687b72d33.
+  \url{https://huggingface.co/datasets/libero-mem/LIBERO-Mem/tree/6df130c05b82e09294fa9534e84a069687b72d33}.
+
+\bibitem{liberomemRawData}
+{LIBERO-Mem contributors}.
+\newblock {LIBERO-Mem-Raw}: Initial-state and raw demonstration dataset.
+\newblock Hugging Face dataset repository, 2026.
+\newblock Revision 61917674055e8b1cbbfd22c1b54c28d20c1a1584.
+  \url{https://huggingface.co/datasets/libero-mem/LIBERO-Mem-Raw/tree/61917674055e8b1cbbfd22c1b54c28d20c1a1584}.
+
+\end{thebibliography}

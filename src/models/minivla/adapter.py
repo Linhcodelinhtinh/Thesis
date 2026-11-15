@@ -1,16 +1,16 @@
-"""MiniVLA Model Adapter for LIBERO Evaluation (Phase 9).
+"""Static MiniVLA candidate adapter scaffold (Phase 9).
 
 Integrates Stanford-ILIAD OpenVLA-mini (Candidate B & Candidate C):
 - Candidate B: minivla_libero90 (Qwen2.5-0.5B + SigLIP 224px, extra_action_tokenizer, chunk_size=1)
 - Candidate C: minivla_vq_libero90 (Residual-VQ action chunking, chunk_size=H)
 
-Adheres strictly to the VLAPolicy interface, AGENTS.md fail-fast rules,
-and Stanford-ILIAD provenance.
+The current implementation is fail-closed for evaluation because its loader,
+prompt, image preprocessing and action postprocessing do not match the pinned
+Stanford-ILIAD runtime. Do not use this scaffold for benchmark rollouts.
 """
 
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
-import glob
 import json
 import numpy as np
 import torch
@@ -25,22 +25,44 @@ from src.models.minivla.postprocess import MiniVLAPostprocessor
 from src.models.minivla.prismatic_model import MiniVLAPrismaticModel
 
 
-def _find_checkpoint_pt(ckpt_dir: Path) -> Optional[Path]:
-    """Find the latest or primary .pt weights file in the checkpoint directory."""
-    # 1. Look in checkpoints/ subdirectory
-    sub_ckpts = list((ckpt_dir / "checkpoints").glob("*.pt"))
-    if sub_ckpts:
-        # Prefer step with highest step number or lowest loss
-        sub_ckpts.sort(key=lambda p: p.stat().st_mtime, reverse=True)
-        return sub_ckpts[0]
+MINIVLA_OFFICIAL_RUNTIME_VERIFIED = False
+MINIVLA_EVALUATION_BLOCK_REASON = (
+    "The local MiniVLA backend is not eligible for evaluation. The pinned Stanford-ILIAD implementation uses "
+    "its Prismatic loader, backbone image transform, prompt builder, statistics-based action decoding, and LIBERO "
+    "gripper normalize/binarize/invert path. This adapter currently differs in those paths and partially loads "
+    "weights with strict=False. See resources/manifests/models/minivla_libero90.yaml and "
+    "experiments/audits/minivla-contract-audit-20261115/report.json."
+)
 
-    # 2. Look in root of ckpt_dir
-    root_ckpts = list(ckpt_dir.glob("*.pt"))
-    if root_ckpts:
-        root_ckpts.sort(key=lambda p: p.stat().st_mtime, reverse=True)
-        return root_ckpts[0]
 
-    return None
+def _find_checkpoint_pt(ckpt_dir: Path, checkpoint_file: Optional[str] = None) -> Optional[Path]:
+    """Resolve only an explicitly named checkpoint, or a directory with exactly one weight file."""
+    candidates = sorted((ckpt_dir / "checkpoints").glob("*.pt")) + sorted(ckpt_dir.glob("*.pt"))
+    if checkpoint_file is not None:
+        requested = Path(checkpoint_file)
+        possible_paths = (
+            [requested]
+            if requested.is_absolute()
+            else [ckpt_dir / requested, ckpt_dir / "checkpoints" / requested]
+        )
+        matches = [p.resolve() for p in possible_paths if p.is_file() and p.suffix == ".pt"]
+        if len(matches) != 1:
+            raise FileNotFoundError(
+                f"Explicit MiniVLA checkpoint '{checkpoint_file}' does not resolve to exactly one .pt file "
+                f"under '{ckpt_dir}'."
+            )
+        return matches[0]
+
+    unique_candidates = sorted({p.resolve() for p in candidates})
+    if not unique_candidates:
+        return None
+    if len(unique_candidates) > 1:
+        names = [p.relative_to(ckpt_dir.resolve()).as_posix() for p in unique_candidates]
+        raise ValueError(
+            "Multiple MiniVLA checkpoints are present; select the official evaluation checkpoint explicitly. "
+            f"No mtime-based selection is permitted. Candidates: {names}"
+        )
+    return unique_candidates[0]
 
 
 @register_model("minivla_libero90")
@@ -125,6 +147,12 @@ class MiniVLAAdapter(VLAPolicy):
 
         Fails loudly if checkpoint path is invalid or weights are corrupt (AGENTS.md Rule 10).
         """
+        if not MINIVLA_OFFICIAL_RUNTIME_VERIFIED:
+            raise RuntimeError(
+                "MiniVLA evaluation is blocked pending official runtime parity. "
+                + MINIVLA_EVALUATION_BLOCK_REASON
+            )
+
         if device is not None:
             self.device = device
             self.config.device = device
@@ -259,6 +287,8 @@ class MiniVLAAdapter(VLAPolicy):
             "has_statistics": self.action_tokenizer.has_stats,
             "is_loaded": self._is_loaded,
             "model_active": self.model is not None,
+            "evaluation_ready": MINIVLA_OFFICIAL_RUNTIME_VERIFIED,
+            "evaluation_block_reason": None if MINIVLA_OFFICIAL_RUNTIME_VERIFIED else MINIVLA_EVALUATION_BLOCK_REASON,
         }
 
 

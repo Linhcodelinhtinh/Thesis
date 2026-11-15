@@ -25,6 +25,8 @@ MemoryVLA của Shi và cộng sự lưu các đặc trưng tri giác và nhận
 
 Chung và cộng sự chuyển trọng tâm sang lịch sử của thực thể trong LIBERO-Mem. Bộ tác vụ làm lộ các tình huống mà quyết định phụ thuộc vào chuyển động, thứ tự, quan hệ hoặc sự che khuất của vật thể. Embodied-SlotSSM biểu diễn diễn biến của các thực thể bằng các trạng thái tiềm ẩn gắn với từng đối tượng. RoboMME mở rộng khảo sát có đối chứng về kiến trúc bộ nhớ bằng 16 tác vụ và 14 biến thể trên cùng mô hình nền $\pi_{0.5}$. Dai và cộng sự nhận thấy tính hữu ích của một biểu diễn phụ thuộc vào loại tác vụ. Kết quả này tạo cơ sở để lựa chọn nội dung bộ nhớ theo biến tiến độ cần suy ra, đồng thời giới hạn việc suy rộng kết quả giữa các họ tác vụ \cite{liberomem2025,robomme2026}.
 
+Một hướng gần đây xem xét bộ nhớ hồi quy trong mô hình VLA gọn. SmoLSTM giữ trạng thái ma trận qua các lần điều khiển, thay vì đưa toàn bộ lịch sử vào một cửa sổ đầu vào ngày càng dài. Công trình báo cáo kết quả trên LIBERO-Mem và LIBERO với một policy được huấn luyện trên nhiều tác vụ; đây là bằng chứng rằng trạng thái hồi quy là một hướng đối chiếu thực chất cho memory tường minh. Kết quả của công trình không được so điểm trực tiếp với các phép đo cục bộ trong khóa luận vì backbone, dữ liệu, cách huấn luyện và giao thức khác nhau. \cite{smoLSTM2026}
+
 \begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
 \begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.18\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.23\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.26\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.33\textwidth-2\tabcolsep\relax}}
 \caption{Các cách biểu diễn lịch sử và liên hệ với câu hỏi nghiên cứu}\label{tab:generated1}\\
@@ -51,6 +53,8 @@ Một biểu diễn lịch sử có thể gom những quỹ đạo khác nhau v�
 Máy trạng thái hữu hạn cung cấp một cách mô tả tiến trình bằng các chuyển tiếp có điều kiện \cite{rewardmachines2018}. Khi dùng cảm biến, sự kiện làm đổi trạng thái phải được suy ra từ chuỗi quan sát. Chẳng hạn, bộ phát hiện thị giác cung cấp vị trí ước lượng trên ảnh \cite{groundingdino2024}. Để xác nhận một quan hệ đã thay đổi, hệ thống cần nối các quan sát của cùng một thực thể và xác định khi nào bằng chứng đủ mạnh. Một khoảng che khuất có thể làm quan hệ hiện tại chưa xác định trong khi sự kiện đã xác nhận vẫn có giá trị lịch sử.
 
 Nhịp lấy mẫu cũng ảnh hưởng đến diễn giải tiến độ. Các khoảng dừng có thể làm sai suy luận dựa vào thời gian trong tác vụ lặp \cite{clockvla2026}. Việc gắn tiến trình với chuyển tiếp quan sát được cho phép đặt câu hỏi cụ thể hơn về thông tin bị bỏ sót, xác nhận nhầm hoặc đến sau thời điểm chính sách cần quyết định.
+
+Tỷ lệ thành công cuối lượt không cho biết thông tin lịch sử nào đã làm thay đổi một quyết định. IMEP đề xuất thay đổi có kiểm soát dữ kiện ở giao diện truy xuất, dùng đối chứng giữ nguyên ý nghĩa và phép lặp chính xác, đồng thời tách tính đúng của quyết định khỏi kết quả vận động. Khóa luận kế thừa nguyên tắc kiểm tra theo từng dữ kiện này trong thiết kế can thiệp; do chưa có lượt policy mới và nhãn độc lập, các phép can thiệp hiện có chỉ là probe trên trace, chưa phải bằng chứng về hiệu quả điều khiển. \cite{imep2026}
 
 \section{SmolVLA và vai trò của thích ứng}
 

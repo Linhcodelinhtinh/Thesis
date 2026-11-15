@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "classification": "AUTHOR_RELEASE_LOCAL_SHA256_RECEIPT",
+  "task": "T10",
+  "source_kind": "refined",
+  "repository": "libero-mem/LIBERO-Mem",
+  "revision": "6df130c05b82e09294fa9534e84a069687b72d33",
+  "source_metadata_url": "https://huggingface.co/api/datasets/libero-mem/LIBERO-Mem/paths-info/6df130c05b82e09294fa9534e84a069687b72d33",
+  "sha256": {
+    "KITCHEN_SCENE1_10_put_the_cream_cheese_in_the_nearest_basket_and_place_the_empty_basket_in_the_center_demo.hdf5": "bcb9357581d17a6312a34c1f7bd855b9bb7357ca3d5a6aa1c5be2d2a58e1d85b",
+    "metainfo.json": "2afe9bc01f9579d4adeec63a6cf012f8560de3b5a4b7d5a96c0643c94777ad0c"
+  },
+  "local_verification": {
+    "task_file_path": "C:\\Users\\Admin\\.codex\\visualizations\\2026\\11\\14\\01a1da4b-08ac-7453-8a46-8f980c940f32\\libero_mem_t10\\KITCHEN_SCENE1_10_put_the_cream_cheese_in_the_nearest_basket_and_place_the_empty_basket_in_the_center_demo.hdf5",
+    "task_file_size_bytes": 19947570362,
+    "task_file_sha256_verified": true,
+    "verification_time_utc": "2026-11-14T22:39:23.953903+00:00",
+    "metainfo_sha256_verified": true,
+    "metainfo_size_bytes": 713618260
+  }
+}

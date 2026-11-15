@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "classification": "AUTHOR_RELEASE_LOCAL_SHA256_RECEIPT",
+  "task": "T8",
+  "source_kind": "raw",
+  "repository": "libero-mem/LIBERO-Mem-Raw",
+  "revision": "61917674055e8b1cbbfd22c1b54c28d20c1a1584",
+  "source_metadata_url": "https://huggingface.co/api/datasets/libero-mem/LIBERO-Mem-Raw/paths-info/61917674055e8b1cbbfd22c1b54c28d20c1a1584",
+  "sha256": {
+    "KITCHEN_SCENE1_8_rotate_the_3_bowls_on_their_plates_from_left_to_right_using_the_empty_plate_demo.hdf5": "77dcad3d4f04b36441a70dc95b4cd2131189c5ebfa105bf92ce5d2a8125a16af"
+  },
+  "local_verification": {
+    "task_file_path": "D:\\Thesis_26\\data\\libero_mem_raw\\KITCHEN_SCENE1_8_rotate_the_3_bowls_on_their_plates_from_left_to_right_using_the_empty_plate_demo.hdf5",
+    "task_file_size_bytes": 74236352,
+    "task_file_sha256_verified": true,
+    "verification_time_utc": "2026-11-14T22:06:53.475256+00:00"
+  }
+}

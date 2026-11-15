@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Prepare a verified causal PROMPT INDEX for T1/T3; not model-training shards.
+"""Prepare a verified causal PROMPT INDEX; not model-training shards.
 
 Runs the same RGB writer as online evaluation. The output retains HDF5 pointers,
 strict token counts, predictions and event traces. Fine-tuning/model image

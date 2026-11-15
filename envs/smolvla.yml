@@ -5,19 +5,11 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.10
+  # Inference environment for the pinned SmolVLA 0.6.1 policy interface.
+  # Python and direct model-runtime dependencies are pinned so the F0 artifact
+  # can be loaded without borrowing the perception or simulator environments.
+  # LeRobot 0.6.1 metadata requires Python >=3.12.
+  - python=3.12.3
   - pip
   - pip:
-    - torch>=2.2.0
-    - torchvision>=0.17.0
-    - transformers>=4.40.0
-    - accelerate>=0.28.0
-    - timm>=0.9.16
-    - diffusers>=0.27.0
-    - einops>=0.7.0
-    - numpy>=1.24.0
-    - h5py>=3.10.0
-    - opencv-python>=4.8.0
-    - pyyaml>=6.0
-    - pytest>=7.4.0
-    - num2words>=0.5.13
+    - -r envs/smolvla_inference.txt

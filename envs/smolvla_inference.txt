@@ -1,0 +1,17 @@
+# SmolVLA F0/F1 inference runtime; pins align with the available V2 artifact.
+# CUDA 12.8 matches the local host driver. The F0 artifact was trained with CUDA 13.0.
+--index-url https://pypi.org/simple
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.11.0+cu128
+torchvision==0.26.0+cu128
+lerobot[smolvla,peft]==0.6.1
+transformers==5.5.4
+peft==0.21.2
+accelerate==1.15.0
+tokenizers==0.22.2
+safetensors==0.8.0
+imageio==2.38.0
+imageio-ffmpeg==0.6.0
+numpy>=1.24.0
+opencv-python-headless==4.13.0.92
+PyYAML>=6.0

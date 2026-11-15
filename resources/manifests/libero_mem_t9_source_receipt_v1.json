@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "classification": "AUTHOR_RELEASE_LOCAL_SHA256_RECEIPT",
+  "task": "T9",
+  "refined_source": {
+    "repository": "libero-mem/LIBERO-Mem",
+    "revision": "6df130c05b82e09294fa9534e84a069687b72d33",
+    "sha256": {
+      "KITCHEN_SCENE1_9_put_the_cream_cheese_in_the_nearest_basket_and_place_that_basket_in_the_center_demo.hdf5": "f825fa2f8094f5ec45994e354dcee0ded16e8c6f9d046d4a0e2b919441246748",
+      "metainfo.json": "2afe9bc01f9579d4adeec63a6cf012f8560de3b5a4b7d5a96c0643c94777ad0c"
+    },
+    "local_verification": {
+      "task_file_size_bytes": 20858283876,
+      "task_file_sha256_verified": true,
+      "metainfo_sha256_verified": true,
+      "verification_date": "2026-11-15"
+    }
+  },
+  "raw_source": {
+    "repository": "libero-mem/LIBERO-Mem-Raw",
+    "revision": "61917674055e8b1cbbfd22c1b54c28d20c1a1584",
+    "path": "KITCHEN_SCENE1_9_put_the_cream_cheese_in_the_nearest_basket_and_place_that_basket_in_the_center_demo.hdf5",
+    "size_bytes": 25979784,
+    "sha256": "16ddf346d85a647d3611cb37b2b68fd82b32e6d456359b332ed0268a4db5cf2a",
+    "local_sha256_verified": true
+  },
+  "repository": "libero-mem/LIBERO-Mem",
+  "revision": "6df130c05b82e09294fa9534e84a069687b72d33",
+  "sha256": {
+    "KITCHEN_SCENE1_9_put_the_cream_cheese_in_the_nearest_basket_and_place_that_basket_in_the_center_demo.hdf5": "f825fa2f8094f5ec45994e354dcee0ded16e8c6f9d046d4a0e2b919441246748",
+    "metainfo.json": "2afe9bc01f9579d4adeec63a6cf012f8560de3b5a4b7d5a96c0643c94777ad0c"
+  },
+  "local_verification": {
+    "task_file_size_bytes": 20858283876,
+    "task_file_sha256_verified": true,
+    "metainfo_sha256_verified": true,
+    "verification_date": "2026-11-15"
+  }
+}

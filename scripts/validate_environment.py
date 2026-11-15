@@ -5,10 +5,11 @@ Validates that Python, MuJoCo, robosuite, LIBERO, and required assets
 are correctly installed and functional per SRS.md and AGENTS.md.
 
 Strictly checks version compliance against official reference specifications:
-  - Python: 3.8.x (Reference: 3.8.13 / 3.8.20)
+  - Python: 3.8.13
   - robosuite: 1.4.0 (Official reference stack pinned version)
   - bddl: 1.0.1
-  - numpy: 1.22.4 (Recommended reference version)
+  - robomimic: 0.2.0
+  - numpy: 1.22.4
 """
 
 import argparse
@@ -19,9 +20,10 @@ from pathlib import Path
 
 
 REFERENCE_SPEC = {
-    "python": "3.8",
+    "python": "3.8.13",
     "robosuite": "1.4.0",
     "bddl": "1.0.1",
+    "robomimic": "0.2.0",
     "numpy": "1.22.4",
 }
 
@@ -32,7 +34,7 @@ def parse_args():
         "--strict",
         action="store_true",
         default=False,
-        help="Enforce strict matching of Python 3.8.x and robosuite 1.4.0 reference versions (fails if non-matching).",
+        help="Enforce exact reference versions (fails if any required package or Python patch differs).",
     )
     return parser.parse_args()
 
@@ -40,13 +42,13 @@ def parse_args():
 def check_python(strict: bool = False):
     version = sys.version_info
     version_str = f"{version.major}.{version.minor}.{version.micro}"
-    is_ref = (version.major == 3 and version.minor == 8)
+    is_ref = version_str == REFERENCE_SPEC["python"]
 
     if is_ref:
-        print(f"PASS: Python ({version_str}) [STRICT-LIBERO Reference Compliant (3.8.x)]")
+        print(f"PASS: Python ({version_str}) [STRICT-LIBERO Reference Compliant]")
         return True
-    elif version.major == 3 and version.minor >= 8:
-        msg = f"NON-COMPLIANT: Python version {version_str} (Reference spec requires 3.8.x for official benchmark scores)"
+    elif version.major >= 3 and (version.major, version.minor) >= (3, 8):
+        msg = f"Python version {version_str} does not match the pinned reference ({REFERENCE_SPEC['python']})"
         if strict:
             print(f"FAIL: {msg}")
             return False
@@ -70,6 +72,47 @@ def check_mujoco():
         return True
     except Exception as exc:
         print(f"FAIL: MuJoCo validation error: {exc}")
+        return False
+
+
+def check_numpy(strict: bool = False):
+    try:
+        import numpy
+
+        version = getattr(numpy, "__version__", "unknown")
+        if version == REFERENCE_SPEC["numpy"]:
+            print(f"PASS: NumPy (version {version}) [STRICT-LIBERO Reference Compliant]")
+            return True
+        msg = f"NumPy version {version} does not match reference spec ({REFERENCE_SPEC['numpy']})"
+        if strict:
+            print(f"FAIL: {msg}")
+            return False
+        print(f"WARN (HOST-ONLY): {msg}")
+        return True
+    except Exception as exc:
+        print(f"FAIL: NumPy validation error: {exc}")
+        return False
+
+
+def check_robomimic(strict: bool = False):
+    try:
+        try:
+            from importlib.metadata import version as distribution_version
+        except ImportError:  # Python 3.8 fallback
+            from importlib_metadata import version as distribution_version
+
+        version = distribution_version("robomimic")
+        if version == REFERENCE_SPEC["robomimic"]:
+            print(f"PASS: robomimic (version {version}) [STRICT-LIBERO Reference Compliant]")
+            return True
+        msg = f"robomimic version {version} does not match reference spec ({REFERENCE_SPEC['robomimic']})"
+        if strict:
+            print(f"FAIL: {msg}")
+            return False
+        print(f"WARN (HOST-ONLY): {msg}")
+        return True
+    except Exception as exc:
+        print(f"FAIL: robomimic validation error: {exc}")
         return False
 
 
@@ -109,11 +152,11 @@ def check_bddl(strict: bool = False):
                 import importlib.metadata
                 version = importlib.metadata.version("bddl")
             except Exception:
-                try:
-                    import pkg_resources
-                    version = pkg_resources.get_distribution("bddl").version
-                except Exception:
-                    version = "1.0.1"
+                try:  # Python 3.8 fallback
+                    import importlib_metadata
+                    version = importlib_metadata.version("bddl")
+                except Exception as exc:
+                    raise RuntimeError("Cannot determine installed BDDL distribution version") from exc
 
         if version == REFERENCE_SPEC["bddl"]:
             print(f"PASS: BDDL (version {version}) [STRICT-LIBERO Reference Compliant (1.0.1)]")
@@ -196,18 +239,20 @@ def main():
 
     p_ok = check_python(strict=args.strict)
     m_ok = check_mujoco()
+    n_ok = check_numpy(strict=args.strict)
     r_ok = check_robosuite(strict=args.strict)
     b_ok = check_bddl(strict=args.strict)
+    rm_ok = check_robomimic(strict=args.strict)
     l_ok = check_libero()
     a_ok = check_required_assets()
 
     # Determine execution provenance tier
-    is_py38 = (sys.version_info.major == 3 and sys.version_info.minor == 8)
+    is_py_reference = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}" == REFERENCE_SPEC["python"]
     import robosuite
     is_rs140 = (getattr(robosuite, "__version__", "") == "1.4.0")
     is_linux = sys.platform.startswith("linux")
 
-    is_strict_reference = is_py38 and is_rs140 and is_linux
+    is_strict_reference = all([is_py_reference, is_rs140, is_linux, p_ok, m_ok, n_ok, r_ok, b_ok, rm_ok, l_ok, a_ok])
 
     print("-" * 65)
     print("PROVENANCE ASSESSMENT:")
@@ -222,7 +267,7 @@ def main():
         print("  Notice: Runs in this environment cannot be reported as official LIBERO scores (Rule 5).")
 
     print("-" * 65)
-    all_ok = all([p_ok, m_ok, r_ok, b_ok, l_ok, a_ok])
+    all_ok = all([p_ok, m_ok, n_ok, r_ok, b_ok, rm_ok, l_ok, a_ok])
     if all_ok:
         print("RESULT: ALL ENVIRONMENT CHECKS PASSED.")
         return 0

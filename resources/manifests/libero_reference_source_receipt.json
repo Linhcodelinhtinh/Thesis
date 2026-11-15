@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-14",
+  "source": {
+    "repository": "https://github.com/Lifelong-Robot-Learning/LIBERO.git",
+    "revision": "8f1084e3132a39270c3a13ebe37270a43ece2a01",
+    "git_tree_oid": "99f4ada3f1d62e026fc9ff2390eb4ff8a1760e60",
+    "git_archive_sha256": "7f81158f45bd6fd60032764ec30dd882fc397b60e473eeb8e7b0620039b79096",
+    "installation_source": ".venv_libero_reference_3813/src/libero",
+    "distribution": "libero==0.1.0",
+    "installation_mode": "official README editable install using pip==23.0.1 from the exact pinned Git checkout"
+  },
+  "environment": {
+    "venv_path": ".venv_libero_reference_3813",
+    "platform": "Ubuntu 24.04 via WSL2",
+    "python_observed": "3.8.13",
+    "python_target": "3.8.13",
+    "exact_python_patch_match": true,
+    "robosuite": "1.4.0",
+    "bddl": "1.0.1",
+    "robomimic": "0.2.0",
+    "numpy": "1.22.4",
+    "mujoco": "3.2.3",
+    "torch": "1.11.0+cu113",
+    "torchvision": "0.12.0+cu113",
+    "torchaudio": "0.11.0+cu113",
+    "opencv_python": "4.6.0.66",
+    "matplotlib": "3.5.3",
+    "rendering_backend": "EGL",
+    "rendering_warning": "libEGL failed to create dri2 screen and fell back to kms_swrast"
+  },
+  "verification": {
+    "environment_validator": {
+      "command": "MUJOCO_GL=egl .venv_libero_reference_3813/bin/python scripts/validate_environment.py --strict",
+      "status": "PASS with exact Python 3.8.13 enforcement",
+      "exact_python_target_verified": true
+    },
+    "simulator_smoke": {
+      "command": "MUJOCO_GL=egl .venv_libero_reference_3813/bin/python -m pytest -v tests/environment/test_libero_env.py",
+      "passed": 14,
+      "failed": 0,
+      "errors": 0,
+      "duration_seconds": 71.68,
+      "warnings": 3,
+      "run_code_state": "current run with exact Python and package provenance assertions"
+    }
+  },
+  "scope": {
+    "policy_score_generated": false,
+    "model_training_executed": false,
+    "interpretation": "Exact pinned reference environment and simulator smoke only; EGL fell back to kms_swrast. No LIBERO policy score or model training was generated."
+  }
+}

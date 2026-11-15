@@ -1,5 +1,6 @@
 \chapter{Nguồn dữ liệu và chi tiết tái lập}
 \label{app:provenance}
+% claim-id: reference-env-smoke
 \section{Cấu hình và nguồn thực nghiệm}
 Phép đánh giá T1/T3 ngày 09/11/2026 sử dụng cùng mười nhóm trạng thái
 khởi tạo cho hai tác vụ và hạt giống chính sách 42. Mỗi lượt bắt đầu
@@ -7,15 +8,78 @@ sau 20 bước làm nóng, dùng tối đa 1.000 bước điều khiển ở 20 
 truy vấn chính sách sau mỗi 10 hành động. Bộ chấm đọc tiến độ từ mã
 nguồn LIBERO-Mem đã khóa phiên bản. Tiêu chí cuối lượt và phạm vi
 đối chiếu được mô tả trong Chương 4.
-Bản tổng hợp bằng chứng ngày 12/11/2026 đối chiếu trạng thái hoàn tất,
-mã SHA-256 của các bản tóm tắt lượt chạy và phiên bản trọng số thích ứng.
+Bản tổng hợp bằng chứng ngày 15/11/2026 đối chiếu trạng thái hoàn tất,
+mã SHA-256 của các bản tóm tắt lượt chạy, artifact F0 V2 và runtime check.
 
-Mô phỏng chạy trong WSL với Python 3.8.20, robosuite 1.4.0, MuJoCo 3.2.3 và
-NumPy 1.22.4. Suy luận trên Windows dùng Python 3.12.2, torch 2.6.0+cu124,
-LeRobot 0.6.1, transformers 5.5.4 và PEFT 0.19.1.
-Huấn luyện dùng torch 2.11.0+cu130, LeRobot 0.6.1, transformers 5.5.4,
-PEFT 0.21.2 và accelerate 1.15.0. Phiên bản mô hình SmolVLA và nguồn tác vụ
-LIBERO-Mem được ghi trong danh mục tài liệu tham khảo và trong bản kê từng lần chạy.
+Môi trường tham chiếu được dựng lại trong WSL với Python 3.8.13, robosuite 1.4.0,
+BDDL 1.0.1, robomimic 0.2.0, MuJoCo 3.2.3 và NumPy 1.22.4. Validator strict
+đạt và 14/14 smoke simulator đạt với assertion provenance đúng patch đã pin.
+EGL báo fallback sang \texttt{kms\_swrast}. Đây chỉ là kiểm tra môi trường và simulator.
+Suy luận policy cho E0 chạy trong WSL với Python 3.12.3, torch 2.11.0+cu128,
+torchvision 0.26.0+cu128, LeRobot 0.6.1, transformers 5.5.4, PEFT 0.21.2,
+accelerate 1.15.0 và NumPy 2.2.6. CUDA 12.8 khả dụng trên NVIDIA GeForce RTX 4060
+Laptop GPU. Môi trường policy không cài robosuite, BDDL, MuJoCo hoặc robomimic;
+simulator tiếp tục chạy riêng trong Python 3.8.13 đã khóa ở trên. Bản kê package
+inference có SHA-256 \nolinkurl{94d1fc4f7988beba96d62a98a8f97a4f9b8119c101036987287656aa93a9ea10}.
+Artifact F0 V2 đã tồn tại trước cập nhật này; manifest huấn luyện ghi torch
+2.11.0+cu130, LeRobot 0.6.1, transformers 5.5.4, PEFT 0.21.2 và accelerate 1.15.0.
+Inference dùng CUDA 12.8 để phù hợp driver máy cục bộ. Phiên bản mô hình SmolVLA và
+nguồn tác vụ LIBERO-Mem được ghi trong danh mục tài liệu tham khảo và bản kê từng lần chạy.
+
+Pilot E0 V2 dùng cùng seen initial-state hash cho T1/T3 và seed 42 ở B0/F0.
+Bốn episode đều chạy đủ 1.000 policy actions, hoàn thành 0 subgoal và dừng tại horizon.
+Các con số được giữ tách biệt khỏi pilot lịch sử B0/F1; chúng chỉ là phát hiện development.
+
+\section{Nguồn public và định danh protocol}
+
+Các định danh dưới đây phân biệt nguồn benchmark với lựa chọn protocol cục bộ. Roster, ngưỡng kết thúc và lịch điều khiển được gắn nhãn custom khi khác với phép đánh giá công bố. Hash là SHA-256 của nội dung artifact tương ứng hoặc LFS OID do nhà phát hành công bố; chúng không hàm ý các giao thức có thể so sánh điểm trực tiếp.
+
+\begingroup\footnotesize\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.05}
+\begin{longtable}{>{\raggedright\arraybackslash}p{.23\textwidth}>{\raggedright\arraybackslash}p{.38\textwidth}>{\raggedright\arraybackslash}p{.31\textwidth}}
+\caption{Nguồn và định danh có thể kiểm tra cho thực nghiệm}\label{tab:public-provenance}\\
+\toprule
+\textbf{Thành phần} & \textbf{Định danh public hoặc nội dung} & \textbf{Phạm vi} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Thành phần} & \textbf{Định danh public hoặc nội dung} & \textbf{Phạm vi} \\
+\midrule\endhead
+\bottomrule\endfoot
+LIBERO & Revision \nolinkurl{8f1084e3132a39270c3a13ebe37270a43ece2a01} \cite{liberoSource} & Benchmark theo nguồn chính thức \\
+LIBERO-Mem task/evaluator & Revision \nolinkurl{0eee0defa4024e51511b6e15a79f30e9620209de} \cite{liberomemSource} & Task map, BDDL và logic evaluator được khóa \\
+LIBERO-Mem refined data & Revision \nolinkurl{6df130c05b82e09294fa9534e84a069687b72d33} \cite{liberomemData} & Tập tác giả; refined Mem chỉ dùng cho huấn luyện trong split V2 \\
+LIBERO-Mem raw data & Revision \nolinkurl{61917674055e8b1cbbfd22c1b54c28d20c1a1584} \cite{liberomemRawData} & Raw state roster T1/T3/T7; unseen tách khỏi tiền tố train đã khóa \\
+SmolVLA LIBERO checkpoint & Revision \nolinkurl{31d453f7edd78c839a8bbc39744a292686daf0de} \cite{smolvlaCheckpoint} & Backbone gốc của pilot T1/T3 \\
+Split V2 T1/T3/base & SHA-256 \nolinkurl{5ac5eb8c8d5498b4422d010394337d0300030204c58df65a789561ba32f82ab6} & Khóa state, roster và assignment; phân loại custom \\
+Alignment audit V2 & SHA-256 \nolinkurl{79ca820e542785f11cd820bfa246a32848cd8fb6af17f5858bb6b6648171b269} & 180.447 cặp observation--action và 1.396 mẫu parity \\
+F0 V2 no-memory adapter & Manifest SHA-256 \nolinkurl{04d9f259d21426615d26da0c23b70bfdd7f44df43bcdb3655265e58c4dee236b} & Artifact 5.000 bước có trước cập nhật; không phải training mới \\
+E0 runtime check & Run manifest SHA-256 \nolinkurl{797c7ec40aa08dc8396950411a23835cdf1c979547a0d2e56df87dfea3c5cc76} & B0/F0 nạp và thực thi 2 action trên T1/T3; diagnostic only \\
+E0 B0/F0 pilot & Run manifest SHA-256 \nolinkurl{9a38b6144a5bdfeadd40340be64d73b15d28fdd272a7d9d2993505c68956ab74} & Bốn lượt custom, 0/4 success; không phải điểm official \\
+Decision development protocol & ID \texttt{libero\_mem\_decision\_dev\_v1}; SHA-256 \nolinkurl{5e19c8fa9a23bca8613525b39b350fa99977c80c15a7b72e62a036e2fd182e69} & Seen split; 12 state development, 8 calibration; custom \\
+T7 refined source & Git LFS SHA-256 \nolinkurl{8cbe1c2e7b5d1664fdc7e08c773aa0beabbc4ba5079bf47d4a10f9e6c9190757} & 88 local demonstration; không phải policy score \\
+T9 refined source & Git LFS SHA-256 \nolinkurl{f825fa2f8094f5ec45994e354dcee0ded16e8c6f9d046d4a0e2b919441246748} & Revision 6df130c0; local file khớp receipt \\
+T7 raw state inventory & SHA-256 \nolinkurl{797b51fb196ad5e0fe161dfc40b2e91d23da173d94c5ec1dfb1637ed7e369187} & 120 raw state; source-only runtime development \\
+T8 raw source & Git LFS SHA-256 \nolinkurl{77dcad3d4f04b36441a70dc95b4cd2131189c5ebfa105bf92ce5d2a8125a16af} & Pinned raw HDF5; local file and receipt verified \\
+T8 refined source & Git LFS SHA-256 \nolinkurl{399061494f4a0b4ac8a5ce646aa5755a6698ec65fbd4e6843143de5e95c1c555} & Revision 6df130c0; local file matches receipt \\
+T10 raw source & Git LFS SHA-256 \nolinkurl{53afeac724e9ead7eedf289e9fc985f87b071aa9146b3694d6c25e16760bc72c} & Revision 61917674; local file matches receipt \\
+T10 refined source & Git LFS SHA-256 \nolinkurl{bcb9357581d17a6312a34c1f7bd855b9bb7357ca3d5a6aa1c5be2d2a58e1d85b} & Revision 6df130c0; local file matches receipt \\
+T8 author-action replay & Report SHA-256 \nolinkurl{a2c15af157c3585036f4ce663123613bac07c19170673500ee48b10a863929b9} & Ba milestone; không terminal dù metainfo refined success \\
+T8 state-parity replay & Report SHA-256 \nolinkurl{36faa0ac563d1bc49379bc3b70f2e55ea5c974ea482d450037126c4960620fb0} & Raw/refined action và state đầu vào trùng; robot-state lệch đầu tại bước 219 \\
+T8 state-parity audit code & SHA-256 \nolinkurl{ca04a99e61bca1e10c1a0b43f2a691ad19919a7b3faa152ae31d85c513a52f62} & So sánh robot-state pre-action với refined trace; diagnostic only \\
+T9 author-action replay & Report SHA-256 \nolinkurl{801d68b6737d5ae25d0ee4942a32e52b6cc1362a1311de0e3e55958408e64f18} & Một demo; terminal upstream success; diagnostic only \\
+T10 author-action replay & Report SHA-256 \nolinkurl{fe1c433204e0921a0d1b7256d7b1a8b38eb6fe58f354967da0149e2f00338df7} & Một demo; terminal upstream success; diagnostic only \\
+Author replay audit code & SHA-256 \nolinkurl{f5e7796832749cff20f06288330956484507d5454aa0442b5abc543f1f2ada30} & Checks upstream helper/evaluator source and runs author actions; no policy \\
+T7 RGB relation writer & Manifest SHA-256 \nolinkurl{1174a7c6d026c4593c802d29d5e636397ffa87306123f4429e00e9cc9e376428} & Một demo refined; 0/425 prompt có memory, relation unknown; không phải accuracy \\
+T8 RGB relation writer & Manifest SHA-256 \nolinkurl{dfb008a673a8ea40f963d7900ea79c632644a056f216aa38a39d69a5651aa143} & Một demo refined; 0/613 prompt có memory, relation unknown; không phải accuracy \\
+T9 RGB relation writer & Manifest SHA-256 \nolinkurl{885ad6ee980001f4678480075845a2b25814f3dd495f528363c863876ee311d2} & Một demo refined; 0/356 prompt có memory, relation unknown; không phải accuracy \\
+T10 RGB relation writer & Manifest SHA-256 \nolinkurl{1bf30840c20bc043cb80b25d7261103943c079a812b97b61722f044958ba24b3} & Một demo refined; 0/309 prompt có memory, relation unknown; không phải accuracy \\
+T7 detector audit & Report SHA-256 \nolinkurl{fceaaed7ba5a7b465293d1cfa5b14a0cb72a81bb339b5ca184b7378f87eb5e8b} & 425 frame exo-box comparison; detection only, not identity/relation accuracy \\
+T7 audit code & SHA-256 \nolinkurl{caeb1a12ee4f136b487a1c7c2062dbfb73eedb3468fc48ef1c93d2d03579fa3d} & Matching rule and source-frame hash verification \\
+F0/E0 image preprocessing audit & Report SHA-256 \nolinkurl{297ec298d24644c088d08ea6a003e98b6fb6bc94449453a835ec55a957aa0ff5} & No orientation mismatch found in declared transforms; training processor file hash was not recorded \\
+\end{longtable}
+\endgroup
+
+\clearpage
+Protocol vòng kín T1/T3 và replay author-action T7–T10 là thực nghiệm custom, không so sánh trực tiếp với điểm trong paper LIBERO-Mem. Với T8 demo\_1, raw action sau transform và initial state trùng chính xác nguồn refined; state parity trong replay bắt đầu vượt dung sai $10^{-5}$ ở bước 219. Sai khác terminal với metadata refined vẫn chưa được giải thích. Các report T8–T10 chỉ là một author-action demo/task. Revision paper của LIBERO-Mem được trích riêng trong danh mục tài liệu tham khảo; revision code và dữ liệu nêu trên xác định artifact được dùng trong nghiên cứu này.
 
 \section{Bối cảnh V1}
 Ở giai đoạn V1, báo cáo nội bộ ghi 77/160 lượt thành công trên 40 tác vụ,

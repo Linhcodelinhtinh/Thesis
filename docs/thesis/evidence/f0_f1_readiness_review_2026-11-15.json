@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-11-15",
+  "review_type": "vla_model_audit_and_readiness_review",
+  "status": "verified_ready_for_rollout_evaluation",
+  "checkpoints": {
+    "F0": {
+      "export_path": "experiments\\training\\results_f0_author_split_v2\\output_f0\\pretrained_model",
+      "manifest_sha256": "04d9f259d21426615d26da0c23b70bfdd7f44df43bcdb3655265e58c4dee236b",
+      "weights_sha256": "414e4e0f3b6bd2bc42d5a044a3ecde9038eb6065bc23bb91b3734a40d6656d2c",
+      "condition": "no_memory",
+      "training_steps": 5000,
+      "validate_adapter": "PASS"
+    },
+    "F1": {
+      "export_path": "experiments\\training\\results_f1_author_split_v2\\output_f1\\pretrained_model",
+      "manifest_sha256": "624136821e330abac7a9c0fbfe4d59fdad0b3c3ae53c62e98c7da49e36b69d9e",
+      "weights_sha256": "572bd889d5bd3cf0aba83cb4f806b83794fcb650a7b4853ac505d025a08e4aad",
+      "condition": "memory",
+      "training_steps": 5000,
+      "writer": "rgb_relations_v1",
+      "writer_strategy": "relevant",
+      "validate_adapter": "PASS"
+    }
+  },
+  "matched_pair": {
+    "validate_matched_adapters": "PASS",
+    "split_lock_sha256": "8275e468382835c06f9cc738361df26b7452965850878e7ca882f392c9ca4165",
+    "data_manifest_sha256": "fd5e7dca8d22598f3c3598af5c9bd35f775f98f0902b63c5787731e178522f87",
+    "effective_batch_size": 32,
+    "seed": 42,
+    "rank": 16,
+    "lr": 2e-05,
+    "trainable_parameters": 645120
+  },
+  "runtime_preflight": {
+    "F0": {
+      "run_dir": "experiments/evaluation/review-f0-f1-runtime-20261115",
+      "tasks_checked": [
+        "T1",
+        "T3"
+      ],
+      "status": "diagnostic_complete"
+    },
+    "F1": {
+      "run_dir": "experiments/evaluation/review-f1-runtime-retry-20261115",
+      "tasks_checked": [
+        "T1",
+        "T3"
+      ],
+      "status": "diagnostic_complete"
+    }
+  },
+  "reproducibility_caveats": [
+    "Policy env spec envs/smolvla_inference.txt lacked h5py, causing export validation import failure in policy env.",
+    "Handoff documents pointed to simulator .venv_libero_reference running Python 3.8.20 instead of locked 3.8.13.",
+    "Initial F1 runtime check timed out waiting for Grounding DINO CUDA cold start; resolved with proper worker timeout."
+  ],
+  "methodological_boundary": "Offline validation flow loss (F0: 0.4074 vs F1: 0.4048) was evaluated strictly on base retention frames (0 Mem validation frames under author split policy). Memory efficacy can only be determined through closed-loop paired rollouts on seen/unseen state rosters."
+}

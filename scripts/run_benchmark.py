@@ -446,7 +446,7 @@ def main():
 
     # Provenance metadata per ADR-0010 & AGENTS.md Source of Truth
     py_version = sys.version.split()[0]
-    is_py38 = py_version.startswith("3.8")
+    is_py_reference = tuple(sys.version_info[:3]) == (3, 8, 13)
     is_linux = sys.platform.startswith("linux")
 
     robosuite_ver = None
@@ -460,13 +460,23 @@ def main():
     try:
         import bddl
         bddl_ver = getattr(bddl, "__version__", None)
+        if not bddl_ver:
+            from importlib.metadata import version as distribution_version
+            bddl_ver = distribution_version("bddl")
     except ImportError:
+        pass
+
+    robomimic_ver = None
+    try:
+        from importlib.metadata import version as distribution_version
+        robomimic_ver = distribution_version("robomimic")
+    except Exception:
         pass
 
     non_comparable_reasons = []
     if not is_linux:
         non_comparable_reasons.append(f"Operating system is {sys.platform} (official reference stack requires Linux)")
-    if not is_py38:
+    if not is_py_reference:
         non_comparable_reasons.append(f"Python version is {py_version} (official reference stack requires Python 3.8.13)")
     if args.camera_resolution != 128:
         non_comparable_reasons.append(f"Camera resolution is {args.camera_resolution}x{args.camera_resolution} (official benchmark baseline uses 128x128)")
@@ -474,8 +484,12 @@ def main():
         non_comparable_reasons.append(f"Max steps is {args.max_steps} (official reference requires 1000)")
     if robosuite_ver != "1.4.0":
         non_comparable_reasons.append(f"robosuite version is {robosuite_ver} (official reference requires 1.4.0)")
-    if bddl_ver not in ("1.0.1", "1.0"):
+    if bddl_ver != "1.0.1":
         non_comparable_reasons.append(f"bddl version is {bddl_ver} (official reference requires 1.0.1)")
+    if np.__version__ != "1.22.4":
+        non_comparable_reasons.append(f"NumPy version is {np.__version__} (official reference requires 1.22.4)")
+    if robomimic_ver != "0.2.0":
+        non_comparable_reasons.append(f"robomimic version is {robomimic_ver} (official reference requires 0.2.0)")
 
     is_official_certified = len(non_comparable_reasons) == 0
 

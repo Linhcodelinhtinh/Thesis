@@ -41,6 +41,24 @@ hardware_requirements:
   min_vram_gb: 4
   recommended_device: "cuda"
 
-gripper_action_polarity: "DIRECT"
+gripper_action_polarity: "INVERTED_RLDS_TO_ROBOSUITE"
 
-metadata_notes: "MiniVLA 0.5B VQ (Qwen2.5-0.5B + SigLIP-224px + Residual-VQ tokenizer) for LIBERO-90 chunk prediction."
+evaluation_status: "BLOCKED_OFFICIAL_CONTRACT_AUDIT"
+checkpoint_selection:
+  status: "UNRESOLVED"
+  selection_rule: "Require the exact checkpoint filename and hash from an official evaluation specification."
+vq_codebook:
+  status: "MISSING_LOCAL_RESOURCE"
+  official_resource_revision: null
+  checkpoint_sha256: null
+  config_sha256: null
+  note: "The adapter requires the trained VQ-VAE codebook; a zero-filled or reconstructed codebook is not valid."
+official_code_audit:
+  repository: "https://github.com/Stanford-ILIAD/openvla-mini"
+  revision: "0822b36227b5a771be4eb2680e34c559734c8fdc"
+contract_findings:
+  status: "BLOCKED"
+  required: "Pin exact VQ model/checkpoint, codebook revision and hashes, then verify the official VQ decoder and action chunk execution contract."
+  shared_minivla_contract: "Use the official Prismatic image transform, prompt builder, action statistics and LIBERO gripper postprocessing."
+
+metadata_notes: "MiniVLA 0.5B VQ candidate. It is not evaluation-ready: the VQ-VAE codebook is absent locally and its revision/hash, official action chunk decode and shared Prismatic runtime contract have not been validated."

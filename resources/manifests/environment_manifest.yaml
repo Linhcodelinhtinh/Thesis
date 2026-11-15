@@ -25,12 +25,34 @@ environments:
   libero_reference_env:
     name: "libero_reference"
     spec_file: "envs/libero_reference.yml"
+    verified_venv: ".venv_libero_reference_3813"
     target_os: "Linux (Ubuntu via WSL2)"
     python_version: "3.8.13"
     robosuite_version: "1.4.0"
     bddl_version: "1.0.1"
     rendering_backend: "egl"
     role: "Canonical Mode A (STRICT-LIBERO) baseline reference execution"
+
+  smolvla_inference_env:
+    name: "smolvla_f0_eval_20261115"
+    spec_file: "envs/smolvla.yml"
+    pip_requirements: "envs/smolvla_inference.txt"
+    package_freeze: "resources/manifests/pip_freeze_smolvla.txt"
+    package_freeze_sha256: "94d1fc4f7988beba96d62a98a8f97a4f9b8119c101036987287656aa93a9ea10"
+    verified_venv: "/home/linh/.venvs/smolvla_f0_eval_20261115"
+    target_os: "Linux (Ubuntu 24.04 via WSL2)"
+    python_version: "3.12.3"
+    torch_version: "2.11.0+cu128"
+    torchvision_version: "0.26.0+cu128"
+    lerobot_version: "0.6.1"
+    transformers_version: "5.5.4"
+    peft_version: "0.21.2"
+    accelerate_version: "1.15.0"
+    numpy_version: "2.2.6"
+    cuda_runtime: "12.8"
+    gpu: "NVIDIA GeForce RTX 4060 Laptop GPU"
+    policy_packages_only: true
+    role: "Isolated SmolVLA inference and evaluation environment; no LIBERO simulator packages"
 
   host_execution_env:
     name: "host_windows"
@@ -45,3 +67,36 @@ environments:
       driver: "571.96"
       cuda: "12.8"
     role: "Local diagnostic and development runner"
+
+observed_reference_verification:
+  date: "2026-11-14"
+  platform: "Ubuntu 24.04 via WSL2"
+  python_observed: "3.8.13"
+  python_pinned: "3.8.13"
+  exact_python_patch_match: true
+  robosuite: "1.4.0"
+  bddl: "1.0.1"
+  robomimic: "0.2.0"
+  numpy: "1.22.4"
+  mujoco: "3.2.3"
+  backend: "EGL; runtime warned and fell back to kms_swrast"
+  validate_environment_strict: "PASS with exact Python 3.8.13 and pinned reference package checks"
+  simulator_smoke: "14 passed; 0 failed; 0 errors; 71.68 seconds; 3 warnings"
+  policy_score_generated: false
+
+observed_smolvla_runtime_verification:
+  date: "2026-11-15"
+  platform: "Ubuntu 24.04 via WSL2"
+  python_observed: "3.12.3"
+  torch: "2.11.0+cu128"
+  torchvision: "0.26.0+cu128"
+  lerobot: "0.6.1"
+  transformers: "5.5.4"
+  peft: "0.21.2"
+  accelerate: "1.15.0"
+  cuda_available: true
+  cuda_runtime: "12.8"
+  gpu: "NVIDIA GeForce RTX 4060 Laptop GPU"
+  runtime_check: "B0/F0 passed on T1/T3, seen state 0; four checks, two actions each; no score"
+  full_development_pilot: "4/4 episodes complete; 1,000 policy actions each; 0/4 success; CUSTOM_V2_LIBERO_MEM; NON-COMPARABLE_OFFICIAL_PAPER"
+  policy_training_performed: false

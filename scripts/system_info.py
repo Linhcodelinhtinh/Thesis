@@ -26,7 +26,7 @@ def get_cpu_info():
     if sys.platform == "win32":
         try:
             cmd = "Get-CimInstance Win32_Processor | Select-Object -Property Name, NumberOfCores, NumberOfLogicalProcessors | ConvertTo-Json"
-            out = subprocess.check_output(["powershell", "-Command", cmd], text=True)
+            out = subprocess.check_output(["powershell", "-Command", cmd], text=True, stderr=subprocess.DEVNULL)
             data = json.loads(out)
             if isinstance(data, list):
                 data = data[0]
@@ -53,10 +53,34 @@ def get_ram_info():
     if sys.platform == "win32":
         try:
             cmd = "(Get-CimInstance Win32_OperatingSystem).TotalVisibleMemorySize"
-            out = subprocess.check_output(["powershell", "-Command", cmd], text=True).strip()
+            out = subprocess.check_output(["powershell", "-Command", cmd], text=True, stderr=subprocess.DEVNULL).strip()
             info["total_gb"] = round(float(out) / (1024 * 1024), 2)
         except Exception:
-            pass
+            try:
+                import ctypes
+
+                class MemoryStatusEx(ctypes.Structure):
+                    _fields_ = [
+                        ("dwLength", ctypes.c_ulong),
+                        ("dwMemoryLoad", ctypes.c_ulong),
+                        ("ullTotalPhys", ctypes.c_ulonglong),
+                        ("ullAvailPhys", ctypes.c_ulonglong),
+                        ("ullTotalPageFile", ctypes.c_ulonglong),
+                        ("ullAvailPageFile", ctypes.c_ulonglong),
+                        ("ullTotalVirtual", ctypes.c_ulonglong),
+                        ("ullAvailVirtual", ctypes.c_ulonglong),
+                        ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
+                    ]
+
+                status = MemoryStatusEx()
+                status.dwLength = ctypes.sizeof(status)
+                kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+                if not kernel32.GlobalMemoryStatusEx(ctypes.byref(status)):
+                    raise ctypes.WinError(ctypes.get_last_error())
+                info["total_gb"] = round(status.ullTotalPhys / (1024 ** 3), 2)
+                info["source"] = "GlobalMemoryStatusEx"
+            except Exception as fallback_exc:
+                info["error"] = str(fallback_exc)
     elif sys.platform.startswith("linux"):
         try:
             with open("/proc/meminfo", "r") as f:

@@ -16,7 +16,8 @@
     "logical_cores": 16
   },
   "ram": {
-    "total_gb": null
+    "total_gb": 15.19,
+    "source": "GlobalMemoryStatusEx"
   },
   "gpu": {
     "available": true,

@@ -1,0 +1,525 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-11-15",
+  "claims": [
+    {
+      "id": "method-contract",
+      "state": "verified_within_scope",
+      "scope": "Formal update/projection properties under the assumptions stated in Chapter 3; this does not establish detector accuracy or closed-loop benefit.",
+      "evidence_source_ids": [
+        "relation_memory_impl",
+        "relation_tracker_impl",
+        "relation_memory_tests"
+      ],
+      "permitted_wording": "The method specifies evidence-linked state updates and a causal projection contract under explicit assumptions."
+    },
+    {
+      "id": "v2-data",
+      "state": "artifact_verified",
+      "scope": "Locked V2 T1/T3/base dataset inventory and observation/action/image alignment only.",
+      "evidence_source_ids": [
+        "v2_split_lock",
+        "v2_alignment"
+      ],
+      "permitted_wording": "The V2 corpus contains 698 episodes and passed the recorded alignment audit over 180,447 state/action rows and 1,396 adapter-parity samples."
+    },
+    {
+      "id": "decision-replay",
+      "state": "development_only",
+      "scope": "Open-loop replay on fixed author demonstrations; no policy action or success effect is measured.",
+      "evidence_source_ids": [
+        "decision_protocol",
+        "decision_t1",
+        "decision_t3"
+      ],
+      "permitted_wording": "D0-D2 replay describes query and trigger schedules on recorded trajectories and is not a policy score."
+    },
+    {
+      "id": "t7-source",
+      "state": "artifact_verified",
+      "scope": "Pinned local T7 source and raw evaluator replay with author actions.",
+      "evidence_source_ids": [
+        "t7_refined_receipt",
+        "t7_raw_rgb_branch1",
+        "t7_raw_rgb_branch2"
+      ],
+      "permitted_wording": "The refined T7 source hash matches the pinned LFS OID, and RGB author-action replay exercised each Or branch."
+    },
+    {
+      "id": "t7-writer",
+      "state": "artifact_verified",
+      "scope": "One author-refined T7 demonstration; writer output plus per-frame detector comparison to released author exo-boxes; no identity/relation accuracy or policy score.",
+      "evidence_source_ids": [
+        "t7_writer_manifest",
+        "t7_writer_samples",
+        "t7_writer_trace",
+        "t7_writer_detections",
+        "t7_detector_box_report",
+        "t7_detector_box_audit_code"
+      ],
+      "permitted_wording": "On one T7 training demonstration, the relation writer produced no memory fact in 425 samples and reported unknown relations throughout; against released exo-box annotations at IoU 0.5, bowl detector precision/recall was 0.893/0.747 and plate precision/recall was 0.971/0.646. These frame-level detection results do not establish identity tracking or relation accuracy."
+    },
+    {
+      "id": "t8-writer",
+      "state": "artifact_verified",
+      "scope": "One author-refined T8 training demonstration; RGB relation writer output only, without independent identity/relation labels or policy rollout.",
+      "evidence_source_ids": [
+        "t8_refined_receipt",
+        "t8_raw_receipt",
+        "t8_writer_manifest",
+        "t8_writer_contract",
+        "t8_writer_samples",
+        "t8_writer_trace",
+        "t8_writer_detections"
+      ],
+      "permitted_wording": "On one T8 training demonstration, the RGB relation writer produced no memory fact in 613 samples and relation state remained unknown throughout. This is a single-demo writer diagnostic, not independent identity/relation accuracy or a policy score."
+    },
+    {
+      "id": "t9-writer",
+      "state": "artifact_verified",
+      "scope": "One author-refined T9 training demonstration; RGB relation writer output only, without independent identity/containment labels or policy rollout.",
+      "evidence_source_ids": [
+        "t9_refined_receipt",
+        "t9_writer_manifest",
+        "t9_writer_contract",
+        "t9_writer_samples",
+        "t9_writer_trace",
+        "t9_writer_detections"
+      ],
+      "permitted_wording": "On one T9 training demonstration, the RGB relation writer produced no memory fact in 356 samples and relation state remained unknown throughout. This is a single-demo writer diagnostic, not independent identity/containment accuracy or a policy score."
+    },
+    {
+      "id": "legacy-writer",
+      "state": "development_only",
+      "scope": "Six previously observed T1/T3 demonstrations from the historical RGB cycle-writer audit.",
+      "evidence_source_ids": [
+        "legacy_writer_summary"
+      ],
+      "permitted_wording": "The earlier cycle-writer audit matched its annotated milestones on the selected demonstrations within the reported tolerance."
+    },
+    {
+      "id": "pilot-policy",
+      "state": "development_only",
+      "scope": "Two separate custom evidence streams: historical B0/F1 T1/T3 pilot with 20 task episodes per condition, and the V2 E0 B0/F0 development pilot with one seen state per task and treatment.",
+      "evidence_source_ids": [
+        "pilot_episode_register",
+        "v2_e0_pilot_manifest",
+        "v2_e0_pilot_report"
+      ],
+      "permitted_wording": "The historical B0 and F1 pilot recorded 0/20 and 1/20 successes under the local protocol; a separate V2 seen-state pilot completed four B0/F0 episodes with 0/4 successes. Neither result estimates a causal memory effect."
+    },
+    {
+      "id": "open-policy-gate",
+      "state": "artifact_verified",
+      "scope": "Matched V2 policy pair verification; F0 (no-memory) and F1 (rgb_relations_v1) unmerged adapters exist, passed static contract and diagnostic runtime checks, and are ready for paired closed-loop evaluation on seen/unseen state rosters. Paired rollout comparison and memory efficacy claims remain pending.",
+      "evidence_source_ids": [
+        "v2_split_lock",
+        "v2_alignment",
+        "f0_v2_adapter_manifest",
+        "f1_v2_adapter_manifest",
+        "f0_v2_runtime_manifest",
+        "f1_v2_runtime_manifest",
+        "f0_f1_review_receipt"
+      ],
+      "permitted_wording": "Matched F0 (no-memory) and F1 (relation-memory) V2 adapters have passed preflight verification and initial-state diagnostic rollout checks, but paired closed-loop performance comparison remains to be evaluated.",
+      "prohibited_wording": "Claiming that memory improves task success before running paired rollouts, or claiming that F1 V2 is unavailable."
+    },
+    {
+      "id": "reference-env-smoke",
+      "state": "artifact_verified",
+      "scope": "Pinned-source environment integrity and simulator smoke only in exact Python 3.8.13 reference environment; no policy score is measured.",
+      "evidence_source_ids": [
+        "libero_reference_source_receipt",
+        "libero_env_smoke_test"
+      ],
+      "permitted_wording": "The pinned-source WSL environment passed strict validation with Python 3.8.13 and the LIBERO simulator smoke suite passed 14/14 under the exact provenance assertions; EGL fell back to kms_swrast and no policy score was generated."
+    },
+    {
+      "id": "image-preprocessing-parity",
+      "state": "verified_within_scope",
+      "scope": "Declared training/evaluation image transforms and code paths; the training-side LeRobot processor file hash is unavailable, and this does not explain E0 task failures.",
+      "evidence_source_ids": [
+        "image_preprocessing_parity",
+        "f0_v2_adapter_manifest",
+        "v2_data_manifest"
+      ],
+      "permitted_wording": "The audit found no image-orientation mismatch in the declared training and evaluation transforms; byte-level identity of the training processor installation was not recorded."
+    },
+    {
+      "id": "t10-writer",
+      "state": "artifact_verified",
+      "scope": "One author-refined T10 training demonstration; RGB relation writer output only, without independent identity/containment labels or policy rollout.",
+      "evidence_source_ids": [
+        "t10_refined_receipt",
+        "t10_raw_receipt",
+        "t10_writer_manifest",
+        "t10_writer_contract",
+        "t10_writer_samples",
+        "t10_writer_trace",
+        "t10_writer_detections"
+      ],
+      "permitted_wording": "On one T10 training demonstration, the RGB relation writer produced no memory fact in 309 samples; relation state remained unknown in all 309 samples and all 927 object identity observations were unknown. This is a single-demo writer diagnostic, not independent identity/containment accuracy or a policy score."
+    },
+    {
+      "id": "task-runtime-replay",
+      "state": "development_only",
+      "scope": "One upstream-style author-action replay each on T8, T9 and T10, plus T8 raw/refined source and per-step robot-state parity diagnostics; no policy, independent labels, or memory treatment.",
+      "evidence_source_ids": [
+        "author_replay_script",
+        "author_replay_t8",
+        "author_replay_t9",
+        "author_replay_t10",
+        "t8_state_parity_script",
+        "t8_state_parity_report"
+      ],
+      "permitted_wording": "One author-action replay reached terminal upstream success on T9 and T10. For T8 demo_1, the refined actions exactly match the pinned transform of raw actions and the initial states match, but replay robot state first exceeded the diagnostic 1e-5 tolerance at step 219; three milestones were reached without terminal success despite refined metainfo success=true. The cause remains unresolved. These one-demo diagnostics do not establish policy competence, writer accuracy, memory benefit, or an official score."
+    }
+  ],
+  "sources": [
+    {
+      "id": "relation_memory_impl",
+      "path": "src/memory/relation_memory.py",
+      "sha256": "95f6c50d695a2cbc8b4dac60de7633182931a6e0f11f0f52b9e81b1a5bc07feb",
+      "description": "Relation state reducer and evidence-validity implementation."
+    },
+    {
+      "id": "relation_tracker_impl",
+      "path": "src/perception/relation_tracking.py",
+      "sha256": "a14e184146f85dd53befdd830706d7e8d00f34ad6c5934f832c894c7ce433dcc",
+      "description": "Conservative RGB identity and relation tracking implementation."
+    },
+    {
+      "id": "relation_memory_tests",
+      "path": "tests/unit/test_relation_memory.py",
+      "sha256": "080ff4e2a2fc968b7fc7ea7c515a8dd2dadf2613fc26117f779238060412c2e0",
+      "description": "Unit checks for relation memory state transitions."
+    },
+    {
+      "id": "v2_split_lock",
+      "path": "resources/manifests/libero_mem_t1_t3_base10_split_v2.json",
+      "sha256": "5ac5eb8c8d5498b4422d010394337d0300030204c58df65a789561ba32f82ab6",
+      "description": "Locked V2 roster and grouped split; file hash verified."
+    },
+    {
+      "id": "v2_alignment",
+      "path": "experiments/training/relations-author-split-v2/alignment-audit.json",
+      "sha256": "79ca820e542785f11cd820bfa246a32848cd8fb6af17f5858bb6b6648171b269",
+      "description": "Completed data alignment audit; not a policy score."
+    },
+    {
+      "id": "decision_protocol",
+      "path": "configs/benchmarks/libero_mem_decision_dev_v1.json",
+      "sha256": "5e19c8fa9a23bca8613525b39b350fa99977c80c15a7b72e62a036e2fd182e69",
+      "description": "Development-only decision protocol."
+    },
+    {
+      "id": "decision_t1",
+      "path": "experiments/audits/relation-e1-20261113-232401/decision-dev-v1-final-T1.json",
+      "sha256": "66c6304167bec3a92dd5a555388f1a0231e7c31e0bd1b71cfc340757871c2373",
+      "description": "Open-loop decision replay report for T1."
+    },
+    {
+      "id": "decision_t3",
+      "path": "experiments/audits/relation-e1-20261113-232401/decision-dev-v1-final-T3.json",
+      "sha256": "9cc011f715080abc633de5e96b0e2c77783f7b0adac0d0cfb320308d3882c216",
+      "description": "Open-loop decision replay report for T3."
+    },
+    {
+      "id": "t7_refined_receipt",
+      "path": "resources/manifests/libero_mem_t7_refined_receipt_v1.json",
+      "sha256": "073b9ee45fd5cae85f2707d89f4f1a74ffafdcfbd1b5c2b8eb465ab01a10918f",
+      "description": "Receipt confirming the local refined source hash against the pinned LFS OID."
+    },
+    {
+      "id": "t7_raw_rgb_branch1",
+      "path": "experiments/audits/t7-raw-rgb-branch1-20261114.json",
+      "sha256": "97afa643d23a330b3b4f695a003180f69f1aa0d1e461dacaaff1c04ff399521b",
+      "description": "RGB replay of author actions through T7 Or branch 1 evaluator."
+    },
+    {
+      "id": "t7_raw_rgb_branch2",
+      "path": "experiments/audits/t7-raw-rgb-branch2-20261114.json",
+      "sha256": "4d5f940b74537f076359eff273f181e8d7b2688c196cb22bec714b446a4f2336",
+      "description": "RGB replay of author actions through T7 Or branch 2 evaluator."
+    },
+    {
+      "id": "t7_writer_manifest",
+      "path": "experiments/audits/relation-e1-20261114-t7-demo1/manifest.json",
+      "sha256": "1174a7c6d026c4593c802d29d5e636397ffa87306123f4429e00e9cc9e376428",
+      "description": "Complete one-demo T7 RGB relation writer index manifest."
+    },
+    {
+      "id": "t9_refined_receipt",
+      "path": "resources/manifests/libero_mem_t9_source_receipt_v1.json",
+      "sha256": "72d5fbf3c84667180555e1dd0a0035f789974f2c37a0a258e926e9e130b57001",
+      "description": "Pinned T9 refined/raw source provenance and locally verified refined-task/metainfo SHA-256 receipt."
+    },
+    {
+      "id": "t9_writer_manifest",
+      "path": "experiments/audits/relation-e1-20261115-t9-demo1/manifest.json",
+      "sha256": "885ad6ee980001f4678480075845a2b25814f3dd495f528363c863876ee311d2",
+      "description": "Complete one-demo T9 RGB relation writer index manifest; offline diagnostic, not training shards."
+    },
+    {
+      "id": "t9_writer_contract",
+      "path": "experiments/audits/relation-e1-20261115-t9-demo1/index_contract.json",
+      "sha256": "ca9a5361d0b300e9743a1ac55838c7c2eed5cd9cd18351e53d30bef6e8bfde64",
+      "description": "T9 index contract pinning source hashes, code hashes, writer, detector, tokenizer and demo selection."
+    },
+    {
+      "id": "t9_writer_samples",
+      "path": "experiments/audits/relation-e1-20261115-t9-demo1/samples.jsonl",
+      "sha256": "0e320298d122704bb2869552b54df945d06cf0929f97896ee8bace70bac839ce",
+      "description": "T9 causal prompt and writer sample rows for 356 observations."
+    },
+    {
+      "id": "t9_writer_trace",
+      "path": "experiments/audits/relation-e1-20261115-t9-demo1/memory_trace.jsonl",
+      "sha256": "3f5d347136166e71e6ee75eacd5615b89f595d3222310da6b39d74a546ce2130",
+      "description": "T9 per-observation relation-memory state trace."
+    },
+    {
+      "id": "t9_writer_detections",
+      "path": "experiments/audits/relation-e1-20261115-t9-demo1/detections.jsonl",
+      "sha256": "06c7798995e396ae510f20b4bcd38aab1eef4911232d2bc60ce5806d8db2c5e7",
+      "description": "T9 RGB detector observations for the complete one-demo writer diagnostic."
+    },
+    {
+      "id": "t7_writer_samples",
+      "path": "experiments/audits/relation-e1-20261114-t7-demo1/samples.jsonl",
+      "sha256": "a0d986e824385a627219d73a208e474bda372f49342ebcdb5adfa1a1774863ab",
+      "description": "T7 prompt/index samples for the one-demo writer audit."
+    },
+    {
+      "id": "t7_writer_trace",
+      "path": "experiments/audits/relation-e1-20261114-t7-demo1/memory_trace.jsonl",
+      "sha256": "7a221a728000c754d6709c0cf2aad6b6e9c17bd293d0b9278f8662663ecc9e78",
+      "description": "T7 relation writer state trace for the one-demo audit."
+    },
+    {
+      "id": "legacy_writer_summary",
+      "path": "experiments/audits/memory_writer_v3/verification_summary.json",
+      "sha256": "0b75e1f67e1db56c4f357028398fc51753b340331785c1c167783ec33d16f74f",
+      "description": "Earlier six-demonstration RGB cycle-writer audit summary."
+    },
+    {
+      "id": "pilot_episode_register",
+      "path": "docs/thesis/evidence/mem_test_episodes.csv",
+      "sha256": "496f37a4e13fd197cfc8ddff5312bab21b24a1280731a88cbe08128e49661abb",
+      "description": "Checked episode-level B0/F1 historical pilot register."
+    },
+    {
+      "id": "f1_v2_preflight",
+      "path": "experiments/evaluation/decision-f1-checkpoint-gate-20261114/run_manifest.json",
+      "sha256": "c481f7b3f69084a8517145a83ac448e42694d53f7053c5ce91febb51fa5fac29",
+      "description": "Preflight record for the incompatible historical F1 adapter against V2 writer/protocol."
+    },
+    {
+      "id": "t7_writer_detections",
+      "path": "experiments/audits/relation-e1-20261114-t7-demo1/detections.jsonl",
+      "sha256": "430069c2f1ab45f28955a680f89a2dc9bbb5500d459291a1bfbb9be7a7f9a772",
+      "description": "Per-frame detector observations for the complete 425-frame T7 writer audit."
+    },
+    {
+      "id": "libero_reference_source_receipt",
+      "path": "resources/manifests/libero_reference_source_receipt.json",
+      "sha256": "8aaa333a84cd2c80195b783107ff01be4f8767ef2779cba0c469368fd65cc717",
+      "description": "Pinned LIBERO source archive, installed reference environment, smoke result, and exact Python patch limitation."
+    },
+    {
+      "id": "libero_env_smoke_test",
+      "path": "tests/environment/test_libero_env.py",
+      "sha256": "48c188fafe50ee31aed17db712b01a6d056f159101dabe4986399aa0e83c97ee",
+      "description": "LIBERO simulator smoke test source; 14/14 passed in the exact Python 3.8.13 reference environment with pinned package provenance assertions."
+    },
+    {
+      "id": "f0_v2_adapter_manifest",
+      "path": "experiments/training/results_f0_author_split_v2/output_f0/pretrained_model/mem_adapter_manifest.json",
+      "sha256": "04d9f259d21426615d26da0c23b70bfdd7f44df43bcdb3655265e58c4dee236b",
+      "description": "Existing V2 no-memory F0 adapter manifest; artifact predates this update and no training was run for it here."
+    },
+    {
+      "id": "smolvla_inference_freeze",
+      "path": "resources/manifests/pip_freeze_smolvla.txt",
+      "sha256": "94d1fc4f7988beba96d62a98a8f97a4f9b8119c101036987287656aa93a9ea10",
+      "description": "Exact pip freeze for the isolated Python 3.12.3 SmolVLA inference environment used by the E0 runs."
+    },
+    {
+      "id": "f0_v2_runtime_manifest",
+      "path": "experiments/evaluation/e0-f0-runtime-ext4-20261115/run_manifest.json",
+      "sha256": "797c7ec40aa08dc8396950411a23835cdf1c979547a0d2e56df87dfea3c5cc76",
+      "description": "Four B0/F0 real model/reset/two-action diagnostics on T1/T3; runtime check only, no score."
+    },
+    {
+      "id": "v2_e0_pilot_manifest",
+      "path": "experiments/evaluation/e0-b0-f0-pilot-20261115/run_manifest.json",
+      "sha256": "9a38b6144a5bdfeadd40340be64d73b15d28fdd272a7d9d2993505c68956ab74",
+      "description": "Completed four-episode custom B0/F0 seen-state E0 development pilot, with per-episode provenance and hashes."
+    },
+    {
+      "id": "v2_e0_pilot_report",
+      "path": "experiments/evaluation/e0-b0-f0-pilot-20261115/report.md",
+      "sha256": "b0d30fd42945f872f3730051067bc66afbfd5e2544d3985939d8a0bfdf2d6eee",
+      "description": "Aggregate report for the E0 pilot; classified custom/non-comparable, with N=1 state per task-condition."
+    },
+    {
+      "id": "t7_detector_box_report",
+      "path": "experiments/audits/t7-detector-box-e1-20261115/report.json",
+      "sha256": "fceaaed7ba5a7b465293d1cfa5b14a0cb72a81bb339b5ca184b7378f87eb5e8b",
+      "description": "Single-demo T7 detector audit against released author exo-box annotations; source RGB hashes verified for 425 frames."
+    },
+    {
+      "id": "t7_detector_box_audit_code",
+      "path": "scripts/audit_t7_detector_boxes.py",
+      "sha256": "caeb1a12ee4f136b487a1c7c2062dbfb73eedb3468fc48ef1c93d2d03579fa3d",
+      "description": "Read-only matching and provenance checks for the T7 detector-versus-exo-box audit."
+    },
+    {
+      "id": "image_preprocessing_parity",
+      "path": "experiments/audits/smolvla-image-preprocessing-parity-20261115/report.json",
+      "sha256": "297ec298d24644c088d08ea6a003e98b6fb6bc94449453a835ec55a957aa0ff5",
+      "description": "F0/E0 declared image transform parity; no orientation mismatch found, training-side processor source file hash not recorded."
+    },
+    {
+      "id": "v2_data_manifest",
+      "path": "experiments/training/results_f0_author_split_v2/dataset-manifest.json",
+      "sha256": "fd5e7dca8d22598f3c3598af5c9bd35f775f98f0902b63c5787731e178522f87",
+      "description": "F0 V2 data manifest with the canonical raw OpenGL image contract and hashed preparation-code provenance."
+    },
+    {
+      "id": "t8_refined_receipt",
+      "path": "resources/manifests/libero_mem_t8_refined_receipt_v1.json",
+      "sha256": "c9bf7f1c750363d1c630307d68b30877ff2676e0037c146fe819b949f6e0a8ee",
+      "description": "Pinned T8 refined author-release source receipt with local SHA-256 verification."
+    },
+    {
+      "id": "t8_raw_receipt",
+      "path": "resources/manifests/libero_mem_t8_raw_receipt_v1.json",
+      "sha256": "7d930d0bac339b88eefe6512ce992192eab6a62782ca8922641d891d1d593e84",
+      "description": "Pinned T8 raw author-release source receipt with local SHA-256 verification."
+    },
+    {
+      "id": "t8_writer_manifest",
+      "path": "experiments/audits/relation-e1-20261115-t8-demo1/manifest.json",
+      "sha256": "dfb008a673a8ea40f963d7900ea79c632644a056f216aa38a39d69a5651aa143",
+      "description": "Complete one-demo T8 RGB relation writer manifest; offline diagnostic only."
+    },
+    {
+      "id": "t8_writer_contract",
+      "path": "experiments/audits/relation-e1-20261115-t8-demo1/index_contract.json",
+      "sha256": "7cd0d636371b0c78f87c44c889bf82adf9a9d96dc59a4e356234a0505128c3d8",
+      "description": "T8 index contract pinning source hashes, writer, detector, tokenizer, and demo selection."
+    },
+    {
+      "id": "t8_writer_samples",
+      "path": "experiments/audits/relation-e1-20261115-t8-demo1/samples.jsonl",
+      "sha256": "f6dfbb55fb32ef81e9f49ea5c761c1b1d5a612e67ba03c401ec94400a9873553",
+      "description": "T8 causal prompt and writer sample rows for 613 observations."
+    },
+    {
+      "id": "t8_writer_trace",
+      "path": "experiments/audits/relation-e1-20261115-t8-demo1/memory_trace.jsonl",
+      "sha256": "265050b4ed29c3cb0db227517d56176c8534efd5037fa631cd861ee738b17aa4",
+      "description": "T8 per-observation relation-memory state trace."
+    },
+    {
+      "id": "t8_writer_detections",
+      "path": "experiments/audits/relation-e1-20261115-t8-demo1/detections.jsonl",
+      "sha256": "31b31f17ce1fd6cf36d1217a8d0dad8760822d324c0a41e45bc09f620c4ee75e",
+      "description": "T8 RGB detector observations for the complete one-demo writer diagnostic."
+    },
+    {
+      "id": "t10_refined_receipt",
+      "path": "resources/manifests/libero_mem_t10_refined_receipt_v1.json",
+      "sha256": "bc7b5aacefa13476a99463cc5f13d55eeada1ff57db24c060bb112373ea74772",
+      "description": "Pinned T10 refined author-release source receipt with local SHA-256 verification."
+    },
+    {
+      "id": "t10_raw_receipt",
+      "path": "resources/manifests/libero_mem_t10_raw_receipt_v1.json",
+      "sha256": "f7ec161bb85dfe6c4422ab036b72d0c41fcb9e12c62543ebbd47e0eae0141b23",
+      "description": "Pinned T10 raw author-release source receipt with local SHA-256 verification."
+    },
+    {
+      "id": "t10_writer_manifest",
+      "path": "experiments/audits/relation-e1-20261115-t10-demo1/manifest.json",
+      "sha256": "1bf30840c20bc043cb80b25d7261103943c079a812b97b61722f044958ba24b3",
+      "description": "Complete one-demo T10 RGB relation writer manifest; offline diagnostic only."
+    },
+    {
+      "id": "t10_writer_contract",
+      "path": "experiments/audits/relation-e1-20261115-t10-demo1/index_contract.json",
+      "sha256": "47ea4a60a81acf9252a9f5bbce4aa1b56d06065faa8d3085af5a94b6e4dfa576",
+      "description": "T10 index contract pinning source hashes, writer, detector, tokenizer, and demo selection."
+    },
+    {
+      "id": "t10_writer_samples",
+      "path": "experiments/audits/relation-e1-20261115-t10-demo1/samples.jsonl",
+      "sha256": "e6aad6289b4c8ab7449398b9ff3725f658b6b674a64e5f05399fd6354d1d1c91",
+      "description": "T10 causal prompt and writer sample rows for 309 observations."
+    },
+    {
+      "id": "t10_writer_trace",
+      "path": "experiments/audits/relation-e1-20261115-t10-demo1/memory_trace.jsonl",
+      "sha256": "fe45ada12c092bc9860d63d77eb00392f19d40994a5add82ada0adda7dfafc01",
+      "description": "T10 per-observation relation-memory state trace."
+    },
+    {
+      "id": "t10_writer_detections",
+      "path": "experiments/audits/relation-e1-20261115-t10-demo1/detections.jsonl",
+      "sha256": "75d4002b7e00226697a218b43fc116e6605a627fc52e9ac0f5b45eb3110089bb",
+      "description": "T10 RGB detector observations for the complete one-demo writer diagnostic."
+    },
+    {
+      "id": "author_replay_script",
+      "path": "scripts/audit_libero_mem_author_replay.py",
+      "sha256": "f5e7796832749cff20f06288330956484507d5454aa0442b5abc543f1f2ada30",
+      "description": "Pinned-source author-action replay audit code."
+    },
+    {
+      "id": "author_replay_t8",
+      "path": "experiments/audits/t8-author-replay-upstream-20261115.json",
+      "sha256": "a2c15af157c3585036f4ce663123613bac07c19170673500ee48b10a863929b9",
+      "description": "One-demo T8 author-action replay through the pinned upstream task helper/evaluator; terminal discrepancy retained."
+    },
+    {
+      "id": "author_replay_t9",
+      "path": "experiments/audits/t9-author-replay-upstream-20261115.json",
+      "sha256": "801d68b6737d5ae25d0ee4942a32e52b6cc1362a1311de0e3e55958408e64f18",
+      "description": "One-demo T9 author-action replay through the pinned upstream task helper/evaluator; diagnostic only."
+    },
+    {
+      "id": "author_replay_t10",
+      "path": "experiments/audits/t10-author-replay-upstream-20261115.json",
+      "sha256": "fe1c433204e0921a0d1b7256d7b1a8b38eb6fe58f354967da0149e2f00338df7",
+      "description": "One-demo T10 author-action replay through the pinned upstream task helper/evaluator; diagnostic only."
+    },
+    {
+      "id": "t8_state_parity_script",
+      "path": "scripts/audit_libero_mem_replay_state_parity.py",
+      "sha256": "ca04a99e61bca1e10c1a0b43f2a691ad19919a7b3faa152ae31d85c513a52f62",
+      "description": "Pinned one-demo T8 author-action replay compared against refined robot states; custom diagnostic only."
+    },
+    {
+      "id": "t8_state_parity_report",
+      "path": "experiments/audits/t8-replay-state-parity-20261115.json",
+      "sha256": "36faa0ac563d1bc49379bc3b70f2e55ea5c974ea482d450037126c4960620fb0",
+      "description": "T8 raw/refined action and initial-state match; replay robot-state drift and terminal discrepancy retained."
+    },
+    {
+      "id": "f1_v2_adapter_manifest",
+      "path": "experiments/training/results_f1_author_split_v2/output_f1/pretrained_model/mem_adapter_manifest.json",
+      "sha256": "624136821e330abac7a9c0fbfe4d59fdad0b3c3ae53c62e98c7da49e36b69d9e"
+    },
+    {
+      "id": "f1_v2_runtime_manifest",
+      "path": "experiments/evaluation/review-f1-runtime-retry-20261115/run_manifest.json",
+      "sha256": "189f691899f4e7e3f7ca2df1946118ad565488fb14d2327a7d750aa558977003"
+    },
+    {
+      "id": "f0_f1_review_receipt",
+      "path": "docs/thesis/evidence/f0_f1_readiness_review_2026-11-15.json",
+      "sha256": "3c23f37573cfaa30cd6bb1e7156d34a57fa0826cf534c853269d1e6afecdf9fd"
+    }
+  ]
+}

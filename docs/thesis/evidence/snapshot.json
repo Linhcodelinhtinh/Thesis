@@ -1,39 +1,100 @@
 {
-  "created_at": "2026-11-12T09:08:08.826508+07:00",
-  "scope": "Existing artifact inspection; no fresh benchmark/training/runtime tests",
-  "git_head": "57867994bcbe470571e17955e1af5ef078ef6233",
+  "created_at": "2026-11-15T21:44:13.683901+07:00",
+  "scope": "Existing artifact inspection, one custom seen-state B0/F0 development pilot, offline T7-T10 writer diagnostics, and an offline MiniVLA source/checkpoint audit; no model training or official benchmark score",
+  "git_head": "50a4e7c08c22437f6c83c2993b5fa3951a233917",
   "git_status": [
+    " M docs/IMPLEMENTATION_PLAN.md",
+    " M docs/thesis/IMPLEMENTATION_AND_WRITING_ROADMAP_2026-11-13.md",
+    " M docs/thesis/MEMORY_DECISION_HANDOFF_2026-11-14.md",
+    " M docs/thesis/MEMORY_DECISION_INTEGRATION_PLAN_2026-11-14.md",
+    " M docs/thesis/P0_P2_HANDOFF_2026-11-13.md",
+    " M docs/thesis/P3_P4_HANDOFF_2026-11-13.md",
+    " M docs/thesis/P5_P6_HANDOFF_2026-11-13.md",
     " M docs/thesis/README.md",
-    " M docs/thesis/REFERENCE_REVIEW.md",
+    " M docs/thesis/RESEARCH_REFRAME_2026-11-13.md",
     " M docs/thesis/STATUS_AND_CLAIMS.md",
-    " M docs/thesis/THESIS_DRAFT.md",
     " M docs/thesis/WRITING_PLAN.md",
+    " M docs/thesis/build_pdf.ps1",
     " M docs/thesis/evidence/document_validation.json",
     " M docs/thesis/evidence/input_hashes.json",
     " M docs/thesis/evidence/snapshot.json",
+    " M docs/thesis/figures/architecture.png",
     " M docs/thesis/figures/architecture.svg",
     " M docs/thesis/figures/mem_success.svg",
     " M docs/thesis/figures/validation_loss.svg",
     " M docs/thesis/latex/appendices/provenance.tex",
-    " M docs/thesis/latex/content/abstract.tex",
     " M docs/thesis/latex/content/chapter1.tex",
     " M docs/thesis/latex/content/chapter2.tex",
     " M docs/thesis/latex/content/chapter3.tex",
     " M docs/thesis/latex/content/chapter4.tex",
     " M docs/thesis/latex/content/chapter5.tex",
+    " M docs/thesis/latex/main.pdf",
     " M docs/thesis/latex/main.tex",
     " M docs/thesis/latex/references.bib",
-    " M docs/thesis/tools/build_latex.py",
     " M docs/thesis/tools/collect_evidence.py",
+    " M docs/thesis/tools/make_figures.py",
     " M docs/thesis/tools/validate_draft.py",
-    " M docs/thesis_completeness.md",
-    " M scripts/generate_derived_demonstrations.py"
+    " M envs/libero_reference.yml",
+    " M envs/smolvla.yml",
+    " M output/pdf/khoa-luan-luu-quang-linh-ban-thao.pdf",
+    " M resources/manifests/environment_manifest.yaml",
+    " M resources/manifests/hardware_inventory.json",
+    " M resources/manifests/models/minivla_libero90.yaml",
+    " M resources/manifests/models/minivla_vq_libero90.yaml",
+    " M resources/manifests/pip_freeze_libero_reference.txt",
+    " M resources/manifests/software_manifest.yaml",
+    " M scripts/download_suite_tasks.py",
+    " M scripts/prepare_libero_mem_sft.py",
+    " M scripts/run_benchmark.py",
+    " M scripts/system_info.py",
+    " M scripts/validate_environment.py",
+    " M src/models/minivla/adapter.py",
+    " M src/simulator/__pycache__/libero_env.cpython-312.pyc",
+    " M src/simulator/__pycache__/libero_env.cpython-38.pyc",
+    " M src/simulator/libero_env.py",
+    " M tests/environment/__pycache__/test_libero_env.cpython-312-pytest-9.1.1.pyc",
+    " M tests/environment/__pycache__/test_libero_env.cpython-38-pytest-8.3.5.pyc",
+    " M tests/environment/test_libero_env.py",
+    "?? docs/thesis/GOAL_REVIEW_F0_F1_READY_2026-11-15.md",
+    "?? docs/thesis/evidence/abstract.sha256",
+    "?? docs/thesis/evidence/claim_ledger.json",
+    "?? docs/thesis/evidence/decision_annotation_guide.md",
+    "?? docs/thesis/evidence/f0_f1_readiness_review_2026-11-15.json",
+    "?? docs/thesis/figures/memory_timeline.png",
+    "?? docs/thesis/figures/memory_timeline.svg",
+    "?? docs/thesis/latex/main.aux",
+    "?? docs/thesis/latex/main.bbl",
+    "?? docs/thesis/latex/main.blg",
+    "?? docs/thesis/latex/main.lof",
+    "?? docs/thesis/latex/main.log",
+    "?? docs/thesis/latex/main.lot",
+    "?? docs/thesis/latex/main.toc",
+    "?? envs/smolvla_inference.txt",
+    "?? resources/manifests/libero_mem_t10_raw_receipt_v1.json",
+    "?? resources/manifests/libero_mem_t10_refined_receipt_v1.json",
+    "?? resources/manifests/libero_mem_t7_raw_receipt_v1.json",
+    "?? resources/manifests/libero_mem_t7_refined_receipt_v1.json",
+    "?? resources/manifests/libero_mem_t8_raw_receipt_v1.json",
+    "?? resources/manifests/libero_mem_t8_refined_receipt_v1.json",
+    "?? resources/manifests/libero_mem_t9_raw_receipt_v1.json",
+    "?? resources/manifests/libero_mem_t9_source_receipt_v1.json",
+    "?? resources/manifests/libero_reference_source_receipt.json",
+    "?? resources/manifests/pip_freeze_smolvla.txt",
+    "?? scripts/audit_libero_mem_author_replay.py",
+    "?? scripts/audit_libero_mem_replay_state_parity.py",
+    "?? scripts/audit_minivla_contract.py",
+    "?? scripts/audit_t7_detector_boxes.py",
+    "?? tmp/pdfs/thesis-review-20261115-final/",
+    "?? tmp/pdfs/thesis-review-20261115/"
   ],
   "limitations": [
     "Episode JSONs and selected small manifests were read and hashed.",
     "Only the four exported adapter files are independently rehashed here; large base weights, raw HDF5, shards and all videos are not rehashed.",
     "Historical runs are inventoried, not pooled or declared comparable.",
-    "Stored test split has already been used for development; it is not a fresh confirmatory holdout."
+    "Stored test split has already been used for development; it is not a fresh confirmatory holdout.",
+    "T7 RGB index evidence, when present, is an offline writer artifact and has no independent relation labels.",
+    "T9 RGB index evidence is one author-refined training demonstration; it has no independent identity or containment labels.",
+    "MiniVLA checkpoint/source audit is provenance and interface evidence only; it includes no model inference or policy rollout."
   ],
   "historical_runs_found": 21,
   "historical_episode_jsons_read": 1520,
@@ -753,5 +814,1068 @@
       "experiments/audits/memory_writer_v3/no_memory_index/manifest.json": "665e5f4c99ed4843ee2fd3e6604d413cb6718fc6834d86616d8c34ebac2d42fc",
       "experiments/audits/memory_writer_v3/memory_writer_source.zip": "72fa5d621436fcf2c97e120b7521117fef8cdc8a666cf341006c649586e5fc3f"
     }
+  },
+  "v2_data": {
+    "classification": "DATA_ALIGNMENT_QA_NOT_POLICY_SCORE",
+    "split_lock_path": "resources/manifests/libero_mem_t1_t3_base10_split_v2.json",
+    "split_lock_file_sha256": "5ac5eb8c8d5498b4422d010394337d0300030204c58df65a789561ba32f82ab6",
+    "split_lock_content_sha256": "8275e468382835c06f9cc738361df26b7452965850878e7ca882f392c9ca4165",
+    "alignment_path": "experiments/training/relations-author-split-v2/alignment-audit.json",
+    "alignment_file_sha256": "79ca820e542785f11cd820bfa246a32848cd8fb6af17f5858bb6b6648171b269",
+    "alignment": {
+      "status": "passed",
+      "classification": "DATA_ALIGNMENT_QA_NOT_POLICY_SCORE",
+      "episodes": 698,
+      "all_state_action_rows_compared": 180447,
+      "rgb_frames_compared_per_camera": 2094,
+      "policy_adapter_parity_samples": 1396
+    }
+  },
+  "decision_replay": {
+    "classification": "OPEN_LOOP_DEVELOPMENT_NOT_POLICY_SCORE",
+    "protocol_path": "configs/benchmarks/libero_mem_decision_dev_v1.json",
+    "protocol_file_sha256": "5e19c8fa9a23bca8613525b39b350fa99977c80c15a7b72e62a036e2fd182e69",
+    "protocol_id": "libero_mem_decision_dev_v1",
+    "tasks": {
+      "T1": {
+        "path": "experiments/audits/relation-e1-20261113-232401/decision-dev-v1-final-T1.json",
+        "sha256": "66c6304167bec3a92dd5a555388f1a0231e7c31e0bd1b71cfc340757871c2373",
+        "classification": "OPEN_LOOP_DEVELOPMENT_NOT_POLICY_SCORE",
+        "exposure": "snapshot",
+        "episodes": 100,
+        "frames": 14746,
+        "scheduled_queries": 1864,
+        "trigger_requests": 653,
+        "index_sha256": "e3b61fb97128fd074cca44a83aef63b4984c218ddacb7865f7cfb813bd65c303",
+        "decision_protocol_sha256": "5e19c8fa9a23bca8613525b39b350fa99977c80c15a7b72e62a036e2fd182e69"
+      },
+      "T3": {
+        "path": "experiments/audits/relation-e1-20261113-232401/decision-dev-v1-final-T3.json",
+        "sha256": "9cc011f715080abc633de5e96b0e2c77783f7b0adac0d0cfb320308d3882c216",
+        "classification": "OPEN_LOOP_DEVELOPMENT_NOT_POLICY_SCORE",
+        "exposure": "snapshot",
+        "episodes": 98,
+        "frames": 28111,
+        "scheduled_queries": 3546,
+        "trigger_requests": 1272,
+        "index_sha256": "92edbe9e97658910ca10b3bddc85efc4e73ddc345ca59c65b4ad2056c52afd16",
+        "decision_protocol_sha256": "5e19c8fa9a23bca8613525b39b350fa99977c80c15a7b72e62a036e2fd182e69"
+      }
+    }
+  },
+  "t7_writer_audit": {
+    "classification": "T7_RGB_WRITER_OFFLINE_INDEX_NOT_POLICY_SCORE",
+    "source_receipt_path": "resources/manifests/libero_mem_t7_refined_receipt_v1.json",
+    "source_receipt_file_sha256": "073b9ee45fd5cae85f2707d89f4f1a74ffafdcfbd1b5c2b8eb465ab01a10918f",
+    "source_revision": "6df130c05b82e09294fa9534e84a069687b72d33",
+    "source_hdf5_sha256": "8cbe1c2e7b5d1664fdc7e08c773aa0beabbc4ba5079bf47d4a10f9e6c9190757",
+    "source_local_hash_verified": true,
+    "independent_relation_labels": false,
+    "index": {
+      "status": "complete",
+      "manifest_path": "experiments/audits/relation-e1-20261114-t7-demo1/manifest.json",
+      "manifest_sha256": "1174a7c6d026c4593c802d29d5e636397ffa87306123f4429e00e9cc9e376428",
+      "episodes": [
+        {
+          "id": "KITCHEN_SCENE1_7_swap_the_2_bowls_on_their_plates_using_the_empty_plate_demo_1",
+          "split": "train",
+          "frames": 425,
+          "memory_frames": 0,
+          "confirmed_returns": 0,
+          "history_complete": false
+        }
+      ],
+      "total_samples": 425,
+      "manifest_memory_frames": 0,
+      "samples_with_memory": 0,
+      "samples_without_relevant_fact": 425,
+      "identity_status_observations": {
+        "unknown": 1385,
+        "tracked": 92,
+        "ambiguous": 648
+      },
+      "relation_status_observations": {
+        "unknown": 850
+      },
+      "first_20_detection_counts": [
+        {
+          "step": 0,
+          "bowl_detections": 1,
+          "plate_detections": 2
+        },
+        {
+          "step": 1,
+          "bowl_detections": 1,
+          "plate_detections": 2
+        },
+        {
+          "step": 2,
+          "bowl_detections": 1,
+          "plate_detections": 2
+        },
+        {
+          "step": 3,
+          "bowl_detections": 1,
+          "plate_detections": 2
+        },
+        {
+          "step": 4,
+          "bowl_detections": 1,
+          "plate_detections": 2
+        },
+        {
+          "step": 5,
+          "bowl_detections": 1,
+          "plate_detections": 2
+        },
+        {
+          "step": 6,
+          "bowl_detections": 1,
+          "plate_detections": 2
+        },
+        {
+          "step": 7,
+          "bowl_detections": 1,
+          "plate_detections": 2
+        },
+        {
+          "step": 8,
+          "bowl_detections": 1,
+          "plate_detections": 2
+        },
+        {
+          "step": 9,
+          "bowl_detections": 1,
+          "plate_detections": 2
+        },
+        {
+          "step": 10,
+          "bowl_detections": 1,
+          "plate_detections": 2
+        },
+        {
+          "step": 11,
+          "bowl_detections": 1,
+          "plate_detections": 2
+        },
+        {
+          "step": 12,
+          "bowl_detections": 1,
+          "plate_detections": 2
+        },
+        {
+          "step": 13,
+          "bowl_detections": 1,
+          "plate_detections": 2
+        },
+        {
+          "step": 14,
+          "bowl_detections": 2,
+          "plate_detections": 2
+        },
+        {
+          "step": 15,
+          "bowl_detections": 1,
+          "plate_detections": 2
+        },
+        {
+          "step": 16,
+          "bowl_detections": 2,
+          "plate_detections": 2
+        },
+        {
+          "step": 17,
+          "bowl_detections": 2,
+          "plate_detections": 2
+        },
+        {
+          "step": 18,
+          "bowl_detections": 2,
+          "plate_detections": 2
+        },
+        {
+          "step": 19,
+          "bowl_detections": 2,
+          "plate_detections": 2
+        }
+      ],
+      "detector_revision": "a2bb814dd30d776dcf7e30523b00659f4f141c71"
+    }
+  },
+  "t7_runtime_replay": {
+    "timing_report_path": "experiments/audits/t7-raw-branch-timing-20261114.json",
+    "timing_report_sha256": "78c8a363d90d8755e9cf55fddec4197faaa66d1e23b927944e1442061e163b10",
+    "classification": "CUSTOM_T7_RAW_REPLAY_NOT_POLICY_SCORE",
+    "camera_observations": false,
+    "source_sha256": "257f2a48d7c127c1abe45d0feea0f146e1a01165693be5f535fef3a2dd48d71c",
+    "demonstrations": 12,
+    "rgb_branch_reports": {
+      "t7-raw-rgb-branch1-20261114.json": {
+        "sha256": "97afa643d23a330b3b4f695a003180f69f1aa0d1e461dacaaff1c04ff399521b",
+        "classification": "CUSTOM_T7_RAW_REPLAY_NOT_POLICY_SCORE",
+        "camera_observations": true,
+        "demonstrations": 1,
+        "completed_or_branches": 1,
+        "source_sha256": "257f2a48d7c127c1abe45d0feea0f146e1a01165693be5f535fef3a2dd48d71c"
+      },
+      "t7-raw-rgb-branch2-20261114.json": {
+        "sha256": "4d5f940b74537f076359eff273f181e8d7b2688c196cb22bec714b446a4f2336",
+        "classification": "CUSTOM_T7_RAW_REPLAY_NOT_POLICY_SCORE",
+        "camera_observations": true,
+        "demonstrations": 1,
+        "completed_or_branches": 1,
+        "source_sha256": "257f2a48d7c127c1abe45d0feea0f146e1a01165693be5f535fef3a2dd48d71c"
+      }
+    }
+  },
+  "t7_detector_box_audit": {
+    "classification": "CUSTOM_OFFLINE_DETECTOR_AUDIT_AGAINST_AUTHOR_EXO_BOXES",
+    "report_path": "experiments/audits/t7-detector-box-e1-20261115/report.json",
+    "report_sha256": "fceaaed7ba5a7b465293d1cfa5b14a0cb72a81bb339b5ca184b7378f87eb5e8b",
+    "frames": 425,
+    "source_frame_hashes_verified": 425,
+    "matching": {
+      "annotation_format": "normalized_xywh",
+      "prediction_format": "normalized_xyxy",
+      "iou_threshold": 0.5,
+      "assignment": "maximum-cardinality one-to-one, then maximum total IoU"
+    },
+    "all_frames": {
+      "by_class": {
+        "bowl": {
+          "ground_truth": 805,
+          "predicted": 673,
+          "tp": 601,
+          "fp": 72,
+          "fn": 204,
+          "precision": 0.8930163447251115,
+          "recall": 0.746583850931677,
+          "f1": 0.8132611637347767,
+          "mean_matched_iou": 0.9182216490863592
+        },
+        "plate": {
+          "ground_truth": 1234,
+          "predicted": 821,
+          "tp": 797,
+          "fp": 24,
+          "fn": 437,
+          "precision": 0.9707673568818515,
+          "recall": 0.6458670988654781,
+          "f1": 0.7756690997566911,
+          "mean_matched_iou": 0.7729776978934132
+        }
+      },
+      "overall": {
+        "ground_truth": 2039,
+        "predicted": 1494,
+        "tp": 1398,
+        "fp": 96,
+        "fn": 641,
+        "precision": 0.9357429718875502,
+        "recall": 0.68563021088769,
+        "f1": 0.7913954146617606,
+        "mean_matched_iou": 0.8354180517324407
+      }
+    },
+    "first_20_frames": {
+      "by_class": {
+        "bowl": {
+          "ground_truth": 40,
+          "predicted": 25,
+          "tp": 25,
+          "fp": 0,
+          "fn": 15,
+          "precision": 1.0,
+          "recall": 0.625,
+          "f1": 0.7692307692307693,
+          "mean_matched_iou": 0.8975630886846352
+        },
+        "plate": {
+          "ground_truth": 60,
+          "predicted": 40,
+          "tp": 40,
+          "fp": 0,
+          "fn": 20,
+          "precision": 1.0,
+          "recall": 0.6666666666666666,
+          "f1": 0.8,
+          "mean_matched_iou": 0.7390056421531042
+        }
+      },
+      "overall": {
+        "ground_truth": 100,
+        "predicted": 65,
+        "tp": 65,
+        "fp": 0,
+        "fn": 35,
+        "precision": 1.0,
+        "recall": 0.65,
+        "f1": 0.787878787878788,
+        "mean_matched_iou": 0.7999892754344622
+      }
+    },
+    "limitations": [
+      "Frames within one demonstration are temporally dependent; counts are descriptive, not independent samples.",
+      "Author exo-box labels are used as released and are not a second blind human annotation.",
+      "The third exo-box field is preserved as annotation metadata; this report does not interpret it as relation truth.",
+      "Detection quality does not establish identity tracking, relation accuracy, memory utility, or task success."
+    ]
+  },
+  "t9_writer_diagnostic": {
+    "classification": "T9_SINGLE_TRAIN_DEMO_OFFLINE_WRITER_DIAGNOSTIC_NOT_ACCURACY_OR_POLICY_SCORE",
+    "source_receipt_path": "resources/manifests/libero_mem_t9_source_receipt_v1.json",
+    "source_receipt_sha256": "72d5fbf3c84667180555e1dd0a0035f789974f2c37a0a258e926e9e130b57001",
+    "source_revision": "6df130c05b82e09294fa9534e84a069687b72d33",
+    "source_hdf5_sha256": "f825fa2f8094f5ec45994e354dcee0ded16e8c6f9d046d4a0e2b919441246748",
+    "manifest_path": "experiments/audits/relation-e1-20261115-t9-demo1/manifest.json",
+    "manifest_sha256": "885ad6ee980001f4678480075845a2b25814f3dd495f528363c863876ee311d2",
+    "index_contract_path": "experiments/audits/relation-e1-20261115-t9-demo1/index_contract.json",
+    "index_contract_sha256": "ca9a5361d0b300e9743a1ac55838c7c2eed5cd9cd18351e53d30bef6e8bfde64",
+    "episode": [
+      {
+        "id": "KITCHEN_SCENE1_9_put_the_cream_cheese_in_the_nearest_basket_and_place_that_basket_in_the_center_demo_1",
+        "split": "train",
+        "frames": 356,
+        "memory_frames": 0,
+        "confirmed_returns": 0,
+        "history_complete": false
+      }
+    ],
+    "total_samples": 356,
+    "samples_with_memory": 0,
+    "samples_without_relevant_fact": 356,
+    "identity_status_observations": {
+      "unknown": 1068
+    },
+    "relation_status_observations": {
+      "unknown": 356
+    },
+    "new_events": 0,
+    "detector_revision": "a2bb814dd30d776dcf7e30523b00659f4f141c71",
+    "independent_identity_or_containment_labels": false
+  },
+  "t8_writer_diagnostic": {
+    "classification": "T8_SINGLE_TRAIN_DEMO_OFFLINE_WRITER_DIAGNOSTIC_NOT_ACCURACY_OR_POLICY_SCORE",
+    "refined_source_receipt_path": "resources/manifests/libero_mem_t8_refined_receipt_v1.json",
+    "refined_source_receipt_sha256": "c9bf7f1c750363d1c630307d68b30877ff2676e0037c146fe819b949f6e0a8ee",
+    "raw_source_receipt_path": "resources/manifests/libero_mem_t8_raw_receipt_v1.json",
+    "raw_source_receipt_sha256": "7d930d0bac339b88eefe6512ce992192eab6a62782ca8922641d891d1d593e84",
+    "source_revision": "6df130c05b82e09294fa9534e84a069687b72d33",
+    "source_hdf5_sha256": "399061494f4a0b4ac8a5ce646aa5755a6698ec65fbd4e6843143de5e95c1c555",
+    "raw_source_hdf5_sha256": "77dcad3d4f04b36441a70dc95b4cd2131189c5ebfa105bf92ce5d2a8125a16af",
+    "manifest_path": "experiments/audits/relation-e1-20261115-t8-demo1/manifest.json",
+    "manifest_sha256": "dfb008a673a8ea40f963d7900ea79c632644a056f216aa38a39d69a5651aa143",
+    "index_contract_path": "experiments/audits/relation-e1-20261115-t8-demo1/index_contract.json",
+    "index_contract_sha256": "7cd0d636371b0c78f87c44c889bf82adf9a9d96dc59a4e356234a0505128c3d8",
+    "episode": [
+      {
+        "id": "KITCHEN_SCENE1_8_rotate_the_3_bowls_on_their_plates_from_left_to_right_using_the_empty_plate_demo_1",
+        "split": "train",
+        "frames": 613,
+        "memory_frames": 0,
+        "confirmed_returns": 0,
+        "history_complete": false
+      }
+    ],
+    "total_samples": 613,
+    "samples_with_memory": 0,
+    "samples_without_relevant_fact": 613,
+    "identity_status_observations": {
+      "unknown": 4291
+    },
+    "relation_status_observations": {
+      "unknown": 1839
+    },
+    "new_events": 0,
+    "detector_revision": "a2bb814dd30d776dcf7e30523b00659f4f141c71",
+    "independent_identity_or_containment_labels": false
+  },
+  "t10_writer_diagnostic": {
+    "classification": "T10_SINGLE_TRAIN_DEMO_OFFLINE_WRITER_DIAGNOSTIC_NOT_ACCURACY_OR_POLICY_SCORE",
+    "refined_source_receipt_path": "resources/manifests/libero_mem_t10_refined_receipt_v1.json",
+    "refined_source_receipt_sha256": "bc7b5aacefa13476a99463cc5f13d55eeada1ff57db24c060bb112373ea74772",
+    "raw_source_receipt_path": "resources/manifests/libero_mem_t10_raw_receipt_v1.json",
+    "raw_source_receipt_sha256": "f7ec161bb85dfe6c4422ab036b72d0c41fcb9e12c62543ebbd47e0eae0141b23",
+    "source_revision": "6df130c05b82e09294fa9534e84a069687b72d33",
+    "source_hdf5_sha256": "bcb9357581d17a6312a34c1f7bd855b9bb7357ca3d5a6aa1c5be2d2a58e1d85b",
+    "raw_source_hdf5_sha256": "53afeac724e9ead7eedf289e9fc985f87b071aa9146b3694d6c25e16760bc72c",
+    "manifest_path": "experiments/audits/relation-e1-20261115-t10-demo1/manifest.json",
+    "manifest_sha256": "1bf30840c20bc043cb80b25d7261103943c079a812b97b61722f044958ba24b3",
+    "index_contract_path": "experiments/audits/relation-e1-20261115-t10-demo1/index_contract.json",
+    "index_contract_sha256": "47ea4a60a81acf9252a9f5bbce4aa1b56d06065faa8d3085af5a94b6e4dfa576",
+    "episode": [
+      {
+        "id": "KITCHEN_SCENE1_10_put_the_cream_cheese_in_the_nearest_basket_and_place_the_empty_basket_in_the_center_demo_1",
+        "split": "train",
+        "frames": 309,
+        "memory_frames": 0,
+        "confirmed_returns": 0,
+        "history_complete": false
+      }
+    ],
+    "total_samples": 309,
+    "samples_with_memory": 0,
+    "samples_without_relevant_fact": 309,
+    "identity_status_observations": {
+      "unknown": 927
+    },
+    "relation_status_observations": {
+      "unknown": 309
+    },
+    "new_events": 0,
+    "detector_revision": "a2bb814dd30d776dcf7e30523b00659f4f141c71",
+    "independent_identity_or_containment_labels": false
+  },
+  "author_action_replay_diagnostics": {
+    "classification": "CUSTOM_SINGLE_DEMO_RUNTIME_DIAGNOSTIC_NOT_POLICY_SCORE",
+    "script_path": "scripts/audit_libero_mem_author_replay.py",
+    "script_sha256_at_collection": "f5e7796832749cff20f06288330956484507d5454aa0442b5abc543f1f2ada30",
+    "tasks": {
+      "T8": {
+        "classification": "CUSTOM_AUTHOR_ACTION_REPLAY_NOT_POLICY_SCORE",
+        "report_path": "experiments/audits/t8-author-replay-upstream-20261115.json",
+        "report_sha256": "a2c15af157c3585036f4ce663123613bac07c19170673500ee48b10a863929b9",
+        "raw_source_receipt_path": "resources/manifests/libero_mem_t8_raw_receipt_v1.json",
+        "raw_source_receipt_sha256": "7d930d0bac339b88eefe6512ce992192eab6a62782ca8922641d891d1d593e84",
+        "raw_source_sha256": "77dcad3d4f04b36441a70dc95b4cd2131189c5ebfa105bf92ce5d2a8125a16af",
+        "upstream_revision": "0eee0defa4024e51511b6e15a79f30e9620209de",
+        "upstream_source_sha256": {
+          "scripts/mem_5_run_evaluation_env_gt.py": "de541d6b4c45c2af46c18cb29620e7b1c04a45cb8325f8fc94c8c8271a1dc7d1",
+          "scripts/experiments/robot/libero/libero_utils.py": "9e3d66bf4f7404ad54edc8f09c5b35213f90054d777a288148446f99b37c9bbf"
+        },
+        "bddl_sha256": "c1cdc6c544b1e7ed82f1576e81981b206de88f35a9bcb2c7565da8f8f0a9160f",
+        "camera_observations": true,
+        "action_transform": "upstream mem_5 remove_initial_noops threshold=1e-4; append 20 zero vectors; map gripper 0 to -1",
+        "result": {
+          "raw_index": 0,
+          "initial_state_sha256": "6a07dfff4588ef8fe515f74c0b0c0b9997504d23b3a67a5900f2bf966ff6330d",
+          "original_action_sha256": "ad8fc6fcdb824c430f02294adc80986519f743883bf06eb268f6a38b477aef1b",
+          "transformed_action_sha256": "a80711a1f18fb8867ce921345a7ea0cea9d68dbab5d8e7acb11482065db616a7",
+          "skipped_leading_noops": 34,
+          "executed_actions": 613,
+          "milestones": [
+            {
+              "step": 152,
+              "count": 1,
+              "phase": "environment_step"
+            },
+            {
+              "step": 296,
+              "count": 2,
+              "phase": "environment_step"
+            },
+            {
+              "step": 427,
+              "count": 3,
+              "phase": "environment_step"
+            }
+          ],
+          "satisfied_subgoals": 3,
+          "last_upstream_return": false,
+          "final_step_done": false,
+          "overshot": false
+        },
+        "state_parity": {
+          "classification": "CUSTOM_AUTHOR_ACTION_STATE_PARITY_DIAGNOSTIC_NOT_POLICY_SCORE",
+          "report_path": "experiments/audits/t8-replay-state-parity-20261115.json",
+          "report_sha256": "36faa0ac563d1bc49379bc3b70f2e55ea5c974ea482d450037126c4960620fb0",
+          "script_path": "scripts/audit_libero_mem_replay_state_parity.py",
+          "script_sha256": "ca04a99e61bca1e10c1a0b43f2a691ad19919a7b3faa152ae31d85c513a52f62",
+          "raw_refined_actions_exact_match": true,
+          "raw_refined_initial_state_exact_match": true,
+          "rows_within_tolerance": 371,
+          "state_row_count": 613,
+          "parity_tolerance": 1e-05,
+          "first_state_divergence": {
+            "step": 219,
+            "max_abs_error": 1.5175207666907192e-05
+          },
+          "max_abs_robot_state_error": 0.008814518799253337,
+          "milestones": [
+            {
+              "step": 152,
+              "count": 1,
+              "phase": "environment_step"
+            },
+            {
+              "step": 296,
+              "count": 2,
+              "phase": "environment_step"
+            },
+            {
+              "step": 427,
+              "count": 3,
+              "phase": "environment_step"
+            }
+          ],
+          "last_upstream_return": false,
+          "final_step_done": false,
+          "limitation": "Exact action and initial-state source alignment does not identify the cause of any robot-state divergence or the terminal-success mismatch."
+        }
+      },
+      "T9": {
+        "classification": "CUSTOM_AUTHOR_ACTION_REPLAY_NOT_POLICY_SCORE",
+        "report_path": "experiments/audits/t9-author-replay-upstream-20261115.json",
+        "report_sha256": "801d68b6737d5ae25d0ee4942a32e52b6cc1362a1311de0e3e55958408e64f18",
+        "raw_source_receipt_path": "resources/manifests/libero_mem_t9_raw_receipt_v1.json",
+        "raw_source_receipt_sha256": "839e1d559585a8755db10e5593331d4b5673661d4d18215eb60d441f6e486251",
+        "raw_source_sha256": "16ddf346d85a647d3611cb37b2b68fd82b32e6d456359b332ed0268a4db5cf2a",
+        "upstream_revision": "0eee0defa4024e51511b6e15a79f30e9620209de",
+        "upstream_source_sha256": {
+          "scripts/mem_5_run_evaluation_env_gt.py": "de541d6b4c45c2af46c18cb29620e7b1c04a45cb8325f8fc94c8c8271a1dc7d1",
+          "scripts/experiments/robot/libero/libero_utils.py": "9e3d66bf4f7404ad54edc8f09c5b35213f90054d777a288148446f99b37c9bbf"
+        },
+        "bddl_sha256": "8f45362506199bea2b0be29d112de094bff35e465ddb6c1fd560346e91f2b32d",
+        "camera_observations": true,
+        "action_transform": "upstream mem_5 remove_initial_noops threshold=1e-4; append 20 zero vectors; map gripper 0 to -1",
+        "result": {
+          "raw_index": 0,
+          "initial_state_sha256": "610f476016abbc2d0ee8e326f5f746621df2915a13addd43201602811f56f1ce",
+          "original_action_sha256": "2a1233391c677707ab24dccebb4ffe365521381ad728560012ef045d607e7f5a",
+          "transformed_action_sha256": "11ad9a6fb34010f310b3d4106440e31533ec6f66f18cd21df749f7d4ab0c32ca",
+          "skipped_leading_noops": 16,
+          "executed_actions": 356,
+          "milestones": [
+            {
+              "step": 191,
+              "count": 1,
+              "phase": "environment_step"
+            },
+            {
+              "step": 336,
+              "count": 2,
+              "phase": "environment_step"
+            }
+          ],
+          "satisfied_subgoals": 2,
+          "last_upstream_return": true,
+          "final_step_done": true,
+          "overshot": false
+        }
+      },
+      "T10": {
+        "classification": "CUSTOM_AUTHOR_ACTION_REPLAY_NOT_POLICY_SCORE",
+        "report_path": "experiments/audits/t10-author-replay-upstream-20261115.json",
+        "report_sha256": "fe1c433204e0921a0d1b7256d7b1a8b38eb6fe58f354967da0149e2f00338df7",
+        "raw_source_receipt_path": "resources/manifests/libero_mem_t10_raw_receipt_v1.json",
+        "raw_source_receipt_sha256": "f7ec161bb85dfe6c4422ab036b72d0c41fcb9e12c62543ebbd47e0eae0141b23",
+        "raw_source_sha256": "53afeac724e9ead7eedf289e9fc985f87b071aa9146b3694d6c25e16760bc72c",
+        "upstream_revision": "0eee0defa4024e51511b6e15a79f30e9620209de",
+        "upstream_source_sha256": {
+          "scripts/mem_5_run_evaluation_env_gt.py": "de541d6b4c45c2af46c18cb29620e7b1c04a45cb8325f8fc94c8c8271a1dc7d1",
+          "scripts/experiments/robot/libero/libero_utils.py": "9e3d66bf4f7404ad54edc8f09c5b35213f90054d777a288148446f99b37c9bbf"
+        },
+        "bddl_sha256": "dd4a0e9b7ec2f3bf63693303c6351b2665be60fb49dee20fdfe10a414da39fe7",
+        "camera_observations": true,
+        "action_transform": "upstream mem_5 remove_initial_noops threshold=1e-4; append 20 zero vectors; map gripper 0 to -1",
+        "result": {
+          "raw_index": 0,
+          "initial_state_sha256": "610f476016abbc2d0ee8e326f5f746621df2915a13addd43201602811f56f1ce",
+          "original_action_sha256": "dc6e6f815b80a74d2ba08df94dbd2f5247fcac2f10baff28da3bad1fd8a135b7",
+          "transformed_action_sha256": "40e477d1b3b21de06b7eec3bbaa4d3d793f8a9f5b3ce1bf2d1d8a546d941fda9",
+          "skipped_leading_noops": 57,
+          "executed_actions": 309,
+          "milestones": [
+            {
+              "step": 179,
+              "count": 1,
+              "phase": "environment_step"
+            },
+            {
+              "step": 289,
+              "count": 2,
+              "phase": "environment_step"
+            }
+          ],
+          "satisfied_subgoals": 2,
+          "last_upstream_return": true,
+          "final_step_done": true,
+          "overshot": false
+        }
+      }
+    },
+    "limitations": [
+      "One author-source demonstration per task; no policy was run.",
+      "T8 raw/refined demo_1 actions and initial state match exactly; a pinned-runtime replay first exceeds the diagnostic 1e-5 robot-state tolerance at step 219 and still does not report terminal success. The cause remains unresolved; this is not a gate pass.",
+      "T9 and T10 each reported final upstream success on demo_1; this does not measure perception, memory, or policy competence."
+    ]
+  },
+  "smolvla_image_preprocessing_parity": {
+    "classification": "CUSTOM_OFFLINE_IMAGE_PREPROCESSING_PARITY_AUDIT",
+    "report_path": "experiments/audits/smolvla-image-preprocessing-parity-20261115/report.json",
+    "report_sha256": "297ec298d24644c088d08ea6a003e98b6fb6bc94449453a835ec55a957aa0ff5",
+    "result": "NO_IMAGE_ORIENTATION_MISMATCH_FOUND_AT_THE_DECLARED_TRANSFORM_LEVEL",
+    "training_collator_matches_f0_implementation_record": true,
+    "data_preparation_sources_match": true,
+    "training_lerobot_version": "0.6.1",
+    "evaluation_lerobot_version": "0.6.1",
+    "evaluation_processor_class_source_sha256": "101c285e0ff8c274cb4f3acec4b3bc4c1c5d8431d2afbf55bd4c0fb7137fdc7a",
+    "training_processor_source_sha256_recorded": false,
+    "limitations": [
+      "This audit checks declared transform and code-path parity, not policy competence or causal explanation for E0 outcomes.",
+      "It does not establish the actual camera pixels observed during every saved policy query.",
+      "F0 is a no-memory adapter; this does not close F1, memory-writer, or matched-policy gates."
+    ]
+  },
+  "minivla_candidate_gate": {
+    "classification": "OFFLINE_MODEL_PROVENANCE_AND_INTERFACE_AUDIT",
+    "report_path": "experiments/audits/minivla-contract-audit-20261115/report.json",
+    "report_sha256": "33336480e4ed4d158a1c2c7678027bb695959acaef51e9630653500aae7a4d6f",
+    "evaluation_status": "BLOCKED_OFFICIAL_CONTRACT_AUDIT",
+    "checkpoint_candidates_verified": 2,
+    "checkpoint_selection_status": "UNRESOLVED",
+    "official_source_revision": "0822b36227b5a771be4eb2680e34c559734c8fdc",
+    "fail_closed_gate_present": true,
+    "model_inference": false,
+    "policy_rollouts": 0,
+    "finding": "Checkpoint bytes match both pinned Hub candidates, but no evaluation weight is selected. The existing local implementation does not reproduce the pinned Prismatic loader, prompt, image, action-statistics and LIBERO gripper path. MiniVLA is blocked from benchmark execution."
+  },
+  "f0_v2_artifact": {
+    "classification": "EXISTING_NO_MEMORY_ADAPTER_ARTIFACT",
+    "manifest_path": "experiments/training/results_f0_author_split_v2/output_f0/pretrained_model/mem_adapter_manifest.json",
+    "manifest_sha256": "04d9f259d21426615d26da0c23b70bfdd7f44df43bcdb3655265e58c4dee236b",
+    "condition": "no_memory",
+    "training_steps": 5000,
+    "data_manifest_sha256": "fd5e7dca8d22598f3c3598af5c9bd35f775f98f0902b63c5787731e178522f87",
+    "weight_identity": "414e4e0f3b6bd2bc42d5a044a3ecde9038eb6065bc23bb91b3734a40d6656d2c",
+    "adapter_manifest_sha256": "04d9f259d21426615d26da0c23b70bfdd7f44df43bcdb3655265e58c4dee236b",
+    "training_versions": {
+      "torch": "2.11.0+cu130",
+      "transformers": "5.5.4",
+      "lerobot": "0.6.1",
+      "peft": "0.21.2",
+      "accelerate": "1.15.0",
+      "h5py": "3.14.0"
+    },
+    "note": "Pre-existing artifact; no model training was performed for this update."
+  },
+  "f1_v2_artifact": {
+    "classification": "TRAINED_FULL_MEMORY_ADAPTER_ARTIFACT",
+    "manifest_path": "experiments/training/results_f1_author_split_v2/output_f1/pretrained_model/mem_adapter_manifest.json",
+    "manifest_sha256": "624136821e330abac7a9c0fbfe4d59fdad0b3c3ae53c62e98c7da49e36b69d9e",
+    "condition": "memory",
+    "training_steps": 5000,
+    "data_manifest_sha256": "fd5e7dca8d22598f3c3598af5c9bd35f775f98f0902b63c5787731e178522f87",
+    "writer": "rgb_relations_v1",
+    "weight_identity": "572bd889d5bd3cf0aba83cb4f806b83794fcb650a7b4853ac505d025a08e4aad",
+    "adapter_manifest_sha256": "624136821e330abac7a9c0fbfe4d59fdad0b3c3ae53c62e98c7da49e36b69d9e",
+    "training_versions": {
+      "torch": "2.11.0+cu130",
+      "transformers": "5.5.4",
+      "lerobot": "0.6.1",
+      "peft": "0.21.2",
+      "accelerate": "1.15.0",
+      "h5py": "3.14.0"
+    },
+    "validate_adapter": "PASS"
+  },
+  "matched_f0_f1_pair": {
+    "status": "VALIDATED_MATCHED_PAIR",
+    "seed": 42,
+    "steps": 5000,
+    "effective_batch_size": 32,
+    "data_manifest_sha256": "fd5e7dca8d22598f3c3598af5c9bd35f775f98f0902b63c5787731e178522f87",
+    "f0_condition": "no_memory",
+    "f1_condition": "memory",
+    "f1_writer": "rgb_relations_v1"
+  },
+  "f0_f1_readiness_review": {
+    "schema_version": 1,
+    "review_date": "2026-11-15",
+    "review_type": "vla_model_audit_and_readiness_review",
+    "status": "verified_ready_for_rollout_evaluation",
+    "checkpoints": {
+      "F0": {
+        "export_path": "experiments\\training\\results_f0_author_split_v2\\output_f0\\pretrained_model",
+        "manifest_sha256": "04d9f259d21426615d26da0c23b70bfdd7f44df43bcdb3655265e58c4dee236b",
+        "weights_sha256": "414e4e0f3b6bd2bc42d5a044a3ecde9038eb6065bc23bb91b3734a40d6656d2c",
+        "condition": "no_memory",
+        "training_steps": 5000,
+        "validate_adapter": "PASS"
+      },
+      "F1": {
+        "export_path": "experiments\\training\\results_f1_author_split_v2\\output_f1\\pretrained_model",
+        "manifest_sha256": "624136821e330abac7a9c0fbfe4d59fdad0b3c3ae53c62e98c7da49e36b69d9e",
+        "weights_sha256": "572bd889d5bd3cf0aba83cb4f806b83794fcb650a7b4853ac505d025a08e4aad",
+        "condition": "memory",
+        "training_steps": 5000,
+        "writer": "rgb_relations_v1",
+        "writer_strategy": "relevant",
+        "validate_adapter": "PASS"
+      }
+    },
+    "matched_pair": {
+      "validate_matched_adapters": "PASS",
+      "split_lock_sha256": "8275e468382835c06f9cc738361df26b7452965850878e7ca882f392c9ca4165",
+      "data_manifest_sha256": "fd5e7dca8d22598f3c3598af5c9bd35f775f98f0902b63c5787731e178522f87",
+      "effective_batch_size": 32,
+      "seed": 42,
+      "rank": 16,
+      "lr": 2e-05,
+      "trainable_parameters": 645120
+    },
+    "runtime_preflight": {
+      "F0": {
+        "run_dir": "experiments/evaluation/review-f0-f1-runtime-20261115",
+        "tasks_checked": [
+          "T1",
+          "T3"
+        ],
+        "status": "diagnostic_complete"
+      },
+      "F1": {
+        "run_dir": "experiments/evaluation/review-f1-runtime-retry-20261115",
+        "tasks_checked": [
+          "T1",
+          "T3"
+        ],
+        "status": "diagnostic_complete"
+      }
+    },
+    "reproducibility_caveats": [
+      "Policy env spec envs/smolvla_inference.txt lacked h5py, causing export validation import failure in policy env.",
+      "Handoff documents pointed to simulator .venv_libero_reference running Python 3.8.20 instead of locked 3.8.13.",
+      "Initial F1 runtime check timed out waiting for Grounding DINO CUDA cold start; resolved with proper worker timeout."
+    ],
+    "methodological_boundary": "Offline validation flow loss (F0: 0.4074 vs F1: 0.4048) was evaluated strictly on base retention frames (0 Mem validation frames under author split policy). Memory efficacy can only be determined through closed-loop paired rollouts on seen/unseen state rosters."
+  },
+  "smolvla_inference_environment": {
+    "spec": "envs/smolvla.yml",
+    "requirements": "envs/smolvla_inference.txt",
+    "package_freeze": "resources/manifests/pip_freeze_smolvla.txt",
+    "package_freeze_sha256": "94d1fc4f7988beba96d62a98a8f97a4f9b8119c101036987287656aa93a9ea10",
+    "software_manifest_sha256": "1eba5c79f7db48851865cf19dec5cabde5660699e92b8686eff0fc205204ec87",
+    "observed": {
+      "prefix": "/home/linh/.venvs/smolvla_f0_eval_20261115",
+      "executable": "/home/linh/.venvs/smolvla_f0_eval_20261115/bin/python",
+      "python": "3.12.3",
+      "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+      "packages": {
+        "numpy": "2.2.6",
+        "torch": "2.11.0+cu128",
+        "torchvision": "0.26.0+cu128",
+        "lerobot": "0.6.1",
+        "transformers": "5.5.4",
+        "peft": "0.21.2",
+        "tokenizers": "0.22.2",
+        "robosuite": null,
+        "bddl": null,
+        "mujoco": null,
+        "robomimic": null,
+        "imageio": "2.38.0",
+        "imageio-ffmpeg": "0.6.0"
+      }
+    },
+    "cuda": {
+      "torch": "2.11.0+cu128",
+      "cuda": "12.8",
+      "devices": [
+        "NVIDIA GeForce RTX 4060 Laptop GPU"
+      ]
+    },
+    "source": "runtime-check manifest; package presence is not treated as policy-load success by itself."
+  },
+  "v2_runtime_check": {
+    "classification": "DIAGNOSTIC_ONLY_NO_SCORE",
+    "manifest_path": "experiments/evaluation/e0-f0-runtime-ext4-20261115/run_manifest.json",
+    "manifest_sha256": "797c7ec40aa08dc8396950411a23835cdf1c979547a0d2e56df87dfea3c5cc76",
+    "status": "runtime_checked",
+    "completed_checks": 4,
+    "completed_episodes": 0,
+    "actions_total": 8,
+    "episodes": [
+      {
+        "episode_id": "T1_B0_seen_state0",
+        "task": "T1",
+        "condition": "B0",
+        "state_idx": 0,
+        "status": "diagnostic_complete",
+        "actions": 2,
+        "initial_state_sha256": "7586850c6c9f89cb522e28c192350b33be6fd1ad7369d92c86d137aa33fe7beb"
+      },
+      {
+        "episode_id": "T1_F0_seen_state0",
+        "task": "T1",
+        "condition": "F0",
+        "state_idx": 0,
+        "status": "diagnostic_complete",
+        "actions": 2,
+        "initial_state_sha256": "7586850c6c9f89cb522e28c192350b33be6fd1ad7369d92c86d137aa33fe7beb"
+      },
+      {
+        "episode_id": "T3_B0_seen_state0",
+        "task": "T3",
+        "condition": "B0",
+        "state_idx": 0,
+        "status": "diagnostic_complete",
+        "actions": 2,
+        "initial_state_sha256": "7586850c6c9f89cb522e28c192350b33be6fd1ad7369d92c86d137aa33fe7beb"
+      },
+      {
+        "episode_id": "T3_F0_seen_state0",
+        "task": "T3",
+        "condition": "F0",
+        "state_idx": 0,
+        "status": "diagnostic_complete",
+        "actions": 2,
+        "initial_state_sha256": "7586850c6c9f89cb522e28c192350b33be6fd1ad7369d92c86d137aa33fe7beb"
+      }
+    ],
+    "report_path": "experiments/evaluation/e0-f0-runtime-ext4-20261115/report.md",
+    "report_sha256": "b8f5b94bb9858d4c6b6280f0298aed4e89e2c6a8f8fded246848b93b307f5b75",
+    "simulator_environment": {
+      "prefix": "/mnt/d/Thesis_26/.venv_libero_reference_3813",
+      "executable": "/mnt/d/Thesis_26/.venv_libero_reference_3813/bin/python",
+      "python": "3.8.13",
+      "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5",
+      "packages": {
+        "numpy": "1.22.4",
+        "torch": "1.11.0+cu113",
+        "torchvision": "0.12.0+cu113",
+        "lerobot": null,
+        "transformers": "4.21.1",
+        "peft": null,
+        "tokenizers": "0.12.1",
+        "robosuite": "1.4.0",
+        "bddl": "1.0.1",
+        "mujoco": "3.2.3",
+        "robomimic": "0.2.0",
+        "imageio": "2.35.1",
+        "imageio-ffmpeg": "0.5.1"
+      }
+    },
+    "policy_environment": {
+      "prefix": "/home/linh/.venvs/smolvla_f0_eval_20261115",
+      "executable": "/home/linh/.venvs/smolvla_f0_eval_20261115/bin/python",
+      "python": "3.12.3",
+      "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+      "packages": {
+        "numpy": "2.2.6",
+        "torch": "2.11.0+cu128",
+        "torchvision": "0.26.0+cu128",
+        "lerobot": "0.6.1",
+        "transformers": "5.5.4",
+        "peft": "0.21.2",
+        "tokenizers": "0.22.2",
+        "robosuite": null,
+        "bddl": null,
+        "mujoco": null,
+        "robomimic": null,
+        "imageio": "2.38.0",
+        "imageio-ffmpeg": "0.6.0"
+      }
+    },
+    "cuda": {
+      "torch": "2.11.0+cu128",
+      "cuda": "12.8",
+      "devices": [
+        "NVIDIA GeForce RTX 4060 Laptop GPU"
+      ]
+    }
+  },
+  "e0_v2_pilot": {
+    "classification": "CUSTOM_V2_LIBERO_MEM",
+    "comparability": "NON-COMPARABLE_OFFICIAL_PAPER",
+    "manifest_path": "experiments/evaluation/e0-b0-f0-pilot-20261115/run_manifest.json",
+    "manifest_sha256": "9a38b6144a5bdfeadd40340be64d73b15d28fdd272a7d9d2993505c68956ab74",
+    "status": "complete",
+    "phase": "finished",
+    "expected_episodes": 4,
+    "completed_episodes": 4,
+    "split_lock_sha256": "8275e468382835c06f9cc738361df26b7452965850878e7ca882f392c9ca4165",
+    "protocol_sha256": "5b3904d73b349b32b31bc0252cf67291c34e4bcda980389df9704cb76aa092ac",
+    "source_revision": "61917674055e8b1cbbfd22c1b54c28d20c1a1584",
+    "policy_environment": {
+      "prefix": "/home/linh/.venvs/smolvla_f0_eval_20261115",
+      "executable": "/home/linh/.venvs/smolvla_f0_eval_20261115/bin/python",
+      "python": "3.12.3",
+      "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+      "packages": {
+        "numpy": "2.2.6",
+        "torch": "2.11.0+cu128",
+        "torchvision": "0.26.0+cu128",
+        "lerobot": "0.6.1",
+        "transformers": "5.5.4",
+        "peft": "0.21.2",
+        "tokenizers": "0.22.2",
+        "robosuite": null,
+        "bddl": null,
+        "mujoco": null,
+        "robomimic": null,
+        "imageio": "2.38.0",
+        "imageio-ffmpeg": "0.6.0"
+      }
+    },
+    "simulator_environment": {
+      "prefix": "/mnt/d/Thesis_26/.venv_libero_reference_3813",
+      "executable": "/mnt/d/Thesis_26/.venv_libero_reference_3813/bin/python",
+      "python": "3.8.13",
+      "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.2.5",
+      "packages": {
+        "numpy": "1.22.4",
+        "torch": "1.11.0+cu113",
+        "torchvision": "0.12.0+cu113",
+        "lerobot": null,
+        "transformers": "4.21.1",
+        "peft": null,
+        "tokenizers": "0.12.1",
+        "robosuite": "1.4.0",
+        "bddl": "1.0.1",
+        "mujoco": "3.2.3",
+        "robomimic": "0.2.0",
+        "imageio": "2.35.1",
+        "imageio-ffmpeg": "0.5.1"
+      }
+    },
+    "cuda": {
+      "torch": "2.11.0+cu128",
+      "cuda": "12.8",
+      "devices": [
+        "NVIDIA GeForce RTX 4060 Laptop GPU"
+      ]
+    },
+    "episodes": [
+      {
+        "episode_id": "T1_B0_seen_state0",
+        "task": "T1",
+        "condition": "B0",
+        "state_idx": 0,
+        "source_demo": "demo_1",
+        "policy_seed": 42,
+        "initial_state_sha256": "7586850c6c9f89cb522e28c192350b33be6fd1ad7369d92c86d137aa33fe7beb",
+        "status": "complete",
+        "termination_reason": "horizon_reached",
+        "success": false,
+        "scr": 0.0,
+        "completed_subgoals": 0,
+        "total_subgoals": 1,
+        "confirmed_cycles": 0,
+        "target_cycles": 1,
+        "overshot": false,
+        "policy_actions": 1000,
+        "mean_policy_inference_ms_per_query": 652.5999290300015,
+        "total_episode_wall_time_s": 202.24668237099996,
+        "decision_metrics_present": false,
+        "summary_path": "experiments/evaluation/e0-b0-f0-pilot-20261115/episodes/T1_B0_seen_state0/summary.json",
+        "summary_sha256": "33b0438bb2f828259281986b06bfa14dadfe3d43f489cb2f0c2ba7109611deec"
+      },
+      {
+        "episode_id": "T1_F0_seen_state0",
+        "task": "T1",
+        "condition": "F0",
+        "state_idx": 0,
+        "source_demo": "demo_1",
+        "policy_seed": 42,
+        "initial_state_sha256": "7586850c6c9f89cb522e28c192350b33be6fd1ad7369d92c86d137aa33fe7beb",
+        "status": "complete",
+        "termination_reason": "horizon_reached",
+        "success": false,
+        "scr": 0.0,
+        "completed_subgoals": 0,
+        "total_subgoals": 1,
+        "confirmed_cycles": 0,
+        "target_cycles": 1,
+        "overshot": false,
+        "policy_actions": 1000,
+        "mean_policy_inference_ms_per_query": 707.7185596600019,
+        "total_episode_wall_time_s": 208.46213026600003,
+        "decision_metrics_present": false,
+        "summary_path": "experiments/evaluation/e0-b0-f0-pilot-20261115/episodes/T1_F0_seen_state0/summary.json",
+        "summary_sha256": "5a36671104fd82e66ceda9d258fb2f6190d1bba3bdac6b5202de835a48de7d81"
+      },
+      {
+        "episode_id": "T3_B0_seen_state0",
+        "task": "T3",
+        "condition": "B0",
+        "state_idx": 0,
+        "source_demo": "demo_1",
+        "policy_seed": 42,
+        "initial_state_sha256": "7586850c6c9f89cb522e28c192350b33be6fd1ad7369d92c86d137aa33fe7beb",
+        "status": "complete",
+        "termination_reason": "horizon_reached",
+        "success": false,
+        "scr": 0.0,
+        "completed_subgoals": 0,
+        "total_subgoals": 3,
+        "confirmed_cycles": 0,
+        "target_cycles": 3,
+        "overshot": false,
+        "policy_actions": 1000,
+        "mean_policy_inference_ms_per_query": 596.0321816899979,
+        "total_episode_wall_time_s": 202.036514093,
+        "decision_metrics_present": false,
+        "summary_path": "experiments/evaluation/e0-b0-f0-pilot-20261115/episodes/T3_B0_seen_state0/summary.json",
+        "summary_sha256": "161bf23047976a84d535d9838b1cc431b68a5d6a4b40bb117331b35522fd6b65"
+      },
+      {
+        "episode_id": "T3_F0_seen_state0",
+        "task": "T3",
+        "condition": "F0",
+        "state_idx": 0,
+        "source_demo": "demo_1",
+        "policy_seed": 42,
+        "initial_state_sha256": "7586850c6c9f89cb522e28c192350b33be6fd1ad7369d92c86d137aa33fe7beb",
+        "status": "complete",
+        "termination_reason": "horizon_reached",
+        "success": false,
+        "scr": 0.0,
+        "completed_subgoals": 0,
+        "total_subgoals": 3,
+        "confirmed_cycles": 0,
+        "target_cycles": 3,
+        "overshot": false,
+        "policy_actions": 1000,
+        "mean_policy_inference_ms_per_query": 673.3058048800034,
+        "total_episode_wall_time_s": 205.23438392799994,
+        "decision_metrics_present": false,
+        "summary_path": "experiments/evaluation/e0-b0-f0-pilot-20261115/episodes/T3_F0_seen_state0/summary.json",
+        "summary_sha256": "c4ad8c9754ab40ab44ac23d6dc833d6e89712960b403408e91ea78e90ef2de80"
+      }
+    ],
+    "counts": [
+      {
+        "task": "T1",
+        "condition": "B0",
+        "n": 1,
+        "successes": 0,
+        "sr": 0.0,
+        "mean_scr": 0.0,
+        "overshot_count": 0,
+        "unique_state_hashes": 1
+      },
+      {
+        "task": "T1",
+        "condition": "F0",
+        "n": 1,
+        "successes": 0,
+        "sr": 0.0,
+        "mean_scr": 0.0,
+        "overshot_count": 0,
+        "unique_state_hashes": 1
+      },
+      {
+        "task": "T3",
+        "condition": "B0",
+        "n": 1,
+        "successes": 0,
+        "sr": 0.0,
+        "mean_scr": 0.0,
+        "overshot_count": 0,
+        "unique_state_hashes": 1
+      },
+      {
+        "task": "T3",
+        "condition": "F0",
+        "n": 1,
+        "successes": 0,
+        "sr": 0.0,
+        "mean_scr": 0.0,
+        "overshot_count": 0,
+        "unique_state_hashes": 1
+      }
+    ],
+    "report_path": "experiments/evaluation/e0-b0-f0-pilot-20261115/report.md",
+    "report_sha256": "b0d30fd42945f872f3730051067bc66afbfd5e2544d3985939d8a0bfdf2d6eee",
+    "interpretation": "DEVELOPMENT_ONLY; one seen state per task and condition; not a memory-effect estimate or official LIBERO score."
   }
 }
