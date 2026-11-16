@@ -32,7 +32,7 @@ T7 writer RGB & 425 mẫu demo 1; 0 prompt có fact memory; relation unknown & P
 T9 writer RGB & 356 mẫu demo 1; 0 prompt có fact memory; relation unknown & Phép đo một demo train; chưa có nhãn blind identity/containment \\
 T7 detector RGB & IoU 0,5: bowl P/R 0,893/0,747; plate 0,971/0,646 & 425 frame train; đối chiếu exo-box theo frame, không phải relation accuracy \\
 T8--T10 author-action replay & T9/T10 terminal; T8 ba milestone, không terminal; action/state khớp, robot-state drift đầu tại bước 219 & Một demo/task; nguyên nhân T8 chưa rõ; không phải policy score \\
-F0 V2 no-memory & Artifact 5.000 bước đã có; manifest và weight identity được kiểm & Adapter F0 hiện hữu; chưa có F1 V2 cùng corpus/writer \\
+Cặp F0/F1 V2 matched & Artifacts 5.000 bước đã có; manifest, weight identity và matched validation qua & Cặp F0/F1 đạt preflight và runtime check; chưa có rollout kín so sánh \\
 Runtime check V2 & B0/F0, T1/T3, seen state 0; 4/4 checks, hai action mỗi check & Nạp model/reset/action thành công; không chấm điểm \\
 E0 pilot V2 & B0/F0 trên T1/T3, một state/task; 4/4 episode đủ 1.000 action; 0/4 success & Custom development; không phải memory effect hoặc điểm official \\
 \end{longtable}
@@ -40,7 +40,7 @@ E0 pilot V2 & B0/F0 trên T1/T3, một state/task; 4/4 episode đủ 1.000 actio
 
 % claim-id: decision-replay
 
-Các bộ shards đã qua alignment audit trên toàn bộ 180.447 cặp, gồm 1.396 mẫu so parity giữa collator và adapter. Artifact F0 V2 no-memory đã tồn tại và qua strict reload, runtime check; chưa có F1 V2 tương thích writer relation nên không có cặp F0/F1, memory competence smoke hoặc lượt confirmatory unseen. Pilot E0 bổ sung bốn lượt B0/F0 trên một state seen mỗi task; mọi lượt chạy đủ horizon nhưng hoàn thành 0 subgoal. Đây là kiểm tra development, không thay thế phép đánh giá matched. Checkpoint F1 dùng trong pilot lịch sử được huấn luyện bằng writer khác và bị từ chối ở cổng kiểm hash cho cơ chế quyết định. Vì vậy kết luận về D1/D2 vẫn giới hạn ở replay offline và kiểm tra phần mềm.
+Các bộ shards đã qua alignment audit trên toàn bộ 180.447 cặp, gồm 1.396 mẫu so parity giữa collator và adapter. Cặp artifact F0 V2 (no-memory) và F1 V2 (\texttt{rgb\_relations\_v1}) 5.000 bước đều đã hoàn tất export, đạt kiểm tra strict reload, khớp hợp đồng cặp \texttt{validate\_matched\_adapters} và vượt qua runtime check chẩn đoán trên T1/T3. Tuy nhiên, phép so sánh vòng kín ghép cặp giữa F0 và F1 trên các tập trạng thái seen và unseen chưa được thực hiện, nên chưa đo được hiệu ứng thành công của memory. Pilot E0 bổ sung bốn lượt B0/F0 trên một state seen mỗi task; mọi lượt chạy đủ horizon nhưng hoàn thành 0 subgoal. Đây là kiểm tra development, không thay thế phép đánh giá matched. Checkpoint F1 dùng trong pilot lịch sử được huấn luyện bằng writer khác và bị từ chối ở cổng kiểm hash cho cơ chế quyết định. Vì vậy kết luận về D1/D2 vẫn giới hạn ở replay offline và kiểm tra phần mềm.
 
 Replay lịch query dùng 198 trajectory mẫu của tác giả, tổng 42.857 frame. Mốc writer khớp 68/100 ở T1 và 126/294 ở T3; median delay trên các mốc ghép là 9 frame. Số query theo thứ tự trong bảng là lịch gốc, lịch theo thay đổi evidence và lịch cố định 8 action. Lịch evidence tạo 653 query sớm dự kiến ở T1 và 1.272 ở T3; đây là dự báo trên trace đã ghi. Thời gian wall-clock, sai số quyết định và success trong vòng kín chưa được đo bằng các lịch đó.
 
