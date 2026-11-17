@@ -30,17 +30,19 @@
 \contentsline {section}{\numberline {4.6}Độ nhạy ngoại tuyến đối với thông tin bộ nhớ}{30}{section.4.6}%
 \contentsline {section}{\numberline {4.7}Kết quả điều khiển vòng kín}{31}{section.4.7}%
 \contentsline {subsection}{\numberline {4.7.1}Pilot E0 V2 trên một state mỗi task}{33}{subsection.4.7.1}%
-\contentsline {section}{\numberline {4.8}Bất đồng giữa tiến độ quan sát và tiến độ được chấm}{34}{section.4.8}%
-\contentsline {section}{\numberline {4.9}Hiệu lực của kết luận và thiết kế kiểm chứng tiếp theo}{35}{section.4.9}%
-\contentsline {chapter}{\numberline {5}Kết luận}{36}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Kết luận theo câu hỏi nghiên cứu}{36}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Ý nghĩa và phạm vi của đóng góp}{37}{section.5.2}%
-\contentsline {section}{\numberline {5.3}Hướng kiểm định tiếp theo}{37}{section.5.3}%
-\contentsline {chapter}{Tài liệu tham khảo}{39}{section*.6}%
+\contentsline {subsection}{\numberline {4.7.2}Đánh giá đối sánh vòng kín E2 trên tập trạng thái Unseen}{34}{subsection.4.7.2}%
+\contentsline {subsection}{\numberline {4.7.3}Đánh giá duy trì năng lực cơ sở E6 trên 10 tác vụ LIBERO-10}{35}{subsection.4.7.3}%
+\contentsline {section}{\numberline {4.8}Bất đồng giữa tiến độ quan sát và tiến độ được chấm}{37}{section.4.8}%
+\contentsline {section}{\numberline {4.9}Hiệu lực của kết luận và thiết kế kiểm chứng tiếp theo}{38}{section.4.9}%
+\contentsline {chapter}{\numberline {5}Kết luận}{40}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Kết luận theo câu hỏi nghiên cứu}{40}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Ý nghĩa và phạm vi của đóng góp}{41}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Hướng kiểm định tiếp theo}{42}{section.5.3}%
+\contentsline {chapter}{Tài liệu tham khảo}{43}{section*.6}%
 \def \@chapapp {\appendixname }
-\contentsline {chapter}{\numberline {A}Nguồn dữ liệu và chi tiết tái lập}{42}{appendix.A}%
-\contentsline {section}{\numberline {A.1}Cấu hình và nguồn thực nghiệm}{42}{appendix.A.1}%
-\contentsline {section}{\numberline {A.2}Nguồn public và định danh protocol}{43}{appendix.A.2}%
-\contentsline {section}{\numberline {A.3}Bối cảnh V1}{46}{appendix.A.3}%
-\contentsline {section}{\numberline {A.4}Đối chiếu bản ghi sự kiện thị giác}{46}{appendix.A.4}%
+\contentsline {chapter}{\numberline {A}Nguồn dữ liệu và chi tiết tái lập}{46}{appendix.A}%
+\contentsline {section}{\numberline {A.1}Cấu hình và nguồn thực nghiệm}{46}{appendix.A.1}%
+\contentsline {section}{\numberline {A.2}Nguồn public và định danh protocol}{47}{appendix.A.2}%
+\contentsline {section}{\numberline {A.3}Bối cảnh V1}{50}{appendix.A.3}%
+\contentsline {section}{\numberline {A.4}Đối chiếu bản ghi sự kiện thị giác}{50}{appendix.A.4}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

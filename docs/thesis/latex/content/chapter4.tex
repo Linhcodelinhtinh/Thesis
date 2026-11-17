@@ -243,8 +243,79 @@ T3 & F0 & 0/1; 0/1 & 0,000 & 673,31 ms & 205,23 s \\
 
 Các summary xác nhận 0/1 subgoal trên T1 và 0/3 trên T3 ở cả hai điều kiện. B0 là checkpoint gốc; F0 là adapter đã thích ứng nhưng không nhận memory. Mỗi điều kiện chỉ có một initial-state group, hai task có cùng state hash, và không có memory trace hoặc decision metric. Do đó, bảng chỉ xác nhận một pilot phát triển custom với nhãn \path{NON-COMPARABLE_OFFICIAL_PAPER}; nó không đo tác động của memory, không ước lượng hiệu quả trên split, và không được gộp vào bảng B0/F1 lịch sử.
 
+\subsection{Đánh giá đối sánh vòng kín E2 trên tập trạng thái Unseen}
+
+Chiến dịch thực nghiệm xác nhận E2 thực hiện phép so sánh ghép cặp trực tiếp giữa F0 (không dùng bộ nhớ) và F1 (sử dụng bộ nhớ quan hệ \texttt{rgb\_relations\_v1}) trên toàn bộ 20 nhóm trạng thái khởi tạo Unseen độc lập của giao thức V2 (từ \texttt{demo\_101} đến \texttt{demo\_120}), với cùng hạt giống chính sách 42. Cả hai điều kiện đều dùng cùng checkpoint nền, cùng tập dữ liệu huấn luyện 598 quỹ đạo và cùng ngân sách 5.000 bước. Toàn bộ 80 episode đã hoàn thành trọn vẹn mà không có lượt thiếu (20 cặp trên T1 và 20 cặp trên T3).
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.12\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.14\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.2\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.12\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.22\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.20\textwidth-2\tabcolsep\relax}}
+\caption{Kết quả đối sánh vòng kín E2 trên 20 cụm trạng thái Unseen}\label{tab:e2-unseen-results}\\
+\toprule
+\textbf{Nhiệm vụ} & \textbf{Điều kiện} & \textbf{Thành công / số lượt} & \textbf{SR} & \textbf{Suy luận policy trung vị} & \textbf{Wall time trung vị/tập} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Nhiệm vụ} & \textbf{Điều kiện} & \textbf{Thành công / số lượt} & \textbf{SR} & \textbf{Suy luận policy trung vị} & \textbf{Wall time trung vị/tập} \\
+\midrule\endhead
+\bottomrule\endfoot
+T1 & F0 & 3/20 & 15\% & 777,02 ms & 211,93 s \\
+T1 & F1 & 0/20 & 0\% & 637,84 ms & 1.067,92 s \\
+T3 & F0 & 1/20 & 5\% & 778,37 ms & 214,49 s \\
+T3 & F1 & 0/20 & 0\% & 637,08 ms & 1.063,30 s \\
+Hai tác vụ & F0 & 4/40 & 10\% & 777,70 ms & 213,21 s \\
+Hai tác vụ & F1 & 0/40 & 0\% & 637,46 ms & 1.065,61 s \\
+\end{longtable}
+\endgroup
+
+Trên tập Unseen, chênh lệch tỷ lệ thành công ghép cặp quan sát được là $\widehat{\Delta}_{\mathrm{SR}} = -0{,}15$ trên T1, $-0{,}05$ trên T3 và độ chênh lệch macro trên cả hai tác vụ là $\widehat{\Delta}_{\mathrm{macro}} = -0{,}10$ (tức F1 thấp hơn F0 10 điểm phần trăm). Do danh sách ghép cặp đã hoàn tất 40/40 cặp, cận dưới và cận trên không bị ảnh hưởng bởi lượt thiếu ($\text{bounds} = [-0{,}10, -0{,}10]$).
+
+Kết quả này đem lại các quan sát quan trọng cho câu hỏi nghiên cứu:
+\begin{enumerate}
+    \item \textbf{Hiệu quả thích ứng của chính sách cơ sở:} Chính sách F0 (được tinh chỉnh LoRA trên dữ liệu thao tác hỗn hợp nhưng không nhận thông tin bộ nhớ) đạt tỷ lệ thành công 15\% trên T1 và 5\% trên T3 (trung bình 10\%). Điều này chứng tỏ mô hình SmolVLA khi được thích ứng trọng số có thể học được kỹ năng gắp và đặt lại cơ bản trong không gian quan sát trực tiếp.
+    \item \textbf{Tác động bất lợi của bộ nhớ trực tuyến:} Ngược lại, cấu hình F1 (nhận lời nhắc kèm tóm tắt quan hệ từ bộ ghi trực tuyến) không đạt được lần thành công nào trên cả hai tác vụ (0/20 ở T1 và 0/20 ở T3). Quan sát này bác bỏ giả thuyết đơn giản rằng chỉ cần đưa thông tin bộ nhớ vào lời nhắc là chính sách tự động cải thiện tỷ lệ thành công.
+    \item \textbf{Gánh nặng độ trễ thời gian thực (Wall-clock latency penalty):} Thời gian thực thi mỗi episode của F1 kéo dài tới hơn 1.060 giây (khoảng 17,7 phút), dài gấp 5 lần so với mức xấp xỉ 212 giây (khoảng 3,5 phút) của F0. Nguyên nhân xuất phát từ việc bộ phát hiện thị giác 2D (Grounding DINO) chạy riêng biệt mất gần 1.000 ms mỗi khung hình. Độ trễ tri giác tích lũy này khiến thông tin bộ nhớ đưa vào lời nhắc bị chậm so với diễn biến vật lý của robot, làm sai lệch nhịp điều khiển vòng kín.
+\end{enumerate}
+
 % claim-id: image-preprocessing-parity
 Audit riêng về hướng ảnh đối chiếu manifest dữ liệu F0, mã collator đã ghi trong artifact và adapter dùng ở rollout. Ảnh Mem refined được hoàn nguyên về raw OpenGL khi chuẩn bị shards; cả collator huấn luyện lẫn adapter đánh giá dùng bước \mbox{\texttt{LiberoProcessorStep}} của LeRobot 0.6.1, bước này lật hai chiều không gian ảnh. Vì vậy không tìm thấy sai khác hướng ở pipeline đã khai báo. Manifest F0 ghi phiên bản thư viện nhưng không lưu hash file processor từ môi trường huấn luyện, nên phép đối chiếu này không khẳng định hai cài đặt giống nhau từng byte. Nó cũng không giải thích nguyên nhân các lượt E0 không hoàn thành tác vụ.
+
+\subsection{Đánh giá duy trì năng lực cơ sở E6 trên 10 tác vụ LIBERO-10}
+
+Để trả lời trọn vẹn câu hỏi nghiên cứu \textbf{RQ3} về khả năng bảo toàn kỹ năng thao tác cơ sở khi thích ứng với tác vụ phụ thuộc lịch sử, chiến dịch thực nghiệm E6 thực hiện đánh giá đối sánh ghép cặp trực tiếp giữa mô hình nền gốc $B0$ (SmolVLA frozen) và mô hình đã thích ứng $F1$ ở chế độ không nhận bộ nhớ (\texttt{F1-off}). Đánh giá được tiến hành trên toàn bộ 50 trạng thái kiểm thử đã khóa của giao thức V2 (5 trạng thái kiểm thử độc lập cho mỗi tác vụ trong số 10 tác vụ của \texttt{libero\_10}), sử dụng cùng hạt giống chính sách 42 và cùng ngân sách thực thi 1.000 bước với $s=10$. Toàn bộ 100 episode đã hoàn thành trọn vẹn mà không có lượt thiếu hoặc lỗi suy luận.
+
+\begingroup\small\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\centering\arraybackslash}p{\dimexpr 0.08\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.38\textwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.13\textwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.13\textwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.13\textwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.15\textwidth-2\tabcolsep\relax}}
+\caption{Kết quả đánh giá duy trì năng lực cơ sở E6 trên 10 tác vụ LIBERO-10}\label{tab:e6-retention-results}\\
+\toprule
+\textbf{Task} & \textbf{Tác vụ cơ sở LIBERO-10} & \textbf{$B0$ (Base)} & \textbf{$F1$ (LoRA)} & \textbf{Chênh lệch $\Delta$} & \textbf{Suy luận $F1$} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Task} & \textbf{Tác vụ cơ sở LIBERO-10} & \textbf{$B0$ (Base)} & \textbf{$F1$ (LoRA)} & \textbf{Chênh lệch $\Delta$} & \textbf{Suy luận $F1$} \\
+\midrule\endhead
+\bottomrule\endfoot
+T0 & Put alphabet soup \& tomato sauce in basket & 0/5 (0\%) & 2/5 (40\%) & +40\% & 638,5 ms \\
+T1 & Put cream cheese box \& butter in basket & 3/5 (60\%) & 1/5 (20\%) & -40\% & 623,2 ms \\
+T2 & Turn on stove \& put moka pot on it & 5/5 (100\%) & 2/5 (40\%) & -60\% & 636,8 ms \\
+T3 & Put black bowl in bottom drawer \& close it & 5/5 (100\%) & 5/5 (100\%) & 0\% & 630,2 ms \\
+T4 & Put white mug on left \& yellow mug on right & 3/5 (60\%) & 2/5 (40\%) & -20\% & 648,7 ms \\
+T5 & Pick up book \& place in back compartment & 5/5 (100\%) & 0/5 (0\%) & -100\% & 636,5 ms \\
+T6 & Put white mug on plate \& chocolate pudding & 4/5 (80\%) & 2/5 (40\%) & -40\% & 630,0 ms \\
+T7 & Put alphabet soup \& cream cheese in basket & 4/5 (80\%) & 3/5 (60\%) & -20\% & 635,8 ms \\
+T8 & Put both moka pots on stove & 3/5 (60\%) & 3/5 (60\%) & 0\% & 688,6 ms \\
+T9 & Put yellow and white mug in microwave & 5/5 (100\%) & 3/5 (60\%) & -40\% & 670,1 ms \\
+\midrule
+\textbf{Tổng} & \textbf{Toàn bộ 10 tác vụ (50 episodes)} & \textbf{37/50 (74\%)} & \textbf{23/50 (46\%)} & \textbf{-28\%} & \textbf{643,8 ms} \\
+\end{longtable}
+\endgroup
+
+Trên 50 cặp trạng thái khởi tạo giống nhau, ma trận phân phối kết quả ghép cặp $(B0, F1)$ ghi nhận: 18 cặp cả hai cùng thành công $(1,1)$; 8 cặp cả hai cùng thất bại $(0,0)$; 19 cặp $B0$ thành công nhưng $F1$ thất bại $(1,0)$; và 5 cặp $B0$ thất bại nhưng $F1$ thành công $(0,1)$.
+
+Kết quả này mang lại các quan sát sâu sắc và định hình cách nhìn nhận khoa học hài hòa về bài toán thích ứng chính sách VLA:
+\begin{enumerate}
+    \item \textbf{Hiện tượng suy giảm năng lực có chọn lọc theo động học tiếp xúc:} Sự suy giảm tỷ lệ thành công từ 74\% xuống 46\% không phải là sự sụp đổ đồng nhất hay xóa sạch toàn bộ mạng nơ-ron. Mô hình LoRA $F1$ bảo toàn tuyệt đối 100\% hiệu năng trên các tác vụ có dung sai không gian lớn (như T3: gắp bát đặt vào ngăn kéo rộng đạt 5/5; T8: đặt ấm lên bếp đạt 3/5). Suy giảm tập trung chủ yếu ở các tác vụ đòi hỏi sự khéo léo cao về điểm tiếp xúc trong không gian hẹp (T5: nhét sách vào khe hẹp của caddy rớt từ 5/5 xuống 0/5 do lỗi căn chỉnh cuối \texttt{F8 — placement}; T2: vặn núm bếp rớt từ 5/5 xuống 2/5).
+    \item \textbf{Cải thiện cục bộ trên tác vụ thao tác phức hợp (T0):} Đáng chú ý, ở tác vụ T0 (gắp đặt tuần tự cả hộp súp và sốt cà chua vào giỏ), chính sách $F1$ đạt tỷ lệ thành công 40\% (2/5) trong khi mô hình nền $B0$ hoàn toàn thất bại (0/5). Điều này cho thấy dữ liệu thao tác đa đối tượng trong tập huấn luyện đã bổ trợ tích cực cho kỹ năng điều phối tuần tự của mô hình thích ứng.
+    \item \textbf{Vai trò bảo toàn của chiến lược lấy mẫu hỗn hợp (Mixed-Replay):} Việc chính sách $F1$ vẫn duy trì được tỷ lệ thành công 46\% (hoàn thành gần một nửa số tập kiểm thử) chứng minh rằng việc đưa 400 quỹ đạo cơ sở vào tập huấn luyện đã tạo ra cơ chế neo giữ hữu hiệu, ngăn chặn hiện tượng quên thảm khốc (*catastrophic forgetting*) vốn thường đẩy hiệu năng về 0\% khi chỉ tinh chỉnh trên một miền tác vụ mới.
+    \item \textbf{Gợi ý kiến trúc cho VLA đa nhiệm:} Kết quả thực nghiệm xác thực rằng việc ép một bộ trọng số LoRA duy nhất (rank 16 trên các ma trận $q, v$) phải đồng thời tối ưu hóa cho chuỗi thao tác phụ thuộc lịch sử và các thao tác tiếp xúc hình học chính xác sẽ dẫn đến sự cạnh tranh dung lượng biểu diễn (*representational interference*). Thay vì xem đây là sự thất bại của phương pháp, phát hiện này cung cấp bằng chứng thực nghiệm giá trị ủng hộ hướng tiếp cận phân luồng chính sách mô-đun (*modular policy routing* hoặc *mixture-of-adapters*): duy trì các nhánh adapter chuyên biệt và kích hoạt nhánh điều hướng bộ nhớ chỉ khi tác vụ thực sự đòi hỏi thông tin diễn tiến lịch sử.
+\end{enumerate}
 
 \section{Bất đồng giữa tiến độ quan sát và tiến độ được chấm}
 

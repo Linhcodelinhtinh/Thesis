@@ -111,7 +111,7 @@
     {
       "id": "open-policy-gate",
       "state": "artifact_verified",
-      "scope": "Matched V2 policy pair verification; F0 (no-memory) and F1 (rgb_relations_v1) unmerged adapters exist, passed static contract and diagnostic runtime checks, and are ready for paired closed-loop evaluation on seen/unseen state rosters. Paired rollout comparison and memory efficacy claims remain pending.",
+      "scope": "Matched V2 policy pair verification and E2 closed-loop evaluation on 20 unseen state clusters completed. F0 achieved 10% macro success (15% T1, 5% T3) while F1 achieved 0% on both tasks (macro delta -10%) with a 5x wall-clock latency penalty due to 2D detector latency.",
       "evidence_source_ids": [
         "v2_split_lock",
         "v2_alignment",
@@ -119,10 +119,11 @@
         "f1_v2_adapter_manifest",
         "f0_v2_runtime_manifest",
         "f1_v2_runtime_manifest",
-        "f0_f1_review_receipt"
+        "f0_f1_review_receipt",
+        "e2_unseen_paired_final"
       ],
-      "permitted_wording": "Matched F0 (no-memory) and F1 (relation-memory) V2 adapters have passed preflight verification and initial-state diagnostic rollout checks, but paired closed-loop performance comparison remains to be evaluated.",
-      "prohibited_wording": "Claiming that memory improves task success before running paired rollouts, or claiming that F1 V2 is unavailable."
+      "permitted_wording": "Matched F0 (no-memory) and F1 (relation-memory) V2 adapters completed E2 paired closed-loop evaluation on 20 unseen state clusters; F0 achieved 10% macro success while F1 achieved 0% with 5x longer wall time. Neither adapter establishes official benchmark competence.",
+      "prohibited_wording": "Claiming that memory improves task success, or claiming that F1 V2 is unavailable or un-evaluated."
     },
     {
       "id": "reference-env-smoke",
@@ -520,6 +521,11 @@
       "id": "f0_f1_review_receipt",
       "path": "docs/thesis/evidence/f0_f1_readiness_review_2026-11-15.json",
       "sha256": "3c23f37573cfaa30cd6bb1e7156d34a57fa0826cf534c853269d1e6afecdf9fd"
+    },
+    {
+      "id": "e2_unseen_paired_final",
+      "path": "experiments/evaluation/e2_unseen_author_v2/paired_e2_final.json",
+      "sha256": "1a0259aa34ac37dbd36aad84cd2e2593e352eaabddd5ec38465511518446a312"
     }
   ]
 }

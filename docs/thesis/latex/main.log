@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (MiKTeX 26.5) (preloaded format=xelatex 2026.11.12)  15 NOV 2026 22:46
+This is XeTeX, Version 3.141592653-2.6-0.999998 (MiKTeX 26.5) (preloaded format=xelatex 2026.11.12)  17 NOV 2026 22:47
 entering extended mode
  file:line:error style messages enabled.
  %&-line parsing enabled.
@@ -1291,18 +1291,18 @@ File: ../figures/validation_loss.png Graphic file (type bmp)
  [30] [31]
 File: ../figures/mem_success.png Graphic file (type bmp)
 <../figures/mem_success.png>
- [32] [33] [34])
-(content/chapter5.tex [35]
+ [32] [33] [34] [35] [36]
+[37] [38]) (content/chapter5.tex [39]
 chapter 5.
-[36
+[40
 
-] [37]) [38] (main.bbl
+] [41]) [42] (main.bbl
 chapter without number
-[39
+[43
 
 
 
-] [40]
+] [44]
 Underfull \hbox (badness 10000) in paragraph at lines 151--156
 []\TU/TimesNewRoman(0)/m/n/13 LIBERO-Mem contributors.  LIBERO-Mem: Demonstrati
 on
@@ -1326,9 +1326,9 @@ Underfull \hbox (badness 1571) in paragraph at lines 158--163
 tory, 2026.  Revision
  []
 
-) (appendices/provenance.tex [41]
+) (appendices/provenance.tex [45]
 chapter A.
-[42
+[46
 
 ]
 LaTeX Font Info:    Font shape `TU/LatinModernMono(0)/m/n' will be
@@ -1341,7 +1341,7 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <7.58339> on input line 47.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5.41673> on input line 47.
- [43] [44] [45]) [46
+ [47] [48] [49]) [50
 
 ] (main.aux)
  ***********
@@ -1350,12 +1350,12 @@ L3 programming layer <2026-09-09>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 31426 strings out of 402429
- 671698 string characters out of 5433152
+ 31438 strings out of 402429
+ 672014 string characters out of 5433152
  1306021 words of memory out of 5000000
- 60189 multiletter control sequences out of 15000+600000
- 693124 words of font info for 142 fonts, out of 8000000 for 9000
+ 60199 multiletter control sequences out of 15000+600000
+ 693140 words of font info for 144 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  108i,20n,113p,11229b,639s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on main.pdf (57 pages).
+Output written on main.pdf (61 pages).

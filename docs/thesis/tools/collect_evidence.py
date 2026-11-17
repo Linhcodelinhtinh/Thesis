@@ -1016,6 +1016,23 @@ snapshot["e0_v2_pilot"] = {
     "interpretation": "DEVELOPMENT_ONLY; one seen state per task and condition; not a memory-effect estimate or official LIBERO score.",
 }
 
+e2_final_path = Path("experiments/evaluation/e2_unseen_author_v2/paired_e2_final.json")
+if e2_final_path.is_file():
+    e2_final = read(e2_final_path)
+    INPUTS[e2_final_path.as_posix()] = digest(ROOT / e2_final_path)
+    snapshot["e2_unseen_paired"] = {
+        "classification": e2_final.get("classification"),
+        "split": e2_final.get("split"),
+        "report_path": e2_final_path.as_posix(),
+        "report_sha256": INPUTS[e2_final_path.as_posix()],
+        "complete_paired_roster": e2_final.get("complete_paired_roster"),
+        "state_groups": e2_final.get("state_groups"),
+        "seeds": e2_final.get("seeds"),
+        "per_task": e2_final.get("per_task"),
+        "macro_delta": e2_final.get("macro_delta"),
+        "missing_outcome_bounds": e2_final.get("missing_outcome_bounds"),
+    }
+
 for folder in ["docs", "src", "configs", "envs", "resources/manifests", "scripts"]:
     for p in (ROOT / folder).rglob("*"):
         if not p.is_file() or "thesis" in p.relative_to(ROOT).parts or "__pycache__" in p.parts:

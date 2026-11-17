@@ -1733,6 +1733,7 @@
   "experiments/evaluation/e0-b0-f0-pilot-20261115/episodes/T3_F0_seen_state0/queries.jsonl": "8123da5eacbe5f15f6000988629960176b7b63a5ad5515a5bf6c25d59b96d941",
   "experiments/evaluation/e0-b0-f0-pilot-20261115/episodes/T3_F0_seen_state0/trajectory.npz": "bf3c080e8fab17285c72533c80308e1c2a78e664ddaa501524951e9661dfb7e9",
   "experiments/evaluation/e0-b0-f0-pilot-20261115/report.md": "b0d30fd42945f872f3730051067bc66afbfd5e2544d3985939d8a0bfdf2d6eee",
+  "experiments/evaluation/e2_unseen_author_v2/paired_e2_final.json": "1a0259aa34ac37dbd36aad84cd2e2593e352eaabddd5ec38465511518446a312",
   "docs/ARCHITECTURE.md": "2ac6bcc43d1494b158f39f90abd90a43790fd561a5cac0eda47e8da540f57515",
   "docs/DECISIONS.md": "284c03f884fe0e2ed1c62708bac270edd4619546a6da49187377f0f6ace9245f",
   "docs/FULL_CLEAN_BENCHMARK_AUDIT_2026-10-14.md": "4d8719a5bcd631557f30da4d9ac742b0e42a09ff247593296aff5cc354d695b5",

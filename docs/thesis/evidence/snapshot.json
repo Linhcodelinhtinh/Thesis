@@ -1,11 +1,13 @@
 {
-  "created_at": "2026-11-15T21:49:37.896396+07:00",
+  "created_at": "2026-11-16T21:13:35.880659+07:00",
   "scope": "Existing artifact inspection, one custom seen-state B0/F0 development pilot, offline T7-T10 writer diagnostics, and an offline MiniVLA source/checkpoint audit; no model training or official benchmark score",
-  "git_head": "76204dc94192f84c3a0a80dac532dd3814d7ba42",
+  "git_head": "657f325bf9778e1935012a153bbc8bf9d08be28f",
   "git_status": [
-    " M docs/thesis/STATUS_AND_CLAIMS.md",
+    " M docs/thesis/evidence/claim_ledger.json",
+    " M docs/thesis/evidence/snapshot.json",
     " M docs/thesis/latex/content/chapter4.tex",
-    " M docs/thesis/latex/content/chapter5.tex"
+    " M docs/thesis/latex/content/chapter5.tex",
+    " M docs/thesis/tools/collect_evidence.py"
   ],
   "limitations": [
     "Episode JSONs and selected small manifests were read and hashed.",
@@ -1797,5 +1799,69 @@
     "report_path": "experiments/evaluation/e0-b0-f0-pilot-20261115/report.md",
     "report_sha256": "b0d30fd42945f872f3730051067bc66afbfd5e2544d3985939d8a0bfdf2d6eee",
     "interpretation": "DEVELOPMENT_ONLY; one seen state per task and condition; not a memory-effect estimate or official LIBERO score."
+  },
+  "e2_unseen_paired": {
+    "classification": "CUSTOM_V2_LIBERO_MEM_RAW_UNSEEN",
+    "split": "unseen",
+    "report_path": "experiments/evaluation/e2_unseen_author_v2/paired_e2_final.json",
+    "report_sha256": "1a0259aa34ac37dbd36aad84cd2e2593e352eaabddd5ec38465511518446a312",
+    "complete_paired_roster": true,
+    "state_groups": 20,
+    "seeds": [
+      42
+    ],
+    "per_task": {
+      "T1": {
+        "planned_pairs": 20,
+        "complete_pairs": 20,
+        "f0_complete": 20,
+        "f1_complete": 20,
+        "f0_successes": 3,
+        "f1_successes": 0,
+        "observed_pair_delta": -0.15,
+        "timing": {
+          "F0": {
+            "episodes": 20,
+            "median_episode_avg_policy_query_ms": 777.0236095010478,
+            "median_rollout_wall_time_s": 211.93039644999953
+          },
+          "F1": {
+            "episodes": 20,
+            "median_episode_avg_policy_query_ms": 637.8406540007563,
+            "median_rollout_wall_time_s": 1067.9210235500068
+          }
+        },
+        "lower_bound": -0.15,
+        "upper_bound": -0.15
+      },
+      "T3": {
+        "planned_pairs": 20,
+        "complete_pairs": 20,
+        "f0_complete": 20,
+        "f1_complete": 20,
+        "f0_successes": 1,
+        "f1_successes": 0,
+        "observed_pair_delta": -0.05,
+        "timing": {
+          "F0": {
+            "episodes": 20,
+            "median_episode_avg_policy_query_ms": 778.3655990005354,
+            "median_rollout_wall_time_s": 214.49368015000073
+          },
+          "F1": {
+            "episodes": 20,
+            "median_episode_avg_policy_query_ms": 637.0804344989301,
+            "median_rollout_wall_time_s": 1063.299512950005
+          }
+        },
+        "lower_bound": -0.05,
+        "upper_bound": -0.05
+      }
+    },
+    "macro_delta": -0.1,
+    "missing_outcome_bounds": [
+      -0.1,
+      -0.1
+    ]
   }
 }

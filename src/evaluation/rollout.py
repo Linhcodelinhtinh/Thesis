@@ -241,6 +241,14 @@ def rollout_episode(
 
     policy.reset()
 
+    # Bind instruction-only contract if policy is an adapted model and memory_condition is off
+    if getattr(policy, "mem_adapter_manifest", None) is not None and memory_condition == "off":
+        from src.interfaces.libero_mem_text import LiberoMemTextRenderer
+        from src.training.mem_adapter_artifact import adapter_training_condition
+        renderer = LiberoMemTextRenderer(tokenizer=policy.tokenizer, max_total_tokens=48, strict_tokenizer=True)
+        cond = "F0" if adapter_training_condition(policy.mem_adapter_manifest) == "no_memory" else "F1-off"
+        policy.bind_instruction_only_runtime(cond, instruction, renderer)
+
     # Capture pristine ground-truth object baseline at t=0 before first action
     if collector is not None:
         collector.capture_baseline(obs)
