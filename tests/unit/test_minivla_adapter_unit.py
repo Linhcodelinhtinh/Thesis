@@ -189,3 +189,25 @@ def test_minivla_validate_interface():
     assert audit["n_bins"] == 256
     assert audit["image_resolution"] == [224, 224]
     assert audit["is_loaded"] is False
+
+
+def test_get_libero_image_orientation():
+    """Verify get_libero_image orientation options (rotate_180 vs flipud)."""
+    from src.models.minivla.preprocess import get_libero_image
+
+    arr = np.zeros((100, 100, 3), dtype=np.uint8)
+    arr[:50, :50] = [255, 0, 0]  # Top-left Red
+    obs = {"agentview_image": arr}
+
+    img_rot = get_libero_image(obs, resize_size=224, orientation="rotate_180")
+    img_flip = get_libero_image(obs, resize_size=224, orientation="flipud")
+
+    arr_rot = np.array(img_rot)
+    arr_flip = np.array(img_flip)
+
+    # In rotate_180, top-left moves to bottom-right
+    assert np.array_equal(arr_rot[200, 200], [255, 0, 0])
+    # In flipud, top-left moves to bottom-left
+    assert np.array_equal(arr_flip[200, 20], [255, 0, 0])
+    # The two orientations must not be equal
+    assert not np.array_equal(arr_rot, arr_flip)

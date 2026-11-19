@@ -21,8 +21,9 @@ class MiniVLAConfig:
     device: str = "cpu"
     dtype: str = "bfloat16"  # or float32, float16
     dataset_statistics: Optional[Dict[str, Any]] = None
-    gripper_polarity: str = "DIRECT"  # or "INVERTED", determined by stats audit
+    gripper_polarity: str = "INVERTED"  # "INVERTED_RLDS_TO_ROBOSUITE" per official upstream contract
     tokenizer_len: int = 152192  # Qwen2.5 base (151936) + 256 extra action tokens
+    image_orientation: str = "flipud"  # "flipud" (official upstream OpenVLA/MiniVLA standard) or "rotate_180"
 
     @classmethod
     def from_checkpoint(cls, checkpoint_dir: Union[str, Path], device: str = "cpu") -> "MiniVLAConfig":
@@ -56,8 +57,8 @@ class MiniVLAConfig:
         # In upstream Stanford-ILIAD OpenVLA for LIBERO-90:
         # RLDS dataloader aligns gripper actions such that 0 = close, 1 = open.
         # Robosuite / LIBERO simulation: 1 = open, -1 = close.
-        # Direct unnormalization keeps gripper in [-1, 1] without modification.
-        gripper_polarity = "DIRECT"
+        # Official evaluation script inverts the gripper: invert_gripper_action(action).
+        gripper_polarity = "INVERTED"
 
         return cls(
             model_id=cfg_dict.get("run_id", "Stanford-ILIAD/minivla-libero90-prismatic"),

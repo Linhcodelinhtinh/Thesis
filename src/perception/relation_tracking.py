@@ -16,25 +16,37 @@ class Track:
 
 
 class RelationTracker:
-    def __init__(self, profile):
+    def __init__(self, profile, *, detection_score=.15, plate_duplicate_overlap=.90,
+                 plate_association_distance=.035, object_association_distance=.07,
+                 association_margin=.02, minimum_instance_separation=.025,
+                 support_horizontal_ratio=.45, support_vertical_tolerance_ratio=.10):
         self.profile = profile
         self.anchors = {}
         self.previous = {}
         self.last_measured = {}
         self.last_seen = {}
+        self.detection_score = detection_score
+        self.plate_duplicate_overlap = plate_duplicate_overlap
+        self.plate_association_distance = plate_association_distance
+        self.object_association_distance = object_association_distance
+        self.association_margin = association_margin
+        self.minimum_instance_separation = minimum_instance_separation
+        self.support_horizontal_ratio = support_horizontal_ratio
+        self.support_vertical_tolerance_ratio = support_vertical_tolerance_ratio
 
-    def observe(self, evidence):
+    def observe(self, evidence, *, allow_late_anchors=False):
         tracks = {}
         for label, count in ((self.profile.subject, self.profile.subject_count),
                              (self.profile.reference, self.profile.reference_count)):
             boxes = [box for box in evidence.views["agentview_image"]
-                     if box.label == label and box.score >= .15]
+                     if box.label == label and box.score >= self.detection_score]
             if label == "plate":
                 distinct = []
                 for box in sorted(boxes, key=lambda item: -float(np.prod(item.size))):
                     low, high = np.array(box.xyxy[:2]), np.array(box.xyxy[2:])
                     if any(np.prod(np.maximum(0, np.minimum(high, other.xyxy[2:]) -
-                                              np.maximum(low, other.xyxy[:2]))) >= .9 * np.prod(box.size)
+                                              np.maximum(low, other.xyxy[:2]))) >=
+                           self.plate_duplicate_overlap * np.prod(box.size)
                            for other in distinct):
                         continue
                     distinct.append(box)
@@ -44,11 +56,14 @@ class RelationTracker:
                 if "plate_1" not in self.anchors:
                     subject = tracks[f"{self.profile.subject}_1"]
                     boxes = [box for box in boxes if subject.box is not None
-                             and support_overlap(subject.box, box)]
+                             and support_overlap(subject.box, box, self.support_horizontal_ratio,
+                                                 self.support_vertical_tolerance_ratio)]
             ids = [f"{label}_{i + 1}" for i in range(count)]
-            if not any(key in self.anchors for key in ids) and len(boxes) == count and evidence.step < 20:
+            if (not any(key in self.anchors for key in ids) and len(boxes) == count
+                    and (evidence.step < 20 or allow_late_anchors)):
                 ordered = sorted(boxes, key=lambda b: b.center[0])
-                if all(b.center[0] - a.center[0] >= .025 for a, b in zip(ordered, ordered[1:])):
+                if all(b.center[0] - a.center[0] >= self.minimum_instance_separation
+                       for a, b in zip(ordered, ordered[1:])):
                     self.anchors.update(zip(ids, ordered))
                     self.previous.update(zip(ids, ordered))
                     self.last_measured.update(zip(ids, ordered))
@@ -70,11 +85,12 @@ class RelationTracker:
                 if count == 1 and len(boxes) == 1 and label != "plate":
                     proposals[key] = boxes[0]
                 elif ref is not None:
-                    limit = .035 if label == "plate" else .07
+                    limit = (self.plate_association_distance if label == "plate"
+                             else self.object_association_distance)
                     ranked = sorted(((float(np.linalg.norm(b.center - ref.center)), b) for b in boxes),
                                     key=lambda row: row[0])
                     if ranked and ranked[0][0] <= limit and (
-                            len(ranked) == 1 or ranked[1][0] - ranked[0][0] >= .02):
+                            len(ranked) == 1 or ranked[1][0] - ranked[0][0] >= self.association_margin):
                         distance, best = ranked[0]
                         # A missed/ambiguous same-class track could have
                         # generated this detection. Reject a reassignment.
@@ -104,7 +120,8 @@ class RelationTracker:
             visible = sorted((track for track in group if track.box), key=lambda t: t.box.center[0])
             if len(visible) != len(group):
                 continue
-            if any(b.box.center[0] - a.box.center[0] < .025 for a, b in zip(visible, visible[1:])):
+            if any(b.box.center[0] - a.box.center[0] < self.minimum_instance_separation
+                   for a, b in zip(visible, visible[1:])):
                 continue
             for i, track in enumerate(visible, 1):
                 desc = label if len(group) == 1 else (
@@ -140,12 +157,13 @@ def relation_candidates(subject, references, predicate):
     return candidates
 
 
-def support_overlap(subject, plate):
+def support_overlap(subject, plate, horizontal_ratio=.45, vertical_tolerance_ratio=.10):
     x, y = subject.center
     _, top, _, bottom = plate.xyxy
     width, height = plate.size
-    return (abs(x - plate.center[0]) <= .45 * width and top <= subject.xyxy[3] <= bottom + .10 * height
-            and y <= plate.center[1] + .10 * height)
+    return (abs(x - plate.center[0]) <= horizontal_ratio * width
+            and top <= subject.xyxy[3] <= bottom + vertical_tolerance_ratio * height
+            and y <= plate.center[1] + vertical_tolerance_ratio * height)
 
 
 def visible_departure(subject, origin):

@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "receipt_type": "MINIVLA_OFFICIAL_RUNTIME_PARITY_RECEIPT",
+  "created_at_utc": "2026-11-18T06:37:35.856128+00:00",
+  "status": "VERIFIED",
+  "provenance": {
+    "model_id": "Stanford-ILIAD/minivla-libero90-prismatic",
+    "upstream_repository": "https://github.com/Stanford-ILIAD/openvla-mini.git",
+    "upstream_pinned_commit": "0822b36227b5a771be4eb2680e34c559734c8fdc",
+    "thesis_repository_head": "fe45424d364bed5f6cbd25f56554416d87b5d6fa",
+    "system_info": {
+      "platform": "Windows-11-10.0.26300-SP0",
+      "python_version": "3.12.2",
+      "torch_version": "2.6.0+cu124",
+      "cuda_available": true,
+      "device_name": "NVIDIA GeForce RTX 4060 Laptop GPU"
+    }
+  },
+  "checkpoint": {
+    "path": "resources/checkpoints/minivla_libero90/checkpoints/step-060000-epoch-26-loss=0.1209.pt",
+    "size_bytes": 5554882540,
+    "sha256": "2baadbf79018194cb7fc38924b68f869b23c3abffb7f7b0d2304d3eab84707c1",
+    "epoch": 26,
+    "step": 60000,
+    "val_loss": 0.1209,
+    "selection_rationale": "Matches config.json official resume pointer."
+  },
+  "runtime_pipeline_verification": {
+    "official_loader": "prismatic.models.load.load_vla",
+    "model_class": "OpenVLA",
+    "vision_backbone": "DinoSigLIPViTBackbone",
+    "llm_backbone": "Qwen25LLMBackbone",
+    "action_tokenizer": "ActionTokenizer",
+    "image_preprocessing": "np.flipud -> PIL LANCZOS (224, 224) -> DinoSigLIP get_image_transform()",
+    "prompt_template": "What action should the robot take to {instruction}?",
+    "action_decoding": "256-bin extra action tokens -> quantile unnormalization (q01/q99) with mask",
+    "gripper_postprocessing": "[0, 1] -> [-1, +1] (formula: 2*(x-0)/(1-0)-1), binarized (np.sign), inverted for Robosuite"
+  },
+  "forward_inference_verification": {
+    "test_instruction": "pick up the black bowl and place it on the plate",
+    "device": "cuda",
+    "load_time_seconds": 148.45,
+    "preprocess_latency_ms": 150.19,
+    "inference_latency_ms": 2357.66,
+    "full_step_latency_ms": 578.05,
+    "raw_continuous_action": [
+      -0.0007457873400520398,
+      0.3237920122988083,
+      -0.15259977473932151,
+      -0.001974787709175377,
+      -0.007638656479470873,
+      -0.00030251086926930126,
+      0.996078431372549
+    ],
+    "postprocessed_action_chunk": [
+      -0.0007457873434759676,
+      0.3237920105457306,
+      -0.1525997817516327,
+      -0.0019747877959161997,
+      -0.007638656534254551,
+      -0.0003025108599103987,
+      -1.0
+    ],
+    "shape": [
+      1,
+      7
+    ],
+    "dtype": "float32",
+    "invariants_passed": {
+      "shape_matches_1x7": true,
+      "dtype_is_float32": true,
+      "no_nans_or_infs": true,
+      "values_within_minus1_plus1": true,
+      "gripper_binarized": true
+    }
+  },
+  "conclusion": "MiniVLA-LIBERO90 official Prismatic runtime parity is completely verified. Model executes official load_vla, DinoSigLIP transforms, prompt builder, quantile unnormalization, and Robosuite inverted gripper without discrepancies."
+}

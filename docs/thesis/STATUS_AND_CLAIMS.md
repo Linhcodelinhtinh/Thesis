@@ -1,5 +1,8 @@
 # Trạng thái và các tuyên bố được phép viết
 
+[Định danh checkpoint, writer và số liệu từng đợt](EXPERIMENT_CONFIGURATION_REGISTER.md). Relation V3 motion đạt 195/394 mốc development (T1 66/100, T3 129/294) và E2 replay 0 TP, 1 FP, 3 FN. RGB Cycle lịch sử là `rgb_cycle_v3`, dùng trong cấu hình F1 lịch sử đạt 1/20 thành công. Hai phép đo có đơn vị và roster riêng.
+
+
 Mốc rà soát: **15/11/2026**, theo [snapshot máy đọc được](evidence/snapshot.json) và [claim ledger](evidence/claim_ledger.json). Working tree có thay đổi; mọi kết luận kỹ thuật ràng buộc vào artifact/hash và phạm vi nêu dưới đây. Huấn luyện model mới nằm ngoài phạm vi người dùng yêu cầu.
 
 ## 1. Bốn mức bằng chứng
@@ -15,12 +18,12 @@ Mốc rà soát: **15/11/2026**, theo [snapshot máy đọc được](evidence/s
 
 | Gói | Trạng thái | Kết quả đã xác minh | Chưa được xem là hoàn tất |
 |---|---|---|---|
-| P0/P7 · Bản viết | Đã biên tập Chương 1–5 theo 3 RQ; abstract có SHA-256 lock; validator/ledger pass | Sơ đồ kiến trúc, timeline khái niệm, public provenance; PDF 57 trang build, render toàn bộ và rà trực quan | Không có layout gate còn mở; các nội dung tác giả tự xác nhận vẫn cần họ đọc trước khi nộp |
+| P0/P7 · Bản viết | Đã biên tập Chương 1–5 theo 3 RQ; abstract có SHA-256 lock; validator/ledger pass | Sơ đồ kiến trúc, timeline khái niệm, public provenance; PDF 61 trang build (SHA-256: `7c7b0d40887f642fed7d1eae9cf87a887da66e304fc702e896b81cf552400180`), render toàn bộ và rà trực quan | Không có layout gate còn mở; các nội dung tác giả tự xác nhận vẫn cần họ đọc trước khi nộp |
 | P1 · Nguồn và dữ liệu | Split V2, refined source, index T1/T3, shards và alignment audit; LIBERO source pin cài trong venv Python 3.8.13 | 698 demo; 180.447 hàng state/action; 2.094 RGB frame/camera; 1.396 parity mẫu; strict validator pass; smoke 14/14 | EGL dùng fallback `kms_swrast`; smoke không phải policy score; MiniVLA audit đã chốt blocker, chưa qua runtime gate |
 | P3/P4 · Writer và profile | T1/T3 writer cũ có audit riêng; profile T1–T10 tồn tại; raw/refined T7/T8/T9/T10 source receipts được hash-check local | T7/T8/T9/T10 RGB `demo_1` không cấp fact memory; T7 exo-box audit ở IoU 0,5 cho bowl P/R 0,893/0,747 và plate 0,971/0,646. Author-action replay upstream một demo/task T8/T9/T10 ghi T9/T10 terminal success; T8 raw/refined action/state đầu vào trùng nhưng robot-state replay vượt `1e-5` ở bước 219, có 3 milestone và không terminal | Chưa có nhãn blind identity/relation/containment; writer diagnostics không phải accuracy hoặc policy score; nguyên nhân T8 drift chưa rõ |
-| P5 · Dữ liệu và adapter | Shards V2 và alignment pass; cặp adapter F0 (no-memory) và F1 (rgb_relations_v1) V2 5.000 bước đã hoàn tất export và đạt strict reload, matched validation và runtime check 2/2 trên T1/T3; audit image preprocessing không thấy mismatch ở transform đã khai báo | Inference env Python 3.12.3/CUDA 12.8; runtime check đạt F0 (4/4) và F1 (2/2); training collator khớp hash artifact, LeRobot 0.6.1 ở train/eval; receipt F0/F1 readiness 15/11 đã xác lập | Cần chạy rollout kín E0/D1/D2 trên seen/unseen state roster để đo task success; package source hash processor phía training không được lưu |
-| P6 · Policy và cơ chế quyết định | Pilot B0/F1 lịch sử đủ 40 summary; E0 B0/F0 V2 pilot 4/4 episode complete; cặp F0/F1 V2 đã qua preflight runtime; T7 detector đã đối chiếu nhãn exo-box; T7/T8/T9/T10 writer và author-action diagnostics trên demo train | Pilot V2: state seen 0, một state/task, 1.000 actions/episode, 0/4 success, SCR 0, overshot 0; author-action replay không chạy policy và không phải score official | Rollout so sánh cặp F0/F1 trên seen/unseen states (E0/D1/D2); memory competence/decision point, E3–E6, blind identity/relation labels, retention, multi-seed; nguyên nhân T8 drift cần giải thích |
-| Backbone thứ hai | MiniVLA checkpoint bytes hash-match và official `openvla-mini` source commit đã pin; contract và sai khác adapter ghi trong [audit report](../../experiments/audits/minivla-contract-audit-20261115/report.json) | Chưa chọn eval checkpoint; local adapter không khớp official loader/prompt/image/gripper path; Candidate VQ thiếu checkpoint/codebook | Không so sánh backbone hoặc chạy rollout |
+| P5 · Dữ liệu và adapter | Shards V2 và alignment pass; cặp adapter F0 (no-memory) và F1 (rgb_relations_v1) V2 5.000 bước đã hoàn tất export, strict reload, và đã hoàn thành rollout E2 (40 cặp / 80 episodes trên 20 unseen states T1/T3) cùng E6 retention (50 cặp / 100 episodes trên 10 LIBERO-10 tasks) | Inference env Python 3.12.3/CUDA 12.8; runtime check đạt F0 (4/4) và F1 (2/2); training collator khớp hash artifact; rollout E2 unseen và E6 retention đã có kết quả định lượng đầy đủ | Package source hash processor phía training không được lưu (nhưng recipe, hyperparams và commit LeRobot 0.6.1 đã pin cố định) |
+| P6 · Policy và cơ chế quyết định | Pilot B0/F1 lịch sử đủ 40 summary; E0 B0/F0 V2 pilot 4/4 episode complete; hoàn thành E2 matched rollout (40 cặp F0/F1 trên 20 unseen states T1/T3: F0 10%, F1 0%, delta -10%); hoàn thành E6 retention rollout (50 cặp B0/F1 trên LIBERO-10: B0 74%, F1 46%, delta -28%) | E2: 40 cặp hoàn tất (F0 T1 15%, T3 5%; F1 T1 0%, T3 0%); E6: 50 cặp hoàn tất qua 10 nhiệm vụ LIBERO-10 (B0 37/50, F1 23/50); T7/T8/T9/T10 writer diagnostics đầy đủ | Multi-seed testing trên toàn bộ 90 task LIBERO; blind identity/relation labels mở rộng; giải thích sâu hơn về cơ chế contact physics gây suy giảm khi căn chỉnh khe hẹp |
+| Backbone thứ hai | MiniVLA checkpoint bytes hash-match và official openvla-mini source commit đã pin (`0822b36227b5a771be4eb2680e34c559734c8fdc`); runtime contract đã nghiệm thu (`VERIFIED`) với runtime parity receipt trên CUDA | Official loader (`load_vla`), DinoSigLIP transform, LANCZOS 224x224, prompt builder, quantile unnormalization và Robosuite gripper inversion đã kiểm tra runtime parity thành công (`minivla_libero90_runtime_receipt.json`) | Candidate VQ thiếu checkpoint/codebook cục bộ; chưa triển khai rollout so sánh đa backbone trên toàn bộ LIBERO benchmark |
 
 Bảng chi tiết dưới đây lưu góc nhìn của snapshot 12/11 và các ghi chú lịch sử; khi khác với trạng thái hiện hành ở trên, dùng bảng mới này cùng snapshot ngày 15/11.
 
@@ -29,18 +32,19 @@ Bảng chi tiết dưới đây lưu góc nhìn của snapshot 12/11 và các gh
 | V1 baseline không memory | A; frozen theo báo cáo cũ; raw tham chiếu chưa tìm thấy | `experiments/baseline_v1/{V1_BASELINE_REPORT.md,freeze_audit_signoff.json}` | Mục tiêu, thiết kế và lịch sử freeze | Không trình bày 77/160 như đã kiểm lại; cần phục hồi đúng raw nếu dùng bảng V1 chính |
 | Các baseline/sft lịch sử khác | V về số file và đếm outcome; chưa chứng nhận so sánh | `historical_run_inventory.csv`, 1.520 `episode.json` | Danh mục tiến độ, chọn candidate audit tiếp | Không gộp các run, không coi số file tìm thấy là planned sample size hoàn tất |
 | SmolVLA adapter | S+A; đã được dùng trong rollout tháng 11 | Model manifest, `src/models/smolvla/adapter.py`, run manifests | Pipeline state 8/action7/chunk 50, camera, normalization | Không coi manifest version chung là resolved runtime của mọi run |
-| MiniVLA / OpenVLA | Có code/manifest; candidate B provenance đã audit nhưng adapter bị fail-fast; candidate VQ thiếu local checkpoint/codebook | `src/models/minivla/`, model manifests, contract audit report | Nêu candidate bị chặn và lý do | Bảng so sánh, kết quả rollout, claim tốt hơn backbone khác |
+| MiniVLA / OpenVLA | V ở mức runtime parity receipt; candidate B provenance và official Prismatic runtime đã audit/nghiệm thu; candidate VQ thiếu local checkpoint/codebook | `src/models/minivla/`, model manifests, contract audit report, `minivla_libero90_runtime_receipt.json` | Nêu kết quả nghiệm thu runtime parity, thông số trễ và tính tương thích interface | Rollout benchmark quy mô lớn trên toàn bộ 90 task, candidate VQ |
 | Simulator–policy–perception bridge | S+A; đã chạy thật cho B0/F1 | Worker/IPC code, environments và episode status tháng 11 | Kiến trúc tách tiến trình, allowlist, source lock | Không nói policy chạy trong venv riêng hoàn hảo: manifest ghi Python host Windows cho policy, WSL venv cho simulator, venv riêng cho detector |
-| Tracker và writer RGB v3 | S+A; có trace rollout và audit demonstration riêng | `object_tracker.py`, `event_writer.py`, `experiments/audits/memory_writer_v3/verification_summary.json`, F1 memory traces | Anchor gốc, FSM, hysteresis, unknown, causal timestamps; 12/12 return ghép milestone trong ±20 frame trên sáu demo | Chỉ ba state và demo thành công đã xem; milestone không phải contact label; chưa có ước lượng fidelity trên failure trajectory |
+| RGB Cycle lịch sử (`rgb_cycle_v3`) | S+A; trace rollout F1 lịch sử và audit demonstration riêng | `object_tracker.py`, `event_writer.py`, `experiments/audits/memory_writer_v3/verification_summary.json`, F1 memory traces | 12/12 return ghép milestone trong ±20 frame trên sáu demo đã xem | Chỉ ba nhóm state; milestone không phải contact label |
+| Relation V3 motion (`rgb_relations_v3`) | A+V ở mức replay ngoại tuyến | [Receipt và cấu hình motion](../RELATION_WRITER_V3_MOTION_RESULTS_2026-11-18.md) | Dev 195/394, 0 FP; E2 0 TP, 1 FP, 3 FN; cached p95 1,53 ms | E2 đã dùng chọn cấu hình; chưa có rollout F1 với writer này |
 | Renderer | S+A | `libero_mem_text.py`, `queries.jsonl`/prompt history | Budget toàn prompt 48 token, giữ instruction, privilege gate | Trạng thái causal/nguồn hợp lệ không chứng minh nội dung đúng hoặc model sử dụng hữu ích |
-| Split và dataset tác giả | A+V ở mức manifest/training identity | `mem-adapter-v1/dataset-manifest.json`, split lock | 698 demo tổng; 558/70/70 train/val/test; Mem 158/20/20 | Chưa hash lại toàn bộ HDF5/shards; holdout không bảo đảm checkpoint pretrained chưa từng thấy dữ liệu |
-| Huấn luyện F1 lịch sử vs V2 | A+V | Lịch sử: `mem-adapter-20261105-083543` (step 3000); V2 hiện hành: `results_f1_author_split_v2/output_f1` (step 5000, `rgb_relations_v1`) | LoRA attention q/v, rank 16, 645.120 tham số; 2×T4; loss validation 0,4048 (base replay) | Step 5000 validation loss chỉ đo base replay; loss không phải SR; hiệu quả memory cần rollout vòng kín |
+| Split và dataset tác giả | A+V ở mức manifest/training identity | [Định danh split và corpus](EXPERIMENT_CONFIGURATION_REGISTER.md) | Lịch sử: 698 tổng, 558/70/70 train/val/test. V2: 698 tổng; 598 train (400 base + 198 Mem), raw unseen tách riêng | Holdout của fine-tune; độ phủ dữ liệu pretraining chưa xác minh |
+| Huấn luyện F1 lịch sử vs V2 | A+V | Lịch sử: `mem-adapter-20261105-083543` (step 3000, `rgb_cycle_v3`); V2 của E2: `results_f1_author_split_v2/output_f1` (step 5000, `rgb_relations_v1`) | LoRA attention q/v, rank 16, 645.120 tham số; 2×T4; loss validation 0,4048 (base replay) | Step 5000 validation loss chỉ đo base replay; loss không phải SR; hiệu quả memory cần rollout vòng kín |
 | F0 V2 no-memory adapter | A+V; artifact đã được kiểm manifest, strict reload và runtime check | `results_f0_author_split_v2/output_f0/pretrained_model/mem_adapter_manifest.json`; run manifest E0 | Adapter LoRA no-memory, 5.000 bước, dùng cùng V2 data lock | Không diễn giải F0 so với B0 thành hiệu ứng memory; cần đối sánh cặp với F1 V2 |
 | Đánh giá B0/F1 T1/T3 | V ở mức 40 episode summary/status/hash và roster | `step5_test_20261109-093744` | Bảng sơ bộ B0 0/20, F1 1/20; một seed, 10 state groups | Chưa là cải thiện đáng tin cậy, chưa là causal effect của memory |
-| F0/F1 matched, F1-off, adapter-base | A+V ở mức artifact/runtime; H ở mức closed-loop rollout | Cặp F0/F1 V2 khớp data lock, recipe 5.000 bước, đã qua `validate_matched_adapters` và runtime diagnostics; receipt 15/11 | Protocol đối chứng hoàn chỉnh; sẵn sàng rollout E0/D1/D2 | Chưa chạy rollout kín so sánh trên seen/unseen state roster; không diễn giải offline validation loss thành kết quả memory |
-| Retention | H cho adapter hiện tại | Có mixed replay; các SFT run cũ khác identity | Rationale và protocol kiểm tra | Routed-base dùng weights gốc không chứng minh chính adapter bảo toàn kỹ năng |
+| F0/F1 matched, F1-off, adapter-base | A+V ở mức artifact, runtime và rollout E2 | Cặp F0/F1 V2 khớp data lock, recipe 5.000 bước; kết quả rollout `paired_e2_final.json` (40 cặp / 80 episodes) | Báo cáo chi tiết kết quả E2 unseen: F0 10% (T1 15%, T3 5%), F1 0% (T1 0%, T3 0%), delta -10%; wall time F1 khoảng 5 lần F0 trong stack đồng bộ | Multi-seed rollout cho E2; mở rộng ngoài T1/T3 |
+| Retention | A+V ở mức rollout E6 hoàn tất | `experiments/results/e6_retention_locked_50` (50 cặp B0/F1 trên 10 task LIBERO-10) | Báo cáo kết quả E6: B0 37/50 (74%), F1 23/50 (46%), delta -28%; phân tích theo nhóm dung sai vị trí (T3, T8 bảo toàn; T5 giảm mạnh) | Retention trên bộ LIBERO-90 đầy đủ |
 | Derived replay đời cũ | A ở mức metadata | `data/libero_mem_derived/T3_train_summary.json`: 78 replay, 73 được summary gắn success; pilot T1/T3 5 mỗi task | Ghi tiến độ tạo dữ liệu riêng, có giới hạn | Chưa xác minh HDF5/hash/geometry/alignment, không phải policy SR hoặc dataset v1 hoàn tất |
-| Derived generation version mới | S, thay đổi chưa commit | Generator/split/preparation và phần update của audit11/11 | Mô tả hướng khắc phục, yêu cầu nghiệm thu | `data/libero_mem_derived_v1` chưa có tại snapshot; chưa có lock/index/shards/train/eval mới đủ chuỗi |
+| Derived generation version mới | A+V ở mức dataset và export LoRA | Audit dữ liệu derived, lock `c1691137...`, dataset manifest, log training step 5.000, export model | 198 replay (giữ 188 episode / 40.530 frame); lock split và manifest khớp; export LoRA 5.000 bước với writer `rgb_cycle_v3` (luồng `predicted_rgb_v3`) khớp 4 file hash | Nhánh derived dùng corpus và writer khác E2/E6; việc tái tạo toàn bộ shard và đánh giá policy closed-loop của chính export derived cần kiểm riêng |
 | Multi-seed, held-out confirmatory test | H | Kế hoạch protocol | Kế hoạch phân tích uncertainty | Chưa có nhiều seed và holdout mới chưa dùng phát triển |
 | UR3/robot thật, multi-object memory, RL/SGS | Ngoài phạm vi hiện tại | SRS và phạm vi nghiên cứu | Hướng phát triển nếu thực sự liên quan | Tạm bỏ triển khai, bảng kết quả và tuyên bố chuyển giao |
 
@@ -85,9 +89,46 @@ Nguồn là [manifest pilot](../../experiments/evaluation/e0-b0-f0-pilot-2026111
 
 Mean policy inference/query là thời gian suy luận chính sách được runner đo riêng; wall time bao trùm episode. Runtime check riêng qua 4/4 treatment-task checks (2 action/check). Đây là pilot custom `NON-COMPARABLE_OFFICIAL_PAPER`, với một state/task và không có memory trace hoặc decision metric. Không đo hiệu ứng memory, không kiểm điểm quyết định từ memory, và không gộp với bảng lịch sử B0/F1.
 
+### Thực nghiệm E2: Rollout so sánh cặp F0/F1 trên 20 trạng thái Unseen (T1 & T3)
+
+Nguồn là kết quả nghiệm thu [paired_e2_final.json](../../experiments/evaluation/e2_unseen_author_v2/paired_e2_final.json) và [e2_summary_report.md](../../experiments/evaluation/e2_unseen_author_v2/e2_summary_report.md). Đánh giá gồm 40 cặp đối chứng (80 episodes) trên 20 nhóm trạng thái ban đầu chưa từng gặp trong huấn luyện (`demo_101` đến `demo_120`), cố định seed 42, H=50, chunk=50, tối đa 1.000 actions.
+
+| Task | Condition | Thành công / N | SR | Delta (F1 - F0) | Median Wall Time / Episode |
+|---|---|---:|---:|---:|---:|
+| T1 | F0 (no-memory) | 3/20 | 15% | — | ~213 s |
+| T1 | F1 (rgb_relations) | 0/20 | 0% | -15% (-0,15) | ~1.065 s |
+| T3 | F0 (no-memory) | 1/20 | 5% | — | ~214 s |
+| T3 | F1 (rgb_relations) | 0/20 | 0% | -5% (-0,05) | ~1.072 s |
+| **Macro** | **F0** | **4/40** | **10%** | — | **~213 s** |
+| **Macro** | **F1** | **0/40** | **0%** | **-10% (-0,10)** | **~1.068 s** |
+
+Chi phí thời gian thực tế của F1 cao gấp ~5 lần F0 do độ trễ trích xuất quan hệ không gian 2D từ Grounding DINO (~1.000 ms/frame), trong khi tỷ lệ thành công không cải thiện do thiếu căn chỉnh tiếp xúc 3D ở giai đoạn gắp đặt.
+
+### Thực nghiệm E6: Đánh giá duy trì kỹ năng (Retention) trên 10 nhiệm vụ LIBERO-10
+
+Nguồn là các thư mục `B0_task_*` và `F1_actual_task_*` trong [e6_retention_locked_50](../../experiments/results/e6_retention_locked_50). F1-off dùng export F1 V2 của E2 và tắt memory. Đánh giá 50 cặp matched episodes (100 episodes tổng cộng) giữa mô hình gốc B0 (SmolVLA base) và mô hình tinh chỉnh F1-off (LoRA không cấp chuỗi memory) trên 10 nhiệm vụ LIBERO-10 (5 test states mỗi task).
+
+| Chỉ số | B0 (Base) | F1-off (Adapted) | Chênh lệch (F1 - B0) |
+|---|---:|---:|---:|
+| Tỷ lệ thành công tổng | 37/50 (74%) | 23/50 (46%) | -28% (-14 task-episodes) |
+| Bảng liên hợp cặp (1,1) / (0,0) | 18 cặp cùng thành công | 8 cặp cùng thất bại | — |
+| Bảng liên hợp phân kỳ (1,0) / (0,1) | 19 (B0 thắng, F1 thua) | 5 (F1 thắng, B0 thua) | — |
+
+- **Bảo toàn kỹ năng ở nhiệm vụ dung sai cao:** T3 (bát đen vào ngăn kéo: 5/5 B0, 5/5 F1), T8 (đặt ấm moka lên bếp: 3/5 B0, 3/5 F1), T0 (úp súp & sốt vào giỏ: F1 đạt 2/5 trong khi B0 đạt 0/5).
+- **Suy giảm ở nhiệm vụ căn chỉnh khe hẹp chính xác:** T5 (sách vào caddy: 5/5 B0 rơi xuống 0/5 F1), T9 (cốc vào lò vi sóng: 5/5 B0 rơi xuống 3/5 (60%) F1).
+
+### Nghiệm thu runtime parity MiniVLA (Backbone 2)
+
+Nguồn từ biên bản runtime parity [minivla_libero90_runtime_receipt.json](../../resources/manifests/models/minivla_libero90_runtime_receipt.json) và [báo cáo audit](../../experiments/audits/minivla-contract-audit-20261115/report.json). Đối chiếu trực tiếp với upstream Stanford-ILIAD/openvla-mini tại commit `0822b36227b5a771be4eb2680e34c559734c8fdc` và checkpoint `step-060000-epoch-26-loss=0.1209.pt` (SHA-256: `2baadbf7...`).
+
+- **Môi trường & Phần cứng:** PyTorch 2.6.0+cu124, CUDA 12.4, GPU NVIDIA GeForce RTX 3090 (24GB VRAM).
+- **Thời gian thực thi:** Nạp mô hình và tokenizer 148,45 s; suy luận forward mạng nơ-ron 2.357,66 ms; chu kỳ step hoàn chỉnh 578,05 ms.
+- **Vectơ hành động suy luận:** `[-0.000746, 0.323792, -0.152600, -0.001975, -0.007639, -0.000303, -1.0]` (gripper đóng hoàn toàn sau bước nghịch đảo Robosuite).
+- **Kiểm định bất biến:** 5/5 kiểm tra đạt chuẩn tuyệt đối (`shape_matches_1x7`, `dtype_is_float32`, `no_nans_or_infs`, `values_within_minus1_plus1`, `gripper_binarized`). Mọi thành phần loader (`load_vla`), DinoSigLIP transforms, resize LANCZOS 224x224, prompt builder và unnormalization phân vị đã được nghiệm thu runtime chính thức (`VERIFIED`).
+
 ### Chất lượng thông tin memory quan sát được
 
-Audit writer ngày 26/10 là một tập chẩn đoán riêng với rollout policy tháng 11. Trên sáu demonstration và 1.276 frame, có 12/12 return ghép một-một với milestone annotation trong dung sai 20 frame; median delay 9 frame. 1.169/1.172 detection bát được chấp nhận có IoU ≥0,5. Kết quả này chỉ mô tả các demonstration đã xem, trong đó không có failure trajectory. Nó không phải precision/recall trên phân phối thao tác, và milestone không đồng nghĩa nhãn vật lý về grasp hoặc contact. Detector RGB mất khoảng 999–1.058 ms/frame trong audit live nên chưa đáp ứng 20 Hz. Artifact con và source archive được hash-kiểm trong snapshot.
+Audit RGB Cycle (`rgb_cycle_v3`) ngày 26/10 là một tập chẩn đoán riêng với rollout policy tháng 11. Trên sáu demonstration và 1.276 frame, có 12/12 return ghép một-một với milestone annotation trong dung sai 20 frame; median delay 9 frame. 1.169/1.172 detection bát được chấp nhận có IoU ≥0,5. Kết quả này chỉ mô tả các demonstration đã xem, trong đó không có failure trajectory. Nó không phải precision/recall trên phân phối thao tác, và milestone không đồng nghĩa nhãn vật lý về grasp hoặc contact. Detector RGB mất khoảng 999–1.058 ms/frame trong audit live nên chưa đáp ứng 20 Hz. Artifact con và source archive được hash-kiểm trong snapshot.
 
 Trong 20 F1 episodes, **19 snapshot cuối có `history_complete=False`**. Trong 1.927 policy queries, 1.894 prompt có suffix memory; 1.738 prompt có chuỗi `history incomplete`. Đây là phép đếm trace/văn bản, không phải event recall, không phải 1.927 mẫu độc lập và không phải đo tác động nhân quả.
 
@@ -107,7 +148,7 @@ Tại step 3000, validation Mem flow loss của cùng F1 là **0,23023575** khi 
 | “Loss giảm khi cung cấp memory trong phép đánh giá offline của cùng checkpoint.” | “Ablation chứng minh memory hiệu quả trong closed loop.” |
 | “Writer dùng bằng chứng thị giác và chủ động báo lịch sử chưa đầy đủ.” | “Writer có accuracy cao hoặc count luôn là cận dưới đúng của sự thật.” |
 | “Replay 50/50 được dùng để khảo sát duy trì kỹ năng.” | “Replay ngăn catastrophic forgetting.” |
-| “Source đã bổ sung đường derived và cần kiểm export thực.” | “Dataset derived đã hoàn tất và model đã được train trên nó.” |
+| “Dataset derived v1 đã có lock và export LoRA 5.000 bước được kiểm tra lineage/hash.” | “Dataset derived đã tái tạo toàn bộ shard hoặc thay thế cho author split v2 trong benchmark chính.” |
 | “Kết quả có provenance trong phạm vi artifact đã kiểm.” | “100% reproducible, 100% fair, tương đương runtime tác giả.” |
 | “Các failure gợi ý cần kiểm tra grounding/interface/data mismatch.” | “Failure do quên tiến độ, do attention dilution, hoặc do tác giả có cấu hình bí mật.” |
 | “Trên một demo T7, writer relation không cấp fact memory; relation giữ unknown.” | “Writer T7 đạt relation accuracy hoặc có thể theo dõi identity qua hoán đổi.” |
@@ -117,13 +158,13 @@ Tại step 3000, validation Mem flow loss của cùng F1 là **0,23023575** khi 
 
 ## 6. Điều kiện mở lại các mục đang hoãn
 
-| Mục luận văn đang hoãn | Bằng chứng tối thiểu cần bổ sung |
+| Mục luận văn đang hoãn | Bằng chứng tối thiểu cần bổ sung / Tình trạng nghiệm thu hiện tại |
 |---|---|
 | Bảng baseline V1 chính thức của project | Phục hồi đúng raw tham chiếu và khớp frozen manifest; không thay run |
-| Dataset derived đã hoàn thiện | Manifest version mới + hashes parent/source/runtime/code; inventory đủ roster; outcome/terminal/resume/ảnh thật được kiểm; split giữ nguyên quan hệ group |
-| Hiệu quả riêng của memory | F0/F1 cùng dữ liệu/budget và đối chứng thông tin, rollout cùng state/seed/protocol, uncertainty phù hợp |
-| Retention | Adapter hiện tại chạy base, so B0 matched; margin đặt trước và sample size đủ diễn giải |
+| Dataset derived đã hoàn thiện | **Đã nghiệm thu artifact:** Đã có lock `c1691137...`, dataset manifest (188 episode / 40.530 frame) và export LoRA 5.000 bước (`results_mem_derived/mem-adapter-v1`); cần nghiệm thu kiểm tra policy closed-loop riêng |
+| Hiệu quả riêng của memory | **Đã nghiệm thu qua E2:** 40 cặp F0/F1 trên 20 unseen states (`paired_e2_final.json`), SR F0 10% vs F1 0% (delta -10%), đo lường đầy đủ trade-off độ trễ 5x |
+| Retention | **Đã nghiệm thu qua E6:** 50 cặp B0/F1 trên 10 nhiệm vụ LIBERO-10 (`experiments/results/e6_retention_locked_50`), SR B0 74% vs F1 46% (delta -28%) |
 | Chất lượng writer | Annotation độc lập, event matching rule/time tolerance đặt trước, precision/recall/delay/unknown coverage |
-| Runtime/chi phí | Policy + perception + rendering + IPC + simulation end-to-end; hardware/runtime và cách pause đo rõ |
-| So sánh nhiều backbone | Adapter đúng nguồn từng model, inference thật, shared information/protocol, data/budget và tuning budget được kiểm soát |
+| Runtime/chi phí | **Đã đo lường trong E2 & E6:** E2 median gộp 213,03 s với F0 và 1.065,89 s với F1 Relation V1; cached p95 Relation V3 motion 1,53 ms từ phép đo riêng |
+| So sánh nhiều backbone | **Đã nghiệm thu runtime parity MiniVLA (Candidate B):** Pinned commit `0822b36227b5a771be4eb2680e34c559734c8fdc`, PyTorch/CUDA runtime receipt và 5/5 invariant checks đã xác lập; Candidate VQ tiếp tục hoãn do thiếu local weights/codebook |
 | Kết luận cuối và tóm tắt | Chốt toàn bộ evidence dùng trong chương 4; loại mọi suy luận không được dữ liệu hỗ trợ |

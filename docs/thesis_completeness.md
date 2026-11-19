@@ -3,7 +3,7 @@
 > **Lưu ý cập nhật 12/11/2026:** Nội dung bên dưới là snapshot lịch sử ngày 28/10, không phải trạng thái hiện hành. Đã có checkpoint và rollout B0/F1 mới; audit writer riêng ghép 12/12 return trong sáu demonstration đã xem. Bằng chứng hiện có vẫn chưa đủ để gọi toàn bộ pipeline hoàn thiện hoặc kết luận memory có lợi. Xem [ma trận trạng thái và claims](thesis/STATUS_AND_CLAIMS.md), [kế hoạch viết toàn bộ khóa luận](thesis/WRITING_PLAN.md) và [bản thảo 5 chương](thesis/THESIS_DRAFT.md). Các khẳng định “đã giải quyết triệt để” bên dưới cần được đọc trong phạm vi lịch sử, không dùng làm chứng nhận kết quả mới.
 
 > **Cập nhật ngày:** 28/10/2026  
-> **Trọng tâm:** Báo cáo tiến độ triển khai các component lớn, tính năng mới (Visual Perception Worker, Visual Event Writer v3, Mixed Memory SFT Training Pipeline, LIBERO-Mem Multi-Cycle Benchmark) và lộ trình nghiệm thu thực nghiệm.
+> **Trọng tâm:** Báo cáo tiến độ triển khai các component lớn, tính năng mới (Visual Perception Worker, RGB Cycle writer (`rgb_cycle_v3`), Mixed Memory SFT Training Pipeline, LIBERO-Mem Multi-Cycle Benchmark) và lộ trình nghiệm thu thực nghiệm.
 
 ---
 
@@ -22,7 +22,7 @@ Mục tiêu cốt lõi của luận văn là thiết kế, hiện thực hóa v�
                  │                                  ┌──────────────┴──────────────┐
                  │                                  ▼                             ▼
                  │                         Visual Perception Layer       Memory Engine & Schemas
-                 │                         (Grounding DINO + Tracker)    (Event Writer v3, Store)
+                 │                         (Grounding DINO + Tracker)    (RGB Cycle Writer, Store)
                  │                                  │                             │
                  └────────────────────────┬─────────┴─────────────────────────────┘
                                           │
@@ -94,8 +94,8 @@ Ranh giới hệ thống được phân định minh bạch:
   - Tích hợp `GroundingDINO` zero-shot detector (`grounding_dino.py`).
   - Hiện thực `ProcessVisualDetector` (`process_detector.py`): Khởi chạy tiến trình worker con trong môi trường `.venv_memory` độc lập, giao tiếp qua JSON IPC, loại bỏ triệt để nguy cơ xung đột phụ thuộc giữa thư viện thị giác và môi trường policy/simulator.
   - Hiện thực `CausalObjectTracker` (`object_tracker.py`): Gắn anchor đĩa/bàn tại frame đầu tiên, theo dõi bounding box bát, áp dụng hysteresis và lưu cache detection có kiểm tra hash SHA-256 từng frame RGB.
-- **Visual Event Memory Writer v3 (`src/memory/event_writer.py`)**:
-  - Thay thế hoàn toàn bộ ghi proprioceptive heuristic cũ. Writer v3 phát hiện sự kiện nhấc vật (`departed_support`) dựa trên độ dịch chuyển mép dưới bounding box so với support anchor, và phát hiện hoàn thành chu kỳ (`returned_to_support`) khi vật quay lại vị trí đĩa gốc ổn định với độ mở gripper $\ge 0.055$m trong 3 frames liên tiếp.
+- **Historical RGB Cycle writer (`src/memory/event_writer.py`)**:
+  - Thay thế hoàn toàn bộ ghi proprioceptive heuristic cũ. RGB Cycle phát hiện sự kiện nhấc vật (`departed_support`) dựa trên độ dịch chuyển mép dưới bounding box so với support anchor, và phát hiện hoàn thành chu kỳ (`returned_to_support`) khi vật quay lại vị trí đĩa gốc ổn định với độ mở gripper $\ge 0.055$m trong 3 frames liên tiếp.
   - Xử lý mất dấu quan sát (incomplete history): Không tự ý suy đoán trạng thái mà đánh dấu cờ `history_complete = False` để cảnh báo policy.
 - **Token-Aware Text Renderer (`src/interfaces/libero_mem_text.py`)**:
   - Giao tiếp trực tiếp với tokenizer SmolVLA, kiểm soát chặt chẽ ngân sách $\le 48$ tokens, hỗ trợ compact rendering và cấm triệt để rò rỉ thông tin oracle (`allow_oracle = False`).
@@ -149,7 +149,7 @@ Trong các báo cáo kiểm định trước (tháng 10/2026), 5 điểm nghẽn
 | | Visual & Causal Tracker | [object_tracker.py](file:///d:/Thesis_26/src/perception/object_tracker.py) | **Hoàn thành** | Anchor binding tại frame 0, temporal continuity $\le 3$ frames, hỗ trợ detection cache. |
 | | Structured Evidence Schema | [visual_evidence.py](file:///d:/Thesis_26/src/perception/visual_evidence.py) | **Hoàn thành** | Đóng gói bounding boxes, frame hash SHA-256, và camera metadata. |
 | **Memory Engine** | Immutable Episode Schemas | [models.py](file:///d:/Thesis_26/src/memory/models.py) | **Hoàn thành** | `V2MemoryEvent`, `SchemaV2EpisodeMemory`, deep immutability qua `MappingProxyType`. |
-| | Visual Cycle Writer v3 | [event_writer.py](file:///d:/Thesis_26/src/memory/event_writer.py) | **Hoàn thành** | FSM departure/return, hysteresis chống đếm lặp, ghi nhận incomplete history. |
+| | RGB Cycle lịch sử | [event_writer.py](file:///d:/Thesis_26/src/memory/event_writer.py) | **Hoàn thành** | FSM departure/return, hysteresis chống đếm lặp, ghi nhận incomplete history. |
 | | Simulation Oracle Writer | [libero_mem_oracle.py](file:///d:/Thesis_26/src/memory/libero_mem_oracle.py) | **Hoàn thành** | Ground-truth predicate/contact từ MuJoCo, đóng vai trò diagnostic upper-bound. |
 | | Store, Updater, Retriever | [store.py](file:///d:/Thesis_26/src/memory/store.py), [updater.py](file:///d:/Thesis_26/src/memory/updater.py), [retriever.py](file:///d:/Thesis_26/src/memory/retriever.py) | **Hoàn thành** | Quản lý vòng đời episode, deterministic causal retrieval. |
 | **Interfaces** | Token-Aware Text Renderer | [libero_mem_text.py](file:///d:/Thesis_26/src/interfaces/libero_mem_text.py) | **Hoàn thành** | Budget $\le 48$ tokens, tokenizer GPT2, cấm oracle privilege leak, render compact. |

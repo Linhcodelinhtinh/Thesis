@@ -27,7 +27,7 @@ def verify_files(root, inventory):
                 raise ValueError("Artifact hash/path mismatch: " + name)
 
 
-def verify_memory_code(provenance):
+def verify_memory_code(provenance, verify_files_on_disk=True):
     if not provenance:
         raise ValueError("A Mem adapter requires predicted-memory provenance")
     first = provenance[0]
@@ -37,7 +37,8 @@ def verify_memory_code(provenance):
             for key in ("writer", "writer_code_sha256", "writer_config", "detector", "tokenizer_revision"):
                 if item[key] != first[key]:
                     raise ValueError("Inconsistent memory contract: " + key)
-        verify_files(ROOT, item["writer_code_sha256"])
+        if verify_files_on_disk:
+            verify_files(ROOT, item["writer_code_sha256"])
     return first
 
 
@@ -65,7 +66,7 @@ def export_adapter(policy, assets, destination, run_info):
     (destination / "mem_adapter_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
 
-def validate_adapter(adapter_path, base_path):
+def validate_adapter(adapter_path, base_path, verify_provenance_files=True):
     root = Path(adapter_path)
     manifest = json.loads((root / "mem_adapter_manifest.json").read_text(encoding="utf-8"))
     if manifest.get("artifact") != "unmerged_mem_lora" or manifest.get("schema_version") != 1:
@@ -78,7 +79,7 @@ def validate_adapter(adapter_path, base_path):
     verify_files(root, manifest["adapter_files"])
     training_condition = adapter_training_condition(manifest)
     if training_condition == "memory":
-        verify_memory_code(manifest["memory_provenance"])
+        verify_memory_code(manifest["memory_provenance"], verify_files_on_disk=verify_provenance_files)
     elif training_condition != "no_memory" or manifest["memory_provenance"]:
         raise ValueError("Invalid no-memory adapter training contract")
     return manifest
@@ -106,16 +107,17 @@ def validate_runtime(manifest, writer, renderer):
     if adapter_training_condition(manifest) != "memory":
         raise ValueError("Predicted memory requires a memory-trained adapter")
     contract = verify_memory_code(manifest["memory_provenance"])
-    if contract.get("writer") == "rgb_relations_v1":
-        from src.memory.relation_memory import RelationMemoryWriter
-        from src.memory.relation_pipeline import relation_config, relation_source_hashes
+    from src.memory.relation_writer_versions import RELATION_WRITERS, relation_config, versioned_relation_source_hashes
+    if contract.get("writer") in RELATION_WRITERS:
+        version = contract["writer"]
         from src.interfaces.relation_memory_text import RelationMemoryRenderer
-        if (not isinstance(writer, RelationMemoryWriter) or writer.image_convention != "libero_raw"
+        if (not isinstance(writer, RELATION_WRITERS[version]) or writer.VERSION != version
+                or writer.image_convention != "libero_raw"
                 or not isinstance(renderer, RelationMemoryRenderer)
                 or renderer.token_counter is not None or renderer.max_total_tokens != 48
                 or not renderer.strict_tokenizer or renderer.allow_oracle
-                or relation_config(renderer.strategy) != contract["writer_config"]
-                or relation_source_hashes(ROOT) != contract["writer_code_sha256"]
+                or relation_config(renderer.strategy, version) != contract["writer_config"]
+                or versioned_relation_source_hashes(ROOT, version) != contract["writer_code_sha256"]
                 or writer.detector.provenance != contract["detector"]):
             raise ValueError("Online relation memory contract differs from training")
         return

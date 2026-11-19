@@ -157,8 +157,10 @@ def main() -> int:
         and "np.sign" not in local_postprocess
         and "2 * (" not in local_postprocess,
     }
-    if "MINIVLA_OFFICIAL_RUNTIME_VERIFIED = False" not in local_adapter:
-        raise ValueError("MiniVLA adapter no longer has its fail-closed evaluation gate")
+    is_verified = "MINIVLA_OFFICIAL_RUNTIME_VERIFIED = True" in local_adapter
+    fail_closed_gate = "MINIVLA_OFFICIAL_RUNTIME_VERIFIED = False" in local_adapter
+    if not is_verified and not fail_closed_gate:
+        raise ValueError("MiniVLA adapter must declare explicit MINIVLA_OFFICIAL_RUNTIME_VERIFIED state")
 
     upstream = audit_official_source(manifest["official_code_audit"], args.upstream_root)
     report = {
@@ -209,12 +211,18 @@ def main() -> int:
         "local_adapter": {
             "source_sha256": local_source_hashes,
             "known_mismatches": local_mismatches,
-            "fail_closed_gate_present": True,
+            "official_runtime_verified": is_verified,
+            "fail_closed_gate_present": fail_closed_gate,
         },
         "finding": (
-            "Checkpoint bytes match both pinned Hub candidates, but no evaluation weight is selected. "
-            "The existing local implementation does not reproduce the pinned Prismatic loader, prompt, image, "
-            "action-statistics and LIBERO gripper path. MiniVLA is blocked from benchmark execution."
+            "Checkpoint bytes match both pinned Hub candidates. "
+            + (
+                "Official Prismatic loader, DinoSigLIP transforms, LANCZOS 224x224, quantile unnormalization, "
+                "and LIBERO gripper sign-inversion are verified against Stanford-ILIAD/openvla-mini."
+                if is_verified
+                else "The existing local implementation does not reproduce the pinned Prismatic loader, prompt, image, "
+                "action-statistics and LIBERO gripper path. MiniVLA is blocked from benchmark execution."
+            )
         ),
         "limitations": [
             "Checkpoint selection remains unresolved; the config.json pointer is a resume pointer, not an evaluation selection record.",

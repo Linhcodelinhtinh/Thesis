@@ -4,6 +4,7 @@ Converts raw language model outputs (token sequences or VQ codebook indices)
 into valid robot actions:
 - Detokenization to normalized action values [-1, 1].
 - Unnormalization using dataset statistics.
+- Official LIBERO gripper postprocessing: [0, 1] -> [-1, +1], sign-binarize, invert.
 - Dynamic gripper polarity handling (never hardcoded +1/-1).
 """
 
@@ -13,6 +14,32 @@ import torch
 
 from src.models.minivla.action_tokenizer import ExtraActionTokenizer
 from src.models.minivla.residual_vq import ResidualVQActionTokenizer
+
+
+def normalize_gripper_action(action: np.ndarray, binarize: bool = True) -> np.ndarray:
+    """Changes gripper action (last dimension of action vector) from [0, 1] to [-1, +1].
+
+    Matches upstream OpenVLA/Prismatic experiments/robot/robot_utils.py:
+    Formula: y = 2 * (x - orig_low) / (orig_high - orig_low) - 1
+    """
+    action = np.copy(action)
+    orig_low, orig_high = 0.0, 1.0
+    action[..., -1] = 2 * (action[..., -1] - orig_low) / (orig_high - orig_low) - 1
+    if binarize:
+        action[..., -1] = np.sign(action[..., -1])
+    return action
+
+
+def invert_gripper_action(action: np.ndarray) -> np.ndarray:
+    """Flips the sign of the gripper action (last dimension of action vector).
+
+    Matches upstream OpenVLA/Prismatic experiments/robot/robot_utils.py:
+    RLDS dataloader aligns gripper actions such that 0 = close, 1 = open;
+    Robosuite environment expects -1 = open, +1 = close.
+    """
+    action = np.copy(action)
+    action[..., -1] = action[..., -1] * -1.0
+    return action
 
 
 class MiniVLAPostprocessor:

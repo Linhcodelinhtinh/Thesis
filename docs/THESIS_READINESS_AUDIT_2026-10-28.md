@@ -34,7 +34,7 @@ Toàn bộ các component cốt lõi, bao gồm:
   - Không có xung đột phụ thuộc giữa thư viện Transformer của detector và môi trường PyTorch/LeRobot của policy.
   - Fail-fast khi worker gặp timeout hoặc lỗi mô hình; không silent fallback sang dữ liệu giả định.
 
-### Component B: Visual Event Memory Writer v3 (`src/memory/`)
+### Component B: Historical RGB Cycle writer (`rgb_cycle_v3`)
 * **Mục tiêu**: Thay thế bộ ghi proprioceptive heuristic cũ (vốn gây 0/9,420 memory frames ở bài toán sách và 1.91% ở bài toán bát do các ngưỡng kẹp $z \le 0.95$ và finger gap sai lệch).
 * **Mã nguồn chính**:
   - [event_writer.py](file:///d:/Thesis_26/src/memory/event_writer.py): `LiberoMemEventWriter` (v3) vận hành theo máy trạng thái hữu hạn (FSM):

@@ -1,4 +1,6 @@
-# RGB memory writer v3 — pilot T1/T3
+# RGB Cycle lịch sử (`rgb_cycle_v3`) — pilot T1/T3
+
+Tài liệu này ghi thiết kế và kết quả pilot 26/10 của RGB Cycle. Relation V3 cập nhật mang mã `rgb_relations_v3` và có kết quả replay riêng. [Đối chiếu các cấu hình](thesis/EXPERIMENT_CONFIGURATION_REGISTER.md) · [Kết quả Relation V3 motion](RELATION_WRITER_V3_MOTION_RESULTS_2026-11-18.md)
 
 > **Cách dùng với adapter Mem riêng (06/11/2026):** xem
 > [MEM_ADAPTER_V1.md](MEM_ADAPTER_V1.md) cho data preparation, Kaggle 2×T4 và
@@ -164,6 +166,6 @@ Artifacts cuối cùng: `final_association_dev/`, `final_association_check/`, `f
 
 ## Giữ LIBERO base
 
-Đường memory-off và policy preprocessing/action decoding của base không đổi. Writer proprioception cũ được giữ để tái lập thí nghiệm cũ và được ghi rõ `observation_legacy_v1` trong converter base; nó **không được nâng thành writer v3 bằng cách đổi ngưỡng z**. V3 hiện chỉ dành cho T1/T3; chưa giải quyết task sách/bát drawer hay toàn bộ LIBERO-Mem.
+Đường memory-off và policy preprocessing/action decoding của base không đổi. Writer proprioception cũ được giữ để tái lập thí nghiệm cũ và được ghi rõ `observation_legacy_v1` trong converter base; nó **không được nâng thành writer v3 bằng cách đổi ngưỡng z**. RGB Cycle lịch sử chỉ dành cho T1/T3; chưa giải quyết task sách/bát drawer hay toàn bộ LIBERO-Mem.
 
 Giữ performance sau fine-tuning vẫn cần đối chứng matched no-memory, dữ liệu base/replay và đánh giá retention trên base. Thay đổi writer không tự chứng minh retention, success rate hoặc chất lượng policy sau adaptation.

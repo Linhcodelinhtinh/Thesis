@@ -95,15 +95,18 @@ class VisualEvidence:
         from src.memory.models import _freeze_value
         object.__setattr__(self, "metadata", _freeze_value(self.metadata or {}))
 
-    def validate(self, step, images):
+    def validate(self, step, images, *, image_digests=None):
         if self.step != step:
             raise ValueError(f"Stale/future visual evidence: {self.step} != {step}")
         if self.source != EvidenceSource.PREDICTED_RGB_TRACKER:
             raise ValueError("Predicted writer rejects privileged or untyped evidence")
         if set(self.views) != set(images) or set(self.image_hashes) != set(images):
             raise ValueError("Visual evidence camera set does not match observation")
+        if image_digests is not None and set(image_digests) != set(images):
+            raise ValueError("Precomputed image digests do not match observation cameras")
         for camera, image in images.items():
-            if self.image_hashes[camera] != image_digest(image):
+            digest = image_digest(image) if image_digests is None else image_digests[camera]
+            if self.image_hashes[camera] != digest:
                 raise ValueError(f"Visual evidence is from a different RGB frame: {camera}")
         ids = [d.evidence_id for view in self.views.values() for d in view]
         if len(ids) != len(set(ids)):

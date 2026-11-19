@@ -65,7 +65,7 @@ little-endian float64, groups it globally across tasks/domains, and assigns
 approximately 80/10/10 train/validation/test by deterministic seed. Connected
 task families share assignment. A canonical payload hash seals the lock.
 
-T1/T3 demos **1, 5, 31** were already inspected while developing writer v3. Those
+T1/T3 demos **1, 5, 31** were already inspected while developing the historical RGB Cycle writer (`rgb_cycle_v3`). Those
 states, including every episode sharing them, are forced into train before
 held-out selection. Do not use test to calibrate the writer, select checkpoints,
 or choose the replay ratio. Val is for development; test is a final paired report.

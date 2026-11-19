@@ -21,18 +21,19 @@ class RelationDetector(GroundingDinoDetector):
             box_threshold=self.box_threshold,
             text_threshold=self.text_threshold, nms_iou=.5, border_rejection_pixels=1))
 
-    def detect(self, step, images, queries, *, pilot_crop=False):
+    def detect(self, step, images, queries, *, pilot_crop=False, image_digests=None):
         if pilot_crop:
             if queries != {"bowl": "a metal bowl.", "plate": "a white plate."}:
                 raise ValueError("Pilot crop supports the original bowl and plate queries")
-            evidence = super().detect(step, images)
+            evidence = super().detect(step, images, image_digests=image_digests)
             return replace(evidence, metadata={**evidence.metadata, "queries": queries, "pilot_crop": True})
         import torch
         from PIL import Image
 
         camera = "agentview_image"
         image = images[camera]
-        hashes = {name: image_digest(frame) for name, frame in images.items()}
+        hashes = (image_digests if image_digests is not None else
+                  {name: image_digest(frame) for name, frame in images.items()})
         height, width = image.shape[:2]
         detections = []
         for label, query in queries.items():
@@ -72,19 +73,20 @@ class ProcessRelationDetector(ProcessVisualDetector):
             self.close()
             raise
 
-    def detect(self, step, images, queries, *, pilot_crop=False):
+    def detect(self, step, images, queries, *, pilot_crop=False, image_digests=None):
         with self._lock:
             if self._closed:
                 raise RuntimeError("RGB detector worker is closed")
             buffer = io.BytesIO()
             np.savez(buffer, **images)
             request = dict(step=step, queries=queries, pilot_crop=pilot_crop,
+                           image_digests=image_digests,
                            rgb_npz=base64.b64encode(buffer.getvalue()).decode("ascii"))
             try:
                 self._process.stdin.write(json.dumps(request) + "\n")
                 self._process.stdin.flush()
                 evidence = VisualEvidence.from_dict(self._receive()["evidence"])
-                evidence.validate(step, images)
+                evidence.validate(step, images, image_digests=image_digests)
                 if evidence.metadata.get("queries") != queries or evidence.metadata.get("pilot_crop") != pilot_crop:
                     raise ValueError("Detector did not return evidence for the requested classes")
                 return evidence

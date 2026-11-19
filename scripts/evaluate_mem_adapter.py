@@ -57,6 +57,8 @@ def parse_args(argv=None):
     p.add_argument("--decision-mode", choices=("text", "shadow", "event", "periodic"),
                    help="Opt into the separate F1 execution protocol on seen states")
     p.add_argument("--decision-exposure", choices=("projected", "snapshot"), default="projected")
+    p.add_argument("--relation-writer", choices=("rgb_relations_v1", "rgb_relations_v2", "rgb_relations_v3"),
+                   help="Explicit runtime relation writer override; defaults to adapter training provenance")
     p.add_argument("--worker-timeout", type=int, default=300)
     p.add_argument("--git-executable", default=os.environ.get("MEM_EVAL_GIT", "git"),
                    help="Git used for read-only provenance; git.exe can speed up WSL /mnt source checks")
@@ -312,6 +314,7 @@ def main(argv=None):
         load_prompt_tokenizer(assets / "backbone")
         manifest["local_assets_lock_sha256"] = sha256_file(assets / "assets.json")
         from dataclasses import asdict
+        from src.memory.relation_writer_versions import RELATION_WRITERS, make_relation_pipeline
         from src.training.mem_adapter_artifact import adapter_training_condition, validate_matched_adapters
         adapters = {}
         manifest["treatments"] = {}
@@ -322,7 +325,13 @@ def main(argv=None):
                 treatment["weight_identity"] = base_files
                 continue
             directory = args.f0_adapter_dir if condition == "F0" else args.adapter_dir
-            adapter = validate_adapter(directory, args.base_checkpoint)
+            adapter = validate_adapter(directory, args.base_checkpoint,
+                                       verify_provenance_files=(args.relation_writer is None or condition != "F1"))
+            if condition == "F1" and args.relation_writer:
+                from src.memory.relation_writer_versions import versioned_relation_source_hashes
+                current_writer_hashes = versioned_relation_source_hashes(ROOT, args.relation_writer)
+                verify_files(ROOT, current_writer_hashes)
+                treatment["runtime_writer_source_sha256"] = current_writer_hashes
             if adapter_training_condition(adapter) != spec.weights:
                 raise ValueError(f"{condition} received the wrong adapter training condition")
             if execution and adapter["memory_provenance"][0]["writer"] != "rgb_relations_v1":
@@ -344,10 +353,17 @@ def main(argv=None):
             treatment["adapter_manifest_sha256"] = sha256_file(copied_manifest)
             if condition == "F1":
                 memory_contract = adapter["memory_provenance"][0]
-                if memory_contract["writer"] == "rgb_relations_v1":
-                    treatment.update(memory_source=memory_contract["writer"],
-                                     projection=memory_contract["writer_config"]["projection"],
-                                     projection_strategy=memory_contract["writer_config"]["strategy"])
+                effective_writer = args.relation_writer or memory_contract["writer"]
+                if effective_writer in RELATION_WRITERS:
+                    from src.memory.relation_pipeline import relation_config
+                    writer_cfg = (relation_config(strategy=memory_contract["writer_config"]["strategy"], writer_version=effective_writer)
+                                  if args.relation_writer else memory_contract["writer_config"])
+                    treatment.update(memory_source=effective_writer,
+                                     projection=writer_cfg["projection"],
+                                     projection_strategy=writer_cfg["strategy"])
+                    if args.relation_writer:
+                        treatment["training_memory_source"] = memory_contract["writer"]
+                        treatment["writer_override"] = True
                 manifest["adapter_manifest_sha256"] = treatment["adapter_manifest_sha256"]
                 write_json(output / "adapter_manifest.json", adapter)
                 verify_files(args.detector_model, adapter["memory_provenance"][0]["detector"]["files"])
@@ -374,7 +390,6 @@ def main(argv=None):
         from src.perception.process_detector import ProcessVisualDetector
         from src.perception.relation_detector import ProcessRelationDetector
         from src.evaluation.libero_mem_protocol import load_suite_source
-        from src.memory.relation_pipeline import relation_pipeline
 
         if not torch.cuda.is_available():
             raise RuntimeError("CUDA policy runtime required; no CPU fallback")
@@ -392,7 +407,8 @@ def main(argv=None):
                 phase(f"Loading {condition} policy")
                 if condition in adapters:
                     directory, adapter = adapters[condition]
-                    policy.load(str(directory), base_checkpoint=str(args.base_checkpoint), device="cuda", strict=True)
+                    policy.load(str(directory), base_checkpoint=str(args.base_checkpoint), device="cuda", strict=True,
+                                verify_provenance_files=(args.relation_writer is None or condition != "F1"))
                     factory, tokenizer = None, policy.tokenizer
                 else:
                     policy.load(str(args.base_checkpoint), device="cuda", strict=True)
@@ -400,14 +416,15 @@ def main(argv=None):
                     tokenizer = load_prompt_tokenizer(ROOT / "experiments/training/assets_mem_adapter_v1/backbone")
                 if condition == "F1":
                     contract = adapter["memory_provenance"][0]
+                    effective_writer = args.relation_writer or contract["writer"]
                     launcher = detector_launcher(args.detector_python, output)
                     manifest["detector_launcher_sha256"] = sha256_file(launcher) if launcher.endswith(".sh") else None
                     write_json(output / "run_manifest.json", manifest)
                     phase("Loading F1 detector")
-                    detector_type = (ProcessRelationDetector if contract["writer"] == "rgb_relations_v1"
+                    detector_type = (ProcessRelationDetector if effective_writer in RELATION_WRITERS
                                      else ProcessVisualDetector)
                     detector = detector_type(launcher, args.detector_model, device="cuda", timeout_seconds=args.worker_timeout)
-                    if contract["writer"] == "rgb_cycle_v3":
+                    if effective_writer == "rgb_cycle_v3":
                         factory = visual_writer_factory(detector, "libero_raw", TrackerConfig(**contract["writer_config"]))
                 import inspect
                 base_policy = policy.policy.get_base_model() if condition in adapters else policy.policy
@@ -422,10 +439,11 @@ def main(argv=None):
                 del base_policy
                 renderer = LiberoMemTextRenderer(tokenizer=tokenizer, strict_tokenizer=True, max_total_tokens=48, allow_oracle=False)
                 for task in args.tasks:
-                    if condition == "F1" and contract["writer"] == "rgb_relations_v1":
+                    if condition == "F1" and effective_writer in RELATION_WRITERS:
                         suite = load_suite_source(source)
-                        factory, renderer = relation_pipeline(suite, task, detector, "libero_raw", tokenizer,
-                                                              contract["writer_config"]["strategy"])
+                        factory, renderer = make_relation_pipeline(suite, task, detector, "libero_raw", tokenizer,
+                                                                   contract["writer_config"]["strategy"],
+                                                                   effective_writer)
                     phase(f"Starting {condition} {task} simulator")
                     env = ProcessLiberoMemEnv(task_name=task, split_lock=args.split_lock, split=args.split,
                         python_executable=args.sim_python, use_wsl=args.use_wsl,

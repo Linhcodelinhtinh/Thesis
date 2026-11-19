@@ -1,5 +1,8 @@
 # Kế hoạch thực thi: bản viết, phương pháp và thực nghiệm
 
+> Các trạng thái gate bên dưới ghi theo ngày của tài liệu. Xem [đối chiếu cập nhật 19/11/2026](EXPERIMENT_CONFIGURATION_REGISTER.md) cho export F1 V2, kết quả E2/E6 và replay Relation V3.
+
+
 Ngày 13/11/2026. Đi kèm [định vị nghiên cứu và bộ RQ](RESEARCH_REFRAME_2026-11-13.md). Đây là backlog nội bộ: tên module/đường dẫn dùng để giao việc và review code, không được chép vào nội dung luận văn hoặc phụ lục.
 
 Trạng thái sau khi chuẩn bị P5–P6, bổ sung kế hoạch tích hợp quyết định ngày 14/11/2026. V1 là baseline lịch sử đã khóa. Các thay đổi về memory, dữ liệu đối sánh và đánh giá trong kế hoạch này thuộc V2. Lệnh theo thứ tự phụ thuộc và vị trí artifact nằm trong [bàn giao P5–P6](P5_P6_HANDOFF_2026-11-13.md). Thiết kế, interface và nghiệm thu cơ chế mới nằm trong [kế hoạch tích hợp memory vào quyết định](MEMORY_DECISION_INTEGRATION_PLAN_2026-11-14.md).

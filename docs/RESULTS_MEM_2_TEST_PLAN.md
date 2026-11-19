@@ -42,7 +42,7 @@ experiments/training/results_mem_2/
 | Base weights SHA256 | `9a9f6413e42c0f332fccbce9a0dc796af2790f82cf002f791cdbf7e01e1afca8`, khớp file local |
 | Normalizers | Hai file normalizer/unnormalizer local khớp manifest; state 8, action 7 |
 | Provenance | Dataset manifest hash, 6 implementation hashes được run ghi lại và writer code hashes khớp file local tại lúc inspection |
-| Training data | 10 task LIBERO-10 + Mem T1/T3; base/Mem sampling 50/50; predicted RGB writer v3; không memory dropout |
+| Training data | 10 task LIBERO-10 + Mem T1/T3; base/Mem sampling 50/50; RGB Cycle (`rgb_cycle_v3`); không memory dropout |
 | Split | 698 demos: 558 train, 70 validation, 70 test; grouping theo hash toàn bộ initial-state vector |
 | Mem split | T1: 80/10/10; T3: 78/10/10; thứ tự train/val/test |
 | Base split | 400/50/50 trên đủ 10 task |
@@ -108,7 +108,7 @@ không chỉ ghi HEAD `1978f05b3519fa9af63e1dcc5b02e715083ff6ef` làm identity c
 | Nhánh | Weights | Prompt khi rollout Mem | Mục đích / điều kiện |
 |---|---|---|---|
 | B0 | SmolVLA gốc | Instruction gốc, memory off | Đối chứng bắt buộc, cùng protocol với F1 |
-| F1-3000 | Base + adapter export mới | Predicted RGB writer v3 + renderer đã pin | Candidate bắt buộc |
+| F1-3000 | Base + adapter export mới | RGB Cycle (`rgb_cycle_v3`) + renderer đã pin | Candidate bắt buộc |
 | B1-predicted | SmolVLA gốc | Cùng writer/renderer với F1 | Đối chứng bổ sung có thể dùng API F1; tách ảnh hưởng thêm adapter khi cùng memory pipeline |
 | F1-off | Cùng adapter F1-3000 | Instruction gốc | Ablation bổ sung sau khi có mode được audit; OOD vì train memory_dropout=0 |
 | F0 matched | Model train riêng không memory | Instruction gốc | Chỉ thêm nếu xác minh cùng data/split/budget; không tự coi checkpoint cũ là matched |

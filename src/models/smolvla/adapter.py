@@ -130,7 +130,9 @@ class SmolVLAAdapter(VLAPolicy):
             adapter_path = checkpoint_path
             checkpoint_path = str(kwargs.pop("base_checkpoint", Path(__file__).resolve().parents[3] /
                                              "resources/checkpoints/smolvla_libero"))
-            self.mem_adapter_manifest = validate_adapter(adapter_path, checkpoint_path)
+            verify_provenance_files = kwargs.pop("verify_provenance_files", True)
+            self.mem_adapter_manifest = validate_adapter(adapter_path, checkpoint_path,
+                                                         verify_provenance_files=verify_provenance_files)
             from src.memory.visual_pipeline import load_prompt_tokenizer
             self.tokenizer = load_prompt_tokenizer(Path(adapter_path) / "tokenizer.json")
 

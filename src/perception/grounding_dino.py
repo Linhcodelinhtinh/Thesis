@@ -96,12 +96,13 @@ class GroundingDinoDetector:
                 selected.append(candidate)
         return selected
 
-    def detect(self, step, images):
+    def detect(self, step, images, *, image_digests=None):
         if step == 0:
             self.reset()
         views, hashes, regions = {}, {}, {}
         for camera, image in images.items():
-            hashes[camera] = image_digest(image)
+            hashes[camera] = (image_digest(image) if image_digests is None
+                              else image_digests[camera])
             height, width = image.shape[:2]
             full = (0, 0, width, height)
             if camera == "agentview_image":

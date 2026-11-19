@@ -10,7 +10,12 @@ from src.utils.file_hash import sha256_file
 from src.memory.visual_pipeline import TOKENIZER_REVISION, TOKENIZER_SHA256
 
 ARTIFACT = "mixed_base_mem_sft_shards"
-PREDICTED_MEMORY_SOURCES = {"rgb_cycle_v3": "predicted_rgb_v3", "rgb_relations_v1": "predicted_rgb_relations_v1"}
+PREDICTED_MEMORY_SOURCES = {
+    "rgb_cycle_v3": "predicted_rgb_v3",
+    "rgb_relations_v1": "predicted_rgb_relations_v1",
+    "rgb_relations_v2": "predicted_rgb_relations_v2",
+    "rgb_relations_v3": "predicted_rgb_relations_v3",
+}
 
 
 def canonical_raw_rgb(images, domain=None, *, source_convention=None):

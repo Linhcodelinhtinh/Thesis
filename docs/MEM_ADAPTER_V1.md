@@ -1,5 +1,8 @@
 # V2 isolated Mem adapter, expanded data
 
+Phạm vi là adapter lịch sử và writer `rgb_cycle_v3`. Xem [bảng định danh thực nghiệm](thesis/EXPERIMENT_CONFIGURATION_REGISTER.md) để đối chiếu với F1 V2 dùng Relation V1 và `rgb_relations_v3` motion.
+
+
 > Hướng dẫn dưới đây ghi lại adapter RGB v3 với split lịch sử. Cặp F0/F1 mới
 > dùng toàn bộ refined T1/T3 và roster raw seen/unseen. [Lệnh P5–P6 hiện hành](thesis/P5_P6_HANDOFF_2026-11-13.md).
 
@@ -9,7 +12,7 @@ or rollout improvement is claimed by the implementation alone.
 
 ## Cách sử dụng Mem — cập nhật 2026-11-06
 
-Đây là hướng dẫn hiện hành cho **adapter Mem riêng + RGB writer v3**, thuộc V2.
+Đây là hướng dẫn hiện hành cho **adapter Mem lịch sử + RGB Cycle (`rgb_cycle_v3`)**, thuộc V2.
 Các notebook SFT cũ dùng merged checkpoint hoặc writer legacy không thay thế
 workflow này. Đọc [writer T1/T3](MEMORY_WRITER_V3_T1_T3.md) để hiểu evidence và
 [kế hoạch test results_mem_2](RESULTS_MEM_2_TEST_PLAN.md) trước khi chạy rollout.

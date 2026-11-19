@@ -1,5 +1,8 @@
 # Review lượt goal trước khi cặp F0/F1 author-split V2 đã có
 
+> Các trạng thái gate bên dưới ghi theo ngày của tài liệu. Xem [đối chiếu cập nhật 19/11/2026](EXPERIMENT_CONFIGURATION_REGISTER.md) cho export F1 V2, kết quả E2/E6 và replay Relation V3.
+
+
 Ngày review: **15/11/2026**. Phạm vi: kiểm tra kết quả và kết luận của lượt goal trước, đối chiếu checkpoint hiện có, và xác định việc nào còn thiếu. Review không huấn luyện model và không chạy chiến dịch tính điểm. Git HEAD khi review: `50a4e7c08c22437f6c83c2993b5fa3951a233917`; working tree chưa sạch. Receipt của review: [f0_f1_readiness_review_2026-11-15.json](evidence/f0_f1_readiness_review_2026-11-15.json).
 
 **Đánh giá: cần sửa trạng thái nghiệm thu và kết luận blocker.** Hai export F0/F1 tương thích với nhau đã hiện diện. Không còn căn cứ để gọi việc thiếu F1 V2 là blocker hiện tại. Lượt goal trước tạo được bằng chứng hữu ích về nguồn, dữ liệu, runtime và các chẩn đoán âm tính, nhưng chưa hoàn tất những mục tiêu ngoài training của roadmap. Checkpoint sẵn có mở đường cho các kiểm tra và pilot T1/T3; bản thân checkpoint chưa phải kết quả so sánh memory trong vòng kín.

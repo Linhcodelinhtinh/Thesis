@@ -36,8 +36,11 @@ def main():
             with np.load(io.BytesIO(base64.b64decode(request["rgb_npz"], validate=True)), allow_pickle=False) as arrays:
                 images = rgb_views({key: arrays[key] for key in arrays.files}, "libero_mem_refined")
             evidence = (detector.detect(request["step"], images, request["queries"],
-                                        pilot_crop=request["pilot_crop"]) if "queries" in request
-                        else GroundingDinoDetector.detect(detector, request["step"], images))
+                                        pilot_crop=request["pilot_crop"],
+                                        image_digests=request.get("image_digests")) if "queries" in request
+                        else GroundingDinoDetector.detect(
+                            detector, request["step"], images,
+                            image_digests=request.get("image_digests")))
             print(json.dumps(dict(evidence=evidence.to_dict())), flush=True)
             step_idx += 1
             if step_idx % 20 == 0 or request.get("step") == 0:

@@ -182,6 +182,7 @@ def rollout_episode(
     memory_writer: str = "auto",  # choices: "auto", "observation", "oracle"
     max_context_chars: int = 512,
     episode_id: Optional[str] = None,
+    settling_steps: int = 0,
 ) -> EpisodeResult:
     """Execute a single closed-loop episode with receding-horizon action chunking.
 
@@ -240,6 +241,12 @@ def rollout_episode(
         obs = env.reset()
 
     policy.reset()
+
+    # Settle simulator physics per official LIBERO / OpenVLA evaluation protocol (num_steps_wait)
+    if settling_steps > 0:
+        dummy_action = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0], dtype=np.float32)
+        for _ in range(settling_steps):
+            obs, _, _, _ = env.step(dummy_action)
 
     # Bind instruction-only contract if policy is an adapted model and memory_condition is off
     if getattr(policy, "mem_adapter_manifest", None) is not None and memory_condition == "off":

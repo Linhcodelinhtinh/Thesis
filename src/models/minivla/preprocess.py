@@ -1,7 +1,8 @@
 """Preprocessing for MiniVLA Models (Phase 9).
 
 Implements official Stanford-ILIAD OpenVLA-mini preprocessing:
-- SigLIP-224px visual observation transforms (bilinear resize to 224x224, normalize).
+- LIBERO observation transforms: np.flipud -> PIL Image -> LANCZOS resize to 224x224.
+- SigLIP-224px visual observation transforms (resize to 224x224, normalize).
 - Language prompt formatting per Prismatic VLM standard:
   "In: What action should the robot take to {instruction}?\\nOut:"
 """
@@ -10,6 +11,48 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import numpy as np
 from PIL import Image
 import torch
+
+
+def get_libero_image(
+    obs: Dict[str, Any],
+    resize_size: Union[int, Tuple[int, int]] = 224,
+    key: str = "agentview_image",
+    orientation: str = "rotate_180",
+) -> Image.Image:
+    """Extract image from observations and preprocess per official LIBERO benchmark runner.
+
+    Supports configurable orientation:
+    - 'rotate_180' (default): 180-degree rotation (img[::-1, ::-1]) matching official RLDS dataset
+      generation and OpenVLA training preprocessing.
+    - 'flipud': Vertical flip only (np.flipud(img)), per downstream openvla-mini utility.
+    - 'none': No orientation transformation.
+
+    Args:
+        obs: Raw observation dictionary containing camera views.
+        resize_size: Target (height, width) or int square resolution (default 224).
+        key: Camera key in observation (default 'agentview_image').
+        orientation: Orientation transform mode ('rotate_180', 'flipud', 'none').
+
+    Returns:
+        PIL Image resized to resize_size in RGB mode.
+    """
+    if isinstance(resize_size, int):
+        resize_size = (resize_size, resize_size)
+    img = obs[key]
+    if orientation == "rotate_180":
+        img = img[::-1, ::-1]
+    elif orientation == "flipud":
+        img = np.flipud(img)
+    elif orientation in ("none", None):
+        pass
+    else:
+        raise ValueError(
+            f"Unsupported image orientation '{orientation}'. Expected 'rotate_180', 'flipud', or 'none'."
+        )
+    pil_img = Image.fromarray(img)
+    pil_img = pil_img.resize(resize_size, Image.Resampling.LANCZOS)
+    pil_img = pil_img.convert("RGB")
+    return pil_img
 
 
 def format_instruction_prompt(instruction: str) -> str:
@@ -53,9 +96,9 @@ def resize_and_normalize_image(
     else:
         uint8_img = image.astype(np.uint8)
 
-    # Resize using PIL Bilinear interpolation
+    # Resize using PIL Lanczos interpolation (matches upstream)
     pil_img = Image.fromarray(uint8_img)
-    resized_pil = pil_img.resize((target_size[1], target_size[0]), Image.BILINEAR)
+    resized_pil = pil_img.resize((target_size[1], target_size[0]), Image.Resampling.LANCZOS)
     img_arr = np.array(resized_pil, dtype=np.float32) / 255.0  # [0.0, 1.0]
 
     # Convert to CHW tensor: (3, H, W)
@@ -78,11 +121,13 @@ class MiniVLAPreprocessor:
         primary_camera_key: str = "agentview_image",
         wrist_camera_key: str = "robot0_eye_in_hand_image",
         device: str = "cpu",
+        orientation: str = "rotate_180",
     ) -> None:
         self.image_resolution = image_resolution
         self.primary_camera_key = primary_camera_key
         self.wrist_camera_key = wrist_camera_key
         self.device = device
+        self.orientation = orientation
 
     def preprocess_observation(
         self,
@@ -96,7 +141,7 @@ class MiniVLAPreprocessor:
             instruction: Task description text.
 
         Returns:
-            Dictionary with formatted prompt, image tensors, and metadata.
+            Dictionary with PIL image for official Prismatic model, formatted prompt, and metadata.
         """
         if self.primary_camera_key not in obs:
             raise KeyError(
@@ -104,13 +149,26 @@ class MiniVLAPreprocessor:
                 f"Available keys: {list(obs.keys())}"
             )
 
-        # Primary camera (agentview)
+        # Official LIBERO image: orientation (rotate_180 or flipud) -> PIL Image LANCZOS 224x224 RGB
+        pil_img = get_libero_image(
+            obs,
+            resize_size=self.image_resolution,
+            key=self.primary_camera_key,
+            orientation=self.orientation,
+        )
+
         primary_img = obs[self.primary_camera_key]
+        if self.orientation == "rotate_180":
+            primary_img = primary_img[::-1, ::-1]
+        elif self.orientation == "flipud":
+            primary_img = np.flipud(primary_img)
+
         pixel_values = resize_and_normalize_image(
             primary_img, target_size=self.image_resolution
         )
 
         inputs: Dict[str, Any] = {
+            "image": pil_img,
             "pixel_values": pixel_values.unsqueeze(0).to(self.device),  # (1, 3, H, W)
             "prompt": format_instruction_prompt(instruction),
             "instruction": instruction,
@@ -118,7 +176,18 @@ class MiniVLAPreprocessor:
 
         # Optional wrist camera
         if self.wrist_camera_key in obs and obs[self.wrist_camera_key] is not None:
+            wrist_pil = get_libero_image(
+                obs,
+                resize_size=self.image_resolution,
+                key=self.wrist_camera_key,
+                orientation=self.orientation,
+            )
+            inputs["wrist_image"] = wrist_pil
             wrist_img = obs[self.wrist_camera_key]
+            if self.orientation == "rotate_180":
+                wrist_img = wrist_img[::-1, ::-1]
+            elif self.orientation == "flipud":
+                wrist_img = np.flipud(wrist_img)
             wrist_pixel_values = resize_and_normalize_image(
                 wrist_img, target_size=self.image_resolution
             )

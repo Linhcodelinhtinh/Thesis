@@ -1,0 +1,39 @@
+# Định danh checkpoint, writer và kết quả thực nghiệm
+
+Cập nhật 19/11/2026. **F1 là điều kiện thích ứng có bộ nhớ, không phải mã phiên bản checkpoint hoặc writer.** V2 trong giao thức và split cũng độc lập với hậu tố của writer. Trong khóa luận, “RGB Cycle lịch sử” chỉ `rgb_cycle_v3`; “Relation V3 cập nhật” chỉ `rgb_relations_v3` với cấu hình motion. Các kết quả local dưới đây mang nhãn **NON-COMPARABLE_OFFICIAL_PAPER**.
+
+## 1. Cấu hình policy và kết quả vòng kín
+
+| Đợt | Trọng số | Memory lúc suy luận | Roster | Kết quả |
+|---|---|---|---|---|
+| Test lịch sử 09/11, B0 | SmolVLA LIBERO gốc, frozen | Tắt | Test lịch sử, 10 nhóm state × T1/T3, seed 42 | T1 0/10, T3 0/10, tổng 0/20. Mean SCR 0,0500, overshot 1/20 |
+| Test lịch sử 09/11, F1 | `mem-adapter-20261105-083543`, LoRA 3.000 bước, split lịch sử | **`rgb_cycle_v3`** | Ghép cùng 20 lượt với B0 ở dòng trên | T1 0/10, T3 1/10, tổng **1/20**. Mean SCR 0,1333, overshot 1/20 |
+| E0 V2 | B0 frozen và F0 `output_f0` 5.000 bước | Tắt ở cả hai arm | Seen state 0, T1/T3 | B0 0/2, F0 0/2. SCR 0, overshot 0/4 |
+| E2, F0 | `results_f0_author_split_v2/output_f0`, LoRA 5.000 bước học không memory | Tắt | Raw unseen `demo_101`–`demo_120`, 40 lượt mỗi arm, seed 42 | T1 3/20, T3 1/20, tổng **4/40** |
+| E2, F1 | `results_f1_author_split_v2/output_f1`, LoRA 5.000 bước, ghép F0 theo corpus và recipe | **`rgb_relations_v1`**, `relation_text_v1`, `relevant` | Cùng 40 lượt E2 | T1 0/20, T3 0/20, tổng **0/40**. Chênh lệch F1−F0 −10 điểm phần trăm |
+| Retest unseen, F1 | Cùng F1 V2 như E2 theo manifest đã lưu | `rgb_relations_v1` | Một lần chạy riêng, **28/40 hoàn tất** | T1 0/20, T3 0/8 trong các lượt hoàn tất. Mean SCR lần lượt 0,050 và 0,083 |
+| E6, B0 / F1-off | SmolVLA gốc / đúng export F1 V2 của E2 | Tắt ở cả hai arm | 50 cặp LIBERO-10 local, 5 state mỗi task | **37/50 (74%) / 23/50 (46%)**, −28 điểm phần trăm. Cặp cả hai đúng / chỉ B0 / chỉ F1-off / cả hai sai là 18/19/5/8 |
+| Derived v1, F1 | `results_mem_derived/mem-adapter-v1/output`, LoRA 5.000 bước. Corpus derived giữ 188/198 quỹ đạo, 40.530 frame | Provenance huấn luyện ghi **`rgb_cycle_v3`**, luồng dữ liệu `predicted_rgb_v3` | Artifact dữ liệu và export | Chưa có kết quả vòng kín được xác minh cho đúng export này |
+| Relation V2/V3 | Replay tracker/reducer trên detections và độ mở kẹp đã ghi | `rgb_relations_v2` / **`rgb_relations_v3`** | 198 demo development và trace F1 trên E2 | Các số ghép mốc ở mục 2. Chưa có checkpoint F1 hoặc rollout vòng kín được xác minh cho hai writer này |
+
+[Manifest F1 lịch sử](../../experiments/evaluation/results_mem_2/step5_test_20261109-093744/test_F1/adapter_manifest.json) · [Audit test lịch sử](../LIBERO_MEM_DERIVED_AUDIT_2026-11-11.md#3-những-gì-đã-được-xác-minh) · [E0](../../experiments/evaluation/e0-b0-f0-pilot-20261115/report.md) · [E2](../../experiments/evaluation/e2_unseen_author_v2/paired_e2_final.json) · [Manifest F1 E2](../../experiments/evaluation/e2_unseen_author_v2/batch-0-1/adapter_manifest.json) · [Retest](../../experiments/evaluation/retest_f1_unseen_full/report.md) · [E6 đúng adapter](../../experiments/results/e6_retention_locked_50/F1_actual_task_0/benchmark_summary.json) · [Manifest derived](../../experiments/training/results_mem_derived/mem-adapter-v1/output/pretrained_model/mem_adapter_manifest.json)
+
+Policy E2 dùng 598 quỹ đạo huấn luyện theo split V2. Tổng corpus 698 quỹ đạo gồm các phần ngoài train. Cả test lịch sử và E2 dùng seed 42 nhưng khác split, state và checkpoint F1. Kết quả 1/20 và 0/40 mô tả hai cấu hình vòng kín khác nhau. E6 đọc `F1_actual_task_*`; thư mục `F1_task_*` chỉ tới checkpoint gốc. LIBERO-10 task 9 là 5/5 → 3/5 và task 8 là 3/5 → 3/5. [Đối chiếu nguồn E2/E6](AUDIT_FACTS_AND_CLAIMS_2026-11-18.md)
+
+Cấu hình lịch sử có 558 demo train (400 base + 158 Mem). Ở bước 3.000, kiểm cùng checkpoint trên 4.299 mẫu Mem validation cho flow loss **0,23024 khi cấp memory** và **0,33554 khi bỏ memory**. Trên 13.525 mẫu base, cả hai là **0,42984**. Cặp V2 5.000 bước dùng 400 base + 198 Mem train. Flow loss cuối của F0/F1 lần lượt **0,40744 / 0,40485**, chỉ trên **13.525 mẫu base validation**. Hai đợt loss có phạm vi khác nhau và được báo riêng với success rate vòng kín. [Rà soát export F0/F1](GOAL_REVIEW_F0_F1_READY_2026-11-15.md)
+
+## 2. Kiểm định trên quỹ đạo cố định
+
+Pilot **RGB Cycle lịch sử** khớp 12/12 mốc trong ±20 frame trên sáu demo đã xem thuộc ba nhóm state. Coverage grounding là 91,85%, coverage prompt memory là 98,59% và prompt tối đa 31/48 token. Phép kiểm này dùng mẫu và pipeline khác bảng dưới. [Pilot RGB Cycle](../MEMORY_WRITER_V3_T1_T3.md)
+
+| Writer quan hệ | Dev T1 TP/100 | Dev T3 TP/294 | Dev TP/FP/FN | Replay E2 TP/FP/FN |
+|---|---:|---:|---:|---:|
+| `rgb_relations_v1` (trace baseline) | 68 | 126 | 194/0/200 | 0/5/3 |
+| `rgb_relations_v2` (alias guard) | 65 | 99 | 164/0/230 | 0/1/3 |
+| `rgb_relations_v3` trước sửa motion, mặc định | 54 | 76 | 130/0/264 | 0/1/3 |
+| `rgb_relations_v3` trước sửa motion, candidate calibration | 68 | 128 | 196/0/198 | 1/30/2 |
+| **`rgb_relations_v3` cập nhật motion** | **66** | **129** | **195/0/199** | **0/1/3** |
+
+Trên 198 demo, V3 motion tăng 31 mốc so với Relation V2 và thấp hơn candidate cũ một mốc. Trên 40 trace E2, bản motion giảm 29 FP so với candidate, bằng Relation V2. Lượt duy nhất khớp thời gian của candidate cũ có departure sau khi predicate `On` phục hồi. E2 chỉ có ba mốc dương và đã dùng để chọn cấu hình, nên đây là hồi quy. V3 motion giữ hai mẫu xác nhận, cửa sổ mất dấu/pending 45/48 frame, kiểm hai mép bbox dâng so với pose nghỉ và kiểm bát hạ về vùng đỡ trước khi đếm. [Chẩn đoán FP](../RELATION_WRITER_V3_E2_FP_DIAGNOSIS_2026-11-18.md) · [Kết quả motion](../RELATION_WRITER_V3_MOTION_RESULTS_2026-11-18.md)
+
+**Chi phí đo ở các tầng khác nhau.** Cùng phép đo cached hai demo, p50/p95 của writer và renderer là 1,08/1,76 ms (Relation V1), 1,14/1,74 ms (Relation V2) và 1,11/1,53 ms (Relation V3 motion). Cached microbenchmark loại detector, IPC và policy. Wall time vòng kín E2 có median gộp 213,03 s (F0) và 1.065,89 s (F1 Relation V1). Số wall time đo chi phí thực thi của stack đồng bộ, còn độ trễ ghép mốc của writer đo theo frame. [Receipt cached](../../experiments/audits/bowl-cycle-v3-motion-cached-latency-20261118.json) · [Audit timing E2](AUDIT_FACTS_AND_CLAIMS_2026-11-18.md)

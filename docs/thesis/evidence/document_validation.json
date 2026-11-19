@@ -1,13 +1,13 @@
 {
   "status": "STATIC_CHECKS_PASS",
   "citations": 20,
-  "labels": 17,
+  "labels": 21,
   "chapters": 5,
-  "claim_ledger_claims": 14,
-  "claim_ledger_sources": 55,
+  "claim_ledger_claims": 15,
+  "claim_ledger_sources": 92,
   "abstract_sha256": "70db1e6fdb42518c8ba55c8dbbc80a52564498beabedd2656e528bad9a87eb8a",
-  "pdf_pages": 57,
-  "pdf_sha256": "220a5123d933a881bbbaaf882917174877f965a71422cecaf396d298b10ceb81",
-  "pdf_visual_review": "All 57 rendered pages inspected in 90 dpi contact sheets; pages 35, 37, 48, and 55–57 inspected at 144 dpi after the T8 state-parity update. No clipping or overflow observed.",
-  "note": "Static validation and PDF visual verification are separate checks."
+  "pdf_pages": 62,
+  "pdf_sha256": "c53d3ed1a6d88b1b4a1df8ce2274ecf817896a2adaae3ed0b9aea600d0adbbc3",
+  "pdf_visual_review": "Rendered and inspected PDF pages 30, 34, 35, 37, 41, 48, 49, 50 and 53 covering the revised definitions, tables, E2/E6 and conclusions.",
+  "note": "Static validation and targeted PDF visual review are separate checks."
 }

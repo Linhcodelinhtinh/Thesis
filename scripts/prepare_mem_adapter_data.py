@@ -22,7 +22,7 @@ def main():
     p.add_argument("--tokenizer-path", type=Path, required=True)
     p.add_argument("--previous-lock", type=Path, default=PREVIOUS_LOCK, help="Preserve base replay assignments")
     p.add_argument("--raw-root", type=Path, default=RAW_ROOT)
-    p.add_argument("--writer", choices=("rgb_cycle_v3", "rgb_relations_v1"), default="rgb_relations_v1")
+    p.add_argument("--writer", choices=PREDICTED_MEMORY_SOURCES, default="rgb_relations_v1")
     p.add_argument("--rgb-compression", choices=("gzip", "lzf"), default="gzip")
     p.add_argument("--download", action="store_true")
     a = p.parse_args()

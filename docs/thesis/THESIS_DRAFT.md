@@ -1,3 +1,5 @@
+> Bản Markdown lịch sử. Nguồn hiện hành là [LaTeX](latex/main.tex). Xem [bảng đối chiếu cập nhật 19/11/2026](EXPERIMENT_CONFIGURATION_REGISTER.md) cho kết quả theo đúng checkpoint, writer và chế độ memory.
+
 <!-- # Tóm tắt
 
 Trong thao tác robot ở chuỗi tác vụ dài, các quan sát cảm biến thu được sau khi hoàn tất một chu kỳ thao tác thường tương tự với quan sát ban đầu, trong khi quyết định tiếp tục hay dừng chuỗi hành động lại phụ thuộc vào số chu kỳ và mốc tiến độ đã hoàn tất. Nhằm giải quyết hiện tượng đa nghĩa quan sát này, khóa luận đề xuất một kiến trúc bộ nhớ theo sự kiện có khả năng biểu diễn mạch lạc thông tin tiến độ và hỗ trợ các mô hình thị giác - ngôn ngữ - hành động (VLA) thực hiện các tác vụ chuỗi cần bộ nhớ. Nghiên cứu tập trung giải quyết bài toán trên bộ tiêu chuẩn thao tác chuỗi dài LIBERO-Mem, đặc biệt hướng tới việc nâng cao năng lực cho các mô hình VLA nhỏ gọn vốn chịu nhiều ràng buộc nghiêm ngặt về độ dài ngữ cảnh và tài nguyên tính toán.
@@ -260,6 +262,8 @@ $\mathrm{SCR}_i$ phản ánh tiến độ từng phần. $S_i$ còn yêu cầu t
 
 ## 4.1. Phạm vi suy luận thực nghiệm
 
+RGB Cycle lịch sử (`rgb_cycle_v3`) đi với F1 3.000 bước: 1/20 thành công trên split test cũ. E2 dùng F1 5.000 bước với `rgb_relations_v1`: F0 4/40, F1 0/40. E6 dùng chính checkpoint F1 E2 với memory tắt: B0 37/50, F1-off 23/50. Relation V3 motion (`rgb_relations_v3`) đạt 195/394 mốc development và 0 TP, 1 FP, 3 FN trên replay E2. Xem [định danh, replay và latency theo phiên bản](EXPERIMENT_CONFIGURATION_REGISTER.md).
+
 Để hỗ trợ điều khiển, một biểu diễn tiến độ cần thỏa mãn ba điều kiện: có thể suy ra từ quan sát khả dụng, đến được chính sách đúng lúc và chứa thông tin mà chính sách có thể sử dụng để chọn hành động. Khóa luận xem xét ba loại bằng chứng: sự phù hợp của sự kiện với mốc tiến độ trong quỹ đạo trình diễn, độ nhạy của sai số dự đoán hành động đối với đầu vào bộ nhớ, và kết quả điều khiển vòng kín. Đối chiếu ba phép đo giúp xác định mắt xích nào đã có bằng chứng và mắt xích nào cần một phép can thiệp riêng.
 
 Nguồn phân tích chính gồm phép phát lại sáu quỹ đạo trình diễn ngày 26/10/2026, nhật ký xác thực của mô hình F1 và 40 quỹ đạo điều khiển hoàn tất trong đợt đánh giá ngày 09/11/2026. Với đợt đánh giá vòng kín, số liệu được tính lại từ từng bản tóm tắt quỹ đạo, sau khi đối chiếu tổng kiểm, trạng thái hoàn tất, tác vụ, trạng thái khởi tạo và hạt giống. Danh mục dữ liệu, phiên bản và tổng kiểm được lưu cùng bản ghi thực nghiệm ngày 12/11/2026 [@artifact2026].
@@ -372,15 +376,15 @@ Chiến dịch thực nghiệm xác nhận E2 thực hiện phép so sánh ghép
 | T1 | F1 | 0/20 | 0% | 637,84 ms | 1.067,92 s |
 | T3 | F0 | 1/20 | 5% | 778,37 ms | 214,49 s |
 | T3 | F1 | 0/20 | 0% | 637,08 ms | 1.063,30 s |
-| Hai tác vụ | F0 | 4/40 | 10% | 777,70 ms | 213,21 s |
-| Hai tác vụ | F1 | 0/40 | 0% | 637,46 ms | 1.065,61 s |
+| Hai tác vụ | F0 | 4/40 | 10% | 777,70 ms | 213,03 s |
+| Hai tác vụ | F1 | 0/40 | 0% | 637,46 ms | 1.065,89 s |
 
 Trên tập Unseen, chênh lệch tỷ lệ thành công ghép cặp quan sát được là $\widehat{\Delta}_{\mathrm{SR}} = -0{,}15$ trên T1, $-0{,}05$ trên T3 và độ chênh lệch macro trên cả hai tác vụ là $\widehat{\Delta}_{\mathrm{macro}} = -0{,}10$ (tức F1 thấp hơn F0 10 điểm phần trăm). Do danh sách ghép cặp đã hoàn tất 40/40 cặp, cận dưới và cận trên không bị ảnh hưởng bởi lượt thiếu ($\text{bounds} = [-0{,}10, -0{,}10]$).
 
 Kết quả này đem lại các quan sát quan trọng cho câu hỏi nghiên cứu:
 1. **Hiệu quả thích ứng của chính sách cơ sở:** Chính sách F0 (được tinh chỉnh LoRA trên dữ liệu thao tác hỗn hợp nhưng không nhận thông tin bộ nhớ) đạt tỷ lệ thành công 15% trên T1 và 5% trên T3 (trung bình 10%). Điều này chứng tỏ mô hình SmolVLA khi được thích ứng trọng số có thể học được kỹ năng gắp và đặt lại cơ bản trong không gian quan sát trực tiếp.
 2. **Tác động bất lợi của bộ nhớ trực tuyến:** Ngược lại, cấu hình F1 (nhận lời nhắc kèm tóm tắt quan hệ từ bộ ghi trực tuyến) không đạt được lần thành công nào trên cả hai tác vụ (0/20 ở T1 và 0/20 ở T3). Quan sát này bác bỏ giả thuyết đơn giản rằng chỉ cần đưa thông tin bộ nhớ vào lời nhắc là chính sách tự động cải thiện tỷ lệ thành công.
-3. **Gánh nặng độ trễ thời gian thực (Wall-clock latency penalty):** Thời gian thực thi mỗi episode của F1 kéo dài tới hơn 1.060 giây (khoảng 17,7 phút), dài gấp 5 lần so với mức xấp xỉ 212 giây (khoảng 3,5 phút) của F0. Nguyên nhân xuất phát từ việc bộ phát hiện thị giác 2D (Grounding DINO) chạy riêng biệt mất gần 1.000 ms mỗi khung hình. Độ trễ tri giác tích lũy này khiến thông tin bộ nhớ đưa vào lời nhắc bị chậm so với diễn biến vật lý của robot, làm sai lệch nhịp điều khiển vòng kín.
+- **Wall time E2.** Median gộp là 213,03 s (F0) và 1.065,89 s (F1). Đây là chi phí theo đồng hồ trong stack đồng bộ. Thời điểm fact khả dụng theo frame và ảnh hưởng lên hành động cần phép kiểm riêng.
 
 ### 4.6.2. Đánh giá duy trì năng lực cơ sở E6 trên 10 tác vụ LIBERO-10
 
@@ -432,11 +436,11 @@ Quỹ đạo T3 thành công duy nhất, `T3_F1_test_state2` khởi tạo từ `
 
 Khóa luận nghiên cứu tiến độ thao tác như một thành phần của trạng thái quyết định mà quan sát hiện thời có thể không biểu hiện đầy đủ. Trong bài toán nhấc và đặt lại bát, sự kiện rời đĩa rồi trở lại đĩa gốc cho phép diễn đạt thông tin lịch sử bằng một đơn vị có ý nghĩa đối với yêu cầu tiếp tục hay dừng. Cách phát biểu này liên kết yêu cầu của tác vụ, bằng chứng có thể quan sát và hành vi cần đánh giá ở chính sách điều khiển.
 
-Với **RQ1**, bộ nhớ ghi các cặp sự kiện đã xác nhận, thời điểm khả dụng và tình trạng thiếu lịch sử. Đánh giá đối sánh vòng kín E2 trên 20 cụm trạng thái Unseen đã hoàn tất 40 cặp ghép giữa F0 (không dùng bộ nhớ) và F1 (có bộ nhớ quan hệ `rgb_relations_v1`). Kết quả cho thấy chính sách F0 đạt 15% trên T1 và 5% trên T3 (trung bình 10%), trong khi F1 đạt 0% trên cả hai tác vụ ($\widehat{\Delta}_{\mathrm{macro}} = -10\%$). Kết quả này bác bỏ giả thiết cho rằng việc bổ sung văn bản bộ nhớ vào lời nhắc luôn làm tăng hiệu quả điều khiển; ngược lại, trong điều kiện thực thi trực tiếp, sự có mặt của chuỗi bộ nhớ kèm độ trễ tính toán đã làm suy giảm năng lực hoàn thành tác vụ vòng kín của chính sách.
+Với **RQ1**, bộ nhớ ghi các cặp sự kiện đã xác nhận, thời điểm khả dụng và tình trạng thiếu lịch sử. Đánh giá đối sánh vòng kín E2 trên 20 cụm trạng thái Unseen đã hoàn tất 40 cặp ghép giữa F0 (không dùng bộ nhớ) và F1 (có bộ nhớ quan hệ `rgb_relations_v1`). Kết quả cho thấy chính sách F0 đạt 15% trên T1 và 5% trên T3 (trung bình 10%), trong khi F1 đạt 0% trên cả hai tác vụ ($\widehat{\Delta}_{\mathrm{macro}} = -10\%$). Kết quả này bác bỏ giả thiết cho rằng việc bổ sung văn bản bộ nhớ vào lời nhắc luôn làm tăng hiệu quả điều khiển; ngược lại, trong điều kiện thực thi trực tiếp, cấu hình F1 có tỷ lệ thành công quan sát thấp hơn F0; nguyên nhân riêng của chênh lệch cần đối chứng giữ cùng trọng số.
 
 Với **RQ2**, điều kiện có bộ nhớ cho sai số flow matching trên tập xác thực Mem thấp hơn chế độ bỏ thông tin lịch sử của cùng adapter. Tuy nhiên, trong đánh giá vòng kín E2, thời gian thực thi mỗi episode của F1 kéo dài tới hơn 1.060 giây (gấp 5 lần mức 212 giây của F0) do chi phí xử lý của bộ phát hiện thị giác 2D (~1.000 ms/frame), chứng minh rõ nét sự đánh đổi thực tế giữa việc duy trì biểu diễn quan hệ và tính kịp thời trong điều khiển thời gian thực.
 
-Với **RQ3**, việc đánh giá duy trì năng lực cơ sở E6 trên 50 tập kiểm tra độc lập của 10 tác vụ LIBERO-10 đã định lượng rõ nét sự đánh đổi biểu diễn: chính sách thích ứng $F1$ (ở chế độ không nhận bộ nhớ) đạt tỷ lệ thành công 46% (23/50) so với mức 74% (37/50) của mô hình nền $B0$ ($\widehat{\Delta}_{\mathrm{retention}} = -28\%$). Mức suy giảm này có tính chọn lọc cao theo động học tiếp xúc: các tác vụ có dung sai hình học rộng (T3, T8) được bảo toàn nguyên vẹn 100%, trong khi các tác vụ đòi hỏi căn chỉnh tiếp xúc không gian hẹp (T5, T2) chịu ảnh hưởng lớn nhất; đồng thời $F1$ lại cải thiện vượt bậc ở tác vụ đa đối tượng T0 (+40% so với $B0$). Kết quả này chứng minh rằng việc lấy mẫu hỗn hợp 50/50 đã ngăn chặn hiện tượng quên thảm khốc hoàn toàn, nhưng sự cạnh tranh dung lượng trong LoRA chỉ ra rằng mô hình thao tác tổng quát tương lai cần hướng đến kiến trúc phân luồng chính sách mô-đun (*modular routing*) thay vì nén chung vào một bộ thích ứng duy nhất.
+Với **RQ3**, E6 ghi 37/50 thành công cho B0 và 23/50 cho F1-off, dùng export F1 V2 của E2 với memory tắt. Chênh lệch là −28 điểm phần trăm trên roster LIBERO-10 local. Kết quả theo task và định danh trọng số có trong [bảng đối chiếu](EXPERIMENT_CONFIGURATION_REGISTER.md).
 
 Với **RQ4**, bộ ghi báo lịch sử chưa đầy đủ ở cuối hầu hết các lượt chạy của cấu hình có bộ nhớ. Bất đồng giữa mốc sự kiện ghi nhận và đánh giá môi trường xác định một hạn chế cốt lõi khi chuyển từ trình diễn sang quỹ đạo do chính sách sinh ra, đặt ra nhu cầu về các cơ chế xử lý tính chưa chắc chắn và phân tách độ trễ tri giác trong các nghiên cứu tiếp theo.
 

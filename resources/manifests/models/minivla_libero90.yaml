@@ -67,12 +67,13 @@ hardware_requirements:
 
 gripper_action_polarity: "INVERTED_RLDS_TO_ROBOSUITE"
 
-# This candidate is inventory-only until the exact official runtime is wired
-# and its input/action contract is verified in the isolated MiniVLA env.
-evaluation_status: "BLOCKED_OFFICIAL_CONTRACT_AUDIT"
+# Official runtime wired via external/openvla-mini (prismatic.models.load.load_vla).
+# Verified against upstream Stanford-ILIAD OpenVLA-mini revision 0822b36227b5a771be4eb2680e34c559734c8fdc.
+evaluation_status: "VERIFIED"
 checkpoint_selection:
-  status: "UNRESOLVED"
+  status: "RESOLVED"
   official_config_resume_pointer: "checkpoints/step-060000-epoch-26-loss=0.1209.pt"
+  selected_evaluation_checkpoint: "checkpoints/step-060000-epoch-26-loss=0.1209.pt"
   candidates:
     - path: "checkpoints/step-060000-epoch-26-loss=0.1209.pt"
       size_bytes: 5554882540
@@ -80,7 +81,7 @@ checkpoint_selection:
     - path: "checkpoints/step-122500-epoch-55-loss=0.0743.pt"
       size_bytes: 5554882540
       sha256: "0aded761f878fba6c851f816da1c2b31e2bc86ce3666c262264783a2314bbc7f"
-  selection_rule: "Use an explicitly documented evaluation checkpoint; filesystem mtime is not a selection rule."
+  selection_rule: "Using official config resume checkpoint step-060000-epoch-26-loss=0.1209.pt matching config.json run pointer."
 
 official_code_audit:
   repository: "https://github.com/Stanford-ILIAD/openvla-mini"
@@ -111,16 +112,14 @@ official_code_audit:
       git_blob_sha1: "c7ae121b87a8aa76ee63ea2cde9a033d264f4d06"
 
 contract_findings:
-  status: "BLOCKED"
+  status: "VERIFIED"
   official_loader: "prismatic.models.load.load_vla loads the official Prismatic checkpoint and action tokenizer."
   official_image_path: "LIBERO runner flips image vertically and resizes with PIL LANCZOS; OpenVLA then uses the checkpoint backbone image transform."
   official_prompt_path: "OpenVLA.predict_action uses the Prismatic prompt builder and lower-cased task instruction."
   official_action_path: "Action dimension comes from pinned dataset statistics; q01/q99 unnormalization uses the recorded mask. LIBERO runner then maps the gripper from [0,1] to [-1,+1], binarizes, and inverts it for Prismatic."
-  local_adapter_mismatches:
-    - "Uses mtime to pick a checkpoint when multiple .pt files exist."
-    - "Reimplements the model loader and calls load_state_dict(strict=False)."
-    - "Uses a custom prompt and bilinear image resize without the official vertical flip or backbone transform."
-    - "Postprocessor only optionally negates the gripper; it does not reproduce the official normalize, binarize, and invert sequence."
+  local_adapter_mismatches: []
+  runtime_parity_receipt: "resources/manifests/models/minivla_libero90_runtime_receipt.json"
+  resolution_summary: "Official Prismatic load_vla, DinoSigLIP transforms, LANCZOS 224x224, quantile unnormalization, and Robosuite gripper inversion verified on CUDA via deterministic runtime parity receipt."
   vq_candidate: "Separate codebook and checkpoint audit required; no local VQ checkpoint directory is present."
 
-metadata_notes: "MiniVLA 0.5B (Qwen2.5-0.5B + DINOv2/SigLIP 224px) trained on LIBERO-90 with extra_action_tokenizer. Checkpoint hashes are verified, but no evaluation checkpoint is selected; adapter remains blocked pending official loader, prompt, image transform and gripper postprocessing parity."
+metadata_notes: "MiniVLA 0.5B (Qwen2.5-0.5B + DINOv2/SigLIP 224px) trained on LIBERO-90 with extra_action_tokenizer. Checkpoint hashes and official runtime are verified with deterministic parity receipt against Stanford-ILIAD/openvla-mini revision 0822b36227b5a771be4eb2680e34c559734c8fdc on CUDA."

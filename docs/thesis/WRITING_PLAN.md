@@ -1,5 +1,8 @@
 # Kế hoạch viết toàn bộ khóa luận
 
+> Các trạng thái gate bên dưới ghi theo ngày của tài liệu. Xem [đối chiếu cập nhật 19/11/2026](EXPERIMENT_CONFIGURATION_REGISTER.md) cho export F1 V2, kết quả E2/E6 và replay Relation V3.
+
+
 Mốc biên tập và snapshot bằng chứng: **15/11/2026**. Snapshot chỉ đọc artifact đã tồn tại; rollout/training lịch sử giữ ngày chạy riêng. Đề tài chính thức: **Nâng cao khả năng xử lý tác vụ chuỗi dài cho mô hình VLA trong điều khiển Robot**. Giữ nguyên tên đã duyệt; luận văn trình bày phương pháp chung và giới hạn đánh giá hiện tại ở SmolVLA, bộ nhớ sự kiện trong một episode, cùng protocol local T1/T3.
 
 ## 1. Lập luận nghiên cứu

@@ -13,6 +13,7 @@ param(
     [string]$ParentLock = 'resources/manifests/libero_mem_t1_t3_base10_split_v2.json',
     [ValidateSet('seen','unseen','val','test')][string]$Split = 'seen',
     [string]$Distro = 'Ubuntu-24.04',
+    [ValidateSet('','rgb_relations_v1','rgb_relations_v2','rgb_relations_v3')][string]$RelationWriter = '',
     [switch]$RuntimeCheck
 )
 
@@ -30,6 +31,7 @@ $cliArgs = @($cli, '--use-wsl', '--wsl-distro', $Distro, '--sim-python', $SimPyt
     '--f0-adapter-dir', $F0, '--adapter-dir', $F1,
     '--no-save-video', '--stream-memory-trace', '--output-dir', $Output)
 $cliArgs += @('--tasks') + $Tasks + @('--conditions') + $Conditions
+if ($RelationWriter) { $cliArgs += @('--relation-writer', $RelationWriter) }
 if ($RuntimeCheck) { $cliArgs += '--runtime-check' }
 & $PolicyPython @cliArgs
 if ($LASTEXITCODE -ne 0) { throw "Batch failed. Inspect $Output/run_manifest.json" }

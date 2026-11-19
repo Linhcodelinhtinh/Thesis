@@ -28,6 +28,7 @@ class RelationState:
     armed: bool
     historical_relation_valid: bool
     current_evidence_ids: tuple
+    origin_verified: bool = True
 
 
 @dataclass(frozen=True)
@@ -55,8 +56,10 @@ class RelationMemorySnapshot:
 
 class RelationReducer:
     """Confirm repeated observations and count only observed departure/return pairs."""
-    def __init__(self, count_cycles):
+    def __init__(self, count_cycles, confirmation_frames=3, origin_before_step=20):
         self.count_cycles = count_cycles
+        self.confirmation_frames = confirmation_frames
+        self.origin_before_step = origin_before_step
         self.origin = None
         self.departure = None
         self.last_event = None
@@ -70,6 +73,7 @@ class RelationReducer:
         self.ready = False
         self.historical_relation_valid = False
         self.initial_support = None
+        self.retained_evidence = ()
 
     def update(self, step, status, reference, evidence, emit):
         self.status, self.reference = status, None
@@ -93,9 +97,9 @@ class RelationReducer:
         if candidate != self.candidate:
             self.candidate, self.frames = candidate, []
         self.frames.append((step, evidence))
-        self.frames = self.frames[-3:]
+        self.frames = self.frames[-self.confirmation_frames:]
         self.status = "candidate"
-        if len(self.frames) < 3:
+        if len(self.frames) < self.confirmation_frames:
             return
         self.status = "confirmed"
         self.reference = reference if status == "relation" else None
@@ -107,7 +111,7 @@ class RelationReducer:
                 self.departure = emit("departure", self.origin, first, ids)
                 self.ready = False
             return
-        if self.origin is None and first < 20:
+        if self.origin is None and self.origin_before_step is not None and first < self.origin_before_step:
             self.origin = reference
         returning = self.departure is not None and reference == self.origin
         changed = self.last_event is None or self.last_event.details["reference"] != reference
@@ -130,7 +134,8 @@ class RelationReducer:
         return RelationState(self.status, self.reference, self.last_event, self.last_return, self.departure,
                              len(self.frames), self.returns, self.complete, self.departure is not None,
                              self.historical_relation_valid,
-                             self.frames[-1][1] if self.reference and self.frames else ())
+                             self.frames[-1][1] if self.reference and self.frames else (),
+                             self.origin is not None)
 
 
 class RelationMemoryWriter:
@@ -178,8 +183,9 @@ class RelationMemoryWriter:
             if self.detector is None:
                 raise ValueError("RGB evidence required")
             evidence = self.detector.detect(step, images, self.profile.queries,
-                                            pilot_crop=self.profile.count_cycles and self.profile.subject == "bowl")
-        evidence.validate(step, images)
+                                            pilot_crop=self.profile.count_cycles and self.profile.subject == "bowl",
+                                            image_digests=hashes)
+        evidence.validate(step, images, image_digests=hashes)
         if (evidence.model_id, evidence.revision) != (MODEL_ID, REVISION):
             raise ValueError("Unexpected visual evidence model or revision")
         records = {}
@@ -236,6 +242,7 @@ class RelationMemoryWriter:
         needed.update(eid for ids in self.outside.values() for eid in ids)
         events = list(self.recent_events)
         for reducer in self.reducers.values():
+            needed.update(reducer.retained_evidence)
             for _, ids in reducer.frames:
                 needed.update(ids)
             events.extend(e for e in (reducer.last_event, reducer.last_return,

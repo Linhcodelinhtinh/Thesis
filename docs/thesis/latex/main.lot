@@ -7,17 +7,19 @@
 \contentsline {table}{\numberline {3.2}{\ignorespaces Ngưỡng đo quan hệ giữa bát và đĩa gốc}}{14}{table.3.2}%
 \contentsline {table}{\numberline {3.3}{\ignorespaces Các điều kiện đối chứng và mục đích đánh giá}}{19}{table.3.3}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces Tình trạng artifact dữ liệu và phân tích V2 tại ngày 15/11/2026}}{23}{table.4.1}%
-\contentsline {table}{\numberline {4.2}{\ignorespaces Đối chiếu sự kiện thị giác với mốc tiến độ trên các quỹ đạo mẫu}}{26}{table.4.2}%
-\contentsline {table}{\numberline {4.3}{\ignorespaces Các điều kiện đối chiếu trong thực nghiệm vòng kín}}{28}{table.4.3}%
-\contentsline {table}{\numberline {4.4}{\ignorespaces Phân hoạch quỹ đạo theo nhóm tác vụ}}{29}{table.4.4}%
-\contentsline {table}{\numberline {4.5}{\ignorespaces Cấu hình thích ứng của F1 và phạm vi suy luận}}{29}{table.4.5}%
-\contentsline {table}{\numberline {4.6}{\ignorespaces Kết quả điều khiển vòng kín theo tác vụ và điều kiện}}{32}{table.4.6}%
-\contentsline {table}{\numberline {4.7}{\ignorespaces Pilot development E0 V2 với B0/F0 trên seen state 0}}{33}{table.4.7}%
-\contentsline {table}{\numberline {4.8}{\ignorespaces Kết quả đối sánh vòng kín E2 trên 20 cụm trạng thái Unseen}}{34}{table.4.8}%
-\contentsline {table}{\numberline {4.9}{\ignorespaces Kết quả đánh giá duy trì năng lực cơ sở E6 trên 10 tác vụ LIBERO-10}}{36}{table.4.9}%
+\contentsline {table}{\numberline {4.1}{\ignorespaces Đối chiếu checkpoint, memory và phạm vi kết quả}}{23}{table.4.1}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Tình trạng artifact dữ liệu và phân tích V2 tại ngày 15/11/2026}}{25}{table.4.2}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Đối chiếu sự kiện thị giác với mốc tiến độ trên các quỹ đạo mẫu}}{28}{table.4.3}%
+\contentsline {table}{\numberline {4.4}{\ignorespaces Replay Relation Writer trên development và E2}}{30}{table.4.4}%
+\contentsline {table}{\numberline {4.5}{\ignorespaces Các điều kiện đối chiếu trong thực nghiệm vòng kín}}{31}{table.4.5}%
+\contentsline {table}{\numberline {4.6}{\ignorespaces Phân hoạch quỹ đạo theo nhóm tác vụ}}{32}{table.4.6}%
+\contentsline {table}{\numberline {4.7}{\ignorespaces Cấu hình thích ứng của F1 và phạm vi suy luận}}{32}{table.4.7}%
+\contentsline {table}{\numberline {4.8}{\ignorespaces Kết quả điều khiển vòng kín theo tác vụ và điều kiện}}{35}{table.4.8}%
+\contentsline {table}{\numberline {4.9}{\ignorespaces Pilot development E0 V2 với B0/F0 trên seen state 0}}{36}{table.4.9}%
+\contentsline {table}{\numberline {4.10}{\ignorespaces Kết quả đối sánh vòng kín E2 trên 20 cụm trạng thái Unseen}}{37}{table.4.10}%
+\contentsline {table}{\numberline {4.11}{\ignorespaces Kết quả đánh giá duy trì năng lực cơ sở E6 trên 10 tác vụ LIBERO-10}}{38}{table.4.11}%
 \addvspace {10\p@ }
 \def \@chapapp {\appendixname }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {A.1}{\ignorespaces Nguồn và định danh có thể kiểm tra cho thực nghiệm}}{47}{table.A.1}%
+\contentsline {table}{\numberline {A.1}{\ignorespaces Nguồn và định danh có thể kiểm tra cho thực nghiệm}}{48}{table.A.1}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

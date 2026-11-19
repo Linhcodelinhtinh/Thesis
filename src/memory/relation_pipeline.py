@@ -2,15 +2,23 @@
 from pathlib import Path
 
 from src.interfaces.relation_memory_text import RelationMemoryRenderer
+from src.interfaces.relation_memory_text_v3 import RelationMemoryRendererV3
 from src.memory.libero_mem_profiles import profile_for_task
 from src.memory.relation_memory import RelationMemoryWriter
+from src.memory.relation_cycle_config import BowlCycleConfig
+from src.memory.relation_cycle_writer_v3 import BowlCycleWriterV3
 from src.utils.file_hash import sha256_file
 
 
-def relation_config(strategy="relevant"):
+def relation_config(strategy="relevant", writer_version=RelationMemoryWriter.VERSION):
     if strategy not in ("relevant", "recent"):
         raise ValueError("Unknown relation projection")
-    return dict(projection=RelationMemoryRenderer.VERSION, strategy=strategy, max_total_tokens=48)
+    projection = (RelationMemoryRendererV3.VERSION if writer_version == BowlCycleWriterV3.VERSION
+                  else RelationMemoryRenderer.VERSION)
+    config = dict(projection=projection, strategy=strategy, max_total_tokens=48)
+    if writer_version == BowlCycleWriterV3.VERSION:
+        config["cycle"] = BowlCycleConfig.load().to_dict()
+    return config
 
 
 def relation_pipeline(suite, task, detector, convention, tokenizer, strategy="relevant"):

@@ -139,11 +139,15 @@ def recover_completed_index(out_dir, expected_frames=None):
 
 
 def main():
+    from src.memory.relation_writer_versions import (
+        RELATION_WRITERS, make_relation_pipeline, relation_config, versioned_relation_source_hashes,
+    )
+
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--output-dir", type=Path, required=True)
     p.add_argument("--data-dir", type=Path, default=ROOT / "data/libero_mem")
     p.add_argument("--task-name", required=True)
-    p.add_argument("--writer", choices=("rgb_cycle_v3", "rgb_relations_v1"), default="rgb_cycle_v3")
+    p.add_argument("--writer", choices=("rgb_cycle_v3", *RELATION_WRITERS), default="rgb_cycle_v3")
     p.add_argument("--projection", choices=("relevant", "recent"), default="relevant")
     p.add_argument("--source-receipt", type=Path, help="Official pinned LFS receipt for additional author tasks")
     p.add_argument("--metainfo", type=Path, help="Use the existing pinned metadata file from another directory")
@@ -160,16 +164,17 @@ def main():
     p.add_argument("--resume", action="store_true", help="Resume from partially written prompt index")
     args = p.parse_args()
     from src.evaluation.libero_mem_protocol import task_spec
-    from src.memory.relation_pipeline import relation_config, relation_pipeline, relation_source_hashes
     from src.perception.relation_detector import RelationDetector
 
     suite = load_suite_source(ROOT / "external/libero-mem")
     args.task_name = task_spec(suite, args.task_name)["name"]
-    relation = args.writer == "rgb_relations_v1"
+    relation = args.writer in RELATION_WRITERS
+    if args.writer in ("rgb_relations_v2", "rgb_relations_v3") and args.task_name not in TASKS.values():
+        p.error(f"{args.writer} supports only T1/T3")
     if not relation and args.task_name not in TASKS.values():
         p.error("rgb_cycle_v3 supports only T1/T3")
     if not relation and args.projection != "relevant":
-        p.error("Choose rgb_relations_v1 to change the projection")
+        p.error("Choose a relation writer to change the projection")
     if args.demo_ids and (args.split_lock or args.resume or args.max_episodes):
         p.error("Explicit demo selection is diagnostic and cannot be resumed or used with a lock")
     out = args.output_dir
@@ -224,10 +229,10 @@ def main():
         image_convention = "raw_opengl"
         source_revision = "derived:" + split_lock["derived_manifest_sha256"]
     tokenizer = load_prompt_tokenizer(args.tokenizer_path)
-    config = relation_config(args.projection) if relation else asdict(TrackerConfig())
+    config = relation_config(args.projection, args.writer) if relation else asdict(TrackerConfig())
     writer_convention = "libero_raw" if image_convention == "raw_opengl" else image_convention
     use_detector = args.stream == "predicted_memory"
-    code_hashes = relation_source_hashes(ROOT) if relation else {
+    code_hashes = versioned_relation_source_hashes(ROOT, args.writer) if relation else {
         str(path.relative_to(ROOT)).replace(chr(92), "/"): sha256(path)
         for directory in ("src/perception", "src/memory", "src/interfaces")
         for path in sorted((ROOT / directory).glob("*.py"))
@@ -266,8 +271,8 @@ def main():
     write_json(out / "index_contract.json", contract)
     detector = (RelationDetector if relation else GroundingDinoDetector)(args.model_dir, args.device) if use_detector else None
     if relation:
-        factory, renderer = relation_pipeline(suite, args.task_name, detector, writer_convention,
-                                              tokenizer, args.projection)
+        factory, renderer = make_relation_pipeline(suite, args.task_name, detector, writer_convention,
+                                                   tokenizer, args.projection, args.writer)
     else:
         factory = visual_writer_factory(detector, writer_convention, TrackerConfig(**config))
         renderer = LiberoMemTextRenderer(tokenizer=tokenizer, strict_tokenizer=True)

@@ -111,7 +111,7 @@
     {
       "id": "open-policy-gate",
       "state": "artifact_verified",
-      "scope": "Matched V2 policy pair verification and E2 closed-loop evaluation on 20 unseen state clusters completed. F0 achieved 10% macro success (15% T1, 5% T3) while F1 achieved 0% on both tasks (macro delta -10%) with a 5x wall-clock latency penalty due to 2D detector latency.",
+      "scope": "Matched V2 policy pair verification and E2 closed-loop evaluation on 20 unseen state clusters completed. F0 achieved 10% macro success (15% T1, 5% T3) while F1 achieved 0% on both tasks (macro delta -10%) with about 5x the episode wall time in the local synchronous stack.",
       "evidence_source_ids": [
         "v2_split_lock",
         "v2_alignment",
@@ -174,20 +174,65 @@
         "t8_state_parity_report"
       ],
       "permitted_wording": "One author-action replay reached terminal upstream success on T9 and T10. For T8 demo_1, the refined actions exactly match the pinned transform of raw actions and the initial states match, but replay robot state first exceeded the diagnostic 1e-5 tolerance at step 219; three milestones were reached without terminal success despite refined metainfo success=true. The cause remains unresolved. These one-demo diagnostics do not establish policy competence, writer accuracy, memory benefit, or an official score."
+    },
+    {
+      "id": "writer-checkpoint-comparison",
+      "state": "verified_within_scope",
+      "scope": "Historical and relation writer identities, compared closed-loop policy configurations, and retrospective replay from pinned writer receipts.",
+      "evidence_source_ids": [
+        "e2_unseen_paired_final",
+        "f1_v2_adapter_manifest",
+        "historical_cycle_adapter",
+        "historical_cycle_report",
+        "relation_motion_dev",
+        "relation_motion_e2",
+        "relation_motion_latency",
+        "relation_old_candidate_e2",
+        "relation_retest_report",
+        "derived_cycle_adapter",
+        "e6_b0_task_0",
+        "e6_b0_task_1",
+        "e6_b0_task_2",
+        "e6_b0_task_3",
+        "e6_b0_task_4",
+        "e6_b0_task_5",
+        "e6_b0_task_6",
+        "e6_b0_task_7",
+        "e6_b0_task_8",
+        "e6_b0_task_9",
+        "e6_f1_actual_task_0",
+        "e6_f1_actual_task_1",
+        "e6_f1_actual_task_2",
+        "e6_f1_actual_task_3",
+        "e6_f1_actual_task_4",
+        "e6_f1_actual_task_5",
+        "e6_f1_actual_task_6",
+        "e6_f1_actual_task_7",
+        "e6_f1_actual_task_8",
+        "e6_f1_actual_task_9",
+        "relation_v1_v2_dev",
+        "relation_v1_v2_e2",
+        "relation_v3_calibration",
+        "relation_v3_initial_e2_ablation",
+        "relation_fp_diagnosis"
+      ],
+      "permitted_wording": "Historical F1 used rgb_cycle_v3. E2 used the matched V2 adapter pair with F1 bound to rgb_relations_v1. E6 used the same F1 weights with memory off. rgb_relations_v3 motion reached 195/394 development matches and 0 TP, 1 FP, 3 FN on retrospective E2 replay; it has no verified closed-loop score."
     }
   ],
   "sources": [
     {
       "id": "relation_memory_impl",
       "path": "src/memory/relation_memory.py",
-      "sha256": "95f6c50d695a2cbc8b4dac60de7633182931a6e0f11f0f52b9e81b1a5bc07feb",
-      "description": "Relation state reducer and evidence-validity implementation."
+      "sha256": "6e63a13f405cf632092580809b36c8fbd210584e342c4c5ea34634717f970b5c",
+      "description": "Relation state reducer and evidence-validity implementation. Working-tree implementation at the time of this manuscript update. Run receipts retain the archived implementation hashes.",
+      "previous_sha256": "95f6c50d695a2cbc8b4dac60de7633182931a6e0f11f0f52b9e81b1a5bc07feb"
     },
     {
       "id": "relation_tracker_impl",
       "path": "src/perception/relation_tracking.py",
-      "sha256": "a14e184146f85dd53befdd830706d7e8d00f34ad6c5934f832c894c7ce433dcc",
-      "description": "Conservative RGB identity and relation tracking implementation."
+      "sha256": "b354b3a93f447b7b059c975d65b747611f59e69144ed94666e60bdaef2b4bd20",
+      "description": "Conservative RGB identity and relation tracking implementation. Working-tree implementation at the time of this manuscript update. Run receipts retain the archived implementation hashes.",
+      "previous_sha256": "a14e184146f85dd53befdd830706d7e8d00f34ad6c5934f832c894c7ce433dcc"
     },
     {
       "id": "relation_memory_tests",
@@ -526,6 +571,171 @@
       "id": "e2_unseen_paired_final",
       "path": "experiments/evaluation/e2_unseen_author_v2/paired_e2_final.json",
       "sha256": "1a0259aa34ac37dbd36aad84cd2e2593e352eaabddd5ec38465511518446a312"
+    },
+    {
+      "id": "historical_cycle_adapter",
+      "path": "experiments/evaluation/results_mem_2/step5_test_20261109-093744/test_F1/adapter_manifest.json",
+      "sha256": "7df88967d1f9ba070f38b3de26255442b91e05a69f5ecf4bf199a144992f75b7"
+    },
+    {
+      "id": "historical_cycle_report",
+      "path": "experiments/evaluation/results_mem_2/step5_test_20261109-093744/test_F1/report.md",
+      "sha256": "4e85362481c11e34249165a291e6dc66acc56f4c0ddd56984dba9bd51e4cc1e6"
+    },
+    {
+      "id": "relation_motion_dev",
+      "path": "experiments/audits/bowl-cycle-v3-motion-development-20261118.json",
+      "sha256": "688abcba49bf15a117a974d22932659fe49742c353443599d75cf12cfaaf665e"
+    },
+    {
+      "id": "relation_motion_e2",
+      "path": "experiments/audits/bowl-cycle-v3-motion-e2-20261118.json",
+      "sha256": "a4b3b9ed2f1fe05df0ab853a8af55ec58ce991c94c6777ff89b3b396fd2a108f"
+    },
+    {
+      "id": "relation_motion_latency",
+      "path": "experiments/audits/bowl-cycle-v3-motion-cached-latency-20261118.json",
+      "sha256": "666430b38544ace7857262a0b81bab5c213036a3a2b0778ce2da05fbd7de23c8"
+    },
+    {
+      "id": "relation_old_candidate_e2",
+      "path": "experiments/audits/bowl-cycle-v3-e2-locked-20261118.json",
+      "sha256": "ef03f748e3801f055f3f6c918129f6aa6efd7294179886ebac57afe93408cbb5"
+    },
+    {
+      "id": "relation_retest_report",
+      "path": "experiments/evaluation/retest_f1_unseen_full/report.md",
+      "sha256": "738f9de284829d5580518cd6f0db67236abe45b38d06a15870eb87e7ae775867"
+    },
+    {
+      "id": "derived_cycle_adapter",
+      "path": "experiments/training/results_mem_derived/mem-adapter-v1/output/pretrained_model/mem_adapter_manifest.json",
+      "sha256": "92f0b38b9f18001b267c02c1041f60e98b1f950a0eeb38484adfac1d26a0584b"
+    },
+    {
+      "id": "e6_b0_task_0",
+      "path": "experiments/results/e6_retention_locked_50/B0_task_0/benchmark_summary.json",
+      "sha256": "5d0c9b7596cb04cf4e397c6b3b75d7b4032507e94670e7ff449c598d1157243e"
+    },
+    {
+      "id": "e6_b0_task_1",
+      "path": "experiments/results/e6_retention_locked_50/B0_task_1/benchmark_summary.json",
+      "sha256": "19a5c7aa9bd4e0a267f5952d1e3a23ffb73ba9517a4bf10492655971f9442cb9"
+    },
+    {
+      "id": "e6_b0_task_2",
+      "path": "experiments/results/e6_retention_locked_50/B0_task_2/benchmark_summary.json",
+      "sha256": "dfecd9b22a53902f0a862cc5a91d5916a28296162448894df3a318e7606ad52d"
+    },
+    {
+      "id": "e6_b0_task_3",
+      "path": "experiments/results/e6_retention_locked_50/B0_task_3/benchmark_summary.json",
+      "sha256": "a192169195a991f0c097c0781f60867cfb5627221be4ca741e034c92272e44b2"
+    },
+    {
+      "id": "e6_b0_task_4",
+      "path": "experiments/results/e6_retention_locked_50/B0_task_4/benchmark_summary.json",
+      "sha256": "8b4f83484974cb4cba8e48701188b5fcda0d9b819694a0ba13ef06cea79c0013"
+    },
+    {
+      "id": "e6_b0_task_5",
+      "path": "experiments/results/e6_retention_locked_50/B0_task_5/benchmark_summary.json",
+      "sha256": "a2e9cd561e02b9e5973bf32397ef8c5cd79469c3f2cd9c69dbd92d5637bd0ebe"
+    },
+    {
+      "id": "e6_b0_task_6",
+      "path": "experiments/results/e6_retention_locked_50/B0_task_6/benchmark_summary.json",
+      "sha256": "b4b89315a4ce2e042c4521beddfcc4d2e10eb25fb262483e1fc3b61ed3cf25de"
+    },
+    {
+      "id": "e6_b0_task_7",
+      "path": "experiments/results/e6_retention_locked_50/B0_task_7/benchmark_summary.json",
+      "sha256": "4cca3cf081565b4aa0eddafe1bb292a397a5d1702f148e950b0544be728f5fe0"
+    },
+    {
+      "id": "e6_b0_task_8",
+      "path": "experiments/results/e6_retention_locked_50/B0_task_8/benchmark_summary.json",
+      "sha256": "abc84e007d0844093810e2d69a7a8386b777552d9e1758c069457feaabc121d7"
+    },
+    {
+      "id": "e6_b0_task_9",
+      "path": "experiments/results/e6_retention_locked_50/B0_task_9/benchmark_summary.json",
+      "sha256": "63c3040dfb0aee12b670580240f3993d8fe61409b561f7ca116d644dd1517b76"
+    },
+    {
+      "id": "e6_f1_actual_task_0",
+      "path": "experiments/results/e6_retention_locked_50/F1_actual_task_0/benchmark_summary.json",
+      "sha256": "50d8d5811ef78a3ccf3d4ae062dadaff0d9e0cf646b24e56a21d11e7fd750dc0"
+    },
+    {
+      "id": "e6_f1_actual_task_1",
+      "path": "experiments/results/e6_retention_locked_50/F1_actual_task_1/benchmark_summary.json",
+      "sha256": "3656a9f1a5373d28fad2485184daad0fdd31f179ccf371915b0a55d196377463"
+    },
+    {
+      "id": "e6_f1_actual_task_2",
+      "path": "experiments/results/e6_retention_locked_50/F1_actual_task_2/benchmark_summary.json",
+      "sha256": "a0a2ae9c02b4ff012eeb6e02d10501854c9349036ae1f565b3cdc2eeb94fa664"
+    },
+    {
+      "id": "e6_f1_actual_task_3",
+      "path": "experiments/results/e6_retention_locked_50/F1_actual_task_3/benchmark_summary.json",
+      "sha256": "a29707f0cd5c4474ce1d98fbaa9f2a68e46ca7751f1398f2cd47d34995caf846"
+    },
+    {
+      "id": "e6_f1_actual_task_4",
+      "path": "experiments/results/e6_retention_locked_50/F1_actual_task_4/benchmark_summary.json",
+      "sha256": "79ec87c073ae44f73d3c82676af839efb45990f08e16d0e826372bf7913008e5"
+    },
+    {
+      "id": "e6_f1_actual_task_5",
+      "path": "experiments/results/e6_retention_locked_50/F1_actual_task_5/benchmark_summary.json",
+      "sha256": "2237aba7c2763c04515285c5a7c1b783a3b9625ea7f4b9b534ecba9ccf09671e"
+    },
+    {
+      "id": "e6_f1_actual_task_6",
+      "path": "experiments/results/e6_retention_locked_50/F1_actual_task_6/benchmark_summary.json",
+      "sha256": "3bd13d44f2ed2fd7ff64d4ea9b2f3c9e6bd60914178e9b46340f70f84caed980"
+    },
+    {
+      "id": "e6_f1_actual_task_7",
+      "path": "experiments/results/e6_retention_locked_50/F1_actual_task_7/benchmark_summary.json",
+      "sha256": "1c9dd2c4f9368836912ef41afbc7e5f925cf3b4dfe60a3a657b355bd7cfddb11"
+    },
+    {
+      "id": "e6_f1_actual_task_8",
+      "path": "experiments/results/e6_retention_locked_50/F1_actual_task_8/benchmark_summary.json",
+      "sha256": "88c704a97d63d852dd9742309afbd680a15ffb987007815e697e15ba936c4bfb"
+    },
+    {
+      "id": "e6_f1_actual_task_9",
+      "path": "experiments/results/e6_retention_locked_50/F1_actual_task_9/benchmark_summary.json",
+      "sha256": "dbdb6968a69d63c2463860bcab8545597027d04fe46225b6011befc69a60e930"
+    },
+    {
+      "id": "relation_v1_v2_dev",
+      "path": "experiments/audits/bowl-cycle-v2-development-alias-guard-20261118.json",
+      "sha256": "f55c1c2b189348faef4ef1e77ac1af7ee8010de2c10fa64007f7773281bef78e"
+    },
+    {
+      "id": "relation_v1_v2_e2",
+      "path": "experiments/audits/bowl-cycle-v2-e2-alias-guard-20261118.json",
+      "sha256": "fd6fbd2dc0f04682498d66367bc84bd890141031be99997230e37ca41fa334ee"
+    },
+    {
+      "id": "relation_v3_calibration",
+      "path": "experiments/audits/bowl-cycle-v3-calibration-sweep3-20261118.json",
+      "sha256": "0ada92098e804379e2be46132a38ae7d46ca7b6c467715519f92266a75f0ec6a"
+    },
+    {
+      "id": "relation_v3_initial_e2_ablation",
+      "path": "experiments/audits/bowl-cycle-v3-e2-fp-ablation-20261118.json",
+      "sha256": "cbd5fea55e77eb17e895b51582484bc60e06592a5df85be881d79c724d34b72f"
+    },
+    {
+      "id": "relation_fp_diagnosis",
+      "path": "experiments/audits/bowl-cycle-v3-e2-fp-diagnosis-20261118.json",
+      "sha256": "8bc4136297d95308ac27e0938835972396aa72a71f43d65ad826deb84854f3d7"
     }
   ]
 }

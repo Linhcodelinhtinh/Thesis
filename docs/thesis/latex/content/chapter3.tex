@@ -154,6 +154,8 @@ Thích ứng được thực hiện bằng LoRA tại các phép chiếu query v
 
 Các đối chứng được xác định theo câu hỏi mà từng phép so sánh có thể trả lời. B0 là mốc tham chiếu với trọng số gốc. Để đo thay đổi do thích ứng, F0 cần dùng cùng tập quỹ đạo, cách chia, cấu hình, ngân sách huấn luyện và quy tắc chọn checkpoint như F1, với ngữ cảnh huấn luyện và suy luận chỉ chứa chỉ dẫn. F1 bổ sung biểu diễn sự kiện trong cả thích ứng lẫn suy luận. F1-off giữ nguyên trọng số F1 và bỏ phần sự kiện ở thời điểm suy luận.
 
+F1 chỉ điều kiện thí nghiệm. Adapter F1 lịch sử ở bước 3.000 dùng RGB Cycle (\texttt{rgb\_cycle\_v3}); adapter F1 theo split V2 ở bước 5.000 dùng Relation V1 (\texttt{rgb\_relations\_v1}) và bộ chiếu \texttt{relation\_text\_v1}. Relation V3 cập nhật (\texttt{rgb\_relations\_v3}) là một bộ ghi riêng với bộ chiếu \texttt{relation\_text\_v2}. Chương~4 trình bày kết quả của Relation V3 ở mức replay. Bảng~\ref{tab:writer-policy-identity} ghi checkpoint, roster và kiểu đánh giá cho từng cấu hình.
+
 \begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
 \begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.29\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}}
 \caption{Các điều kiện đối chứng và mục đích đánh giá}\label{tab:generated3}\\
@@ -164,10 +166,10 @@ Các đối chứng được xác định theo câu hỏi mà từng phép so s�
 \textbf{Điều kiện} & \textbf{Trọng số} & \textbf{Ngữ cảnh suy luận} & \textbf{Mục đích đánh giá} & \textbf{Bằng chứng hiện có} \\
 \midrule\endhead
 \bottomrule\endfoot
-B0 & Checkpoint gốc & Chỉ dẫn & Mốc tham chiếu trước thích ứng & Pilot T1/T3, 20 lượt \\
-F0 & Adapter huấn luyện đối sánh & Chỉ dẫn & Đối chứng cho thay đổi do thích ứng & Chưa có lượt ghép cặp trong corpus v2 \\
-F1 & Adapter học với bộ nhớ & Chỉ dẫn và sự kiện & Đánh giá phương pháp đề xuất & Pilot lịch sử; chưa có export từ corpus v2 \\
-F1-off & Cùng adapter F1 & Chỉ dẫn & Đo độ nhạy với việc bỏ phần sự kiện & Chưa có lượt vòng kín đủ điều kiện \\
+B0 & Checkpoint gốc & Chỉ dẫn & Mốc tham chiếu trước thích ứng & Pilot T1/T3 (20 lượt), E6 (50 lượt) \\
+F0 & Adapter huấn luyện đối sánh & Chỉ dẫn & Đối chứng cho thay đổi do thích ứng & Đã có artifact; E2 Unseen (40 lượt) \\
+F1 & Adapter học với bộ nhớ & Chỉ dẫn và sự kiện & Đánh giá phương pháp đề xuất & Đã export V2; E2 Unseen (40 lượt) \\
+F1-off & Cùng adapter F1 & Chỉ dẫn & Đo độ nhạy với việc bỏ phần sự kiện & Pilot seen (2 lượt), E6 (50 lượt) \\
 \end{longtable}
 \endgroup
 
@@ -177,7 +179,7 @@ So sánh hiện có B0 với F1 đo chênh lệch khi thay đồng thời trọn
 
 Một treatment phát triển tách cách policy được huấn luyện khỏi quyền và thời điểm dùng thông tin khi chạy. Tại mỗi truy vấn, bộ ghi lại fact cùng phiên bản đã được chiếu vào prompt. Sau mỗi hành động đã thực thi, hệ cập nhật bộ nhớ và so nghĩa của các fact liên quan với ngữ cảnh của truy vấn đang mở. Thay đổi chỉ tạo đề xuất truy vấn lại khi tồn tại qua số quan sát tối thiểu và xuất hiện sau một tiền tố thực thi tối thiểu. Việc làm mới evidence cho cùng một nghĩa không tự tạo trigger. Cách này giữ rõ thời điểm một sự kiện có thể ảnh hưởng đến quyết định mà không thay đổi writer.
 
-Protocol development khóa 20 nhóm trạng thái seen, tách 12 nhóm để phát triển và 8 nhóm để hiệu chỉnh. Mỗi tập policy query tối đa 125 lần; đối chứng theo lịch cố định thực thi 8 hành động trước mỗi query, trong khi treatment theo sự kiện cần ít nhất 2 hành động và yêu cầu thay đổi tồn tại qua 2 quan sát. Khi hết ngân sách query, lượt dừng với trạng thái abstain và được tính là không hoàn thành. Các ngưỡng này là thông số development, chưa phải ngưỡng xác nhận. Closed-loop smoke cần checkpoint F1 huấn luyện bằng writer quan hệ tương ứng; do đó các phép đo hiện tại chỉ đánh giá replay trên quỹ đạo đã ghi và kiểm tra phần mềm.
+Protocol development khóa 20 nhóm trạng thái seen, tách 12 nhóm để phát triển và 8 nhóm để hiệu chỉnh. Mỗi tập policy query tối đa 125 lần; đối chứng theo lịch cố định thực thi 8 hành động trước mỗi query, trong khi treatment theo sự kiện cần ít nhất 2 hành động và yêu cầu thay đổi tồn tại qua 2 quan sát. Khi hết ngân sách query, lượt dừng với trạng thái abstain và được tính là không hoàn thành. Các ngưỡng này là thông số development, chưa phải ngưỡng xác nhận. Checkpoint F1 V2 dùng writer quan hệ tương ứng đã hoàn tất huấn luyện và export 5.000 bước, được đưa vào đánh giá đối sánh vòng kín E2 trên tập Unseen và E6 trên tác vụ cơ sở (Chương~4); các phép can thiệp mức quyết định trực tuyến sâu hơn vẫn cần protocol kiểm soát chuyên biệt.
 
 Một bộ kiểm ba giá trị cho intent đã gán nhãn trả về supported, violated hoặc unknown. Với tác vụ đếm, phép kiểm cần target và intent từ nhãn độc lập; nó không suy luận target từ reward, predicate hoặc hành động controller. Bộ kiểm hiện ở chế độ phân tích và chưa có quyền loại đề xuất trong runner. Sinh nhiều chunk chỉ được mở sau khi bộ đọc đề xuất đạt gate và adapter chứng minh được parity khi khôi phục hàng đợi, cache cùng trạng thái ngẫu nhiên. Vì vậy, luận văn không xem selector nhiều ứng viên là kết quả đã triển khai.
 

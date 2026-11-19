@@ -21,6 +21,7 @@ from src.training.mixed_sft import (ARTIFACT, PREDICTED_MEMORY_SOURCES, canonica
 from src.training.memory_data import validate_episode
 from src.training.libero_mem_hdf5_loader import read_episode_metadata
 from src.memory.visual_pipeline import load_prompt_tokenizer, TOKENIZER_REVISION, TOKENIZER_SHA256
+from src.memory.relation_writer_versions import RELATION_WRITERS, versioned_relation_source_hashes
 from src.evaluation.libero_mem_protocol import DEFAULT_PROTOCOL, source_digest
 from src.utils.file_hash import sha256_file
 
@@ -29,13 +30,13 @@ def load_memory_indices(paths, lock):
     samples, provenance = {}, []
     for root in paths:
         m = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
-        if m.get("status") != "complete" or m.get("writer") not in ("rgb_cycle_v3", "rgb_relations_v1") or m.get("stream") != "predicted_memory":
+        if (m.get("status") != "complete" or m.get("writer") not in PREDICTED_MEMORY_SOURCES
+                or m.get("stream") != "predicted_memory"):
             raise ValueError("Memory must come from a completed, versioned RGB predicted index")
         if m.get("split_lock_sha256") != lock["lock_sha256"]:
             raise ValueError("Generate memory indices using the same --split-lock first")
-        if m["writer"] == "rgb_relations_v1":
-            from src.memory.relation_pipeline import relation_source_hashes
-            if m["writer_code_sha256"] != relation_source_hashes(ROOT):
+        if m["writer"] in RELATION_WRITERS:
+            if m["writer_code_sha256"] != versioned_relation_source_hashes(ROOT, m["writer"]):
                 raise ValueError("Relation index was produced by a different writer/projection implementation")
             if sha256_file(root / "index_contract.json") != m["index_contract_sha256"]:
                 raise ValueError("Relation index contract checksum mismatch")

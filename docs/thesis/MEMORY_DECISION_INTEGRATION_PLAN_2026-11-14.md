@@ -1,5 +1,8 @@
 **Kế hoạch tích hợp memory vào quyết định và thực thi hành động**
 
+> Các trạng thái gate bên dưới ghi theo ngày của tài liệu. Xem [đối chiếu cập nhật 19/11/2026](EXPERIMENT_CONFIGURATION_REGISTER.md) cho export F1 V2, kết quả E2/E6 và replay Relation V3.
+
+
 Ngày 14/11/2026. Đây là thiết kế V2. Tiến độ D0–D2, replay và các gate D3–D6 được cập nhật trong [bàn giao quyết định](MEMORY_DECISION_HANDOFF_2026-11-14.md). Thiết kế triển khai dùng lớp metadata bên ngoài renderer để khớp source hash của writer. Tài liệu đi cùng [roadmap](IMPLEMENTATION_AND_WRITING_ROADMAP_2026-11-13.md), [bàn giao P5–P6](P5_P6_HANDOFF_2026-11-13.md) và [protocol phân tích v2](evidence/mem_analysis_protocol_v2.json).
 
 **1. Phương án được khuyến nghị**

@@ -110,7 +110,7 @@ Hệ thống hỗ trợ hai đường tích hợp thực nghiệm:
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │ 1. RESEARCH LAYER (Thesis Contributions)                                               │
 │    • Visual Memory Perception & Tracking (Grounding DINO + Causal Tracker)             │
-│    • Visual Event Writer v3 (FSM: Departure / Return / Incomplete History)             │
+│    • RGB Cycle (rgb_cycle_v3: Departure / Return / Incomplete History)             │
 │    • Episode Memory Store, Updater, & Immutable Schemas                                │
 │    • Tokenizer-Budgeted Prompt Renderer (LiberoMemTextRenderer, <= 48 tokens)          │
 │    • Mixed Replay SFT Training Protocol (50% Base / 50% Mem)                           │
@@ -151,7 +151,9 @@ Lớp nhận thức chịu trách nhiệm trích xuất thông tin thực thể 
   - Áp dụng cơ chế hysteresis và temporal continuity ($\le 3$ frames) để loại trừ proposal nhiễu.
   - Hỗ trợ cơ chế cache detection (`--detection-cache`) có kiểm tra hash SHA-256 từng frame RGB.
 
-### 6.2 Visual Event Memory Writer v3 (`src/memory/`)
+### 6.2 RGB Cycle lịch sử (`rgb_cycle_v3`)
+
+Đây là kiến trúc của writer dùng trong pilot cũ. Bản `rgb_relations_v3` motion thuộc họ Relation Writer. [Định danh thực nghiệm](thesis/EXPERIMENT_CONFIGURATION_REGISTER.md)
 
 Bộ sinh memory thế hệ 3 loại bỏ hoàn toàn các giả định heuristic về proprioception (như ngưỡng $z \le 0.95$ vốn gây ra 0 memory frames trên task sách và đĩa):
 

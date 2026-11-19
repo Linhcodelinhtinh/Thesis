@@ -248,6 +248,12 @@ def parse_args():
         default=512,
         help="Maximum characters for rendered memory text block.",
     )
+    parser.add_argument(
+        "--settling-steps",
+        type=int,
+        default=None,
+        help="Number of initial dummy steps to let simulator objects settle on the table (default 10 for MiniVLA, 0 otherwise).",
+    )
     return parser.parse_args()
 
 
@@ -298,6 +304,16 @@ def resolve_tasks(args, config_data: Optional[Dict[str, Any]] = None) -> List[Di
 
 def main():
     args = parse_args()
+
+    # Early CUDA warmup to establish primary GPU context and wake up hybrid laptop GPUs
+    if args.device == "cuda" or (args.device and args.device.startswith("cuda")):
+        import torch
+        if torch.cuda.is_available():
+            try:
+                torch.cuda.init()
+                _ = torch.empty(1, device=args.device)
+            except Exception:
+                pass
 
     config_data = None
     if args.config:
@@ -365,6 +381,10 @@ def main():
     print(f"Video Policy: {args.record_video_policy} (record_video={args.record_video})")
     print("=" * 70)
 
+    # Auto-resolve checkpoint path for known models if default was left untouched
+    if args.checkpoint == "resources/checkpoints/smolvla_libero" and args.model_name == "minivla_libero90":
+        args.checkpoint = "resources/checkpoints/minivla_libero90"
+
     # Fail-fast checkpoint check per AGENTS.md Rule 2
     is_hub_id = any(args.checkpoint.startswith(p) for p in ["Stanford-ILIAD/", "openvla/", "lerobot/", "HuggingFace/"]) or ("/" in args.checkpoint and not os.path.exists(args.checkpoint) and not args.checkpoint.startswith(".") and not args.checkpoint.startswith("resources"))
     if not args.checkpoint or (not os.path.exists(args.checkpoint) and not is_hub_id):
@@ -398,10 +418,11 @@ def main():
     model_contract_meta = {}
 
     model_cfg_path = args.model_config
-    if not model_cfg_path and os.path.exists("configs/models/selected_baseline.yaml"):
-        # Auto-detect canonical baseline config if model matches
-        if args.model_name == "smolvla_libero":
+    if not model_cfg_path:
+        if args.model_name == "smolvla_libero" and os.path.exists("configs/models/selected_baseline.yaml"):
             model_cfg_path = "configs/models/selected_baseline.yaml"
+        elif args.model_name == "minivla_libero90" and os.path.exists("configs/models/minivla_libero90.yaml"):
+            model_cfg_path = "configs/models/minivla_libero90.yaml"
 
     if model_cfg_path:
         if not os.path.exists(model_cfg_path):
@@ -443,6 +464,16 @@ def main():
             print(f"[INFO] Automatically clamped execution_horizon from {args.execution_horizon} to {policy_chunk_size} (matching {args.model_name} chunk size).")
     else:
         effective_horizon = args.execution_horizon
+
+    # Auto-resolve settling steps per official LIBERO benchmark protocol (10 steps for MiniVLA)
+    if args.settling_steps is not None:
+        effective_settling_steps = args.settling_steps
+    elif "minivla" in args.model_name.lower():
+        effective_settling_steps = 10
+    else:
+        effective_settling_steps = 0
+    if effective_settling_steps > 0:
+        print(f"[INFO] Applied {effective_settling_steps} simulator settling steps per official benchmark protocol.")
 
     # Provenance metadata per ADR-0010 & AGENTS.md Source of Truth
     py_version = sys.version.split()[0]
@@ -716,6 +747,7 @@ def main():
                 memory_writer=args.memory_writer,
                 max_context_chars=args.max_context_chars,
                 episode_id=f"{suite}_task{tid}_init{init_id}",
+                settling_steps=effective_settling_steps,
             )
 
             # Save per-episode artifacts
