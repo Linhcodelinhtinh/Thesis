@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (MiKTeX 26.5) (preloaded format=xelatex 2026.11.12)  19 NOV 2026 09:19
+This is XeTeX, Version 3.141592653-2.6-0.999998 (MiKTeX 26.5) (preloaded format=xelatex 2026.11.12)  19 NOV 2026 09:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1265,7 +1265,7 @@ chapter 3.
 ] [12]
 File: ../figures/architecture.png Graphic file (type bmp)
 <../figures/architecture.png>
- [13]
+ [13] [14]
 LaTeX Font Info:    Calculating math sizes for size <11.86258> on input line 91
 .
 LaTeX Font Info:    External font `lmex10' loaded for size
@@ -1274,10 +1274,10 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <8.30376> on input line 91.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5.93129> on input line 91.
- [14] [15] [16]
+ [15] [16] [17]
 File: ../figures/memory_timeline.png Graphic file (type bmp)
 <../figures/memory_timeline.png>
- [17] [18]
+ [18]
 LaTeX Font Info:    Font shape `TU/LatinModernMono(0)/m/n' will be
 (Font)              scaled to size 13.49055pt on input line 157.
 
@@ -1356,6 +1356,10 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 LaTeX2e <2026-11-01>
 L3 programming layer <2026-09-09>
  ***********
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
  ) 
 Here is how much of TeX's memory you used:
  31446 strings out of 402429
