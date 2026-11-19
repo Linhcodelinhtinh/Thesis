@@ -12,8 +12,10 @@ tương tự như vậy, bộ nhớ không chỉ để đếm số lần đặt 
 
 phần trình bày nội dung chính phải cho thấy đượic tính novelty trong phương pháp. phương pháp phải hỗ trợ trả lời hoặc giải quyết các research question một cách sắc bén, thuyết phục.
 
-abstract.tex đã được tôi điều chỉnh theo đúng các mô tả của tôi và mong muốn của tôi, không cần sửa file này nữa
-
 phần phụ lục nói riêng và thesis nói chung: không mention đến các tên file local, vì người khác sẽ không xem được dữ liệu trên máy tôi, which is really obvious.
 
-về training: Khi có bộ nhớ (memory): loss là 0.2142. Khi bị cắt bộ nhớ (no_memory): loss tăng vọt lên 0.2487 (tăng tương đối ≈16%≈16%).👉 Ý nghĩa khoa học cốt lõi: Khi cắt bỏ bộ nhớ, sai số dự đoán hành động tăng đáng kể. Điều này chứng minh rằng mô hình đã thực sự học cách điều kiện hóa hành động dựa trên tín hiệu tiến độ trong bộ nhớ, chứ không bỏ qua thông tin này.
+hạn chế các notation giải thích theo kiểu mở ngoặc đóng ngoặc (), ví dụ như: "mô hình thị giác - ngôn ngữ - hành động (Vision-Language-Action – VLA)" "quá trình quyết định Markov quan sát một phần (POMDP)", ...
+
+tuyệt đối không dùng các kí tự gạch ngang lạ, dài hay double gạch ngang --, chỉ dùng gạch ngang ngắn và đơn "-".
+
+về training: Khi có bộ nhớ: loss là 0.2142. Khi bị cắt bộ nhớ (no_memory): loss tăng vọt lên 0.2487 (tăng tương đối ≈16%≈16%).👉 Ý nghĩa khoa học cốt lõi: Khi cắt bỏ bộ nhớ, sai số dự đoán hành động tăng đáng kể. Điều này chứng minh rằng mô hình đã thực sự học cách điều kiện hóa hành động dựa trên tín hiệu tiến độ trong bộ nhớ, chứ không bỏ qua thông tin này.

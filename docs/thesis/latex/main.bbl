@@ -12,9 +12,10 @@ Nhat Chung, Taisei Hanyu, Toan Nguyen, Huy Le, Frederick Bumgarner, Duy Minh~Ho
   Ngan Le.
 \newblock Rethinking progression of memory state in robotic manipulation: An
   object-centric perspective.
-\newblock arXiv:2511.11478v3, 2025.
-\newblock \url{https://arxiv.org/abs/2511.11478v3}. Phiên bản paper tách
-  biệt với revision code sử dụng trong thực nghiệm.
+\newblock Proceedings of the AAAI Conference on Human Computation and
+  Crowdsourcing / AAAI 2026, 40(5), 3407--3415; bản arXiv:2511.11478v3, 2026.
+\newblock \url{https://doi.org/10.1609/aaai.v40i5.37337}. Phiên bản paper
+  tách biệt với revision code sử dụng trong thực nghiệm.
 
 \bibitem{robomme2026}
 Yinpei Dai, Hongze Fu, Jayjun Lee, Yuejiang Liu, Haoran Zhang, Jianing Yang,
@@ -61,13 +62,12 @@ Chubin Zhang and Bo~An.
 \newblock arXiv:2611.14488v1, 2026.
 \newblock \url{https://arxiv.org/abs/2611.14488v1}.
 
-\bibitem{liberoSource}
-{Lifelong Robot Learning contributors}.
-\newblock {LIBERO}: Mã nguồn benchmark được khóa phiên bản.
-\newblock GitHub source repository, 2026.
-\newblock Revision \path{8f1084e3132a39270c3a13ebe37270a43ece2a01}; truy cập
-  11/11/2026.
-  \url{https://github.com/Lifelong-Robot-Learning/LIBERO/tree/8f1084e3132a39270c3a13ebe37270a43ece2a01}.
+\bibitem{eventsync2026}
+Shuaihang Yuan et~al.
+\newblock {EventSync}: Event-synchronized multi-modal memory for robotic
+  manipulation.
+\newblock arXiv:2610.27917, 2026.
+\newblock \url{https://arxiv.org/abs/2610.27917}.
 
 \bibitem{liberomemSource}
 {LIBERO-Mem contributors}.
@@ -76,6 +76,14 @@ Chubin Zhang and Bo~An.
 \newblock Revision \path{0eee0defa4024e51511b6e15a79f30e9620209de}; truy cập
   11/11/2026.
   \url{https://github.com/libero-mem/libero-mem/tree/0eee0defa4024e51511b6e15a79f30e9620209de}.
+
+\bibitem{liberoSource}
+{Lifelong Robot Learning contributors}.
+\newblock {LIBERO}: Mã nguồn benchmark được khóa phiên bản.
+\newblock GitHub source repository, 2026.
+\newblock Revision \path{8f1084e3132a39270c3a13ebe37270a43ece2a01}; truy cập
+  11/11/2026.
+  \url{https://github.com/Lifelong-Robot-Learning/LIBERO/tree/8f1084e3132a39270c3a13ebe37270a43ece2a01}.
 
 \bibitem{groundingdino2024}
 Shilong Liu, Zhaoyang Zeng, Tianhe Ren, Feng Li, Hao Zhang, Jie Yang, Qing
@@ -100,6 +108,13 @@ Jan-Gerrit Habekost, Parsa~Mastouri Kashani, Connor G\"ade, Matthias Kerzel,
 \newblock arXiv:2609.22854v1, 2026.
 \newblock \url{https://arxiv.org/abs/2609.22854v1}.
 
+\bibitem{imep2026}
+Keyuan Luo, Yi~Xie, Wanyun Ling, Yuanzhe Li, Ziyue Li, and Zhuoqi Zeng.
+\newblock Beyond success rate: Interventional evaluation of memory in
+  vision-language-action systems.
+\newblock arXiv:2610.23372v1, 2026.
+\newblock \url{https://arxiv.org/abs/2610.23372v1}.
+
 \bibitem{rewardmachines2018}
 Rodrigo~Toro Icarte, Toryn Klassen, Richard Valenzano, and Sheila McIlraith.
 \newblock Using reward machines for high-level task specification and
@@ -108,13 +123,6 @@ Rodrigo~Toro Icarte, Toryn Klassen, Richard Valenzano, and Sheila McIlraith.
   Learning}, volume~80 of {\em Proceedings of Machine Learning Research}, pages
   2107--2116, 2018.
 \newblock \url{https://proceedings.mlr.press/v80/icarte18a.html}.
-
-\bibitem{imep2026}
-Keyuan Luo, Yi~Xie, Wanyun Ling, Yuanzhe Li, Ziyue Li, and Zhuoqi Zeng.
-\newblock Beyond success rate: Interventional evaluation of memory in
-  vision-language-action systems.
-\newblock arXiv:2610.23372v1, 2026.
-\newblock \url{https://arxiv.org/abs/2610.23372v1}.
 
 \bibitem{smolvlaCheckpoint}
 {LeRobot contributors}.
@@ -146,19 +154,5 @@ Bo~Liu, Yifeng Zhu, Chongkai Gao, Yihao Feng, Qiang Liu, Yuke Zhu, and Peter
   learning.
 \newblock arXiv:2306.03310v1, 2023.
 \newblock \url{https://arxiv.org/abs/2306.03310v1}.
-
-\bibitem{liberomemData}
-{LIBERO-Mem contributors}.
-\newblock {LIBERO-Mem}: Demonstration dataset.
-\newblock Hugging Face dataset repository, 2026.
-\newblock Revision 6df130c05b82e09294fa9534e84a069687b72d33.
-  \url{https://huggingface.co/datasets/libero-mem/LIBERO-Mem/tree/6df130c05b82e09294fa9534e84a069687b72d33}.
-
-\bibitem{liberomemRawData}
-{LIBERO-Mem contributors}.
-\newblock {LIBERO-Mem-Raw}: Initial-state and raw demonstration dataset.
-\newblock Hugging Face dataset repository, 2026.
-\newblock Revision 61917674055e8b1cbbfd22c1b54c28d20c1a1584.
-  \url{https://huggingface.co/datasets/libero-mem/LIBERO-Mem-Raw/tree/61917674055e8b1cbbfd22c1b54c28d20c1a1584}.
 
 \end{thebibliography}

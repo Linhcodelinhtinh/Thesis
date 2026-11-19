@@ -2,12 +2,10 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Đường thông tin của phương pháp. Bộ nhớ được suy từ quan sát đã nhận, còn tiến độ do môi trường ghi nhận được dành cho đánh giá.}}{14}{figure.caption.2}%
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Minh họa khái niệm cho bộ nhớ chu kỳ (OM/OS), danh tính và quan hệ (OR), cùng quan hệ vật chứa khi che khuất (OO). Trục là chỉ số quan sát sơ đồ: sự kiện có thể xảy ra trước khi bằng chứng đủ để cấp cho chính sách; thời điểm query biểu thị lúc thông tin có thể được tiêu thụ. Hình không phải trace hoặc số đo thực nghiệm.}}{18}{figure.caption.3}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Đường thông tin của phương pháp. Bộ nhớ được suy từ quan sát đã nhận, còn tiến độ do môi trường ghi nhận được dành cho đánh giá.}}{18}{figure.caption.2}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Minh họa khái niệm cho bộ nhớ chu kỳ OM/OS, danh tính và quan hệ OR, cùng quan hệ vật chứa khi che khuất OO. Trục là chỉ số quan sát sơ đồ: sự kiện có thể xảy ra trước khi bằng chứng đủ để cấp cho chính sách; thời điểm query biểu thị lúc thông tin có thể được tiêu thụ. Hình không phải trace hoặc số đo thực nghiệm.}}{23}{figure.caption.3}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Hàm mất mát flow matching trên tập xác thực theo số bước huấn luyện. Hai chế độ có và bỏ bộ nhớ được đo trên cùng checkpoint ở mỗi bước.}}{34}{figure.caption.4}%
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Tỷ lệ thành công trên T1 và T3 theo giao thức của khóa luận. Mỗi cột biểu diễn 10 quỹ đạo. Hai tác vụ dùng chung các nhóm trạng thái khởi tạo và cùng một hạt giống chính sách.}}{35}{figure.caption.5}%
-\addvspace {10\p@ }
-\def \@chapapp {\appendixname }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Hàm mất mát flow matching trên tập xác thực theo số bước huấn luyện ở đợt pilot lịch sử. Hai chế độ có và bỏ bộ nhớ được đo trên cùng checkpoint ở mỗi bước.}}{39}{figure.caption.4}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Tỷ lệ thành công trên T1 và T3 theo giao thức của khóa luận. Mỗi cột biểu diễn 10 quỹ đạo. Hai tác vụ dùng chung các nhóm trạng thái khởi tạo và cùng một hạt giống chính sách.}}{41}{figure.caption.5}%
 \addvspace {10\p@ }
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 
