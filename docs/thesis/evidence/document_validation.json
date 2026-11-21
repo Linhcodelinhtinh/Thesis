@@ -1,15 +1,15 @@
 {
-  "status": "DRAFT_PDF_BUILT_VISUALLY_REVIEWED",
+  "status": "DRAFT_SOURCE_UPDATED_PDF_STALE_BUILD_BLOCKED",
   "citations": 30,
   "labels": 33,
   "chapters": 5,
-  "claim_ledger_claims": 18,
-  "claim_ledger_sources": 162,
+  "claim_ledger_claims": 20,
+  "claim_ledger_sources": 185,
   "abstract_sha256": "136ce3f69b5b671e2e2bbe7dc87a762ed5cc9230a326b80dff1a48c8c1dc476e",
   "pdf_pages": 51,
-  "pdf_sha256": "b4263cf2578bf2459e8f3dec86548a5bde95e778ab8760e5e9da726af13543fc",
-  "pdf_visual_review": "Current on-disk PDF rendered and inspected on physical pages 43-46 (printed pages 32-35): E2/B0/D2 results, successful D2 video crop, E6 table, and conclusion. No clipping or overlap observed in these pages.",
-  "note": "Full XeLaTeX/BibTeX build succeeded. Abstract SHA-256 matches the author checksum. No tests were run.",
+  "pdf_sha256": "2715e546d4cf46c5ecf2aa91c463d5e96670299aea0f2d0336294e9bc62b1e41",
+  "pdf_visual_review": "The on-disk PDF remains SHA-256 2715e546d4cf46c5ecf2aa91c463d5e96670299aea0f2d0336294e9bc62b1e41 (51 pages), previously rendered and inspected on physical pages 43–46 before the latest source edits. The D2 table and freshness paragraph edits are not present in that PDF and have not been visually reviewed. Rebuild attempts failed: terminal MiKTeX stopped during first-use setup; the built-in compiler could not find TeX Gyre Heros. The output PDF was not replaced.",
+  "note": "Thesis source and evidence ledger updated with the D2 requery evidence-ID freshness audit. The current output PDF is stale because the local TeX toolchain could not complete a build (MiKTeX first-use setup failure; built-in compiler missing TeX Gyre Heros). No tests were run.",
   "built_at": "2026-11-21",
   "citation_commands": 57
 }

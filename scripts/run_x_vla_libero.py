@@ -47,8 +47,20 @@ def load_upstream(path):
     return module
 
 
+def verify_adapter(adapter, manifest):
+    """Check an exported F0/F1 PEFT adapter against the pinned base checkpoint and its own hashes."""
+    export = yaml.safe_load((adapter / "export_manifest.json").read_text(encoding="utf-8"))
+    if export.get("base_revision") != manifest["revision"] or export.get("xvla_commit") != manifest["code_revision"]:
+        raise RuntimeError(f"Adapter {adapter} was trained on another base/code revision: "
+                           f"{export.get('base_revision')} / {export.get('xvla_commit')}")
+    for name in ("adapter_config.json", "adapter_model.safetensors"):
+        if name not in export.get("files", {}) or sha256_file(adapter / name) != export["files"][name]:
+            raise RuntimeError(f"Adapter file missing or SHA-256 mismatch: {adapter / name}")
+    return export
+
+
 @contextmanager
-def start_server(python, checkout, checkpoint, output, port, timeout):
+def start_server(python, checkout, checkpoint, output, port, timeout, adapter=None):
     import requests
 
     with socket.socket() as sock:
@@ -68,7 +80,7 @@ def start_server(python, checkout, checkpoint, output, port, timeout):
         proc = subprocess.Popen(
             [str(python), "-c", launch, "--model_path", str(checkpoint), "--device", "cuda",
              "--host", "127.0.0.1", "--port", str(port), "--disable_slurm",
-             "--output_dir", str(output / "server")],
+             "--output_dir", str(output / "server")] + (["--LoRA_path", str(adapter)] if adapter else []),
             cwd=checkout, env=server_env, stdout=log, stderr=subprocess.STDOUT,
         )
         try:
@@ -79,7 +91,8 @@ def start_server(python, checkout, checkpoint, output, port, timeout):
                         response = requests.get(f"http://127.0.0.1:{port}/openapi.json", timeout=1)
                         if response.ok and "/act" in response.json()["paths"]:
                             startup = (output / "server.log").read_text(encoding="utf-8", errors="replace")
-                            if "Processor loaded successfully" not in startup or "newly initialized" in startup:
+                            if ("Processor loaded successfully" not in startup or "newly initialized" in startup
+                                    or (adapter and "LoRA weights applied successfully" not in startup)):
                                 raise RuntimeError(f"X-VLA failed model or processor verification. See {output / 'server.log'}")
                             break
                     except requests.RequestException:
@@ -106,6 +119,9 @@ def parse_args():
     parser.add_argument("--seed", type=int, default=42, help="Author's simulator seed base")
     parser.add_argument("--checkpoint", type=Path, help="Local copy of the pinned X-VLA snapshot")
     parser.add_argument("--inference-python", type=Path)
+    parser.add_argument("--adapter", type=Path, help="Exported X-VLA PEFT adapter (F0/F1) with export_manifest.json")
+    parser.add_argument("--arm", choices=("B0", "F0", "F1-off"), default="B0",
+                        help="Label only. LIBERO suites always receive the plain instruction, so F1 here is F1-off")
     parser.add_argument("--preflight-only", action="store_true", help="Validate resources and render one reset")
     parser.add_argument("--output-dir", required=True, type=Path, help="New directory for this run")
     parser.add_argument("--port", type=int, default=8000)
@@ -116,6 +132,8 @@ def parse_args():
     for ids, bound in ((args.task_ids, 10), (args.initial_state_ids, 50)):
         if ids is not None and (len(set(ids)) != len(ids) or any(i < 0 or i >= bound for i in ids)):
             parser.error(f"IDs must be unique and belong to 0..{bound - 1}")
+    if (args.arm == "B0") != (args.adapter is None):
+        parser.error("--arm B0 runs without --adapter; F0/F1-off require --adapter")
     if not 1 <= args.port <= 65535 or not 0 < args.timeout < float("inf"):
         parser.error("Expected a valid TCP port and a finite positive timeout")
     return args
@@ -129,6 +147,9 @@ def main():
     for name, expected in manifest["sha256"].items():
         if sha256_file(checkpoint / name) != expected:
             raise RuntimeError(f"X-VLA checkpoint SHA-256 mismatch for {checkpoint / name}")
+
+    adapter = args.adapter.resolve() if args.adapter else None
+    adapter_export = verify_adapter(adapter, manifest) if adapter else None
 
     upstream_path = ROOT / "external" / "X-VLA"
     libero_path = ROOT / "external" / "LIBERO"
@@ -158,6 +179,9 @@ def main():
         "libero_revision": LIBERO_REVISION,
         "model": manifest,
         "checkpoint_path": str(checkpoint),
+        "arm": args.arm,
+        "adapter_path": str(adapter) if adapter else None,
+        "adapter_export": adapter_export,
         "suite": args.suite,
         "task_ids": task_ids,
         "initial_state_ids": state_ids,
@@ -190,7 +214,8 @@ def main():
 
     policy = make_client(upstream, args.port, args.timeout)
     summaries = []
-    with start_server(args.inference_python.absolute(), upstream_path, checkpoint, output, args.port, args.timeout):
+    with start_server(args.inference_python.absolute(), upstream_path, checkpoint, output, args.port, args.timeout,
+                      adapter=adapter):
         for task_id in task_ids:
             successes = 0
             for state_id in state_ids:

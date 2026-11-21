@@ -4,8 +4,11 @@
   "base_checkpoint": "2toINF/X-VLA-Libero",
   "base_checkpoint_revision": "129e71460678b7236cee6fc9707f09d9fa0c3590",
   "required_base_tasks": 10,
-  "mem_tasks": ["T1", "T3"],
-  "memory_source": "predicted_rgb_v3",
+  "mem_tasks": [
+    "T1",
+    "T3"
+  ],
+  "memory_source": "predicted_rgb_relations_v1",
   "condition": "memory",
   "adaptation": "lora_peft",
   "lora_rank": 8,
@@ -21,5 +24,8 @@
   "steps": 5000,
   "effective_batch_size": 32,
   "base_fraction": 0.5,
-  "save_every": 500
+  "save_every": 500,
+  "status": "SUPERSEDED",
+  "superseded_by": "configs/training/xvla_mem_adapter_v2.json",
+  "superseded_reason": "memory_source label corrected to the V2 shard writer (Relation V1); LR schedule re-chosen for X-VLA size in v2"
 }

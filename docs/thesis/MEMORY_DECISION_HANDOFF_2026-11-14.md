@@ -15,7 +15,7 @@ Giao thức development áp dụng cho F1 trên T1/T3 với khóa seen v2. Giữ
 |---|---|---|
 | D0 | Replay offline trên demo/trace mẫu; query và wall-clock đã đo thực tế trong D2 | Chưa có nhãn độc lập về đúng/sai quyết định hoặc điểm commit; replay không đổi hành động |
 | D1 | Text/shadow parity chính xác trên 2 cặp T1/T3 seen state 0; prompt, query, action và chunk khớp | Hoàn tất plumbing/parity; chưa có nhãn điểm commit và không đo lợi ích của trigger |
-| D2 | Hoàn tất 24 cặp shadow/event closed loop trên T1/T3 seen states 0–11. Event phát 56 requery có event ID và evidence ID trong 22/24 episode; cả hai arm thành công 1/24 | Không cho thấy cải thiện SR; calibration states 12–19 dừng ở preflight do writer source hash mismatch, 0 episode. Cần khôi phục provenance, rồi mới chạy thêm/confirmatory roster và nhiều seed |
+| D2 | Hoàn tất 24 cặp shadow/event closed loop trên T1/T3 seen states 0–11. Event phát 56 requery trong 22/24 episode; 41 thêm evidence ID mới, 15 chỉ gắn `History incomplete` và giữ ID cũ. Cả hai arm thành công 1/24 | Không cho thấy cải thiện SR; độ mới ID chưa phải đánh giá đúng/sai. Calibration states 12–19 dừng ở preflight do writer source hash mismatch, 0 episode. Cần khôi phục provenance, rồi mới chạy thêm/confirmatory roster và nhiều seed |
 | D3 | Rule probe offline ba giá trị cho intent start/finish và xử lý evidence bất hợp lệ | Thiếu nhãn độc lập target/effect/intent và reader chunk đã hiệu chuẩn; chưa cấp quyền reject trong runner |
 | D4 | Contract chunk đơn và trace từng action đã xác định | Phụ thuộc D3; còn thiếu candidate recall và parity queue/cache/RNG trước khi bật chọn nhiều chunk |
 | D5 | T7–T10 writer/source diagnostics và author-action replay upstream đã chạy; T9/T10 terminal success, T8 không terminal và robot-state drift đầu ở bước 219 | Chưa có nhãn blind identity/containment, T8 discrepancy chưa giải thích, và chưa có protocol policy closed loop riêng |
@@ -60,11 +60,11 @@ Mỗi dòng JSONL gắn `task`, `initial_state_sha256`, `policy_seed`, `decision
 
 ### Điều kiện mở lại các gap
 
-- D2 đã xác nhận event requery có evidence trong closed loop; để kiểm efficacy cần roster xác nhận khóa trước, nhiều seed và cùng protocol/compute.
+- D2 đã xác nhận event requery có evidence trong closed loop; 41/56 quyết định thêm ID evidence mới, 15/56 giữ ID cũ và chỉ ghi `History incomplete`. Để kiểm efficacy cần roster xác nhận khóa trước, nhiều seed và cùng protocol/compute.
 - D3/D5 đã có đối chiếu offline `bowl_1.returns`–evaluator trên 48 trace D2: endpoint khớp event T1 10/12, T3 8/12, shadow T1 6/12, T3 10/12. Đây là cycle-count alignment mô tả, không phải blind writer accuracy.
 - D3–D4 vẫn cần nhãn độc lập intent/target/effect, reader chunk đã hiệu chuẩn, rồi mới đánh giá reject, candidate recall và parity queue/cache/RNG.
 - D5–D6 vẫn cần nhãn blind identity/relation/containment, làm rõ sai khác terminal T8, và trace đã gán nhãn trước khi kiểm lỗi quyết định.
-- E3 đã có fixed-trace renderer sweep trên 24 episode D2 (2.397 query; exact replay ở 48 token), chưa đo action/SR tại budget thấp. E4 đã có một diagnostic delay một query tại D2 state7 q142: exact replay control khớp 1.000/1.000 action và success; nhánh trì hoãn memory một query 0/1 success sau prefix khớp 142/142. Các mức delay, noise/corruption, labels và risk–coverage vẫn thiếu. E5 cũng còn incomplete: case này chỉ một state; state16 có tám nhánh và tất cả overshoot, còn fact-changing/fact-preserving và C0/L0 controls trên roster rộng chưa chạy.
+- E3 đã có fixed-trace renderer sweep trên 24 episode D2 (2.397 query; exact replay ở 48 token), chưa đo action/SR tại budget thấp. E4/E5 đã có exact-replay control và one-query memory suppression trên hai success states: state7 q142 (prefix 142/142; suppression 0/1 success) và state5 q10 (prefix 10/10; suppression 0/1 success). Đây vẫn là hai single-state counterfactuals; các mức delay, noise/corruption, labels, risk–coverage và roster rộng còn thiếu. State16 có tám prompt branches và đều overshoot; fact-changing/fact-preserving cùng C0/L0 controls trên roster rộng chưa chạy.
 - Derived v1 cần exact perception source snapshot ghi trong export hoặc một export mới có provenance khớp. Preflight 21/11 dừng trước rollout với 0 episode; không bỏ qua mismatch hash.
 
 Lệnh development bên dưới được giữ để truy xuất cách gọi runner cũ; trạng thái và kết quả thực tế mới nhất xem trong bảng D0–D6 ở đầu tài liệu và [sổ trạng thái](STATUS_AND_CLAIMS.md).

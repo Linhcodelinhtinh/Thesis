@@ -1,0 +1,68 @@
+{
+ "status": "complete",
+ "split_lock_sha256": "x",
+ "source_manifest_sha256": "ca281ca4657c86932360d626c3f677d68f9c8d6ebe67405055f7fbdfdf6d005a",
+ "memory_source": null,
+ "rot_frame": "panda_rz_m90",
+ "train_episodes": {
+  "base": 2,
+  "mem": 2
+ },
+ "frames": {
+  "base": 127,
+  "mem": 127
+ },
+ "sampler_frames": {
+  "shown_with_memory": 105,
+  "shown_total_base": 107,
+  "shown_total_mem": 107
+ },
+ "zero_rotation_rows": 0,
+ "clipped_rows": 0,
+ "tracking": {
+  "base": {
+   "pos_track_median_m": {
+    "median": 0.21870233083705415,
+    "max": 0.2251031405924696
+   },
+   "pos_track_p95_m": {
+    "median": 0.3675638434275664,
+    "max": 0.3755332622588451
+   },
+   "rot_track_median_deg": {
+    "median": 44.272961653903714,
+    "max": 47.856793239639
+   },
+   "rot_track_p95_deg": {
+    "median": 73.37562190537287,
+    "max": 75.78892542212552
+   }
+  },
+  "mem": {
+   "pos_track_median_m": {
+    "median": 0.1962401533078692,
+    "max": 0.21964131994802505
+   },
+   "pos_track_p95_m": {
+    "median": 0.3856957344420575,
+    "max": 0.3879370870693767
+   },
+   "rot_track_median_deg": {
+    "median": 44.636065503691455,
+    "max": 44.977105637340856
+   },
+   "rot_track_p95_deg": {
+    "median": 75.78303215639458,
+    "max": 75.79242305945226
+   }
+  }
+ },
+ "token_check": null,
+ "actions_h5_sha256": "6601cce4ee8ae0e4f6c1c575f76e1544d903d14cff5ed4cf24fd917fdb415e93",
+ "code_sha256": {
+  "abs_actions.py": "3636b39fa09f7ddb36d8872cdec7005f6f837f1ee4a2c4fb4e3c4f17efd5964a",
+  "shard_handler.py": "99223373286ba953b3260bc1eb988853b2b9c62ac32aeb7d4358a9b48303dd4c",
+  "build_xvla_v2_dataset.py": "82b3c38969907768c8fbd2a3152e124fea7a90b2001efe345eb92a11c06907b8"
+ },
+ "note": "Analytic goals; confirm frame/offset with check_xvla_alignment.py (and optionally sim replay)"
+}

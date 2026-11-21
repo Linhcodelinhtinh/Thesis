@@ -47,7 +47,7 @@
     {
       "id": "open-policy-gate",
       "state": "artifact_verified",
-      "scope": "Matched V2 F0/F1 E2 unseen evaluation, separate one-state event pilot, offline E2 shadow replay, and completed 24-pair D2 shadow/event development cohort on seen T1/T3 states.",
+      "scope": "Matched V2 F0/F1 E2 unseen evaluation, separate one-state event pilot, offline E2 shadow replay, and completed 24-pair D2 shadow/event development cohort on seen T1/T3 states and a descriptive audit of evidence-ID freshness for its 56 event requeries.",
       "evidence_source_ids": [
         "closed_loop_case_provenance",
         "d2_dev12_analyzer",
@@ -70,9 +70,12 @@
         "t1_e2_f1_case_observations",
         "t3_e2_f0_case_observations",
         "v2_alignment",
-        "v2_split_lock"
+        "v2_split_lock",
+        "d2_requery_freshness_receipt",
+        "d2_requery_freshness_report",
+        "d2_requery_freshness_summary"
       ],
-      "permitted_wording": "E2 used fixed 10-action queries and did not evaluate evidence-triggered exploration. The separate D2 seen-development cohort completed 24 paired episodes per arm with matching initial-state hashes. Event mode issued 56 evidence-backed requeries in 22/24 episodes; shadow issued none. Both arms succeeded 1/24; paired SR difference was zero and mean SCR difference was +0.056 with a state-group bootstrap 95% interval [-0.125, 0.250]. This confirms closed-loop event activation but does not establish an efficacy benefit. The offline E2 replay reconstructed 3,969/3,969 prompts and flagged candidates on fixed trajectories without issuing queries or changing actions. None of these results is an official LIBERO score.",
+      "permitted_wording": "E2 used fixed 10-action queries and did not evaluate evidence-triggered exploration. The separate D2 seen-development cohort completed 24 paired episodes per arm with matching initial-state hashes. Event mode issued 56 logged requeries in 22/24 episodes; all 56 resulting facts carried an evidence ID, but only 41/56 decisions added new evidence IDs. The remaining 15 only appended “History incomplete.” to the prior bowl fact and retained IDs from observations 0–2; their evidence age had median 73 actions and range 32–758. No evidence-age threshold or decision-correctness labels were predeclared. Shadow issued no early requery. Both arms succeeded 1/24; paired SR difference was zero and mean SCR difference was +0.056 with a state-group bootstrap 95% interval [-0.125, 0.250]. This confirms closed-loop event activation but does not establish an efficacy benefit. The offline E2 replay reconstructed 3,969/3,969 prompts and flagged candidates on fixed trajectories without issuing queries or changing actions. None of these results is an official LIBERO score.",
       "prohibited_wording": "Claiming that memory or event-triggered retrieval improves task success; claiming that E2 tests active evidence-triggered exploration; treating the one-state event/periodic pilot as an efficacy estimate; treating offline replay candidates as actual re-queries or changed actions; or presenting these custom runs as official LIBERO scores."
     },
     {
@@ -300,6 +303,48 @@
       ],
       "permitted_wording": "At episode end, memory return counts exactly matched evaluator confirmed-cycle counts in event T1 10/12, event T3 8/12, shadow T1 6/12, and shadow T3 10/12. Across these traces, the comparison is descriptive only: no predeclared timing tolerance or blind identity/relation/intent labels were used, so these counts are not writer accuracy or FP/FN rates.",
       "prohibited_wording": "Do not call endpoint agreement writer accuracy, infer identity/relation correctness or FP/FN rates, or generalize beyond the logged T1/T3 D2 cohort."
+    },
+    {
+      "id": "d2-second-success-query-single-case-intervention",
+      "state": "artifact_verified",
+      "scope": "One T1 seen-development state-5 D2 shadow trajectory, policy seed 42, intervention at query step 10; one exact-prompt replay control and one branch removing the evidence-backed initial bowl-return fact for that query only.",
+      "evidence_source_ids": [
+        "d2_dev12_shadow_manifest",
+        "d2_state5_intervention_receipt",
+        "d2_state5_intervention_report",
+        "d2_state5_intervention_summary",
+        "d2_state5_intervention_manifest",
+        "d2_state5_intervention_script",
+        "d2_state5_control_status",
+        "d2_state5_suppression_status",
+        "d2_state5_source_status",
+        "d2_state5_source_summary",
+        "d2_state5_source_queries",
+        "d2_state5_source_actions",
+        "d2_state5_source_observations",
+        "d2_state5_control_video",
+        "d2_state5_intervention_code_snapshot",
+        "d2_state5_intervention_code_patch",
+        "d2_state5_intervention_adapter_manifest",
+        "d2_state5_intervention_split_lock"
+      ],
+      "permitted_wording": "On this second successful state, the exact-prompt shadow-mode rerun reproduced all 1000/1000 source actions and succeeded. Removing the evidence-backed “bowl: 0 observed returns” fact at query 10 changed the action chunk (first-action L2 0.1504) after an exact 10/10 action prefix; the branch then completed 0/1 subgoals (SCR 0) at 1000 steps. This is a second single-state diagnostic, not a population-level efficacy estimate.",
+      "prohibited_wording": "Do not generalize the two successful-state counterfactuals to population-level memory efficacy, call them official LIBERO scores, or claim identity/relation accuracy."
+    },
+    {
+      "id": "d2-requery-evidence-freshness",
+      "state": "artifact_verified",
+      "scope": "Descriptive evidence-ID comparison in 56 event-mode requeries from the 24-episode D2 seen T1/T3 development cohort; evidence-age values use query step minus one and the largest referenced RGB/gripper observation index.",
+      "evidence_source_ids": [
+        "d2_requery_freshness_receipt",
+        "d2_requery_freshness_report",
+        "d2_requery_freshness_summary",
+        "d2_requery_freshness_per_requery",
+        "d2_requery_freshness_episode_summary",
+        "d2_requery_freshness_script"
+      ],
+      "permitted_wording": "All 56 D2 event requery facts carried an evidence ID; 41 decisions added new evidence IDs. Fifteen only appended “History incomplete.” and retained nine IDs from observations 0–2; those IDs had median age 73 actions (range 32–758). No predeclared age threshold or correctness labels were used, so this describes logged provenance freshness and does not estimate decision accuracy or efficacy.",
+      "prohibited_wording": "Do not call evidence-ID presence evidence correctness, claim that carried evidence was fresh or stale under a validated threshold, infer writer/decision accuracy, or claim causal policy benefit from this descriptive audit."
     }
   ],
   "sources": [
@@ -1238,6 +1283,144 @@
       "path": "src/evaluation/libero_mem_rollout.py",
       "sha256": "c8c4c056904d20c5a61a0119f06c03bea2383659f0c64f23ff110f103079cd31",
       "description": "Rollout trace writer for evaluation metrics; hash matches the D2 run source inventory."
+    },
+    {
+      "id": "d2_state5_intervention_receipt",
+      "path": "experiments/evaluation/d2_state5_prompt_intervention_20261121_retry/receipt.json",
+      "sha256": "2b850a2043603e31ae0ef231c0dd3a9b674d007e347541e0de0a2920aae703e3",
+      "description": "Receipt and post-run hash verification for the T1 state-5 query-10 counterfactual."
+    },
+    {
+      "id": "d2_state5_intervention_report",
+      "path": "experiments/evaluation/d2_state5_prompt_intervention_20261121_retry/report.md",
+      "sha256": "dad6f2c714c30fcee80f9eb54e57663538bc336562956b91b76f91600e6d3c25",
+      "description": "Report for the second successful-state one-query memory intervention."
+    },
+    {
+      "id": "d2_state5_intervention_summary",
+      "path": "experiments/evaluation/d2_state5_prompt_intervention_20261121_retry/counterfactual_summary.json",
+      "sha256": "973bc98fb6f116ca2c010b9db722cc8939da52e36baaadbb2852913fd1c9a643",
+      "description": "Full-horizon outcomes and action comparisons for the two T1 state-5 branches."
+    },
+    {
+      "id": "d2_state5_intervention_manifest",
+      "path": "experiments/evaluation/d2_state5_prompt_intervention_20261121_retry/run_manifest.json",
+      "sha256": "bce2df8e73f07a028465a7e6952bd9dd54ca7654b54927ad01ee196389e80984",
+      "description": "Completed run manifest with checkpoint, protocol, split, environment and source identity."
+    },
+    {
+      "id": "d2_state5_intervention_script",
+      "path": "scripts/audit_d2_state5_prompt_intervention.py",
+      "sha256": "6d679d95c73ba71424a19695b31178b3413ee66111395733efbbc853db552fd8",
+      "description": "Runner for the state-5 query-10 one-query intervention."
+    },
+    {
+      "id": "d2_state5_control_status",
+      "path": "experiments/evaluation/d2_state5_prompt_intervention_20261121_retry/episodes/T1_F1_seen_state5_q10_F1-original/status.json",
+      "sha256": "0503fdc34e63e6cd01f77547f653a65e2f4873eda25900639f5c2eda0870e92e",
+      "description": "Artifact hash status for the exact-prompt state-5 replay control."
+    },
+    {
+      "id": "d2_state5_suppression_status",
+      "path": "experiments/evaluation/d2_state5_prompt_intervention_20261121_retry/episodes/T1_F1_seen_state5_q10_F1-off-one-query/status.json",
+      "sha256": "e0781b0778aeb6c4bccac8ee85245656c7a0e63bb6c62ff1a642067b13e3f036",
+      "description": "Artifact hash status for the state-5 branch with memory text suppressed at query 10."
+    },
+    {
+      "id": "d2_state5_source_status",
+      "path": "experiments/evaluation/decision_shadow_dev12_t1_t3_20261120_wsl/episodes/T1_F1_seen_state5/status.json",
+      "sha256": "959e47e7bb6fc6cbe7d1f76897b9dd6082117676aa23b42323ec56a43f03ac9d",
+      "description": "Artifact hash status for the original successful D2 state-5 shadow episode."
+    },
+    {
+      "id": "d2_state5_source_summary",
+      "path": "experiments/evaluation/decision_shadow_dev12_t1_t3_20261120_wsl/episodes/T1_F1_seen_state5/summary.json",
+      "sha256": "d841f02fd551ab6bc6c4ff4d6385a8a5d55b05157d7b4e44b2618352ca0529ae",
+      "description": "Original successful D2 state-5 episode outcome and locked state identity."
+    },
+    {
+      "id": "d2_state5_source_queries",
+      "path": "experiments/evaluation/decision_shadow_dev12_t1_t3_20261120_wsl/episodes/T1_F1_seen_state5/queries.jsonl",
+      "sha256": "437f2ddcd97e6272be9379a52f252fb5d701b3ad0c01a0d87e9a01c775ec6feb",
+      "description": "Original D2 state-5 prompt trace showing the evidence-backed memory fact at query 10."
+    },
+    {
+      "id": "d2_state5_source_actions",
+      "path": "experiments/evaluation/decision_shadow_dev12_t1_t3_20261120_wsl/episodes/T1_F1_seen_state5/actions.jsonl",
+      "sha256": "b3446341af43e9b1c0f94b6a776d54f19c48474ea7ea7066b965f11e2fde9caf",
+      "description": "Original D2 state-5 action trace used for exact prefix and replay comparisons."
+    },
+    {
+      "id": "d2_state5_source_observations",
+      "path": "experiments/evaluation/decision_shadow_dev12_t1_t3_20261120_wsl/episodes/T1_F1_seen_state5/observations.jsonl",
+      "sha256": "6f547a4edea2b0c177df1cce988aae76047510425bc5a2520457a471ceebb6ad",
+      "description": "Original D2 state-5 RGB observation hashes used for prefix verification."
+    },
+    {
+      "id": "d2_state5_control_video",
+      "path": "experiments/evaluation/d2_state5_prompt_intervention_20261121_retry/episodes/T1_F1_seen_state5_q10_F1-original/agentview_image.mp4",
+      "sha256": "58df50b075acb469fa21aa439b9417f52e34e0affb8ca4277787efe93ab8d5aa",
+      "description": "Saved video from the successful exact-prompt state-5 control branch."
+    },
+    {
+      "id": "d2_state5_intervention_code_snapshot",
+      "path": "experiments/evaluation/d2_state5_prompt_intervention_20261121_retry/code_snapshot.zip",
+      "sha256": "23cb7aff78478e545d78dc29bdf7578baaae58d04bae1a42dbae33ac5ca297a5",
+      "description": "Code snapshot captured for the state-5 intervention run."
+    },
+    {
+      "id": "d2_state5_intervention_code_patch",
+      "path": "experiments/evaluation/d2_state5_prompt_intervention_20261121_retry/code.patch",
+      "sha256": "b4463592ab3306d25ab4cff2b6f3b994980e1457dc514ccf1ebc6723328b60ef",
+      "description": "Source diff captured for the state-5 intervention run."
+    },
+    {
+      "id": "d2_state5_intervention_adapter_manifest",
+      "path": "experiments/evaluation/d2_state5_prompt_intervention_20261121_retry/adapter_manifest_F1.json",
+      "sha256": "624136821e330abac7a9c0fbfe4d59fdad0b3c3ae53c62e98c7da49e36b69d9e",
+      "description": "Adapter manifest copied into the state-5 intervention run."
+    },
+    {
+      "id": "d2_state5_intervention_split_lock",
+      "path": "experiments/evaluation/d2_state5_prompt_intervention_20261121_retry/split.lock.json",
+      "sha256": "5bf5763449f9c866ffafa2be22749b2034a165c32e5757ddbbaa928f95273bce",
+      "description": "Sealed split-lock snapshot copied into the state-5 intervention run."
+    },
+    {
+      "id": "d2_requery_freshness_receipt",
+      "path": "experiments/evaluation/d2_requery_evidence_freshness_20261121_v2/receipt.json",
+      "sha256": "48d55c240a448fa2ced8908f872db786a50f66ad5d006839f14cbe9f88f944cf",
+      "description": "Receipt for the hash-verified descriptive D2 requery evidence freshness audit."
+    },
+    {
+      "id": "d2_requery_freshness_report",
+      "path": "experiments/evaluation/d2_requery_evidence_freshness_20261121_v2/report.md",
+      "sha256": "a46330fcc4ac1acaa109d9652dfe619e8904ddba1066969ca4a54c8cb29ebc73",
+      "description": "Report distinguishing carried evidence IDs from newly added IDs across 56 closed-loop D2 requeries."
+    },
+    {
+      "id": "d2_requery_freshness_summary",
+      "path": "experiments/evaluation/d2_requery_evidence_freshness_20261121_v2/summary.json",
+      "sha256": "2d1fdea711e051c727bf82dc5ea62b7d6f65a4098626022c323e93a520d9dc62",
+      "description": "Grouped D2 event requery evidence-ID freshness summary."
+    },
+    {
+      "id": "d2_requery_freshness_per_requery",
+      "path": "experiments/evaluation/d2_requery_evidence_freshness_20261121_v2/per_requery.jsonl",
+      "sha256": "0a423914eff4f12dd1f494c01bf1bd815e84abbbf893c99541a1e290223e7e57",
+      "description": "Decision-level evidence-ID additions and evidence-age calculations for all D2 requeries."
+    },
+    {
+      "id": "d2_requery_freshness_episode_summary",
+      "path": "experiments/evaluation/d2_requery_evidence_freshness_20261121_v2/episode_summary.jsonl",
+      "sha256": "6e44e875676c7ba642448f6325d5c65180f427cc2f09d101837002ba4202bedd",
+      "description": "Per-episode summary for the complete 24-episode D2 event cohort."
+    },
+    {
+      "id": "d2_requery_freshness_script",
+      "path": "scripts/analyze_d2_requery_evidence_freshness.py",
+      "sha256": "f7de524212cad560aa1b88d6a3baf9da50d2120a2dd311715d5826dec684718e",
+      "description": "Reproducible audit script verifying the D2 paired roster, source hashes, split lock, and evidence ages."
     }
   ]
 }

@@ -97,17 +97,18 @@ Trên 40 cặp E2, F1 đạt 0/40 thành công so với 4/40 của F0; chênh l�
 \caption{Kết quả D2 trên cohort phát triển T1/T3 (24 episode mỗi arm)}
 \label{tab:d2-decision-results}
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{lrrrrr}
+\begin{tabular}{lrrrrrr}
 \toprule
-\textbf{Arm} & \textbf{Thành công} & \textbf{Mean SCR} & \shortstack{\textbf{Query /}\\\textbf{episode}} & \shortstack{\textbf{Episode có}\\\textbf{requery}} & \shortstack{\textbf{Requery có}\\\textbf{evidence}} \\
+\textbf{Arm} & \textbf{Thành công} & \shortstack{\textbf{SCR}\\\textbf{trung bình}} & \shortstack{\textbf{Lần gọi VLA}\\\textbf{/lượt}} & \shortstack{\textbf{Lượt có}\\\textbf{gọi sớm}} & \shortstack{\textbf{Có mã}\\\textbf{evidence}} & \shortstack{\textbf{Thêm mã}\\\textbf{mới}} \\
 \midrule
-Shadow-projected & 1/24 & 0,111 & 97,17 & 0/24 & 0/0 \\
-Event-projected & 1/24 & 0,167 & 99,88 & 22/24 & 56/56 \\
+Shadow-projected & 1/24 & 0,111 & 97,17 & 0/24 & -- & -- \\
+Event-projected & 1/24 & 0,167 & 99,88 & 22/24 & 56/56 & 41/56 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Event mode thực sự kích hoạt truy vấn trong closed loop: cả 56 quyết định requery đều có event ID và evidence ID; hai episode không phát requery. Tuy vậy, tỷ lệ thành công ghép cặp không đổi (1/24 mỗi arm), chênh lệch SCR trung bình là $+0{,}056$ với khoảng bootstrap theo nhóm state 95\% từ $-0{,}125$ đến $0{,}250$. Các dữ liệu development này xác nhận đường kích hoạt và mô tả hành vi, chưa chứng minh cơ chế làm tăng hiệu quả. Trong cohort, lượt T1 state 7 của event đạt 1/1 mốc ở bước 409 và terminal success tại bước 1.000; shadow có một lượt T1 thành công ở state 5. Hai thành công nằm ở state khác nhau.
+% claim-id: d2-requery-evidence-freshness
+Event mode đã kích hoạt requery trong closed loop: cả 56 lần gọi sớm đều ghi mã evidence, nhưng chỉ 41 lần thêm ID mới. 15 lần còn lại chỉ gắn ``History incomplete'' vào fact bát và giữ 9 ID từ quan sát bước 0--2; tuổi evidence của chúng có median 73 hành động (32--758). Không có ngưỡng tuổi định trước, nên đây là mô tả độ mới trong log, không phải đánh giá đúng sai. Hai episode không phát requery. Hai chế độ đều đạt 1/24 success, nhưng ở hai state khác nhau; chênh lệch SCR trung bình là $+0{,}056$ với khoảng bootstrap theo nhóm state 95\% từ $-0{,}125$ đến $0{,}250$. Kết quả development xác nhận đường kích hoạt, chưa chứng minh lợi ích hiệu năng. Lượt T1 state 7 của event đạt mốc ở bước 409 và terminal success ở bước 1.000; shadow thành công ở state 5.
 
 \begin{figure}[htbp]
 \centering

@@ -1,0 +1,24 @@
+{
+ "dataset_name": "xvla_v2_f0_base",
+ "robot_type": "libero_v2_shard",
+ "prompt_mode": "instruction",
+ "shards_root": "D:\\Thesis_26\\scripts\\xvla_v2\\tests\\v2",
+ "actions_h5": "D:\\Thesis_26\\scripts\\xvla_v2\\tests\\out\\xvla_abs_actions_v2.h5",
+ "split_lock_sha256": "x",
+ "datalist": [
+  {
+   "shard": "shards/base__TASKB.hdf5",
+   "demo": "demo_0",
+   "domain": "base",
+   "task": "TASKB",
+   "length": 60
+  },
+  {
+   "shard": "shards/base__TASKB.hdf5",
+   "demo": "demo_1",
+   "domain": "base",
+   "task": "TASKB",
+   "length": 67
+  }
+ ]
+}

@@ -25,7 +25,7 @@
 \contentsline {subsection}{\numberline {4.1.2}Giao thức mô phỏng và chỉ số đánh giá}{31}{subsection.4.1.2}%
 \contentsline {section}{\numberline {4.2}Đối sánh vòng kín trên LIBERO-Mem}{32}{section.4.2}%
 \contentsline {section}{\numberline {4.3}Duyệt theo bằng chứng trong vòng kín}{33}{section.4.3}%
-\contentsline {section}{\numberline {4.4}Duy trì kỹ năng cơ sở trên LIBERO-10}{33}{section.4.4}%
+\contentsline {section}{\numberline {4.4}Duy trì kỹ năng cơ sở trên LIBERO-10}{34}{section.4.4}%
 \contentsline {chapter}{\numberline {5}Kết luận}{35}{chapter.5}%
 \contentsline {chapter}{Tài liệu tham khảo}{36}{section*.10}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

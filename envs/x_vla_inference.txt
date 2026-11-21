@@ -12,3 +12,4 @@ fastapi==0.115.12
 uvicorn==0.34.3
 safetensors==0.4.5
 accelerate==1.2.1
+peft==0.17.1  # load F0/F1 LoRA adapters via deploy.py --LoRA_path
