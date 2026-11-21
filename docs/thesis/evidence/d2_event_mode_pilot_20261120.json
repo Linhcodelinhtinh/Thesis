@@ -1,0 +1,210 @@
+{
+  "experiment_id": "D2-event-periodic-same-state-pilot-2026-11-20",
+  "status": "complete",
+  "stage": "development_only",
+  "classification": "CUSTOM_V2_LIBERO_MEM",
+  "comparability": "NON-COMPARABLE_OFFICIAL_PAPER",
+  "question": "Did the closed-loop runner activate an evidence-backed early requery in event mode?",
+  "protocol": {
+    "protocol_id": "libero_mem_decision_dev_v1",
+    "decision_mode": "event",
+    "decision_exposure": "projected",
+    "task": "T1",
+    "split": "seen",
+    "source_demo": "demo_1",
+    "state_idx": 0,
+    "initial_state_sha256": "7586850c6c9f89cb522e28c192350b33be6fd1ad7369d92c86d137aa33fe7beb",
+    "policy_seed": 42,
+    "max_policy_actions": 1000,
+    "writer": "rgb_relations_v1",
+    "writer_source_override": true,
+    "decision_mode_comparator": "periodic",
+    "parent_execution_horizon": 10,
+    "periodic_prefix_actions": 8,
+    "max_policy_queries": 125,
+    "periodic_query_budget_matched_to_event": false
+  },
+  "result": {
+    "success": false,
+    "completed_subgoals": 0,
+    "total_subgoals": 1,
+    "scr": 0.0,
+    "overshot": false,
+    "termination_reason": "horizon_reached",
+    "total_steps": 1000,
+    "policy_queries": 101,
+    "early_requeries": 1,
+    "triggered_checks": 1,
+    "first_trigger": {
+      "step": 3,
+      "query_id": 0,
+      "decision": "requery",
+      "reason": "semantic_change",
+      "prefix_actions": 3,
+      "fact": "bowl: 0 observed returns.",
+      "event_id": "T1_F1_seen_state0:0",
+      "evidence_available_at": 2,
+      "evidence_ids": [
+        "rgb:0:agentview_image:07d1ea43b0fbe5cf:0",
+        "rgb:0:agentview_image:07d1ea43b0fbe5cf:1",
+        "gripper:0",
+        "rgb:1:agentview_image:3b1251f005e7e2de:0",
+        "rgb:1:agentview_image:3b1251f005e7e2de:1",
+        "gripper:1",
+        "rgb:2:agentview_image:08777b4b24f897b9:0",
+        "rgb:2:agentview_image:08777b4b24f897b9:1",
+        "gripper:2"
+      ]
+    },
+    "timing": {
+      "episode_wall_time_s": 1144.0107683969995,
+      "mean_policy_query_ms": 642.4705490297011,
+      "policy_total_ms": 64889.52545199981,
+      "writer_total_ms": 926838.5889969926,
+      "supervisor_total_ms": 545.3507930028536,
+      "detector_calls": 1001
+    }
+  },
+  "periodic_comparator": {
+    "decision_mode": "periodic",
+    "same_task_state_and_seed": true,
+    "decision_exposure": "projected",
+    "success": false,
+    "completed_subgoals": 0,
+    "total_subgoals": 1,
+    "scr": 0.0,
+    "overshot": false,
+    "termination_reason": "horizon_reached",
+    "total_steps": 1000,
+    "policy_queries": 125,
+    "early_requeries": 0,
+    "episode_wall_time_s": 1229.745830637,
+    "mean_policy_query_ms": 730.6403001440411,
+    "policy_total_ms": 91330.0375180051,
+    "writer_total_ms": 977825.720621019,
+    "supervisor_total_ms": 0.0,
+    "detector_calls": 1001
+  },
+  "same_state_comparison": {
+    "event_policy_queries": 101,
+    "periodic_policy_queries": 125,
+    "event_minus_periodic_queries": -24,
+    "event_wall_time_s": 1144.0107683969995,
+    "periodic_wall_time_s": 1229.745830637,
+    "event_minus_periodic_wall_time_s": -85.7350622400004,
+    "event_wall_time_reduction_pct": 6.97177092241819,
+    "success_both_false": true,
+    "query_cadences": {
+      "event": "initial query at step 0; evidence-triggered requery at step 3; then 10-action intervals",
+      "periodic": "fixed 8-action intervals"
+    },
+    "interpretation": "Descriptive same-state/same-seed pair only. The schedules have different query cadence and actual query count, and the state/seed sample is one; this does not isolate the causal effect of the early trigger."
+  },
+  "interpretation": [
+    "The event supervisor activated once: a memory fact became available at observation 2 and caused a requery after three executed actions at step 3.",
+    "The event and fixed-period episodes both completed 1000 actions with no completed subgoal; neither is a success.",
+    "The event arm used 101 queries (one early requery); the periodic arm used 125 queries. Their schedules were not query-budget matched: event used a 10-action horizon after its early trigger, while periodic used an 8-action prefix.",
+    "This is one same-state/same-seed descriptive pair with a logged writer-source override. It verifies event activation and trace provenance, but does not isolate event timing or establish a performance benefit.",
+    "The run is not an official LIBERO score and is kept out of the main efficacy comparison."
+  ],
+  "video": {
+    "path": "experiments/evaluation/decision_evidence_event_t1_20261120_wsl/episodes/T1_F1_seen_state0/agentview_image.mp4",
+    "sha256": "fa7f398b884bb4f582bb7034c2def2a633f2f47db8e36f0b6fc7b730ef98e2a6",
+    "codec": "h264",
+    "width": 256,
+    "height": 256,
+    "fps": "20/1",
+    "duration_s": 50.05,
+    "frame_files": [
+      {
+        "path": "experiments/evaluation/decision_evidence_event_t1_20261120_wsl/analysis/frame_000015.png",
+        "sha256": "ebe976b8af3f7460da2911ff86880c4a15e7fe1b4f2ada4e77925cb22bf6ddf1",
+        "video_time_s": 15
+      },
+      {
+        "path": "experiments/evaluation/decision_evidence_event_t1_20261120_wsl/analysis/frame_000050.png",
+        "sha256": "4c365fa21f7c3b85b809aed8c78cca6a43e00c1250d64d129abb8325b9f9878f",
+        "video_time_s": 50
+      }
+    ]
+  },
+  "periodic_video": {
+    "path": "experiments/evaluation/decision_evidence_periodic_control_t1_20261120_wsl/episodes/T1_F1_seen_state0/agentview_image.mp4",
+    "sha256": "a6e90d288fbd3ba4d2d5a765e910479e18dd6d096a1a632472ac6edc2fcada57",
+    "codec": "h264",
+    "width": 256,
+    "height": 256,
+    "fps": "20/1",
+    "duration_s": 50.05,
+    "frame_files": [
+      {
+        "path": "experiments/evaluation/decision_evidence_periodic_control_t1_20261120_wsl/analysis/frame_000015.png",
+        "sha256": "d17a5e56f9d615067597ba790ed2e4f844e6f7c634d5e6eb0144ef9b72601c6f",
+        "video_time_s": 15
+      },
+      {
+        "path": "experiments/evaluation/decision_evidence_periodic_control_t1_20261120_wsl/analysis/frame_000050.png",
+        "sha256": "d2a6ae7ef63569815440ce1220c80c32df672bb718a49123f59141deceab8426",
+        "video_time_s": 50
+      }
+    ]
+  },
+  "provenance_files": [
+    {
+      "path": "experiments/evaluation/decision_evidence_event_t1_20261120_wsl/run_manifest.json",
+      "sha256": "ae59441e94945e9410400319191dacf6ef069c4d21471f18e4c943bfa5c5d06b"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_event_t1_20261120_wsl/adapter_manifest_F1.json",
+      "sha256": "624136821e330abac7a9c0fbfe4d59fdad0b3c3ae53c62e98c7da49e36b69d9e"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_event_t1_20261120_wsl/summary.csv",
+      "sha256": "79ce38c0f8e7ea8f17041949afd867f56824d4d2c10339e726d1aaaf794d5741"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_event_t1_20261120_wsl/episodes/T1_F1_seen_state0/status.json",
+      "sha256": "39565d2fb0bcf8074304abd333d8729ed94744deb0c3cbb6d2744e1c262f4d24"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_event_t1_20261120_wsl/episodes/T1_F1_seen_state0/summary.json",
+      "sha256": "2fc07eec5668cb22775c2fced6f485badfafa9ada2296570de6c18c7d1f5e64d"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_event_t1_20261120_wsl/episodes/T1_F1_seen_state0/decisions.jsonl",
+      "sha256": "f80526abd92920e77ea7438d983957ad2eef108763fc4175a3494f3441403a36"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_event_t1_20261120_wsl/episodes/T1_F1_seen_state0/memory_trace.jsonl",
+      "sha256": "7002a83e7618960798793859c719ccee38bbb94959f3afa436f9d1788c0356b4"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_periodic_control_t1_20261120_wsl/run_manifest.json",
+      "sha256": "6a08f3d7e4fedcdf1f2e614bf42e2c302d24313dbfbe79bce6421aaf8c4d2381"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_periodic_control_t1_20261120_wsl/summary.csv",
+      "sha256": "ea0c16c2aadcb965d34fb8d29e8c7d9ba4f245c15f29c89288e836434a86a4c1"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_periodic_control_t1_20261120_wsl/episodes/T1_F1_seen_state0/status.json",
+      "sha256": "c9077363dfdccb17cf992ae946eb54c3e1687085c0b3cfb5ca26dd67e72b2930"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_periodic_control_t1_20261120_wsl/episodes/T1_F1_seen_state0/summary.json",
+      "sha256": "3afad44362dcbde5c6e7914eb734adde2276a972a9ae9eb276dafe06f6971ff8"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_periodic_control_t1_20261120_wsl/episodes/T1_F1_seen_state0/actions.jsonl",
+      "sha256": "4322d50d60dab5b10654af661fe4ffdc67a05b14b2061f9c878a8fe7a0935ff6"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_periodic_control_t1_20261120_wsl/episodes/T1_F1_seen_state0/queries.jsonl",
+      "sha256": "20e5eedce864920155838146802465667c645d583966dc9006df67b029aac892"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_periodic_control_t1_20261120_wsl/episodes/T1_F1_seen_state0/memory_trace.jsonl",
+      "sha256": "24b837e1a7761372e15f46196c5d8a2e82e2e74af13008f3d161ce008acbf068"
+    }
+  ]
+}

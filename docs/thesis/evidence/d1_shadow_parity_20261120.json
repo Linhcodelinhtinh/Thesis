@@ -1,0 +1,234 @@
+{
+  "experiment_id": "D1-text-shadow-parity-2026-11-20",
+  "status": "complete",
+  "stage": "development_only",
+  "classification": "DECISION_DEVELOPMENT_CUSTOM_V2",
+  "comparability": "NON-COMPARABLE_OFFICIAL_PAPER",
+  "question": "Does projected shadow observation preserve text-arm prompts and actions while logging evidence-backed semantic changes?",
+  "source_differences": [
+    {
+      "path": "scripts/run_benchmark.py",
+      "text_sha256": "61ab4c4e101c3f52e184eed4147dcafba18a1510924cece652e5be7d50c12377",
+      "shadow_sha256": "33f85f6a1d3ab3098234323f54cbf2dde1175237dc6f8d101f7c92771ebf083a",
+      "impact": "Unrelated run_benchmark CLI change; D1 entrypoint is evaluate_mem_adapter.py."
+    }
+  ],
+  "provenance": {
+    "adapter_manifest_sha256": "624136821e330abac7a9c0fbfe4d59fdad0b3c3ae53c62e98c7da49e36b69d9e",
+    "decision_protocol_sha256": "5e19c8fa9a23bca8613525b39b350fa99977c80c15a7b72e62a036e2fd182e69",
+    "split_lock_sha256": "8275e468382835c06f9cc738361df26b7452965850878e7ca882f392c9ca4165",
+    "source_sha256": {
+      "scripts/evaluate_mem_adapter.py": "ab821c1f55fdb14fb27941af0fe05889b23bece962e2e17da32521bbf6c136ae",
+      "scripts/libero_mem_sim_worker.py": "fde9ca2599c051be3c16083c308356f7597c6868f5d323f9b2c1e200d9fe7729",
+      "scripts/memory_detector_worker.py": "c0ee8bac3807a25087e3a3677adc41312ae4b04e7ebcc18ed4a0455ea73f1b20",
+      "src/evaluation/libero_mem_rollout.py": "c8c4c056904d20c5a61a0119f06c03bea2383659f0c64f23ff110f103079cd31",
+      "src/evaluation/memory_supervisor.py": "c96308f62c26dc66ddae80662ed1852c66743ed5c99d96115f4eae4e870e8a76",
+      "src/memory/decision_context.py": "62899ac321e6658a26295e74339f933bc0e4762acf49a90a650f25732ebacd25",
+      "src/memory/event_writer.py": "2384c583388cac1d4dca0922223481887eacd78afb44647640129e8022212994",
+      "src/memory/relation_pipeline.py": "efbb50a5aa3768244e2edbbfdbf7c96bc50e0f6e010fd029852ebce588a09d16",
+      "src/interfaces/relation_memory_text.py": "63ba48070b0953c56df8661cddd9de851fa8ea1ac2fd0a4020d5450e64bec1f4",
+      "src/interfaces/libero_mem_text.py": "21fe6930d5850d0e22844583ea12075b92cd766ff90db95651bcbf70e4fbd7cd",
+      "src/simulator/libero_mem_env.py": "61e08e3773839dff25b1cb6e370d66d4ec378cbf30def19b5c615db35ee93add",
+      "src/simulator/libero_mem_loader.py": "1148f44862989374387b572076ee5b8e44fb0f6336628776b7bf279b2351c27b",
+      "src/simulator/process_libero_mem_env.py": "15aee0783c80b7249ad2aebd34b54b849f2330a1f45bce4fcc7bad250f37444d",
+      "src/models/smolvla/adapter.py": "61c8893011e746ee3381af453c66e583a8005ebcccc77593094750dbed66c833"
+    }
+  },
+  "episodes": [
+    {
+      "episode": "T1_F1_seen_state0",
+      "task": "T1",
+      "state_idx": 0,
+      "initial_state_sha256": "7586850c6c9f89cb522e28c192350b33be6fd1ad7369d92c86d137aa33fe7beb",
+      "seed": 42,
+      "artifacts_sha256": {
+        "text": {
+          "status_sha256": "070ec401c0b917c566e49b80686b0e3d00c2038c36ce2eb355e015e50c04969c",
+          "artifacts": {
+            "actions.jsonl": "95562b4e82933d144a0e969a4d8a1220840cc1152fcb73c8e77740e3f9b756bb",
+            "agentview_image.mp4": "e3c18b1977af90f3683eaaa126dea4421b32a2744210e99be724fda0fd923f9f",
+            "final_observation.npz": "d746c6eb31db825bf16ffc7bad40fa7f1f9a78cb647668e67458053c2959cfb7",
+            "initial_observation.npz": "b3f900d1b4109261aa72acfe71fdee5154c6e452e3de3dd67098817dd7816ee3",
+            "memory_trace.jsonl": "fbc378d2e59bceba27fcaaafd6f6d75793bd0664703e0d87490529e5dba08dd2",
+            "observations.jsonl": "dff84fc956d7c57bc709e152c1ce5db144e24739049ef92ee91a6600622650f4",
+            "queries.jsonl": "e2738ab456a3316bbd0085f894f0ebf45639cc9f5c38587fabcbb1fc9e99b171",
+            "robot0_eye_in_hand_image.mp4": "18cc4d5d6f9de085d7173faf19325a3344410b113bb8f0de1f970207b6bd814f",
+            "summary.json": "5e21e72bb79272c5ce7ec6037fe2fe3771f40b4a1259ac4c8d6aba2f5164f80a",
+            "trajectory.npz": "fac6dc59943977a1b8618b4717be8e3ae966241f47f66f5c861f440ed34cef2f"
+          }
+        },
+        "shadow": {
+          "status_sha256": "bb1517f69155be3cc5238cb7f095cfab1827a889f9b2fa40c3057deb39357923",
+          "artifacts": {
+            "actions.jsonl": "95562b4e82933d144a0e969a4d8a1220840cc1152fcb73c8e77740e3f9b756bb",
+            "agentview_image.mp4": "e3c18b1977af90f3683eaaa126dea4421b32a2744210e99be724fda0fd923f9f",
+            "decisions.jsonl": "fa2752f9ec242a9ddc933cdc4023eec9b9f79d2107d57ebf6ce51cd3fa43e84b",
+            "final_observation.npz": "d746c6eb31db825bf16ffc7bad40fa7f1f9a78cb647668e67458053c2959cfb7",
+            "initial_observation.npz": "b3f900d1b4109261aa72acfe71fdee5154c6e452e3de3dd67098817dd7816ee3",
+            "memory_trace.jsonl": "e60d1c41ed82d4160198492633b181b2c8a161fdfc4ab049d5fa05e6dea2447f",
+            "observations.jsonl": "dff84fc956d7c57bc709e152c1ce5db144e24739049ef92ee91a6600622650f4",
+            "queries.jsonl": "e24939e9bad7028388f9bea32e256a736327d0654d2b3d8db91d7a3fe0957cd6",
+            "robot0_eye_in_hand_image.mp4": "18cc4d5d6f9de085d7173faf19325a3344410b113bb8f0de1f970207b6bd814f",
+            "summary.json": "06aed992a2b4f513fffbe8fc1cc8e84e1376211fe91bfe8b2ce3154a621fbba5",
+            "trajectory.npz": "fac6dc59943977a1b8618b4717be8e3ae966241f47f66f5c861f440ed34cef2f"
+          }
+        }
+      },
+      "text": {
+        "success": false,
+        "scr": 0.0,
+        "queries": 100,
+        "early_requeries": 0,
+        "wall_time_s": 1122.9355948129996
+      },
+      "shadow": {
+        "success": false,
+        "scr": 0.0,
+        "queries": 100,
+        "early_requeries": 0,
+        "triggered_checks": 1,
+        "wall_time_s": 1133.3950193009987
+      },
+      "shadow_observed_changes": [
+        {
+          "step": 3,
+          "decision": "continue",
+          "reason": "semantic_change",
+          "key": "bowl_1",
+          "evidence_ids": [
+            "rgb:0:agentview_image:07d1ea43b0fbe5cf:0",
+            "rgb:0:agentview_image:07d1ea43b0fbe5cf:1",
+            "gripper:0",
+            "rgb:1:agentview_image:3b1251f005e7e2de:0",
+            "rgb:1:agentview_image:3b1251f005e7e2de:1",
+            "gripper:1",
+            "rgb:2:agentview_image:08777b4b24f897b9:0",
+            "rgb:2:agentview_image:08777b4b24f897b9:1",
+            "gripper:2"
+          ],
+          "event_ids": [
+            "T1_F1_seen_state0:0"
+          ]
+        }
+      ],
+      "parity": {
+        "query_rows_identical": true,
+        "trajectory_arrays_identical": true,
+        "trajectory_arrays": {
+          "actions": true,
+          "query_steps": true,
+          "action_chunks": true
+        },
+        "text_queries": 100,
+        "shadow_queries": 100,
+        "text_last_step": 990,
+        "shadow_last_step": 990
+      }
+    },
+    {
+      "episode": "T3_F1_seen_state0",
+      "task": "T3",
+      "state_idx": 0,
+      "initial_state_sha256": "7586850c6c9f89cb522e28c192350b33be6fd1ad7369d92c86d137aa33fe7beb",
+      "seed": 42,
+      "artifacts_sha256": {
+        "text": {
+          "status_sha256": "b9a96eb4b7b74776d3b1ac91beb54ec55f3efb84b69fa61944d6812fda152650",
+          "artifacts": {
+            "actions.jsonl": "8915618062bd9d195f0f61bffd74351c1bba3a31691fffff3e8f679d8f297157",
+            "agentview_image.mp4": "175fe59255ce2250753c920f71c6371a826ddfa1e5386617c41505e1180000a1",
+            "final_observation.npz": "5b82952bc7fe18a97bc163c71b7543d58d0c962186c5139771e8e0a3373f3498",
+            "initial_observation.npz": "b3f900d1b4109261aa72acfe71fdee5154c6e452e3de3dd67098817dd7816ee3",
+            "memory_trace.jsonl": "98aa48e0047144a450eed8039b2569bb554540b34b150e64f78cab62fa14c048",
+            "observations.jsonl": "f05f82d5a7f168813df2c06cfe0714039dad543665e057a9985954ec553e5a3f",
+            "queries.jsonl": "22cd27662836931f84dd0a1300c50a63c13b883d39020f913994adf785aa6938",
+            "robot0_eye_in_hand_image.mp4": "32e2adc542bd6d3fd9aa574a35bc08312073e994e6eca037382b74088885ac9d",
+            "summary.json": "db452eeaae91e8dc39bf824a03d4ef5269f8720a618d3e63405ad89ee8d04c24",
+            "trajectory.npz": "2bbf661df72585d020e8a790fe7fe0240a3e4ec26a2d821ea9afbaf859e0d30e"
+          }
+        },
+        "shadow": {
+          "status_sha256": "20e25eeeba8d2df6a835765de661faf4cb859e26d364ffbb355cc6ade52033a7",
+          "artifacts": {
+            "actions.jsonl": "8915618062bd9d195f0f61bffd74351c1bba3a31691fffff3e8f679d8f297157",
+            "agentview_image.mp4": "175fe59255ce2250753c920f71c6371a826ddfa1e5386617c41505e1180000a1",
+            "decisions.jsonl": "1b2cbbdea672feb2be92f7dae9e6140a08d63e7d52b37c94d72cb6214f853840",
+            "final_observation.npz": "5b82952bc7fe18a97bc163c71b7543d58d0c962186c5139771e8e0a3373f3498",
+            "initial_observation.npz": "b3f900d1b4109261aa72acfe71fdee5154c6e452e3de3dd67098817dd7816ee3",
+            "memory_trace.jsonl": "900ce7517711619e1c888774c0668b1605cfc2d3d6aa53502b525a4d0ebc0ade",
+            "observations.jsonl": "f05f82d5a7f168813df2c06cfe0714039dad543665e057a9985954ec553e5a3f",
+            "queries.jsonl": "215627cf14cb7c38c54d27c15de6fc4681aa4b9cbde315fce93c131ee96ec36a",
+            "robot0_eye_in_hand_image.mp4": "32e2adc542bd6d3fd9aa574a35bc08312073e994e6eca037382b74088885ac9d",
+            "summary.json": "559cd554729414becfa0e148d17c1ab690a1e1419e4fbc3b34f07f4d4646f105",
+            "trajectory.npz": "2bbf661df72585d020e8a790fe7fe0240a3e4ec26a2d821ea9afbaf859e0d30e"
+          }
+        }
+      },
+      "text": {
+        "success": false,
+        "scr": 0.0,
+        "queries": 100,
+        "early_requeries": 0,
+        "wall_time_s": 1122.7804988720018
+      },
+      "shadow": {
+        "success": false,
+        "scr": 0.0,
+        "queries": 100,
+        "early_requeries": 0,
+        "triggered_checks": 1,
+        "wall_time_s": 1136.4639650070021
+      },
+      "shadow_observed_changes": [
+        {
+          "step": 3,
+          "decision": "continue",
+          "reason": "semantic_change",
+          "key": "bowl_1",
+          "evidence_ids": [
+            "rgb:0:agentview_image:07d1ea43b0fbe5cf:0",
+            "rgb:0:agentview_image:07d1ea43b0fbe5cf:1",
+            "gripper:0",
+            "rgb:1:agentview_image:15f6d42140836f87:0",
+            "rgb:1:agentview_image:15f6d42140836f87:1",
+            "gripper:1",
+            "rgb:2:agentview_image:60347af7bfca5fe6:0",
+            "rgb:2:agentview_image:60347af7bfca5fe6:1",
+            "gripper:2"
+          ],
+          "event_ids": [
+            "T3_F1_seen_state0:0"
+          ]
+        }
+      ],
+      "parity": {
+        "query_rows_identical": true,
+        "trajectory_arrays_identical": true,
+        "trajectory_arrays": {
+          "actions": true,
+          "query_steps": true,
+          "action_chunks": true
+        },
+        "text_queries": 100,
+        "shadow_queries": 100,
+        "text_last_step": 990,
+        "shadow_last_step": 990
+      }
+    }
+  ],
+  "parity": {
+    "pairs": 2,
+    "identical": 2
+  },
+  "limitations": [
+    "Two seen state-0 episodes, one policy seed; development trace/parity only.",
+    "Shadow records a potential semantic change but does not issue an early query.",
+    "The separate D2 event pilot is the only completed functional early-requery closed-loop example and remains one unbalanced pair."
+  ],
+  "analysis_source_sha256": {
+    "scripts/analyze_d1_shadow_parity.py": "457efefb968620268f8d0e489f4f498f28f4757ab0cfd0202be3d50ba5c77eff",
+    "scripts/aggregate_memory_decisions.py": "1813ae9e4cb8ff8b5e6cb61cc247c5abb7a1abf3c0c79e2c350b1ad36c6c1063"
+  },
+  "text_run_manifest_sha256": "451dfb056b50c0188274c9a5965a5b7f49df1d1dc663f0b4ae820fa8fec42e36",
+  "shadow_run_manifest_sha256": "63acb545f28d92610b325259d8ede59065921925478c91c98aae5b23cccf03be"
+}

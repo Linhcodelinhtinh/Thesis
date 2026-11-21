@@ -1,0 +1,1156 @@
+{
+  "analysis_id": "e6-retention-paired-state-bootstrap-2026-11-20",
+  "generated_at_utc": "2026-11-20T04:39:27.536042+00:00",
+  "classification": "CUSTOM_LIBERO_LOCAL",
+  "comparability": "NON-COMPARABLE_OFFICIAL_PAPER",
+  "arms": {
+    "B0": "SmolVLA base checkpoint",
+    "F1-off": "F1 V2 adapter with memory suppressed"
+  },
+  "method": {
+    "estimand": "paired success-rate difference (F1-off minus B0)",
+    "bootstrap": "10,000 paired-state resamples, stratified within each of the 10 fixed tasks; five state pairs sampled with replacement per task",
+    "interval": "two-sided 95% percentile interval",
+    "seed": 42,
+    "scope_note": "Descriptive uncertainty conditional on this fixed local task roster. It does not generalize to LIBERO-90 or isolate a causal memory effect."
+  },
+  "overall": {
+    "pairs": 50,
+    "b0_successes": 37,
+    "f1_off_successes": 23,
+    "b0_success_rate": 0.74,
+    "f1_off_success_rate": 0.46,
+    "paired_difference_f1_off_minus_b0": -0.28,
+    "paired_outcomes": {
+      "both_success": 18,
+      "b0_only": 19,
+      "f1_off_only": 5,
+      "both_failure": 8
+    }
+  },
+  "paired_difference_bootstrap_95": [
+    -0.42,
+    -0.14
+  ],
+  "per_task": [
+    {
+      "task_id": 0,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket",
+      "episodes_per_arm": 5,
+      "b0_successes": 0,
+      "f1_off_successes": 2,
+      "paired_difference_f1_off_minus_b0": 0.4
+    },
+    {
+      "task_id": 1,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket",
+      "episodes_per_arm": 5,
+      "b0_successes": 3,
+      "f1_off_successes": 1,
+      "paired_difference_f1_off_minus_b0": -0.4
+    },
+    {
+      "task_id": 2,
+      "task_name": "KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it",
+      "episodes_per_arm": 5,
+      "b0_successes": 5,
+      "f1_off_successes": 2,
+      "paired_difference_f1_off_minus_b0": -0.6
+    },
+    {
+      "task_id": 3,
+      "task_name": "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+      "episodes_per_arm": 5,
+      "b0_successes": 5,
+      "f1_off_successes": 5,
+      "paired_difference_f1_off_minus_b0": 0.0
+    },
+    {
+      "task_id": 4,
+      "task_name": "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate",
+      "episodes_per_arm": 5,
+      "b0_successes": 3,
+      "f1_off_successes": 2,
+      "paired_difference_f1_off_minus_b0": -0.2
+    },
+    {
+      "task_id": 5,
+      "task_name": "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+      "episodes_per_arm": 5,
+      "b0_successes": 5,
+      "f1_off_successes": 0,
+      "paired_difference_f1_off_minus_b0": -1.0
+    },
+    {
+      "task_id": 6,
+      "task_name": "LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate",
+      "episodes_per_arm": 5,
+      "b0_successes": 4,
+      "f1_off_successes": 2,
+      "paired_difference_f1_off_minus_b0": -0.4
+    },
+    {
+      "task_id": 7,
+      "task_name": "LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket",
+      "episodes_per_arm": 5,
+      "b0_successes": 4,
+      "f1_off_successes": 3,
+      "paired_difference_f1_off_minus_b0": -0.2
+    },
+    {
+      "task_id": 8,
+      "task_name": "KITCHEN_SCENE8_put_both_moka_pots_on_the_stove",
+      "episodes_per_arm": 5,
+      "b0_successes": 3,
+      "f1_off_successes": 3,
+      "paired_difference_f1_off_minus_b0": 0.0
+    },
+    {
+      "task_id": 9,
+      "task_name": "KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it",
+      "episodes_per_arm": 5,
+      "b0_successes": 5,
+      "f1_off_successes": 3,
+      "paired_difference_f1_off_minus_b0": -0.4
+    }
+  ],
+  "pairs": [
+    {
+      "task_id": 0,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket",
+      "initial_state_id": 8,
+      "seed": 3050,
+      "b0_success": false,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 1,
+      "b0_episode_sha256": "66591de50b7cd66649ee35d1d22adb60aa90dd065e7e138fc033e6b3be1f7e74",
+      "f1_off_episode_sha256": "298231e80cee2f93b55db0bc71723fda75972deb222d35608411dcca2da4ba84"
+    },
+    {
+      "task_id": 0,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket",
+      "initial_state_id": 13,
+      "seed": 3055,
+      "b0_success": false,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 1,
+      "b0_episode_sha256": "098c5f0e80605c51542370bb3db2e8786c289bce01d7358f8402f4f72335a3cf",
+      "f1_off_episode_sha256": "c39b78d32425ccb1fb43664143438c481a2ac50b0669d019de2e7118475bac09"
+    },
+    {
+      "task_id": 0,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket",
+      "initial_state_id": 27,
+      "seed": 3069,
+      "b0_success": false,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "563f8b30f546350beb04c1e57727773c18a1a29a7fda2dbc82e3ad1083633115",
+      "f1_off_episode_sha256": "8794894b9bee15f9bc4520a81c9ac0ab4b570d0d6c137c256c9512725ce27a8b"
+    },
+    {
+      "task_id": 0,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket",
+      "initial_state_id": 45,
+      "seed": 3087,
+      "b0_success": false,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "cbd78b4c9e45a3445ac714fbcd458a3250ecc517a79f7b12ad6a76527214e36e",
+      "f1_off_episode_sha256": "a44fca713905f830069c96ec2bc6b3cb3c8d3c5801e25b9f46876bc69ea6b076"
+    },
+    {
+      "task_id": 0,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket",
+      "initial_state_id": 48,
+      "seed": 3090,
+      "b0_success": false,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "567c302afd53da7cf8ca1291bbc4986a105c64c857065fbea3b21c10cf1024c5",
+      "f1_off_episode_sha256": "261a329292f7bec6ef5ce6c7cc33f8fad5dfd76a7aff2d15c25f83ee56bd4042"
+    },
+    {
+      "task_id": 1,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket",
+      "initial_state_id": 17,
+      "seed": 3159,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "6af40cc93e131875d542fd7dbcb5fd2dff6a52952fa468e063d861cba41fd5eb",
+      "f1_off_episode_sha256": "e9781cc4942a213388d3b266a8ef6b24090d4919b7ce4a2cfbc563d842e40d2f"
+    },
+    {
+      "task_id": 1,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket",
+      "initial_state_id": 21,
+      "seed": 3163,
+      "b0_success": false,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 1,
+      "b0_episode_sha256": "b181e41668da7e86578cdf6e7eda9b7d1619a5914dcac22672d89d91b63d7c6c",
+      "f1_off_episode_sha256": "9c52bbbb10625b12a29259efab491f9ddd9ec7396a9f9426f200ca1cb21e477b"
+    },
+    {
+      "task_id": 1,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket",
+      "initial_state_id": 39,
+      "seed": 3181,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "52d669f8b9b52b754951eb5e6d15339855cd9333506945d161d85f501b5ce88b",
+      "f1_off_episode_sha256": "c589b0176ba9cc99cacb5f552c1003f6d459bcfa4247bcb48a44160a60fa0454"
+    },
+    {
+      "task_id": 1,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket",
+      "initial_state_id": 41,
+      "seed": 3183,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "e1d9723658410cd325a81007da5042f68b5df5492938f5d4eddce826113ab989",
+      "f1_off_episode_sha256": "4da29695b08a29573c49c117eca97ae87606e0c6282d921471ebf4ea4afbfa24"
+    },
+    {
+      "task_id": 1,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket",
+      "initial_state_id": 47,
+      "seed": 3189,
+      "b0_success": false,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "69cd7d389640ad23234a584dd22602e6fc5965ab59c8261b7aafaebb3d7c77a3",
+      "f1_off_episode_sha256": "88e171ac0a1a80146f8ade895fb7540249e278655ad773da28bf8b58d37b39df"
+    },
+    {
+      "task_id": 2,
+      "task_name": "KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it",
+      "initial_state_id": 3,
+      "seed": 3245,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "3f9fc6e0e32c4c11eb34e613aa934a7ea49ce29255cd662664b9e5913f3188df",
+      "f1_off_episode_sha256": "499e4d42df9aba403561e3db498dda1254a31537e24efc6b3e0fc0df9c501a8c"
+    },
+    {
+      "task_id": 2,
+      "task_name": "KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it",
+      "initial_state_id": 6,
+      "seed": 3248,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "a6217219658dc23dc9b92f00b43005cb2473723a165e905f55e2cbd73983ec66",
+      "f1_off_episode_sha256": "8176934ba1695e8d659e189861e5ed1bf28d50648544a3a77b77c0d5685cf303"
+    },
+    {
+      "task_id": 2,
+      "task_name": "KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it",
+      "initial_state_id": 12,
+      "seed": 3254,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "69890cd17d12a241934e3092a362779aac3696b0fe651c2ce2b326edc5665923",
+      "f1_off_episode_sha256": "3687faaa53d0ca2001968f18a7da7fb5fbddb4b7a91061e238b4668dee149242"
+    },
+    {
+      "task_id": 2,
+      "task_name": "KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it",
+      "initial_state_id": 15,
+      "seed": 3257,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "b3f65a78a5179d99f3c74a53ae6d75243c5c2513ab32200569d671bba0993867",
+      "f1_off_episode_sha256": "c331c356793c0a90db283d8298f2cf576bec98f0c8c15ee8c66bc1ac978d018b"
+    },
+    {
+      "task_id": 2,
+      "task_name": "KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it",
+      "initial_state_id": 40,
+      "seed": 3282,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "581e3fbe432584d06a217c50137b483b4a7d66cfabff0e52210d9cdbcc2cab13",
+      "f1_off_episode_sha256": "e60ed6fafbf96c65cbc3dbd45391b774019d48668243fbcbf5c7ab7a47113e42"
+    },
+    {
+      "task_id": 3,
+      "task_name": "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+      "initial_state_id": 19,
+      "seed": 3361,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "28a7310fa87457da3a4a369596abe8b841889221c51193d96e89f0cbf94141ee",
+      "f1_off_episode_sha256": "2128eb9d3299cab3a1717d39d521edd5e004151359ceeeb483c57decc6cd68b4"
+    },
+    {
+      "task_id": 3,
+      "task_name": "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+      "initial_state_id": 38,
+      "seed": 3380,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "c6e34e32981f0593b38470f3604e24a4cab5d5f4c596f596b8f3b49ccb108b25",
+      "f1_off_episode_sha256": "7893c0d386c76ad66548c62dff8818810870a37e0d18920f531e086028b51f98"
+    },
+    {
+      "task_id": 3,
+      "task_name": "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+      "initial_state_id": 44,
+      "seed": 3386,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "5b0a97f13f4e22dcf24cb944e67fa9a0b0678ed8b4a9e168a5707b8a693a3a5d",
+      "f1_off_episode_sha256": "7fc6355b5ed7d5dfcd026de6ce323bdd3dcea1f0b98d0b8f9ba9f08412561503"
+    },
+    {
+      "task_id": 3,
+      "task_name": "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+      "initial_state_id": 47,
+      "seed": 3389,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "89bcccaf1fde20954725aff751ac09ed9e73fa3d1fb20bd6d6b472f1076906e3",
+      "f1_off_episode_sha256": "a805818b598e0e578de536883d9f1c784c2fd92c736254958d2b3a2153c73e00"
+    },
+    {
+      "task_id": 3,
+      "task_name": "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+      "initial_state_id": 49,
+      "seed": 3391,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "d70080a891de9ded9bf2d56eceaa313740716c1eb6d586eaddbe118db34d74b0",
+      "f1_off_episode_sha256": "b421ea1c0be9649a503d428264ee33f1bfbaa8ec2b8c84a67929ad0672b9167b"
+    },
+    {
+      "task_id": 4,
+      "task_name": "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate",
+      "initial_state_id": 3,
+      "seed": 3445,
+      "b0_success": false,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 1,
+      "b0_episode_sha256": "a7fc1d6a1f520a7810005261ec4d35f22c48e1c6e1bf62d910a2f7aa401dc296",
+      "f1_off_episode_sha256": "2659ccf950601d2ca0c7fc68a3c68ef499d9e11f3f6118def2f4143aa2b2cf99"
+    },
+    {
+      "task_id": 4,
+      "task_name": "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate",
+      "initial_state_id": 14,
+      "seed": 3456,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "d87623cec9175d55609ba4f1c033a6f1075698721dd2bd64f391d131574ade34",
+      "f1_off_episode_sha256": "421565388da48aa5ca9d643cccfc886824b809d52923b83f591af989a3162660"
+    },
+    {
+      "task_id": 4,
+      "task_name": "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate",
+      "initial_state_id": 26,
+      "seed": 3468,
+      "b0_success": false,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "329eeff427a472605c6ff63b36b5ec67d02a13e2d380811314adc8c0531af96f",
+      "f1_off_episode_sha256": "7af1be98e9906c0d6db9082f85e093247ba8bb24c488821dd432d4a17cabe961"
+    },
+    {
+      "task_id": 4,
+      "task_name": "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate",
+      "initial_state_id": 33,
+      "seed": 3475,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "9b7f629fda5f43e3a130591022f473fbe2d543e4f15d046754f506ddcd1a97cf",
+      "f1_off_episode_sha256": "c85ff6bbcb216975409e3b2c8dc2abce9ec2208728c9540f18885aaf59b836a8"
+    },
+    {
+      "task_id": 4,
+      "task_name": "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate",
+      "initial_state_id": 44,
+      "seed": 3486,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "cef7fe7bf62d04d96dea90b01dd60e2bf8900f82999f7589cf790df015b5bacb",
+      "f1_off_episode_sha256": "d58239e941374ea69c4982ca449c320953cf471eb2f9ba0aee105eb11de5fb19"
+    },
+    {
+      "task_id": 5,
+      "task_name": "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+      "initial_state_id": 6,
+      "seed": 3548,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "fc09c6dc71003b0b9ef80e37021ac74b29295d29a15fc812fd733bacfd845afa",
+      "f1_off_episode_sha256": "334b800325abc209154935b9fa8610aec91b28e6fc13f3629597f36816bc878b"
+    },
+    {
+      "task_id": 5,
+      "task_name": "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+      "initial_state_id": 17,
+      "seed": 3559,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "42bfc97a425ede3a3c6ebcda098d76e43b9f7a6ce8e6415cd340a9143bb70ec2",
+      "f1_off_episode_sha256": "dd6ddc9467a6860190353d0c6d1f23228779a47cc1d9a25ac56d40d86a25dc37"
+    },
+    {
+      "task_id": 5,
+      "task_name": "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+      "initial_state_id": 28,
+      "seed": 3570,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "73535aea449a2f77dae36e9dd427c6443d591b1d8233ad1cbc12c3623c08c86e",
+      "f1_off_episode_sha256": "92c1f3a2f349f50d536eb1d774a8ab8e8e7d0c4f5dc9290b80b919f38d9024e7"
+    },
+    {
+      "task_id": 5,
+      "task_name": "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+      "initial_state_id": 31,
+      "seed": 3573,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "cb3a048bc1b7205be07b2c7332a138d58dbee4988bbefb93aeb9db7469a05646",
+      "f1_off_episode_sha256": "31926328fbd77cf96d5e315355880d26b02127a4798a542123f380e1a36ea00b"
+    },
+    {
+      "task_id": 5,
+      "task_name": "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+      "initial_state_id": 42,
+      "seed": 3584,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "70f67ea290db38df2c1076fcbf2004d43414365ec6f96f21d174c40f3bdabcd5",
+      "f1_off_episode_sha256": "dc5515593ce41df421e5daea1c778a0de86d84bcc0da10aea1edd322d1aa756d"
+    },
+    {
+      "task_id": 6,
+      "task_name": "LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate",
+      "initial_state_id": 3,
+      "seed": 3645,
+      "b0_success": false,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "cee5c461de00c53d4fce0f42e5cb6d31ab579fa4f5d6e689f896052b1f60592f",
+      "f1_off_episode_sha256": "efbf925de6863e7a0b16ebfde164bafeedcfbc1179d8581762d4ca067e470bb7"
+    },
+    {
+      "task_id": 6,
+      "task_name": "LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate",
+      "initial_state_id": 5,
+      "seed": 3647,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "83ab71d07729a787317cfbc9cdee111d0e0e9faa80b97902d8f29b70fb162699",
+      "f1_off_episode_sha256": "6de024ebb3254001843d4a0769c84acef834005f716af67bfc20eeb8878d2039"
+    },
+    {
+      "task_id": 6,
+      "task_name": "LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate",
+      "initial_state_id": 17,
+      "seed": 3659,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "31e77813b3c6a38e259b9b7f66416e9a2f21c2d63ecb893c7883769197d7c92d",
+      "f1_off_episode_sha256": "6a8b026fd2d522b79cd0de7040f671824fbb8d689038dbd2e638698c009c3de8"
+    },
+    {
+      "task_id": 6,
+      "task_name": "LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate",
+      "initial_state_id": 33,
+      "seed": 3675,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "edf9f186fd16a7c70ddb6949dfc1bac7aa3f0ab61f0403fba244a7c8f89d69c9",
+      "f1_off_episode_sha256": "185eee86c1f31f356d6b0546b8cdd80e8eee70153b849582827d45647a8c311d"
+    },
+    {
+      "task_id": 6,
+      "task_name": "LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate",
+      "initial_state_id": 42,
+      "seed": 3684,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "7ddde14b018125c1d35a09aa0002412a0021c0031a819dd270c4c906e6701e22",
+      "f1_off_episode_sha256": "ab1e4e5ac51912b222b5980bfd80181bc2630deb7a5cafcd833ed415abab2b53"
+    },
+    {
+      "task_id": 7,
+      "task_name": "LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket",
+      "initial_state_id": 2,
+      "seed": 3744,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "df1c8a812f631cc3a43e66a52d98476944fc9b157af014149fe6ddceb52e0b43",
+      "f1_off_episode_sha256": "04b9ec98b7396c25653a5c66f229326e1269437e42dc1d0f21b5a2bbc7a78818"
+    },
+    {
+      "task_id": 7,
+      "task_name": "LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket",
+      "initial_state_id": 12,
+      "seed": 3754,
+      "b0_success": false,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "11ae65a2e51f389792808bc26464f8be4efcca56d4f1ba48012ef335e876c545",
+      "f1_off_episode_sha256": "5614fdd664874f90d73cc59cbd3cde978bb4db6f93eb590e6ab9a9c98f313f96"
+    },
+    {
+      "task_id": 7,
+      "task_name": "LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket",
+      "initial_state_id": 40,
+      "seed": 3782,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "5b99ae7880bb8a925053dac14362d5a00dd04036bc52100be3e5f6600d1ab35a",
+      "f1_off_episode_sha256": "789fa711327cd691ed9e80c42db90f389bf3bc47107b0f4d93e235add83ba955"
+    },
+    {
+      "task_id": 7,
+      "task_name": "LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket",
+      "initial_state_id": 41,
+      "seed": 3783,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "2159861c5b645b5e527fefaad42a7785643784bcf07e487da0cf9adbcea1dd46",
+      "f1_off_episode_sha256": "e5f12e2bfb41f087ffb60be355a5f09540e44c2b582e70190db30ed664e26ee8"
+    },
+    {
+      "task_id": 7,
+      "task_name": "LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket",
+      "initial_state_id": 42,
+      "seed": 3784,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "e2e28d802d2fb6c598b3356f2a8a237ad22b90da177229886dd1eb08bfad9b8f",
+      "f1_off_episode_sha256": "f002a4d1b5bcb26307a4b41477d4ca02fa395a256bc19e2249d317468811be6f"
+    },
+    {
+      "task_id": 8,
+      "task_name": "KITCHEN_SCENE8_put_both_moka_pots_on_the_stove",
+      "initial_state_id": 3,
+      "seed": 3845,
+      "b0_success": false,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 1,
+      "b0_episode_sha256": "18fbfd330bc11dcdaaf69ad383f0309bffe063f678fc1f467953f6e7ec0219f4",
+      "f1_off_episode_sha256": "ad614f93466f8b475d2c81ee4af398eba2fe03be7276a1eaad5ca5131e9c2b32"
+    },
+    {
+      "task_id": 8,
+      "task_name": "KITCHEN_SCENE8_put_both_moka_pots_on_the_stove",
+      "initial_state_id": 8,
+      "seed": 3850,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "baccc56ce978d5b49e59fd3e531eb2e167f19984357508169e6874328895c2d3",
+      "f1_off_episode_sha256": "81098d70b289890ae47f1db93397f5331fe9e82589a50a4d2637ffe1b7708560"
+    },
+    {
+      "task_id": 8,
+      "task_name": "KITCHEN_SCENE8_put_both_moka_pots_on_the_stove",
+      "initial_state_id": 22,
+      "seed": 3864,
+      "b0_success": false,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "4bd8381e9b524b824251045b66dbd8250f9a3cdb111c9ffdc8fe621edf80fcb3",
+      "f1_off_episode_sha256": "d590c09858d02dff7f18569581f09c8a2089fad0c936dc9e976961a85a7c0f13"
+    },
+    {
+      "task_id": 8,
+      "task_name": "KITCHEN_SCENE8_put_both_moka_pots_on_the_stove",
+      "initial_state_id": 33,
+      "seed": 3875,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "ea0e78fbf20526ec385f26dfb0509d4ffdd9d3ddced2998b05bf2dabfe24cb96",
+      "f1_off_episode_sha256": "8e6952499e18c348a3dc1a7d29959614b7103d082ed2290076243fedc89b1be7"
+    },
+    {
+      "task_id": 8,
+      "task_name": "KITCHEN_SCENE8_put_both_moka_pots_on_the_stove",
+      "initial_state_id": 35,
+      "seed": 3877,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "79e77515720a0089038e19cb2d66b86ed9ad9a587ac4b3702d1df183dc2b4517",
+      "f1_off_episode_sha256": "bda08008a989b7764532b9f8531d3cf3cc8a7dffbb9c23b44c5f1e0f091a0a5a"
+    },
+    {
+      "task_id": 9,
+      "task_name": "KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it",
+      "initial_state_id": 3,
+      "seed": 3945,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "76229b16fac5e674368fb1013898e33692c572a48314633f69ddf9c62590dd74",
+      "f1_off_episode_sha256": "61a94f53325ebadab5db35bda924ec000d3c6584946c4f236e16666fe50c2b6e"
+    },
+    {
+      "task_id": 9,
+      "task_name": "KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it",
+      "initial_state_id": 14,
+      "seed": 3956,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "a0ea813ea56ce8ac6ea1bf37d3b3bbab40195160f1286c199dbbcd802e243f31",
+      "f1_off_episode_sha256": "f3042ed80b799883e51db33051931395fea20695ad2cf7426adcffed598a296a"
+    },
+    {
+      "task_id": 9,
+      "task_name": "KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it",
+      "initial_state_id": 43,
+      "seed": 3985,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "6f7af222ad4dc893164ccd2b0a29168688b622814d26d122acd2e3ba697e46e7",
+      "f1_off_episode_sha256": "3e73d9319365f08f3e63bdac49dbe066e0d5cfedd033bab4d478712d2727b4ff"
+    },
+    {
+      "task_id": 9,
+      "task_name": "KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it",
+      "initial_state_id": 45,
+      "seed": 3987,
+      "b0_success": true,
+      "f1_off_success": true,
+      "paired_difference_f1_off_minus_b0": 0,
+      "b0_episode_sha256": "d9b0b9c575af8e04f2b9b8cb3540cfbb0d6f6786e6f38a1493811b6e76f23233",
+      "f1_off_episode_sha256": "761e69129b9c3054a9ed135abacd1356a6f8e1e8f1b843ea0e116158232d5026"
+    },
+    {
+      "task_id": 9,
+      "task_name": "KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it",
+      "initial_state_id": 49,
+      "seed": 3991,
+      "b0_success": true,
+      "f1_off_success": false,
+      "paired_difference_f1_off_minus_b0": -1,
+      "b0_episode_sha256": "5fa6c0e793c6183fa51f655cac8db5f0196ee326f3986412187185c1cb5ba5da",
+      "f1_off_episode_sha256": "f13c6a1c91a58ef05e1ca5ba01017ecb351094521bf0c7bfaa13ada791d9e490"
+    }
+  ],
+  "provenance": {
+    "run_root": "experiments/results/e6_retention_locked_50",
+    "source_files": [
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_0/benchmark_summary.json",
+        "sha256": "5d0c9b7596cb04cf4e397c6b3b75d7b4032507e94670e7ff449c598d1157243e"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_13/episode.json",
+        "sha256": "098c5f0e80605c51542370bb3db2e8786c289bce01d7358f8402f4f72335a3cf"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_27/episode.json",
+        "sha256": "563f8b30f546350beb04c1e57727773c18a1a29a7fda2dbc82e3ad1083633115"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_45/episode.json",
+        "sha256": "cbd78b4c9e45a3445ac714fbcd458a3250ecc517a79f7b12ad6a76527214e36e"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_48/episode.json",
+        "sha256": "567c302afd53da7cf8ca1291bbc4986a105c64c857065fbea3b21c10cf1024c5"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_8/episode.json",
+        "sha256": "66591de50b7cd66649ee35d1d22adb60aa90dd065e7e138fc033e6b3be1f7e74"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_1/benchmark_summary.json",
+        "sha256": "19a5c7aa9bd4e0a267f5952d1e3a23ffb73ba9517a4bf10492655971f9442cb9"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_17/episode.json",
+        "sha256": "6af40cc93e131875d542fd7dbcb5fd2dff6a52952fa468e063d861cba41fd5eb"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_21/episode.json",
+        "sha256": "b181e41668da7e86578cdf6e7eda9b7d1619a5914dcac22672d89d91b63d7c6c"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_39/episode.json",
+        "sha256": "52d669f8b9b52b754951eb5e6d15339855cd9333506945d161d85f501b5ce88b"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_41/episode.json",
+        "sha256": "e1d9723658410cd325a81007da5042f68b5df5492938f5d4eddce826113ab989"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_47/episode.json",
+        "sha256": "69cd7d389640ad23234a584dd22602e6fc5965ab59c8261b7aafaebb3d7c77a3"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_2/benchmark_summary.json",
+        "sha256": "dfecd9b22a53902f0a862cc5a91d5916a28296162448894df3a318e7606ad52d"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_12/episode.json",
+        "sha256": "69890cd17d12a241934e3092a362779aac3696b0fe651c2ce2b326edc5665923"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_15/episode.json",
+        "sha256": "b3f65a78a5179d99f3c74a53ae6d75243c5c2513ab32200569d671bba0993867"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_3/episode.json",
+        "sha256": "3f9fc6e0e32c4c11eb34e613aa934a7ea49ce29255cd662664b9e5913f3188df"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_40/episode.json",
+        "sha256": "581e3fbe432584d06a217c50137b483b4a7d66cfabff0e52210d9cdbcc2cab13"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_6/episode.json",
+        "sha256": "a6217219658dc23dc9b92f00b43005cb2473723a165e905f55e2cbd73983ec66"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_3/benchmark_summary.json",
+        "sha256": "a192169195a991f0c097c0781f60867cfb5627221be4ca741e034c92272e44b2"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_19/episode.json",
+        "sha256": "28a7310fa87457da3a4a369596abe8b841889221c51193d96e89f0cbf94141ee"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_38/episode.json",
+        "sha256": "c6e34e32981f0593b38470f3604e24a4cab5d5f4c596f596b8f3b49ccb108b25"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_44/episode.json",
+        "sha256": "5b0a97f13f4e22dcf24cb944e67fa9a0b0678ed8b4a9e168a5707b8a693a3a5d"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_47/episode.json",
+        "sha256": "89bcccaf1fde20954725aff751ac09ed9e73fa3d1fb20bd6d6b472f1076906e3"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_49/episode.json",
+        "sha256": "d70080a891de9ded9bf2d56eceaa313740716c1eb6d586eaddbe118db34d74b0"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_4/benchmark_summary.json",
+        "sha256": "8b4f83484974cb4cba8e48701188b5fcda0d9b819694a0ba13ef06cea79c0013"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_14/episode.json",
+        "sha256": "d87623cec9175d55609ba4f1c033a6f1075698721dd2bd64f391d131574ade34"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_26/episode.json",
+        "sha256": "329eeff427a472605c6ff63b36b5ec67d02a13e2d380811314adc8c0531af96f"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_3/episode.json",
+        "sha256": "a7fc1d6a1f520a7810005261ec4d35f22c48e1c6e1bf62d910a2f7aa401dc296"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_33/episode.json",
+        "sha256": "9b7f629fda5f43e3a130591022f473fbe2d543e4f15d046754f506ddcd1a97cf"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_44/episode.json",
+        "sha256": "cef7fe7bf62d04d96dea90b01dd60e2bf8900f82999f7589cf790df015b5bacb"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_5/benchmark_summary.json",
+        "sha256": "a2e9cd561e02b9e5973bf32397ef8c5cd79469c3f2cd9c69dbd92d5637bd0ebe"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_17/episode.json",
+        "sha256": "42bfc97a425ede3a3c6ebcda098d76e43b9f7a6ce8e6415cd340a9143bb70ec2"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_28/episode.json",
+        "sha256": "73535aea449a2f77dae36e9dd427c6443d591b1d8233ad1cbc12c3623c08c86e"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_31/episode.json",
+        "sha256": "cb3a048bc1b7205be07b2c7332a138d58dbee4988bbefb93aeb9db7469a05646"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_42/episode.json",
+        "sha256": "70f67ea290db38df2c1076fcbf2004d43414365ec6f96f21d174c40f3bdabcd5"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_6/episode.json",
+        "sha256": "fc09c6dc71003b0b9ef80e37021ac74b29295d29a15fc812fd733bacfd845afa"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_6/benchmark_summary.json",
+        "sha256": "b4b89315a4ce2e042c4521beddfcc4d2e10eb25fb262483e1fc3b61ed3cf25de"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_17/episode.json",
+        "sha256": "31e77813b3c6a38e259b9b7f66416e9a2f21c2d63ecb893c7883769197d7c92d"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_3/episode.json",
+        "sha256": "cee5c461de00c53d4fce0f42e5cb6d31ab579fa4f5d6e689f896052b1f60592f"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_33/episode.json",
+        "sha256": "edf9f186fd16a7c70ddb6949dfc1bac7aa3f0ab61f0403fba244a7c8f89d69c9"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_42/episode.json",
+        "sha256": "7ddde14b018125c1d35a09aa0002412a0021c0031a819dd270c4c906e6701e22"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_5/episode.json",
+        "sha256": "83ab71d07729a787317cfbc9cdee111d0e0e9faa80b97902d8f29b70fb162699"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_7/benchmark_summary.json",
+        "sha256": "4cca3cf081565b4aa0eddafe1bb292a397a5d1702f148e950b0544be728f5fe0"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_12/episode.json",
+        "sha256": "11ae65a2e51f389792808bc26464f8be4efcca56d4f1ba48012ef335e876c545"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_2/episode.json",
+        "sha256": "df1c8a812f631cc3a43e66a52d98476944fc9b157af014149fe6ddceb52e0b43"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_40/episode.json",
+        "sha256": "5b99ae7880bb8a925053dac14362d5a00dd04036bc52100be3e5f6600d1ab35a"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_41/episode.json",
+        "sha256": "2159861c5b645b5e527fefaad42a7785643784bcf07e487da0cf9adbcea1dd46"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_42/episode.json",
+        "sha256": "e2e28d802d2fb6c598b3356f2a8a237ad22b90da177229886dd1eb08bfad9b8f"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_8/benchmark_summary.json",
+        "sha256": "abc84e007d0844093810e2d69a7a8386b777552d9e1758c069457feaabc121d7"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_22/episode.json",
+        "sha256": "4bd8381e9b524b824251045b66dbd8250f9a3cdb111c9ffdc8fe621edf80fcb3"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_3/episode.json",
+        "sha256": "18fbfd330bc11dcdaaf69ad383f0309bffe063f678fc1f467953f6e7ec0219f4"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_33/episode.json",
+        "sha256": "ea0e78fbf20526ec385f26dfb0509d4ffdd9d3ddced2998b05bf2dabfe24cb96"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_35/episode.json",
+        "sha256": "79e77515720a0089038e19cb2d66b86ed9ad9a587ac4b3702d1df183dc2b4517"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_8/episode.json",
+        "sha256": "baccc56ce978d5b49e59fd3e531eb2e167f19984357508169e6874328895c2d3"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_9/benchmark_summary.json",
+        "sha256": "63c3040dfb0aee12b670580240f3993d8fe61409b561f7ca116d644dd1517b76"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_14/episode.json",
+        "sha256": "a0ea813ea56ce8ac6ea1bf37d3b3bbab40195160f1286c199dbbcd802e243f31"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_3/episode.json",
+        "sha256": "76229b16fac5e674368fb1013898e33692c572a48314633f69ddf9c62590dd74"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_43/episode.json",
+        "sha256": "6f7af222ad4dc893164ccd2b0a29168688b622814d26d122acd2e3ba697e46e7"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_45/episode.json",
+        "sha256": "d9b0b9c575af8e04f2b9b8cb3540cfbb0d6f6786e6f38a1493811b6e76f23233"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_49/episode.json",
+        "sha256": "5fa6c0e793c6183fa51f655cac8db5f0196ee326f3986412187185c1cb5ba5da"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_0/benchmark_summary.json",
+        "sha256": "50d8d5811ef78a3ccf3d4ae062dadaff0d9e0cf646b24e56a21d11e7fd750dc0"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_0/libero_10_task0/init_13/episode.json",
+        "sha256": "c39b78d32425ccb1fb43664143438c481a2ac50b0669d019de2e7118475bac09"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_0/libero_10_task0/init_27/episode.json",
+        "sha256": "8794894b9bee15f9bc4520a81c9ac0ab4b570d0d6c137c256c9512725ce27a8b"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_0/libero_10_task0/init_45/episode.json",
+        "sha256": "a44fca713905f830069c96ec2bc6b3cb3c8d3c5801e25b9f46876bc69ea6b076"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_0/libero_10_task0/init_48/episode.json",
+        "sha256": "261a329292f7bec6ef5ce6c7cc33f8fad5dfd76a7aff2d15c25f83ee56bd4042"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_0/libero_10_task0/init_8/episode.json",
+        "sha256": "298231e80cee2f93b55db0bc71723fda75972deb222d35608411dcca2da4ba84"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_1/benchmark_summary.json",
+        "sha256": "3656a9f1a5373d28fad2485184daad0fdd31f179ccf371915b0a55d196377463"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_1/libero_10_task1/init_17/episode.json",
+        "sha256": "e9781cc4942a213388d3b266a8ef6b24090d4919b7ce4a2cfbc563d842e40d2f"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_1/libero_10_task1/init_21/episode.json",
+        "sha256": "9c52bbbb10625b12a29259efab491f9ddd9ec7396a9f9426f200ca1cb21e477b"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_1/libero_10_task1/init_39/episode.json",
+        "sha256": "c589b0176ba9cc99cacb5f552c1003f6d459bcfa4247bcb48a44160a60fa0454"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_1/libero_10_task1/init_41/episode.json",
+        "sha256": "4da29695b08a29573c49c117eca97ae87606e0c6282d921471ebf4ea4afbfa24"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_1/libero_10_task1/init_47/episode.json",
+        "sha256": "88e171ac0a1a80146f8ade895fb7540249e278655ad773da28bf8b58d37b39df"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_2/benchmark_summary.json",
+        "sha256": "a0a2ae9c02b4ff012eeb6e02d10501854c9349036ae1f565b3cdc2eeb94fa664"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_2/libero_10_task2/init_12/episode.json",
+        "sha256": "3687faaa53d0ca2001968f18a7da7fb5fbddb4b7a91061e238b4668dee149242"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_2/libero_10_task2/init_15/episode.json",
+        "sha256": "c331c356793c0a90db283d8298f2cf576bec98f0c8c15ee8c66bc1ac978d018b"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_2/libero_10_task2/init_3/episode.json",
+        "sha256": "499e4d42df9aba403561e3db498dda1254a31537e24efc6b3e0fc0df9c501a8c"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_2/libero_10_task2/init_40/episode.json",
+        "sha256": "e60ed6fafbf96c65cbc3dbd45391b774019d48668243fbcbf5c7ab7a47113e42"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_2/libero_10_task2/init_6/episode.json",
+        "sha256": "8176934ba1695e8d659e189861e5ed1bf28d50648544a3a77b77c0d5685cf303"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_3/benchmark_summary.json",
+        "sha256": "a29707f0cd5c4474ce1d98fbaa9f2a68e46ca7751f1398f2cd47d34995caf846"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_3/libero_10_task3/init_19/episode.json",
+        "sha256": "2128eb9d3299cab3a1717d39d521edd5e004151359ceeeb483c57decc6cd68b4"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_3/libero_10_task3/init_38/episode.json",
+        "sha256": "7893c0d386c76ad66548c62dff8818810870a37e0d18920f531e086028b51f98"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_3/libero_10_task3/init_44/episode.json",
+        "sha256": "7fc6355b5ed7d5dfcd026de6ce323bdd3dcea1f0b98d0b8f9ba9f08412561503"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_3/libero_10_task3/init_47/episode.json",
+        "sha256": "a805818b598e0e578de536883d9f1c784c2fd92c736254958d2b3a2153c73e00"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_3/libero_10_task3/init_49/episode.json",
+        "sha256": "b421ea1c0be9649a503d428264ee33f1bfbaa8ec2b8c84a67929ad0672b9167b"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_4/benchmark_summary.json",
+        "sha256": "79ec87c073ae44f73d3c82676af839efb45990f08e16d0e826372bf7913008e5"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_4/libero_10_task4/init_14/episode.json",
+        "sha256": "421565388da48aa5ca9d643cccfc886824b809d52923b83f591af989a3162660"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_4/libero_10_task4/init_26/episode.json",
+        "sha256": "7af1be98e9906c0d6db9082f85e093247ba8bb24c488821dd432d4a17cabe961"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_4/libero_10_task4/init_3/episode.json",
+        "sha256": "2659ccf950601d2ca0c7fc68a3c68ef499d9e11f3f6118def2f4143aa2b2cf99"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_4/libero_10_task4/init_33/episode.json",
+        "sha256": "c85ff6bbcb216975409e3b2c8dc2abce9ec2208728c9540f18885aaf59b836a8"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_4/libero_10_task4/init_44/episode.json",
+        "sha256": "d58239e941374ea69c4982ca449c320953cf471eb2f9ba0aee105eb11de5fb19"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_5/benchmark_summary.json",
+        "sha256": "2237aba7c2763c04515285c5a7c1b783a3b9625ea7f4b9b534ecba9ccf09671e"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_5/libero_10_task5/init_17/episode.json",
+        "sha256": "dd6ddc9467a6860190353d0c6d1f23228779a47cc1d9a25ac56d40d86a25dc37"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_5/libero_10_task5/init_28/episode.json",
+        "sha256": "92c1f3a2f349f50d536eb1d774a8ab8e8e7d0c4f5dc9290b80b919f38d9024e7"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_5/libero_10_task5/init_31/episode.json",
+        "sha256": "31926328fbd77cf96d5e315355880d26b02127a4798a542123f380e1a36ea00b"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_5/libero_10_task5/init_42/episode.json",
+        "sha256": "dc5515593ce41df421e5daea1c778a0de86d84bcc0da10aea1edd322d1aa756d"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_5/libero_10_task5/init_6/episode.json",
+        "sha256": "334b800325abc209154935b9fa8610aec91b28e6fc13f3629597f36816bc878b"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_6/benchmark_summary.json",
+        "sha256": "3bd13d44f2ed2fd7ff64d4ea9b2f3c9e6bd60914178e9b46340f70f84caed980"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_6/libero_10_task6/init_17/episode.json",
+        "sha256": "6a8b026fd2d522b79cd0de7040f671824fbb8d689038dbd2e638698c009c3de8"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_6/libero_10_task6/init_3/episode.json",
+        "sha256": "efbf925de6863e7a0b16ebfde164bafeedcfbc1179d8581762d4ca067e470bb7"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_6/libero_10_task6/init_33/episode.json",
+        "sha256": "185eee86c1f31f356d6b0546b8cdd80e8eee70153b849582827d45647a8c311d"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_6/libero_10_task6/init_42/episode.json",
+        "sha256": "ab1e4e5ac51912b222b5980bfd80181bc2630deb7a5cafcd833ed415abab2b53"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_6/libero_10_task6/init_5/episode.json",
+        "sha256": "6de024ebb3254001843d4a0769c84acef834005f716af67bfc20eeb8878d2039"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_7/benchmark_summary.json",
+        "sha256": "1c9dd2c4f9368836912ef41afbc7e5f925cf3b4dfe60a3a657b355bd7cfddb11"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_7/libero_10_task7/init_12/episode.json",
+        "sha256": "5614fdd664874f90d73cc59cbd3cde978bb4db6f93eb590e6ab9a9c98f313f96"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_7/libero_10_task7/init_2/episode.json",
+        "sha256": "04b9ec98b7396c25653a5c66f229326e1269437e42dc1d0f21b5a2bbc7a78818"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_7/libero_10_task7/init_40/episode.json",
+        "sha256": "789fa711327cd691ed9e80c42db90f389bf3bc47107b0f4d93e235add83ba955"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_7/libero_10_task7/init_41/episode.json",
+        "sha256": "e5f12e2bfb41f087ffb60be355a5f09540e44c2b582e70190db30ed664e26ee8"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_7/libero_10_task7/init_42/episode.json",
+        "sha256": "f002a4d1b5bcb26307a4b41477d4ca02fa395a256bc19e2249d317468811be6f"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_8/benchmark_summary.json",
+        "sha256": "88c704a97d63d852dd9742309afbd680a15ffb987007815e697e15ba936c4bfb"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_8/libero_10_task8/init_22/episode.json",
+        "sha256": "d590c09858d02dff7f18569581f09c8a2089fad0c936dc9e976961a85a7c0f13"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_8/libero_10_task8/init_3/episode.json",
+        "sha256": "ad614f93466f8b475d2c81ee4af398eba2fe03be7276a1eaad5ca5131e9c2b32"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_8/libero_10_task8/init_33/episode.json",
+        "sha256": "8e6952499e18c348a3dc1a7d29959614b7103d082ed2290076243fedc89b1be7"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_8/libero_10_task8/init_35/episode.json",
+        "sha256": "bda08008a989b7764532b9f8531d3cf3cc8a7dffbb9c23b44c5f1e0f091a0a5a"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_8/libero_10_task8/init_8/episode.json",
+        "sha256": "81098d70b289890ae47f1db93397f5331fe9e82589a50a4d2637ffe1b7708560"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_9/benchmark_summary.json",
+        "sha256": "dbdb6968a69d63c2463860bcab8545597027d04fe46225b6011befc69a60e930"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_9/libero_10_task9/init_14/episode.json",
+        "sha256": "f3042ed80b799883e51db33051931395fea20695ad2cf7426adcffed598a296a"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_9/libero_10_task9/init_3/episode.json",
+        "sha256": "61a94f53325ebadab5db35bda924ec000d3c6584946c4f236e16666fe50c2b6e"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_9/libero_10_task9/init_43/episode.json",
+        "sha256": "3e73d9319365f08f3e63bdac49dbe066e0d5cfedd033bab4d478712d2727b4ff"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_9/libero_10_task9/init_45/episode.json",
+        "sha256": "761e69129b9c3054a9ed135abacd1356a6f8e1e8f1b843ea0e116158232d5026"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_9/libero_10_task9/init_49/episode.json",
+        "sha256": "f13c6a1c91a58ef05e1ca5ba01017ecb351094521bf0c7bfaa13ada791d9e490"
+      }
+    ],
+    "analysis_code_path": "scripts/analyze_e6_retention_paired_bootstrap.py",
+    "analysis_code_sha256": "cabdeecb8d20d1c92928de464ac95dfbb8c6104726025aa00cb369114a24140c"
+  }
+}

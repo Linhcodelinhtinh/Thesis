@@ -183,11 +183,15 @@ class SmolVLAAdapter(VLAPolicy):
 
         self._is_loaded = True
 
-    def bind_memory_runtime(self, writer, renderer):
+    def bind_memory_runtime(self, writer, renderer, *, writer_override=None,
+                            runtime_writer_source_sha256=None, runtime_writer_config=None):
         """Verify the actual online writer before using an isolated Mem adapter."""
         if self.mem_adapter_manifest is not None:
             from src.training.mem_adapter_artifact import validate_runtime
-            validate_runtime(self.mem_adapter_manifest, writer, renderer)
+            validate_runtime(self.mem_adapter_manifest, writer, renderer,
+                             writer_override=writer_override,
+                             runtime_writer_source_sha256=runtime_writer_source_sha256,
+                             runtime_writer_config=runtime_writer_config)
             if renderer.tokenizer is not self.tokenizer:
                 raise ValueError("Use the adapter's pinned prompt tokenizer")
             self._instruction_only = None

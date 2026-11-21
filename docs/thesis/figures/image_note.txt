@@ -1,0 +1,13 @@
+nhận xét về hình ảnh: đang hơi ít hình, cần tổng số hình rơi vào khoảng 10-12 hình. các hình không cần quá cầu kì, chi tiết hay quá to nhưng cần có khả năng minh họa được hệ thống/1 phần hệ thống/component hoặc hỗ trợ giải thích...
+về style, tham khảo từ docs\format_reference\22022513_Thesis.pdf
+
+vẽ lại workflow/dataflow của hệ thống trong hình 3.1 một cách cẩn thận và chăm chút chi tiết hơn, không nhất thiết phải vẽ quá nhiều module nhưng cần đảm bảo mọi module đều là ý nghĩa và được render cẩn thận.
+
+bổ sung thêm các hình ảnh khác, như: template mẫu + ví dụ của memory instruction vào phần thực nghiệm, 
+
+add thêm các hình robot gắp vật thể thành công trong libero 10 khi bàn về duy trì và suy giảm hiệu năng benchmark gốc
+
+docs\thesis\figures\libero_mem_t3_success.png đang chưa flip lại ảnh cho xuôi mắt con người
+
+
+tạo plan + mô tả chi tiết để thay thế, chỉnh sửa hoặc tạo mới cho tất cả hình ảnh cần thiết 

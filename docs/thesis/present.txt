@@ -1,0 +1,9 @@
+các vấn đề còn lại:
+
+performance run closed loop phiên bản latest: F1 latest + mem rgb_regulation_v3 đang không tốt bằng F0
+
+performance F1 v1 + mem rgb_cycle_v3 tốt hơn bản latest hiện tại 
+
+chưa deliver e3/e4, minivla đang underperformance
+
+có các bằng chứng về cải thiện loss khi thêm mem, nhưng khi chạy thực tế chưa 

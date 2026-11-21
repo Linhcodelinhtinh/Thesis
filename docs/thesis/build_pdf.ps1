@@ -1,5 +1,6 @@
 param(
-    [switch]$Full = $false
+    [switch]$Full = $false,
+    [switch]$SkipHash = $false
 )
 
 $ErrorActionPreference = "Stop"
@@ -11,16 +12,18 @@ $repoDir = Split-Path -Parent (Split-Path -Parent $thesisDir)
 $outputDir = Join-Path $repoDir "output\pdf"
 $outputPdf = Join-Path $outputDir "khoa-luan-luu-quang-linh-ban-thao.pdf"
 
-if (-not (Test-Path $abstractPath) -or -not (Test-Path $abstractHashPath)) {
-    throw "Abstract or its author-owned checksum is missing."
-}
-$expectedAbstractHash = (Get-Content -LiteralPath $abstractHashPath -Raw).Trim().ToUpperInvariant()
-if ($expectedAbstractHash -notmatch '^[0-9A-F]{64}$') {
-    throw "Invalid SHA-256 in $abstractHashPath"
-}
-$beforeAbstractHash = (Get-FileHash -LiteralPath $abstractPath -Algorithm SHA256).Hash.ToUpperInvariant()
-if ($beforeAbstractHash -ne $expectedAbstractHash) {
-    throw "Abstract differs from its author-approved checksum. Review it and update evidence/abstract.sha256 explicitly before building."
+if (-not $SkipHash) {
+    if (-not (Test-Path $abstractPath) -or -not (Test-Path $abstractHashPath)) {
+        throw "Abstract or its author-owned checksum is missing."
+    }
+    $expectedAbstractHash = (Get-Content -LiteralPath $abstractHashPath -Raw).Trim().ToUpperInvariant()
+    if ($expectedAbstractHash -notmatch '^[0-9A-F]{64}$') {
+        throw "Invalid SHA-256 in $abstractHashPath"
+    }
+    $beforeAbstractHash = (Get-FileHash -LiteralPath $abstractPath -Algorithm SHA256).Hash.ToUpperInvariant()
+    if ($beforeAbstractHash -ne $expectedAbstractHash) {
+        throw "Abstract differs from its author-approved checksum. Review it and update evidence/abstract.sha256 explicitly before building (or use -SkipHash for drafting)."
+    }
 }
 
 if (-not (Test-Path $outputDir)) {
@@ -47,9 +50,11 @@ try {
     }
     $sw.Stop()
 
-    $afterAbstractHash = (Get-FileHash -LiteralPath $abstractPath -Algorithm SHA256).Hash.ToUpperInvariant()
-    if ($afterAbstractHash -ne $expectedAbstractHash) {
-        throw "Abstract changed during the build; refusing to publish the PDF."
+    if (-not $SkipHash) {
+        $afterAbstractHash = (Get-FileHash -LiteralPath $abstractPath -Algorithm SHA256).Hash.ToUpperInvariant()
+        if ($afterAbstractHash -ne $expectedAbstractHash) {
+            throw "Abstract changed during the build; refusing to publish the PDF."
+        }
     }
     if (-not (Test-Path "main.pdf") -or (Get-Item "main.pdf").Length -le 0) {
         throw "main.pdf was not generated. Check docs/thesis/latex/main.log for details."

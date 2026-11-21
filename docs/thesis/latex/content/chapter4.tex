@@ -1,394 +1,142 @@
-\chapter{Thực nghiệm và thảo luận}
+\chapter{Thực nghiệm}
 
-\section{Phạm vi suy luận thực nghiệm}
+Chương này trình bày toàn bộ kết quả thực nghiệm nhằm đánh giá phương pháp bộ nhớ sự kiện có bằng chứng. Hệ thống thực nghiệm được thiết kế nhằm trả lời ba câu hỏi cốt lõi: (1) Việc bổ sung bộ nhớ sự kiện có giúp chính sách VLA cải thiện khả năng ra quyết định trong các tác vụ thao tác chuỗi lặp hay không; (2) Cơ chế ghi nhận bằng chứng thị giác vận hành như thế nào trong các tình huống thực tế; và (3) Quá trình tinh chỉnh với bộ nhớ có ảnh hưởng tới việc duy trì các kỹ năng thao tác cơ sở hay không.
 
-Để hỗ trợ điều khiển, một biểu diễn tiến độ cần thỏa mãn ba điều kiện: có thể suy ra từ quan sát khả dụng, đến được chính sách đúng lúc và chứa thông tin mà chính sách có thể sử dụng để chọn hành động. Khóa luận xem xét ba loại bằng chứng: sự phù hợp của sự kiện với mốc tiến độ trong các quỹ đạo thao tác mẫu, độ nhạy của sai số dự đoán hành động đối với đầu vào bộ nhớ, và kết quả điều khiển vòng kín. Đối chiếu ba phép đo giúp xác định mắt xích nào đã có bằng chứng và mắt xích nào cần một phép can thiệp riêng.
+\section{Thiết lập thực nghiệm và chỉ số đánh giá}
 
-Nguồn phân tích gồm một đợt thử nghiệm pilot lịch sử với sáu quỹ đạo thao tác mẫu, adapter F1 lịch sử và 40 quỹ đạo điều khiển vòng kín trên T1/T3; đợt pilot E0, chiến dịch đối sánh vòng kín E2 trên tập Unseen, đợt đánh giá duy trì năng lực E6 trên 10 tác vụ cơ sở, và các phép phát lại ngoại tuyến của các bộ ghi quan hệ. Bảng~\ref{tab:writer-policy-identity} xác định cấu hình của từng đợt. Các đợt dùng phiên bản writer, split và mục đích khác nhau, nên được báo cáo riêng biệt chứ không gộp thành một kết quả đơn lẻ. Hồ sơ kiểm định thực nghiệm tổng hợp chi tiết nguồn gốc và phạm vi của từng đợt thực nghiệm.
+\subsection{Các điều kiện đối chứng}
 
-Đối chứng của pilot vòng kín là B0 trên chính T1/T3. Các kết quả ở giai đoạn khảo sát sơ bộ trước đó chỉ cung cấp bối cảnh về chính sách gốc trên các tác vụ khác và với nhịp truy vấn khác.
+Để đánh giá một cách khoa học và bóc tách rõ vai trò của từng thành phần, nghiên cứu thiết lập bốn điều kiện đối chứng có kiểm soát chặt chẽ:
+
+\begin{enumerate}
+    \item \textbf{Mô hình cơ sở gốc (B0):} Sử dụng checkpoint tiền huấn luyện chính thức của SmolVLA mà không qua bất kỳ bước tinh chỉnh nào, chỉ tiếp nhận chỉ dẫn ngôn ngữ ban đầu $\ell$. Điều kiện này đóng vai trò là mốc tham chiếu hiệu năng zero-shot của mô hình nền tảng.
+    \item \textbf{Đối chứng thích ứng không bộ nhớ (F0):} Mô hình SmolVLA được tinh chỉnh LoRA trên Action Expert với cùng bộ dữ liệu và cùng ngân sách 5.000 bước tối ưu, nhưng chỉ nhận chỉ dẫn ngôn ngữ gốc $\ell$ mà không có thông tin bộ nhớ. Điều kiện này là mốc đối chứng then chốt để đo lường riêng biệt tác động của việc bổ sung ngữ cảnh bộ nhớ.
+    \item \textbf{Chính sách có bộ nhớ đề xuất (F1):} Mô hình được huấn luyện và suy luận với đầy đủ thông tin bộ nhớ sự kiện có bằng chứng được chiếu thành văn bản $C_q$. Cả F0 và F1 đều chia sẻ chung checkpoint nền, tập quỹ đạo huấn luyện, cấu hình LoRA và siêu tham số tối ưu hóa.
+    \item \textbf{Kiểm định độ nhạy cắt bộ nhớ (F1-off):} Sử dụng nguyên vẹn trọng số đã học của F1 nhưng chủ động cắt bỏ phần văn bản bộ nhớ trong quá trình suy luận vòng kín, chỉ cung cấp chỉ dẫn gốc. Đối chứng này nhằm kiểm định xem mô hình có thực sự học cách điều kiện hóa hành vi dựa trên tín hiệu bộ nhớ hay không.
+\end{enumerate}
+
+Bảng~\ref{tab:experimental-conditions} tổng hợp cấu hình của bốn điều kiện thực nghiệm.
+
+\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.18\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.26\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.26\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.30\textwidth-2\tabcolsep\relax}}
+\caption{Các điều kiện thực nghiệm đối chứng}\label{tab:experimental-conditions}\\
+\toprule
+\textbf{Điều kiện} & \textbf{Trọng số mô hình} & \textbf{Ngữ cảnh văn bản} & \textbf{Mục đích đánh giá} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Điều kiện} & \textbf{Trọng số mô hình} & \textbf{Ngữ cảnh văn bản} & \textbf{Mục đích đánh giá} \\
+\midrule\endhead
+\bottomrule\endfoot
+B0 & Checkpoint gốc & Chỉ dẫn gốc & Mốc tham chiếu nền tảng trước thích ứng \\
+F0 & Adapter LoRA đối chứng & Chỉ dẫn gốc & Đo lường tác động của thích ứng không bộ nhớ \\
+F1 & Adapter LoRA có bộ nhớ & Chỉ dẫn và sự kiện & Đánh giá hiệu quả của phương pháp đề xuất \\
+F1-off & Trọng số của F1 & Chỉ dẫn gốc & Kiểm tra độ nhạy và phụ thuộc vào bộ nhớ \\
+\end{longtable}
+\endgroup
+
+\subsection{Giao thức mô phỏng và chỉ số đánh giá}
+
+Các thử nghiệm vòng kín được thực hiện trên môi trường mô phỏng cánh tay robot Franka Emika Panda với bộ điều khiển không gian tác vụ Operational Space Controller OSC\_POSE vận hành ở tần số 20 Hz. Hệ thống cảm biến cung cấp hai luồng ảnh RGB kích thước $256 \times 256$ (camera góc nhìn thứ ba và camera gắn cổ tay) cùng vector trạng thái khớp robot.
+
+Mỗi lượt thực thi bắt đầu bằng 20 bước làm nóng để ổn định tiếp xúc vật lý. Chính sách VLA sinh đoạn hành động gồm $H = 50$ lệnh chuyển động và thực thi $K = 10$ hành động trước khi truy vấn lại. Mỗi lượt chạy có giới hạn tối đa 1.000 bước hành động. Một lượt bị dừng sớm nếu bộ chấm phát hiện hành vi vượt quá số chu kỳ yêu cầu.
+
+Để định lượng hiệu năng một cách toàn diện, nghiên cứu sử dụng ba chỉ số đánh giá:
+\begin{enumerate}
+    \item \textbf{Chỉ báo thành công toàn phần ($S_i$):}
+    \begin{equation}
+    S_i = \mathbf{1}[K_i = K_i^\star \land P_i \land \neg O_i].
+    \end{equation}
+    Trong đó $K_i$ là số mốc chu kỳ bộ chấm xác nhận, $K_i^\star$ là số mốc yêu cầu của tác vụ, $P_i$ là vị từ kiểm tra trạng thái đích tại thời điểm kết thúc, và $O_i$ là cờ báo vi phạm vượt số chu kỳ.
+    \item \textbf{Tỷ lệ hoàn thành mốc thành phần ($\mathrm{SCR}_i$):} Đo lường tiến độ từng phần của robot:
+    \begin{equation}
+    \mathrm{SCR}_i = \frac{K_i}{K_i^\star}.
+    \end{equation}
+    \item \textbf{Tỷ lệ thành công thực nghiệm ($\widehat{\mathrm{SR}}$):} Trung bình tỷ lệ thành công trên tập $M$ lượt đánh giá:
+    \begin{equation}
+    \widehat{\mathrm{SR}} = \frac{1}{M}\sum_{i=1}^{M} S_i.
+    \end{equation}
+\end{enumerate}
+
+\section{Đối sánh vòng kín trên LIBERO-Mem}
 
 % claim-id: v2-data
-\section{Định danh checkpoint và bộ ghi}
-
-F1 là điều kiện thích ứng có bộ nhớ. RGB Cycle lịch sử \texttt{rgb\_cycle\_v3} và Relation V3 cập nhật \texttt{rgb\_relations\_v3} có mã nguồn, cấu hình và hợp đồng prompt riêng. Hậu tố phiên bản writer độc lập với số phiên bản giao thức và split.
-
 % claim-id: writer-checkpoint-comparison
-\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
-\begin{longtable}{>{\raggedright\arraybackslash}p{0.17\textwidth}>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedright\arraybackslash}p{0.23\textwidth}}
-\caption{Đối chiếu checkpoint, memory và phạm vi kết quả}\label{tab:writer-policy-identity}\\
+Thực nghiệm E2 so sánh đối đầu giữa hai adapter F0 và F1 trên cùng 20 nhóm trạng thái kiểm tra Unseen (\texttt{demo\_101}--\texttt{demo\_120}) của hai tác vụ T1 (yêu cầu một chu kỳ nhấc và đặt lại bát) và T3 (yêu cầu ba chu kỳ). Hai cấu hình được ghép cặp chặt chẽ theo từng trạng thái khởi tạo và hạt giống ngẫu nhiên seed 42, tạo thành 40 cặp đối đầu với tổng cộng 80 lượt chạy vòng kín độc lập.
+
+Các bản ghi thực nghiệm E2 vận hành ở chế độ suy luận định kỳ tiêu chuẩn ($K = 10$ hành động giữa hai lần truy vấn chính sách), tập trung đánh giá tác động của việc điều kiện hóa ngữ cảnh văn bản lên phân phối hành động của VLA.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Kết quả đối sánh vòng kín E2 trên tác vụ T1 và T3}
+\label{tab:e2-unseen-results}
+\begin{tabular}{lrrrr}
 \toprule
-\textbf{Đợt} & \textbf{Checkpoint} & \textbf{Memory lúc suy luận} & \textbf{Kết quả quan sát} \\
-\midrule\endfirsthead
-\toprule
-\textbf{Đợt} & \textbf{Checkpoint} & \textbf{Memory lúc suy luận} & \textbf{Kết quả quan sát} \\
-\midrule\endhead
-\bottomrule\endfoot
-Test lịch sử & B0 gốc và F1 LoRA 3.000 bước, split lịch sử & B0 tắt, F1 \texttt{rgb\_cycle\_v3} & B0 0/20, F1 1/20 trên T3; 10 nhóm state \\
-E0 seen & B0 gốc và F0 V2 5.000 bước & Tắt cả hai & 0/2 mỗi arm; một state mỗi task \\
-E2 raw unseen & F0/F1 V2 LoRA 5.000 bước, cùng corpus và recipe & F0 tắt, F1 \texttt{rgb\_relations\_v1} & F0 4/40, F1 0/40; 20 nhóm state \\
-Retest unseen & Cùng export F1 V2 & \texttt{rgb\_relations\_v1} & 0/28 đã hoàn tất trong 40 lượt dự kiến \\
-E6 LIBERO-10 & B0 gốc và F1-off dùng export F1 V2 của E2 & Tắt cả hai & B0 37/50, F1-off 23/50 \\
-Derived v1 & Export F1 riêng, LoRA 5.000 bước & Huấn luyện với \texttt{rgb\_cycle\_v3} & 188/198 quỹ đạo giữ lại; chưa xác minh rollout của export này \\
-Replay writer & Trace đã lưu; không chạy lại policy & \texttt{rgb\_relations\_v2}, \texttt{rgb\_relations\_v3} & Có số ghép mốc; chưa có checkpoint F1 tương ứng đã đánh giá vòng kín \\
-\end{longtable}
-\endgroup
-
-Test lịch sử và E2 cùng dùng seed 42 nhưng khác checkpoint F1, split và roster. Thành công 1/20 ở test lịch sử và 0/40 ở E2 do đó mô tả hai cấu hình vòng kín. Retest 28/40 dùng cùng adapter E2 và được giữ riêng do thiếu 12 outcome T3. Trong manifest derived, \texttt{predicted\_rgb\_v3} là nhãn luồng dữ liệu còn \texttt{rgb\_cycle\_v3} là định danh writer.
-
-\section{Artifact development của giao thức V2}
-
-Khóa split V2 xác minh 198 quỹ đạo refined T1/T3 và 500 quỹ đạo LIBERO cơ sở. Toàn bộ 198 quỹ đạo Mem được giữ cho huấn luyện; phía cơ sở có 400 quỹ đạo huấn luyện, 50 quỹ đạo xác thực và 50 quỹ đạo dành riêng cho kiểm tra duy trì kỹ năng. Roster raw dùng riêng cho rollout: seen phục vụ phát triển và unseen gồm 20 nhóm trạng thái dùng chung giữa T1/T3. Các nhóm unseen không trùng với tiền tố 100 state raw đầu của Mem hoặc các state cơ sở trong khóa. Đây là khóa dữ liệu, chưa phải kết quả của chính sách được huấn luyện trên tập này.
-
-\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.12}
-\begin{longtable}{>{\raggedright\arraybackslash}p{.27\textwidth}>{\raggedright\arraybackslash}p{.31\textwidth}>{\raggedright\arraybackslash}p{.32\textwidth}}
-\caption{Tình trạng artifact dữ liệu và phân tích trong đợt đối sánh V2}\label{tab:v2-artifacts}\\
-\toprule
-\textbf{Artifact} & \textbf{Kết quả kiểm tra} & \textbf{Phạm vi diễn giải} \\
-\midrule\endfirsthead
-\toprule
-\textbf{Artifact} & \textbf{Kết quả kiểm tra} & \textbf{Phạm vi diễn giải} \\
-\midrule\endhead
-\bottomrule\endfoot
-Khóa nguồn và split & 698 quỹ đạo; 598 train gồm 198 Mem và 400 cơ sở, 50 validation cơ sở, 50 base-retention & State/hash và assignment được khóa; chưa có model mới \\
-Shards đối sánh & 180.447 cặp observation-action; 11,83 GiB; 1.396 mẫu parity qua audit & F0/F1 có cùng đầu vào dữ liệu nếu được huấn luyện theo recipe đã khóa \\
-Replay decision T1 & 100 quỹ đạo; 42.857 frame gộp T1/T3; 68/100 mốc tác giả khớp; lịch query 1.504 / 1.864 / 1.874 & Lịch theo evidence so với lịch gốc và lịch cố định 8 action trên đường quan sát đã ghi \\
-Replay decision T3 & 98 quỹ đạo; 126/294 mốc tác giả khớp; lịch query 2.845 / 3.546 / 3.550 & Kết quả replay không phải policy rollout hoặc nhãn độc lập \\
-T7 nguồn refined & Tổng kiểm băm cục bộ khớp bản ghi LFS; 88 demo, 35.637 hành động & Writer audit trên demonstration không đo competence policy \\
-T7 writer RGB & 425 mẫu demo 1; 0 prompt có fact memory; relation unknown & Phép đo một demo; chưa có nhãn blind identity/relation \\
-T9 writer RGB & 356 mẫu demo 1; 0 prompt có fact memory; relation unknown & Phép đo một demo train; chưa có nhãn blind identity/containment \\
-T7 detector RGB & IoU 0,5: bowl P/R 0,893/0,747; plate 0,971/0,646 & 425 frame train; đối chiếu exo-box theo frame, không phải relation accuracy \\
-T8-T10 author-action replay & T9/T10 terminal; T8 ba milestone, không terminal; action/state khớp, robot-state drift đầu tại bước 219 & Một demo/task; nguyên nhân T8 chưa rõ; không phải policy score \\
-Cặp F0/F1 V2 matched & Artifacts 5.000 bước đã có; manifest, weight identity và matched validation qua & Hoàn tất rollout đối sánh ghép cặp E2 trên 20 cụm trạng thái Unseen gồm 40 cặp tương ứng 80 episodes với kết quả F0 đạt 10\% và F1 đạt 0\%; matched seen là phép kiểm riêng \\
-Runtime check V2 & B0/F0, T1/T3, seen state 0; 4/4 checks, hai action mỗi check & Nạp model/reset/action thành công; không chấm điểm \\
-E0 pilot V2 & B0/F0 trên T1/T3, một state/task; 4/4 episode đủ 1.000 action; 0/4 success & Custom development; không phải memory effect hoặc điểm official \\
-\end{longtable}
-\endgroup
-
-% claim-id: decision-replay
-
-Các bộ shards đã qua alignment audit trên toàn bộ 180.447 cặp, gồm 1.396 mẫu so parity giữa collator và adapter. Cặp artifact F0 V2 không dùng bộ nhớ và F1 V2 sử dụng bộ nhớ quan hệ \texttt{rgb\_relations\_v1} ở mốc 5.000 bước đều đã hoàn tất export, đạt kiểm tra strict reload, khớp hợp đồng cặp \texttt{validate\_matched\_adapters} và vượt qua runtime check chẩn đoán trên T1/T3. Phép so sánh vòng kín ghép cặp giữa F0 và F1 trên 20 cụm trạng thái Unseen của chiến dịch E2, được trình bày chi tiết ở Bảng~\ref{tab:e2-unseen-results}, đã hoàn tất trọn vẹn 40 cặp đối sánh tương ứng 80 episodes, trong khi phép so sánh matched trên các trạng thái seen vẫn là phép kiểm riêng. Pilot E0 bổ sung bốn lượt B0/F0 trên một state seen mỗi task; mọi lượt chạy đủ horizon nhưng hoàn thành 0 subgoal. Đây là kiểm tra development, không thay thế phép đánh giá matched. Checkpoint F1 dùng trong pilot lịch sử được huấn luyện bằng \texttt{rgb\_cycle\_v3} và bị từ chối ở cổng kiểm hash cho cơ chế quyết định. Vì vậy kết luận về D1/D2 vẫn giới hạn ở replay offline và kiểm tra phần mềm.
-
-Replay lịch query dùng 198 trajectory mẫu của tác giả, tổng 42.857 frame. Mốc writer khớp 68/100 ở T1 và 126/294 ở T3; median delay trên các mốc ghép là 9 frame. Số query theo thứ tự trong bảng là lịch gốc, lịch theo thay đổi evidence và lịch cố định 8 action. Lịch evidence tạo 653 query sớm dự kiến ở T1 và 1.272 ở T3; đây là dự báo trên trace đã ghi. Thời gian wall-clock, sai số quyết định và success trong vòng kín chưa được đo bằng các lịch đó.
-
-% claim-id: t7-source
-T7 có hai mức xác nhận nguồn khác nhau. Khóa raw lưu 120 state từ phiên bản của kho dữ liệu raw; tệp refined cục bộ gồm 88 quỹ đạo và đã được kiểm tra tính toàn vẹn theo bản ghi LFS. Replay action trong simulator khóa đã kiểm tra timing của hai nhánh Or, kể cả trường hợp bộ đếm được cập nhật trong bước môi trường. Các lượt đó xác minh hành vi evaluator trên action tác giả; chúng không đánh giá policy, writer identity hoặc khả năng hoán đổi bát trong vòng kín.
-
-% claim-id: t7-writer
-Audit RGB relation writer trên \texttt{demo\_1} tạo index hoàn chỉnh cho 425 mẫu nhưng không cấp fact memory ở bất kỳ mẫu nào. Hai relation states đều \texttt{unknown} trong 425 bước; 2.125 object-status ghi nhận 92 trạng thái \texttt{tracked}, 648 \texttt{ambiguous} và 1.385 \texttt{unknown}. Trong 20 quan sát đầu, detector chỉ trả hai hộp plate ở mỗi frame, trong khi task profile có ba plate. Tracker chỉ khởi tạo anchor plate khi đủ ba đối tượng cùng được phát hiện trong cửa sổ đầu; điều kiện này không xuất hiện ở demo đã audit. Đối chiếu với exo-box annotations phát hành ở IoU 0,5 cho bowl precision/recall 0,893/0,747 và plate 0,971/0,646 trên 425 ảnh; 425 hash khung hình đều khớp nguồn refined. Đây là đánh giá hộp 2D theo frame của một demo train, không phải identity/relation accuracy hoặc đánh giá trên frame độc lập. Chưa có nhãn blind để xác nhận identity hoặc relation, và một demo không đại diện cho 88 quỹ đạo của nguồn.
-
-% claim-id: t9-writer
-Nguồn refined của T9 tại phiên bản đã khóa khớp biên nhận kiểm tra toàn vẹn cục bộ. Trên \texttt{demo\_1}, index RGB relation writer hoàn chỉnh gồm 356 quan sát nhưng không cấp fact memory ở bất kỳ quan sát nào; relation state duy trì \texttt{unknown} trong cả 356 bước. Kết quả này chỉ mô tả đầu ra writer trên một demo train, không đo độ đúng của identity hoặc containment và không phải điểm policy. Chưa có nhãn blind để đánh giá liên hệ hộp cream cheese với giỏ qua che khuất.
-
-% claim-id: t8-writer
-Nguồn refined của T8 tại phiên bản đã khóa khớp biên nhận kiểm tra toàn vẹn cục bộ. Trên \texttt{demo\_1}, index RGB relation writer hoàn chỉnh gồm 613 quan sát nhưng không cấp fact memory ở bất kỳ quan sát nào; relation state duy trì \texttt{unknown} trong cả 613 bước. Kết quả này chỉ mô tả đầu ra writer trên một demo train, không đo độ đúng identity hoặc quan hệ qua ba bát, và không phải điểm policy.
-
-% claim-id: t10-writer
-Nguồn refined của T10 tại phiên bản đã khóa khớp biên nhận kiểm tra toàn vẹn cục bộ. Trên \texttt{demo\_1}, index RGB relation writer hoàn chỉnh gồm 309 quan sát nhưng không cấp fact memory ở bất kỳ quan sát nào; relation state duy trì \texttt{unknown} trong cả 309 bước và 927 quan sát identity đều \texttt{unknown}. Kết quả này chỉ mô tả đầu ra writer trên một demo train, không đo độ đúng identity hoặc containment qua che khuất, và không phải điểm policy.
-
-% claim-id: task-runtime-replay
-Một phép kiểm riêng phát lại author actions của \texttt{demo\_1} trên T8, T9 và T10 qua environment helper, state initializer, action transform và evaluator được đối chiếu với revision LIBERO-Mem đã pin. T9 và T10 đều ghi hai milestone, terminal return/done là true và không overshot. Với T8, raw actions sau transform trùng chính xác 613 action trong refined HDF5; initial state raw cũng trùng metainfo refined. So với robot states đã ghi, replay còn trong dung sai chẩn đoán $10^{-5}$ đến bước 218 và lần đầu vượt dung sai ở bước 219. Lượt replay ghi ba sequence milestones nhưng terminal return/done đều false, trong khi metainfo refined ghi \texttt{success=true} cho cùng state. Kết quả này thu hẹp sai khác vào diễn tiến trạng thái mô phỏng sau bước 219 nhưng chưa xác định nguyên nhân; T8 vẫn chưa qua gate evaluator. Hai báo cáo chi tiết về T8 được lưu trữ trong hồ sơ kiểm định bằng chứng của đề tài. Đây là một author-action trajectory mỗi task; không chạy policy, không đánh giá relation/containment accuracy và không đo tác động của bộ nhớ.
-
-% claim-id: legacy-writer
-\section{Mức phù hợp giữa sự kiện thị giác và mốc tiến độ}
-
-Để khảo sát RQ2, bộ ghi sự kiện từ RGB được áp dụng trên sáu quỹ đạo thao tác mẫu T1/T3, gồm 1.276 khung hình và ba trạng thái khởi tạo. Với mỗi trạng thái đều có quỹ đạo của cả T1 lẫn T3. Hai quỹ đạo được dùng để phát triển phương pháp và các quỹ đạo bổ sung cũng đã được quan sát trước khi tổng hợp. Phép đo này vì vậy có phạm vi chẩn đoán trên những quỹ đạo đã biết. Nhãn tham chiếu mô tả thời điểm tiến độ tích lũy đạt mốc, nên phù hợp để đối chiếu sự kiện hoàn thành chu kỳ, còn thời điểm tiếp xúc hoặc nhả vật cần một loại nhãn khác.
-
-Mỗi sự kiện đặt lại do bộ ghi xác nhận được ghép với nhiều nhất một mốc tham chiếu, trong dung sai 20 khung hình. Tất cả 12 sự kiện xác nhận đều ghép được với 12 mốc. Độ trễ xác nhận có trung vị 9 khung hình, trung bình xấp xỉ 9,92 khung hình và nằm trong khoảng 6-20 khung hình. Kết quả cho thấy có thể trích xuất một biến tiến độ hữu ích để mô tả những quỹ đạo đã xem từ bằng chứng thị giác. Độ trễ quan sát được cho thấy giữa thời điểm tiến độ thay đổi và thời điểm chính sách có thể nhận bằng chứng về thay đổi đó tồn tại một khoảng chờ cần tính đến.
-
-\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
-\begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.25\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.35\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.4\textwidth-2\tabcolsep\relax}}
-\caption{Đối chiếu sự kiện thị giác với mốc tiến độ trên các quỹ đạo mẫu}\label{tab:generated4}\\
-\toprule
-\textbf{Đại lượng khảo sát} & \textbf{Kết quả quan sát} & \textbf{Phạm vi diễn giải} \\
-\midrule\endfirsthead
-\toprule
-\textbf{Đại lượng khảo sát} & \textbf{Kết quả quan sát} & \textbf{Phạm vi diễn giải} \\
-\midrule\endhead
-\bottomrule\endfoot
-Quỹ đạo mẫu / trạng thái / khung hình & 6 / 3 / 1.276 & Các quỹ đạo hoàn thành tác vụ đã được quan sát \\
-Mốc tham chiếu / sự kiện xác nhận / cặp ghép & 12 / 12 / 12 & Ghép một-một trong dung sai ±20 khung hình \\
-Sự kiện dư / mốc bị bỏ sót & 0 / 0 & Tính trên sáu quỹ đạo mẫu \\
-Độ trễ xác nhận & Trung vị 9, khoảng 6-20 khung hình & So với mốc tham chiếu \\
-Phát hiện bát có IoU $\geq0{,}5$ & 1.169/1.172, đạt 99,74\% & Mẫu số chỉ gồm phát hiện đã được bộ theo dõi chấp nhận \\
-Có định vị vật / có văn bản bộ nhớ & 1.172/1.276 / 1.258/1.276 khung hình & Tỷ lệ có đầu ra ở từng khâu \\
-Lời nhắc dài nhất & 31 trên giới hạn 48 token & Đo bằng bộ tách token đã chọn \\
-Độ trễ xử lý RGB & Khoảng 999-1.058 ms/khung hình & Độ trễ tính toán ở lần đo riêng \\
-\end{longtable}
-\endgroup
-
-Tỷ lệ khớp hộp giới hạn đo chất lượng định vị có điều kiện trên các phát hiện được chấp nhận. Tỷ lệ này bỏ qua các khung mà đối tượng bị bỏ sót hoặc bị từ chối. Tương tự, việc tạo được văn bản chỉ chứng tỏ biểu diễn có đầu ra tại khung hình đó. Muốn ước lượng mức phù hợp của nội dung bộ nhớ trên phân phối điều khiển, cần cả quỹ đạo thành công lẫn thất bại và nhãn độc lập cho những tình huống như nhấc hụt, đặt lệch đĩa hoặc che khuất kéo dài.
-
-Hồ sơ kiểm định lưu trữ chi tiết các nguồn phát hành, phiên bản, mã kiểm tra và phương pháp đối chiếu các artifact được dùng trong chương này.
-
-\subsection{Replay các phiên bản Relation Writer trên cùng cache}
-
-Pilot sáu demo ở trên dùng RGB Cycle lịch sử. Phép so sánh sau dùng cache chung của 198 demo development với 394 mốc và trace F1 Relation V1 đã lưu trên 40 lượt E2 với ba mốc. Dự đoán và mốc được ghép một-một trong $\pm20$ frame. TP là số lượt khớp, FP là số lượt báo dư và FN là số mốc bị bỏ sót.
-
-\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
-\begin{longtable}{p{0.29\textwidth}rrrr}
-\caption{Replay Relation Writer trên development và E2}\label{tab:relation-writer-replay}\\
-\toprule
-\textbf{Phiên bản} & \textbf{T1/100} & \textbf{T3/294} & \textbf{Dev TP/FP/FN} & \textbf{E2 TP/FP/FN} \\
-\midrule\endfirsthead
-\toprule
-\textbf{Phiên bản} & \textbf{T1/100} & \textbf{T3/294} & \textbf{Dev TP/FP/FN} & \textbf{E2 TP/FP/FN} \\
-\midrule\endhead
-\bottomrule\endfoot
-Relation V1 & 68 & 126 & 194/0/200 & 0/5/3 \\
-Relation V2 alias guard & 65 & 99 & 164/0/230 & 0/1/3 \\
-Relation V3 cũ, mặc định & 54 & 76 & 130/0/264 & 0/1/3 \\
-Relation V3 cũ, candidate & 68 & 128 & 196/0/198 & 1/30/2 \\
-Relation V3 cập nhật motion & 66 & 129 & 195/0/199 & 0/1/3 \\
-\end{longtable}
-\endgroup
-
-Candidate trước sửa motion có 23/30 báo dư trong khi predicate $On$ đúng xuyên suốt cặp nhấc-đặt và 7/30 báo dư khi predicate vẫn sai tại return. Bản motion kiểm hai mép bbox cùng dâng so với pose nghỉ và quan sát bát hạ về vùng đỡ trước khi tăng bộ đếm. Trên development, bản này tăng 31 mốc so với Relation V2, thấp hơn candidate cũ một mốc và còn dưới mục tiêu T1 là 68/100. Trên E2, bản motion giảm 29 báo dư so với candidate và bỏ sót cả ba mốc. Match duy nhất của candidate cũ có departure ghi sau khi predicate $On$ phục hồi. E2 đã dùng để chọn cấu hình nên số liệu này là hồi quy. Hiệu quả vòng kín của Relation V3 còn cần một checkpoint và lượt chạy tương ứng.
-
-Trên cùng phép đo cached của hai demo, p50/p95 của writer và renderer lần lượt là 1,08/1,76 ms đối với Relation V1, 1,14/1,74 ms đối với Relation V2 và 1,11/1,53 ms đối với Relation V3 motion. Phép đo dùng RGB 256$\times$256, detector cache và bộ đếm token đơn giản. Wall time vòng kín ở E2 được đo riêng trên cấu hình F0/F1 V2.
-
-\section{Điều kiện đối chiếu trong mô phỏng}
-
-Việc so sánh vòng kín giữa các chính sách đòi hỏi giữ ổn định động lực học, điều kiện quan sát và tiêu chí chấm điểm. Mức độ quy kết còn phụ thuộc vào những thành phần được thay đổi trong phép đối chứng. Hai lần chạy B0/F1 có cùng tổng kiểm của mô hình gốc, cấu hình đánh giá và danh sách trạng thái. Bản ghi nguồn của hai lần chạy khác nhau ở ba tập lệnh khởi chạy hoặc chẩn đoán. Các điểm khớp giúp thu hẹp diễn giải về biến gây nhiễu, còn khác biệt nguồn đặt giới hạn cho phát biểu về độ tương đương của hai lần chạy. Hồ sơ kiểm định bằng chứng mô tả chi tiết định danh nguồn và phạm vi đối chiếu.
-
-\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
-\begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.31\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.69\textwidth-2\tabcolsep\relax}}
-\caption{Các điều kiện đối chiếu trong thực nghiệm vòng kín}\label{tab:generated5}\\
-\toprule
-\textbf{Điều kiện} & \textbf{Giá trị dùng trong thực nghiệm} \\
-\midrule\endfirsthead
-\toprule
-\textbf{Điều kiện} & \textbf{Giá trị dùng trong thực nghiệm} \\
-\midrule\endhead
-\bottomrule\endfoot
-Mô hình gốc & SmolVLA cho LIBERO, cùng phiên bản ở B0 và F1 \\
-Nguồn tác vụ và bộ chấm & LIBERO-Mem tại phiên bản đã khóa \\
-Mô phỏng & Franka Panda thông qua lớp runtime \texttt{MountedPanda}, cùng thiết lập động lực học \\
-Đầu vào chính sách & Hai camera 256×256, trạng thái 8 chiều, tiền xử lý theo checkpoint gốc \\
-Điều khiển & OSC\_POSE ở 20 Hz trong mô phỏng, dự đoán $H=50$, thực thi $s=10$ \\
-Khởi tạo và điểm cuối & Trạng thái từ danh sách đã khóa, 20 bước làm ấm, tối đa 1.000 hành động chính sách, dừng sớm khi vượt số chu kỳ \\
-\end{longtable}
-\endgroup
-
-% claim-id: reference-env-smoke
-Huấn luyện sử dụng hai GPU Tesla T4. Các phép đánh giá suy luận được thực hiện trên NVIDIA GeForce RTX 4060 Laptop GPU. Môi trường thực thi được phân định rõ theo từng đợt: đối với đợt E0, suy luận chính sách chạy trong WSL với Python 3.12.3 và CUDA 12.8, trong khi môi trường mô phỏng chạy riêng với Python 3.8.13 và robosuite 1.4.0; đối với đợt đối sánh E2, chính sách chạy trên Windows còn mô phỏng chạy trong WSL với robosuite 1.4.0; đối với đợt đánh giá duy trì E6 trên LIBERO-10, thực nghiệm chạy trên Windows với robosuite 1.5.2 và BDDL 3.6.0. Chu kỳ danh định 20 Hz của bộ điều khiển tương ứng 50 ms mỗi bước mô phỏng. Riêng thời gian xử lý một khung hình RGB trong phép đo chẩn đoán đã xấp xỉ một giây. Thời gian phát lại máy trạng thái từ dữ liệu đã lưu khoảng 1-2 ms mỗi khung hình phản ánh chi phí của một thành phần khác, sau khi đã có kết quả nhận dạng vật. Khi mô phỏng tạm dừng để chờ suy luận, tiến độ mô phỏng và thời gian thực trôi qua là hai đại lượng khác nhau. Một kết luận về khả năng vận hành thời gian thực cần đo trọn chu trình trên cấu hình đã xác định.
-
-\section{Mẫu nghiên cứu và điều kiện thích ứng}
-
-F1 trong bảng này là adapter lịch sử được đánh giá ở pilot, huấn luyện trên một phiên bản split trước V2. Bảng ghi số quỹ đạo trong danh mục dữ liệu của checkpoint đó, không phải số lượng của corpus mới trong Bảng~\ref{tab:v2-artifacts}. Các quỹ đạo có cùng mã băm trạng thái khởi tạo được phân vào cùng một tập. Trong pilot vòng kín T1/T3, 20 tổ hợp tác vụ và trạng thái của mỗi điều kiện tương ứng 10 nhóm trạng thái dùng chung giữa hai tác vụ. Tập này đã được sử dụng trong quá trình phát triển, nên số liệu chỉ có vai trò thăm dò.
-
-\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
-\begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.29\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.1775\textwidth-2\tabcolsep\relax}}
-\caption{Phân hoạch quỹ đạo theo nhóm tác vụ}\label{tab:generated6}\\
-\toprule
-\textbf{Nhóm dữ liệu} & \textbf{Huấn luyện} & \textbf{Xác thực} & \textbf{Kiểm tra} & \textbf{Tổng} \\
-\midrule\endfirsthead
-\toprule
-\textbf{Nhóm dữ liệu} & \textbf{Huấn luyện} & \textbf{Xác thực} & \textbf{Kiểm tra} & \textbf{Tổng} \\
-\midrule\endhead
-\bottomrule\endfoot
-Thao tác cơ sở LIBERO-10 & 400 & 50 & 50 & 500 \\
-Mem T1 & 80 & 10 & 10 & 100 \\
-Mem T3 & 78 & 10 & 10 & 98 \\
-Tổng & 558 & 70 & 70 & 698 \\
-\end{longtable}
-\endgroup
-
-Lấy mẫu hỗn hợp nhằm đặt ra bài toán duy trì kỹ năng cơ sở nêu trong RQ3 trong cùng quá trình thích ứng với tác vụ phụ thuộc lịch sử. Trong mỗi lô cập nhật, số mẫu của hai miền được phân bổ theo tỷ lệ đã chọn. Trong từng miền, tác vụ được chọn luân phiên, sau đó lấy mẫu đều theo quỹ đạo rồi chọn khung hình. Cách này làm giảm ảnh hưởng của độ dài quỹ đạo lên xác suất được chọn. Tỷ lệ lấy mẫu 50/50 là một điều kiện huấn luyện đã quan sát, nên giá trị của việc trộn dữ liệu và lựa chọn tỷ lệ vẫn cần đối chứng riêng.
-
-\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
-\begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.18\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.23\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.26\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.33\textwidth-2\tabcolsep\relax}}
-\caption{Cấu hình thích ứng của F1 và phạm vi suy luận}\label{tab:generated7}\\
-\toprule
-\textbf{Hạng mục} & \textbf{Cấu hình đã sử dụng} & \textbf{Vai trò nghiên cứu} & \textbf{Giới hạn suy luận} \\
-\midrule\endfirsthead
-\toprule
-\textbf{Hạng mục} & \textbf{Cấu hình đã sử dụng} & \textbf{Vai trò nghiên cứu} & \textbf{Giới hạn suy luận} \\
-\midrule\endhead
-\bottomrule\endfoot
-Vị trí thích ứng & LoRA tại phép chiếu query/value của khối sinh hành động, hạng 16, 645.120 tham số được cập nhật & Giữ mô hình nền cố định khi thích ứng & Chỉ khảo sát một vị trí và một hạng \\
-Tối ưu hóa & AdamW, tốc độ học ban đầu $2\times10^{-5}$, làm ấm 100 bước, 3.000 bước cập nhật, chặn chuẩn gradient 1,0 & Cố định ngân sách của F1 & Chưa có khảo sát siêu tham số \\
-Lấy mẫu hỗn hợp & Lô hiệu dụng 32, tỷ lệ dữ liệu cơ sở 0,5, hạt giống 42 & Đặt kỹ năng cơ sở và thích ứng vào cùng bài toán huấn luyện & Mức độ duy trì cần đo bằng điều khiển vòng kín \\
-Bộ nhớ khi huấn luyện & Tỷ lệ bỏ bộ nhớ bằng 0, xác thực và lưu mô hình mỗi 500 bước & Xác định phân phối đầu vào của F1 & Bỏ bộ nhớ khi suy luận có thể thay đổi phân phối \\
-Mô hình được đánh giá & Trọng số LoRA lưu riêng, dùng checkpoint ở bước 3.000 & Cố định phiên bản dùng cho các phép đo & Chưa chọn checkpoint theo tỷ lệ thành công vòng kín \\
-\end{longtable}
-\endgroup
-
-Tổng kiểm của danh mục dữ liệu khớp với bản ghi huấn luyện, và bốn tệp được liệt kê trong bản xuất F1 lịch sử có tổng kiểm khớp bản kê. Phép đối chiếu giới hạn ở các tệp đã nêu. Dữ liệu Mem của checkpoint này dùng quỹ đạo do tác giả công bố, với ảnh được đưa về quy ước gốc trước tiền xử lý của policy. Một đợt tái tạo dữ liệu tại chỗ ghi nhận 73/78 quỹ đạo phát lại T3 đạt điều kiện thành công của đợt replay; đây là nhánh nghiên cứu riêng. Bộ shards V2 được mô tả ở trên có alignment audit, nhưng chưa được dùng để huấn luyện checkpoint có trong pilot này. Định danh dữ liệu và giới hạn đối chiếu được lưu trữ đầy đủ trong hồ sơ kiểm định bằng chứng của đề tài.
-
-\section{Độ nhạy ngoại tuyến đối với thông tin bộ nhớ}
-
-Đối với checkpoint F1 lịch sử tại bước 3.000, trên 4.299 mẫu khung hình của tập xác thực Mem, hàm mất mát flow matching của cùng mô hình đạt 0,2302 khi có bộ nhớ và tăng lên 0,3355 khi bị cắt bỏ bộ nhớ. Trên 13.525 mẫu khung hình của tập xác thực cơ sở, hai chế độ đều cho giá trị 0,4298 do dữ liệu cơ sở không mang hậu tố bộ nhớ.
-
-Đặc biệt, trong quá trình huấn luyện và kiểm định mô hình F1 trên bộ dữ liệu dẫn xuất derived, hàm mất mát trên tập xác thực khi có bộ nhớ đạt 0,2142, trong khi khi bị cắt bỏ bộ nhớ \texttt{no\_memory}, mất mát tăng vọt lên 0,2487, tương ứng mức tăng tương đối khoảng 16,1\%. Ý nghĩa khoa học cốt lõi của kết quả này là: khi cắt bỏ thông tin bộ nhớ, sai số dự đoán hành động của mô hình tăng lên rõ rệt. Điều này chứng minh rằng chính sách VLA đã thực sự học cách điều kiện hóa hành động dựa trên tín hiệu tiến độ trong bộ nhớ, thay vì bỏ qua hay xem nhẹ thông tin này như một thành phần nhiễu.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth]{../figures/validation_loss.png}
-\caption{Hàm mất mát flow matching trên tập xác thực theo số bước huấn luyện ở đợt pilot lịch sử. Hai chế độ có và bỏ bộ nhớ được đo trên cùng checkpoint ở mỗi bước.}
-\label{fig:validation_loss}
-\end{figure}
-
-Chênh lệch trên tập Mem là bằng chứng rằng cách cung cấp đầu vào bộ nhớ có liên hệ với chất lượng dự đoán hành động trên phân phối xác thực. Do F1 được huấn luyện với tỷ lệ bỏ bộ nhớ bằng 0, phép bỏ bộ nhớ có thể đồng thời loại thông tin tiến độ và đưa đầu vào ra ngoài phân phối huấn luyện. Để tách hai cách giải thích này, một phép thử có kiểm soát cần duy trì định dạng và dung lượng lời nhắc, đồng thời thay đổi có chủ đích thông tin lịch sử mà nó chứa. Mặt khác, một chính sách có sai số dự đoán nhỏ trên các quỹ đạo thao tác mẫu vẫn có thể thực thi kém khi các hành động của chính nó làm thay đổi phân phối quan sát.
-
-Về khả năng duy trì kỹ năng trong RQ3, hai giá trị hàm mất mát bằng nhau trên tập cơ sở chỉ phản ánh tính ổn định giữa hai chế độ đầu vào của F1 trong phép đo này. Chẳng hạn, các mẫu cơ sở có thể có cùng đầu vào ở hai chế độ nếu chúng đều không mang hậu tố bộ nhớ. Để ước lượng mức duy trì kỹ năng, phép so sánh cần đặt chính F1 và B0 vào cùng các tác vụ cơ sở, với tiêu chí thành công và ngân sách điều khiển giống nhau.
-
-% claim-id: pilot-policy
-\section{Kết quả điều khiển vòng kín}
-
-\subsection{Pilot điều khiển vòng kín B0/F1 lịch sử}
-
-Đợt thử nghiệm pilot lịch sử đối chiếu B0 là checkpoint gốc với F1 lịch sử là bản LoRA 3.000 bước sử dụng bộ theo dõi \texttt{rgb\_cycle\_v3}. Mỗi điều kiện thực hiện trên 20 lượt chạy, gồm 10 lượt trên T1 và 10 lượt trên T3 phân bổ theo 10 nhóm trạng thái dùng chung, với hạt giống chính sách 42. Kết quả mang nhãn \path{CUSTOM_V2_LIBERO_MEM} và \path{NON-COMPARABLE_OFFICIAL_PAPER}.
-
-\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
-\begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.12\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.14\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.2\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.12\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.19\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.23\textwidth-2\tabcolsep\relax}}
-\caption{Kết quả điều khiển vòng kín theo tác vụ và điều kiện ở pilot lịch sử}\label{tab:generated8}\\
-\toprule
-\textbf{Nhiệm vụ} & \textbf{Điều kiện} & \textbf{Thành công / số lượt} & \textbf{SR} & \textbf{SCR trung bình} & \textbf{Vượt số chu kỳ / số lượt} \\
-\midrule\endfirsthead
-\toprule
-\textbf{Nhiệm vụ} & \textbf{Điều kiện} & \textbf{Thành công / số lượt} & \textbf{SR} & \textbf{SCR trung bình} & \textbf{Vượt số chu kỳ / số lượt} \\
-\midrule\endhead
-\bottomrule\endfoot
-T1 & B0 & 0/10 & 0\% & 0,1000 & 1/10 \\
-T1 & F1 & 0/10 & 0\% & 0,1000 & 1/10 \\
-T3 & B0 & 0/10 & 0\% & 0,0000 & 0/10 \\
-T3 & F1 & 1/10 & 10\% & 0,1667 & 0/10 \\
-Hai tác vụ & B0 & 0/20 & 0\% & 0,0500 & 1/20 \\
-Hai tác vụ & F1 & 1/20 & 5\% & 0,1333 & 1/20 \\
-\end{longtable}
-\endgroup
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth]{../figures/mem_success.png}
-\caption{Tỷ lệ thành công trên T1 và T3 theo giao thức của khóa luận. Mỗi cột biểu diễn 10 quỹ đạo. Hai tác vụ dùng chung các nhóm trạng thái khởi tạo và cùng một hạt giống chính sách.}
-\label{fig:mem_success}
-\end{figure}
-
-Gọi $S_{c,j}$ là chỉ báo thành công của điều kiện $c$ trên tổ hợp tác vụ và trạng thái thứ $j$. Chênh lệch tỷ lệ thành công quan sát được tính theo
-
-\begin{equation}
-\widehat{\Delta}_{\mathrm{SR}}
-=\frac{1}{M}\sum_{j=1}^{M}\left(S_{F1,j}-S_{B0,j}\right),
-\qquad M=20.
-\end{equation}
-
-Có 19 cặp có kết quả $(0,0)$ và một cặp có kết quả $(0,1)$ theo thứ tự $(B0,F1)$, nên $\widehat{\Delta}_{\mathrm{SR}}=0{,}05$, tức 5 điểm phần trăm. Toàn bộ chênh lệch đến từ một lần thực thi T3. Hai tác vụ chia sẻ 10 nhóm trạng thái và thí nghiệm chỉ dùng một hạt giống, nên báo cáo giới hạn ở thống kê mô tả. Việc ước lượng độ bất định cần thêm biến thiên qua trạng thái và hạt giống, đồng thời giữ cấu trúc ghép cặp.
-
-SCR ghi nhận mức hoàn thành từng phần. Trên T1, cả B0 và F1 đều có một quỹ đạo đạt mốc tiến độ nhưng tiếp tục đến mức vượt số chu kỳ. Trên T3, SCR trung bình của F1 là 0,1667 trong khi của B0 bằng 0, cho thấy bộ đánh giá ghi nhận thêm tiến độ ở một số lần chạy. Diễn giải này bổ sung cho tỷ lệ thành công, vì tiến độ từng phần và hoàn thành ở điểm cuối là hai tiêu chí khác nhau. Đối chứng F0 thích ứng trên cùng dữ liệu nhưng không có bộ nhớ và phép đánh giá F1 khi thay đổi có kiểm soát đầu vào lịch sử vẫn cần thiết để trả lời RQ1.
-
-\subsection{Pilot E0 V2 trên một state mỗi task}
-
-Để kiểm tra competence và runtime sau khi tìm thấy artifact F0 V2 no-memory, chạy B0 và F0 trên cùng state seen đầu tiên của T1 và T3, với policy seed 42. Mỗi episode thực hiện đủ 1.000 policy actions. Bốn episode đều dừng ở horizon, không hoàn thành subgoal và không overshoot. Thời gian suy luận trung bình là thời gian gọi policy được đo riêng; wall time bao trùm toàn bộ episode.
-
-\begingroup\footnotesize\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.12}
-\begin{longtable}{>{\raggedright\arraybackslash}p{.09\textwidth}>{\raggedright\arraybackslash}p{.12\textwidth}>{\raggedright\arraybackslash}p{.18\textwidth}>{\raggedright\arraybackslash}p{.11\textwidth}>{\raggedright\arraybackslash}p{.24\textwidth}>{\raggedright\arraybackslash}p{.18\textwidth}}
-\caption{Pilot development E0 V2 với B0/F0 trên seen state 0}\label{tab:e0-v2-pilot}\\
-\toprule
-\textbf{Task} & \textbf{Điều kiện} & \textbf{Thành công; overshot} & \textbf{SCR} & \textbf{Suy luận policy/query} & \textbf{Wall time/episode} \\
-\midrule\endfirsthead
-\toprule
-\textbf{Task} & \textbf{Điều kiện} & \textbf{Thành công; overshot} & \textbf{SCR} & \textbf{Suy luận policy/query} & \textbf{Wall time/episode} \\
-\midrule\endhead
-\bottomrule\endfoot
-T1 & B0 & 0/1; 0/1 & 0,000 & 652,60 ms & 202,25 s \\
-T1 & F0 & 0/1; 0/1 & 0,000 & 707,72 ms & 208,46 s \\
-T3 & B0 & 0/1; 0/1 & 0,000 & 596,03 ms & 202,04 s \\
-T3 & F0 & 0/1; 0/1 & 0,000 & 673,31 ms & 205,23 s \\
-\end{longtable}
-\endgroup
-
-Các summary xác nhận 0/1 subgoal trên T1 và 0/3 trên T3 ở cả hai điều kiện. B0 là checkpoint gốc; F0 là adapter đã thích ứng nhưng không nhận memory. Mỗi điều kiện chỉ có một initial-state group, hai task có cùng state hash, và không có memory trace hoặc decision metric. Do đó, bảng chỉ xác nhận một pilot phát triển custom với nhãn \path{NON-COMPARABLE_OFFICIAL_PAPER}; nó không đo tác động của memory, không ước lượng hiệu quả trên split, và không được gộp vào bảng B0/F1 lịch sử.
-
-\subsection{Đánh giá đối sánh vòng kín E2 trên tập trạng thái Unseen}
-
-Thực nghiệm E2 thực hiện phép so sánh ghép cặp trực tiếp giữa chính sách F0 không dùng bộ nhớ và chính sách F1 sử dụng bộ nhớ quan hệ \texttt{rgb\_relations\_v1} trên 20 nhóm trạng thái khởi tạo raw unseen theo split huấn luyện V2, từ \texttt{demo\_101} đến \texttt{demo\_120}, với cùng hạt giống chính sách 42. Cả hai điều kiện đều dùng cùng checkpoint nền, cùng tập dữ liệu huấn luyện 598 quỹ đạo và cùng ngân sách 5.000 bước. Toàn bộ 80 episode đã hoàn thành trọn vẹn mà không có lượt thiếu, gồm 20 cặp trên T1 và 20 cặp trên T3.
-
-\begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
-\begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.12\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.14\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.2\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.12\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.22\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.20\textwidth-2\tabcolsep\relax}}
-\caption{Kết quả đối sánh vòng kín E2 trên 20 cụm trạng thái Unseen}\label{tab:e2-unseen-results}\\
-\toprule
-\textbf{Nhiệm vụ} & \textbf{Điều kiện} & \textbf{Thành công / số lượt} & \textbf{SR} & \textbf{Suy luận policy trung vị} & \textbf{Wall time trung vị/tập} \\
-\midrule\endfirsthead
-\toprule
-\textbf{Nhiệm vụ} & \textbf{Điều kiện} & \textbf{Thành công / số lượt} & \textbf{SR} & \textbf{Suy luận policy trung vị} & \textbf{Wall time trung vị/tập} \\
-\midrule\endhead
-\bottomrule\endfoot
-T1 & F0 & 3/20 & 15\% & 777,02 ms & 211,93 s \\
-T1 & F1 & 0/20 & 0\% & 637,84 ms & 1.067,92 s \\
-T3 & F0 & 1/20 & 5\% & 778,37 ms & 214,49 s \\
-T3 & F1 & 0/20 & 0\% & 637,08 ms & 1.063,30 s \\
-Hai tác vụ & F0 & 4/40 & 10\% & 778,37 ms & 213,03 s \\
-Hai tác vụ & F1 & 0/40 & 0\% & 637,84 ms & 1.065,89 s \\
-\end{longtable}
-\endgroup
-
-Trên tập Unseen, chênh lệch tỷ lệ thành công ghép cặp quan sát được là $\widehat{\Delta}_{\mathrm{SR}} = -0{,}15$ trên T1, $-0{,}05$ trên T3 và độ chênh lệch macro trên cả hai tác vụ là $\widehat{\Delta}_{\mathrm{macro}} = -0{,}10$, tức F1 thấp hơn F0 10 điểm phần trăm. Do danh sách ghép cặp đã hoàn tất 40/40 cặp, cận dưới và cận trên không bị ảnh hưởng bởi lượt thiếu, với khoảng giá trị $[-0{,}10, -0{,}10]$. Giá trị trung vị thời gian suy luận chính sách gộp trên toàn bộ 40 lượt mỗi arm được tính trực tiếp từ 40 giá trị \texttt{avg\_latency\_ms} của từng lượt chạy, đạt 778,37 ms/query ở F0 và 637,84 ms/query ở F1, phân biệt với trung bình số học của hai trung vị theo từng tác vụ là 777,70 ms và 637,46 ms.
-
-Kết quả này đem lại các quan sát quan trọng cho câu hỏi nghiên cứu:
-\begin{enumerate}
-    \item \textbf{Năng lực thực thi của chính sách cơ sở:} Chính sách F0, được tinh chỉnh LoRA trên dữ liệu thao tác hỗn hợp nhưng không nhận thông tin bộ nhớ, đạt tỷ lệ thành công 15\% trên T1 với 3/20 lượt và 5\% trên T3 với 1/20 lượt, trung bình toàn diện 10\% tương ứng 4/40 lượt. Kết quả này cho thấy mô hình SmolVLA khi được thích ứng trọng số có thể học được kỹ năng gắp và đặt lại cơ bản trong không gian quan sát trực tiếp trên tập trạng thái unseen này.
-    \item \textbf{Kết quả của cấu hình F1:} Ngược lại, adapter F1 V2, được huấn luyện kèm bộ nhớ Relation V1, đạt 0/20 trên cả T1 và T3. Cả hai mô hình đều được huấn luyện trên cùng corpus và cùng ngân sách 5.000 bước. Chênh lệch $-10$ điểm phần trăm phản ánh hiệu năng tương đối giữa hai công thức huấn luyện trên tập mẫu unseen cụ thể của đợt E2.
-    \item \textbf{Chi phí theo đồng hồ:} Median gộp 40 lượt mỗi arm là 213,03 giây đối với F0 và 1.065,89 giây đối với F1. Trong stack đồng bộ này, wall time của F1 cao hơn khoảng năm lần do chi phí phát hiện thị giác trực tiếp ở từng bước quan sát; độ trễ xác nhận fact theo frame và ảnh hưởng cụ thể lên hành động điều khiển cần các phép đo phân tách chuyên biệt.
-\end{enumerate}
-
-% claim-id: image-preprocessing-parity
-Audit riêng về hướng ảnh đối chiếu manifest dữ liệu F0, mã collator đã ghi trong artifact và adapter dùng ở rollout. Ảnh Mem refined được hoàn nguyên về raw OpenGL khi chuẩn bị shards; cả collator huấn luyện lẫn adapter đánh giá dùng bước \mbox{\texttt{LiberoProcessorStep}} của LeRobot 0.6.1, bước này lật hai chiều không gian ảnh. Vì vậy không tìm thấy sai khác hướng ở pipeline đã khai báo. Manifest F0 ghi phiên bản thư viện nhưng không lưu hash file processor từ môi trường huấn luyện, nên phép đối chiếu này không khẳng định hai cài đặt giống nhau từng byte. Nó cũng không giải thích nguyên nhân các lượt E0 không hoàn thành tác vụ.
-
-\subsection{Đánh giá duy trì năng lực cơ sở E6 trên 10 tác vụ LIBERO-10}
-
-E6 so sánh B0 với F1-off trên 50 cặp local LIBERO-10, năm state mỗi task. F1-off dùng trọng số export F1 5.000 bước của E2, học với \texttt{rgb\_relations\_v1}, và tắt memory khi suy luận. Trong 50 cặp đánh giá này, 50 ID trạng thái khởi tạo khớp hoàn toàn với phần số của \texttt{demo\_N} thuộc split kiểm tra. Tuy nhiên, khi kiểm tra băm byte của các vector trạng thái từ file \texttt{.pruned\_init} theo chuẩn \texttt{state\_digest}, không có vector nào trùng khớp hoàn toàn từng byte với hash demo trong split lock. Do đó, kết quả của E6 được xác định chính xác là kết quả đánh giá đối chứng ghép cặp trên 50 cặp trạng thái local, chứ không dùng để khẳng định là một tập kiểm tra hoàn toàn độc lập về mặt vector vật lý. Hai arm dùng base seed 42, cùng seed từng cặp, ngân sách 1.000 bước và $s=10$. Cả 100 lượt đều hoàn tất.
-
-\begingroup\small\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.15}
-\begin{longtable}{>{\centering\arraybackslash}p{\dimexpr 0.08\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.38\textwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.13\textwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.13\textwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.13\textwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.15\textwidth-2\tabcolsep\relax}}
-\caption{Kết quả đánh giá duy trì năng lực cơ sở E6 trên 10 tác vụ LIBERO-10}\label{tab:e6-retention-results}\\
-\toprule
-\textbf{Task} & \textbf{Tác vụ cơ sở LIBERO-10} & \textbf{$B0$ Base} & \textbf{F1-off LoRA} & \textbf{Chênh lệch $\Delta$} & \textbf{Suy luận $F1$} \\
-\midrule\endfirsthead
-\toprule
-\textbf{Task} & \textbf{Tác vụ cơ sở LIBERO-10} & \textbf{$B0$ Base} & \textbf{F1-off LoRA} & \textbf{Chênh lệch $\Delta$} & \textbf{Suy luận $F1$} \\
-\midrule\endhead
-\bottomrule\endfoot
-T0 & Put alphabet soup \& tomato sauce in basket & 0/5 (0\%) & 2/5 (40\%) & +40 pp & 638,5 ms \\
-T1 & Put cream cheese box \& butter in basket & 3/5 (60\%) & 1/5 (20\%) & -40 pp & 623,2 ms \\
-T2 & Turn on stove \& put moka pot on it & 5/5 (100\%) & 2/5 (40\%) & -60 pp & 636,8 ms \\
-T3 & Put black bowl in bottom drawer \& close it & 5/5 (100\%) & 5/5 (100\%) & 0 pp & 630,2 ms \\
-T4 & Put white mug on left \& yellow mug on right & 3/5 (60\%) & 2/5 (40\%) & -20 pp & 648,7 ms \\
-T5 & Pick up book \& place in back compartment & 5/5 (100\%) & 0/5 (0\%) & -100 pp & 636,5 ms \\
-T6 & Put white mug on plate \& chocolate pudding to the right of plate & 4/5 (80\%) & 2/5 (40\%) & -40 pp & 630,0 ms \\
-T7 & Put alphabet soup \& cream cheese in basket & 4/5 (80\%) & 3/5 (60\%) & -20 pp & 635,8 ms \\
-T8 & Put both moka pots on stove & 3/5 (60\%) & 3/5 (60\%) & 0 pp & 688,6 ms \\
-T9 & Put yellow and white mug in microwave \& close door & 5/5 (100\%) & 3/5 (60\%) & -40 pp & 670,1 ms \\
+& \multicolumn{2}{c}{\textbf{Thành công toàn phần}} & \multicolumn{2}{c}{\textbf{Chưa đạt mốc nào}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+\textbf{Tác vụ} & \textbf{F0} & \textbf{F1} & \textbf{F0} & \textbf{F1} \\
 \midrule
-\textbf{Tổng} & \textbf{Toàn bộ 10 tác vụ với 50 lượt thực thi cho mỗi mô hình} & \textbf{37/50 (74\%)} & \textbf{23/50 (46\%)} & \textbf{-28 pp} & \textbf{643,8 ms} \\
-\end{longtable}
-\endgroup
+T1 & 3/20 & 0/20 & 15/20 & 19/20 \\
+T3 & 1/20 & 0/20 & 15/20 & 18/20 \\
+\textbf{Tổng} & \textbf{4/40} & \textbf{0/40} & \textbf{30/40} & \textbf{37/40} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-Trên 50 cặp trạng thái khởi tạo giống nhau, ma trận phân phối kết quả ghép cặp $(B0, F1)$ ghi nhận: 18 cặp cả hai cùng thành công $(1,1)$; 8 cặp cả hai cùng thất bại $(0,0)$; 19 cặp $B0$ thành công nhưng $F1$ thất bại $(1,0)$; và 5 cặp $B0$ thất bại nhưng $F1$ thành công $(0,1)$. Cột suy luận F1 phản ánh thời gian suy luận trung bình theo lượt chạy tính theo đơn vị ms/query, tính bình quân trên 5 lượt mỗi tác vụ cho F1-off.
+Trên 40 cặp E2, F1 đạt 0/40 thành công so với 4/40 của F0; chênh lệch SR là $-10$ điểm phần trăm, với khoảng bootstrap 95\% theo 20 cụm trạng thái từ $-20$ đến $-2{,}5$ điểm. F1 không đạt mốc nào ở 37/40 lượt, so với 30/40 của F0. Các log cho thấy khác biệt về tiến độ và thời gian chạy, nhưng không xác định nguyên nhân lỗi. Trong stack đồng bộ đã dùng, trung vị wall time là khoảng 213 giây với F0 và 1.066 giây với F1.
 
-Kết quả này mang lại các quan sát sâu sắc và định hình cách nhìn nhận khoa học hài hòa về bài toán thích ứng chính sách VLA:
-\begin{enumerate}
-    \item Tỷ lệ thành công E6 giảm ở bảy tác vụ; mức giảm lớn nhất ở LIBERO-10 task 5 từ 5/5 giảm xuống 0/5 và task 2 từ 5/5 giảm xuống 2/5. Task 3 giữ 5/5 và task 8 giữ 3/5.
-    \item LIBERO-10 task 0 tăng từ 0/5 lên 2/5. Kết quả mô tả hai checkpoint trên roster local. Vai trò của mixed replay cần đối chứng huấn luyện riêng.
-    \item \textbf{Giả thuyết về sự cạnh tranh dung lượng biểu diễn:} Sự suy giảm tỷ lệ thành công của F1-off trên 7/10 tác vụ cơ sở, với tổng mức suy giảm 28 điểm phần trăm từ 74\% xuống 46\%, gợi ý giả thuyết về sự cạnh tranh dung lượng biểu diễn representational interference khi ép một bộ trọng số LoRA duy nhất với rank 16 trên các ma trận $q, v$ phải đồng thời tối ưu hóa cho cả chuỗi thao tác phụ thuộc tiến độ lịch sử lẫn các thao tác tiếp xúc hình học chính xác. Tuy nhiên, đây mới dừng lại ở mức giả thuyết khoa học và quan sát thực nghiệm ban đầu trên roster local của E6, chứ chưa thể xem là kết luận xác thực do chưa có các thí nghiệm bóc tách ablation về rank, phạm vi lớp LoRA hay tỷ lệ pha trộn dữ liệu. Quan sát này mở ra một hướng nghiên cứu giàu tiềm năng về phân luồng chính sách mô-đun như modular policy routing hoặc mixture-of-adapters: duy trì các nhánh adapter chuyên biệt cho kỹ năng cơ sở và chỉ kích hoạt nhánh điều hướng bộ nhớ khi tác vụ thực sự đòi hỏi thông tin lịch sử.
-\end{enumerate}
+Đối chứng raw B0 bổ sung chạy trên cùng 40 hash trạng thái và seed 42 đạt 0/40 thành công, mean SCR $0{,}0167$, không overshoot; T1 đạt 0/20 và T3 đạt 0/20, trong đó một lượt T3 hoàn thành 2/3 mốc. Đây chỉ là đối chiếu mô tả: 115/134 source hash trùng E2 và policy runtime khác nhau (B0 WSL Torch 2.11/CUDA 12.8; E2 Windows Torch 2.6/CUDA 12.4). Vì vậy không dùng B0--E2 để quy hiệu quả cho fine-tuning hoặc memory, và không gộp thành điểm LIBERO chính thức.
 
-\section{Bất đồng giữa tiến độ quan sát và tiến độ được chấm}
+\section{Duyệt theo bằng chứng trong vòng kín}
+\label{sec:d2-evidence}
 
-Khi chính sách tự sinh quỹ đạo, nó có thể đưa hệ thống đến những tình huống ít gặp trong dữ liệu thao tác mẫu. Trên 20 quỹ đạo F1, 19 trạng thái bộ nhớ cuối báo lịch sử chưa đầy đủ. Trong 1.927 lần gọi chính sách, 1.894 lời nhắc chứa hậu tố bộ nhớ và 1.738 lời nhắc chứa cụm \path{history incomplete}. Hai số đếm ở cấp lời nhắc lần lượt phản ánh tần suất cung cấp bộ nhớ và tần suất báo lịch sử chưa đầy đủ. Chúng là các phép đo lặp theo thời gian trên cùng quỹ đạo. Độ đúng của từng sự kiện đòi hỏi đối chiếu với nhãn độc lập.
+% claim-id: open-policy-gate
+Để kiểm tra trực tiếp cơ chế điều phối, D2 ghép cặp hai chế độ trên cùng 12 trạng thái seen của T1 và T3, cùng checkpoint F1, seed 42 và query horizon cơ sở 10 hành động (24 episode mỗi chế độ). Arm shadow chỉ ghi quyết định giám sát; arm event có thể phát truy vấn sớm khi memory đổi ngữ nghĩa và có evidence. Hash trạng thái khởi tạo khớp ở cả 24 cặp. Đây là cohort phát triển V2 tùy biến, không phải điểm LIBERO chính thức.
 
-Quỹ đạo T3 thành công duy nhất của F1 trong pilot lịch sử là một trường hợp chẩn đoán cho RQ2. Tại bước 1.000, bộ đánh giá ghi đủ ba chu kỳ, điều kiện cuối được thỏa mãn và số chu kỳ không bị vượt. Bộ ghi thị giác cuối chỉ xác nhận hai lần đặt lại và đánh dấu lịch sử chưa đầy đủ. Bất đồng này làm suy yếu cách giải thích rằng chính sách dừng khi bộ đếm thị giác ghi đủ ba chu kỳ. Kết quả vẫn tương thích với nhiều cơ chế, chẳng hạn sử dụng một phần bằng chứng lịch sử, phản ứng với quan sát hiện tại, hoặc hành vi đã thay đổi qua thích ứng trọng số.
+\begin{table}[htbp]
+\centering\small
+\caption{Kết quả D2 trên cohort phát triển T1/T3 (24 episode mỗi arm)}
+\label{tab:d2-decision-results}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Arm} & \textbf{Thành công} & \textbf{Mean SCR} & \shortstack{\textbf{Query /}\\\textbf{episode}} & \shortstack{\textbf{Episode có}\\\textbf{requery}} & \shortstack{\textbf{Requery có}\\\textbf{evidence}} \\
+\midrule
+Shadow-projected & 1/24 & 0,111 & 97,17 & 0/24 & 0/0 \\
+Event-projected & 1/24 & 0,167 & 99,88 & 22/24 & 56/56 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-Trong lượt T1 của F1 bị vượt số chu kỳ, bộ đánh giá ghi một mốc và SCR bằng 1, nhưng dừng quỹ đạo tại bước 266 do vượt số chu kỳ. Bộ ghi thị giác cuối ghi nhận 0 lần đặt lại và lịch sử chưa đầy đủ. B0 cũng có một quỹ đạo T1 vượt số chu kỳ, ở trạng thái 3 và bước 290. Những trường hợp này chỉ ra hai vấn đề khác nhau: hệ thống có thể thực hiện thao tác đạt mốc nhưng không duy trì đúng điểm cuối, và bộ ghi thị giác có thể thiếu bằng chứng để xác nhận mốc mà bộ đánh giá đã ghi nhận. Muốn quy nguyên nhân cần nhãn độc lập theo thời gian và can thiệp riêng lên nội dung bộ nhớ trong khi giữ các điều kiện còn lại ổn định.
+Event mode thực sự kích hoạt truy vấn trong closed loop: cả 56 quyết định requery đều có event ID và evidence ID; hai episode không phát requery. Tuy vậy, tỷ lệ thành công ghép cặp không đổi (1/24 mỗi arm), chênh lệch SCR trung bình là $+0{,}056$ với khoảng bootstrap theo nhóm state 95\% từ $-0{,}125$ đến $0{,}250$. Các dữ liệu development này xác nhận đường kích hoạt và mô tả hành vi, chưa chứng minh cơ chế làm tăng hiệu quả. Trong cohort, lượt T1 state 7 của event đạt 1/1 mốc ở bước 409 và terminal success tại bước 1.000; shadow có một lượt T1 thành công ở state 5. Hai thành công nằm ở state khác nhau.
 
-\section{Hiệu lực của kết luận và thiết kế kiểm chứng tiếp theo}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{../figures/libero_mem_d2_event_t1_state7_success.png}\par
+{\small\makebox[.25\linewidth]{Bước 0}%
+\makebox[.25\linewidth]{Bước 142}%
+\makebox[.25\linewidth]{Bước 409}%
+\makebox[.25\linewidth]{Bước 1.000}\par}
+\caption{Các khung trích từ video của lượt T1 event-projected thành công (seen state 7, seed 42). Hàng trên là camera ngoài, hàng dưới là camera cổ tay. Bước 142 có truy vấn theo bằng chứng; bộ chấm xác nhận mốc tại bước 409 và task kết thúc thành công ở bước 1.000. Đây là một lượt trong cohort development, không phải bằng chứng nhân quả riêng lẻ.}
+\label{fig:libero-mem-d2-t1-success}
+\end{figure}
 
-Đối với RQ2, sự phù hợp trong sáu quỹ đạo mẫu cung cấp bằng chứng về tính khả thi của việc biểu diễn tiến độ bằng sự kiện thị giác. Dấu thời điểm khả dụng cho phép kiểm tra dữ kiện nào đã có thể đưa vào lời nhắc tại từng bước. Khoảng cách giữa kết quả ghép mốc trên quỹ đạo mẫu và tỷ lệ lịch sử chưa đầy đủ trên quỹ đạo F1 đặt ra giới hạn về tính đại diện của phép kiểm chẩn đoán. Một tập nhãn độc lập gồm cả tình huống thất bại, với quy tắc ghép và dung sai đặt trước, cho phép ước lượng riêng xác nhận sai, bỏ sót, độ trễ và tỷ lệ tình huống chưa xác định.
+\section{Duy trì kỹ năng cơ sở trên LIBERO-10}
 
-Đối với RQ1, cần giữ dữ liệu, phân hoạch, ngân sách huấn luyện và quy tắc chọn checkpoint giống nhau khi so F0 với F1. Phép thử can thiệp lúc suy luận cần có điều kiện chỉ dùng thông tin hiện tại và điều kiện có cùng định dạng nhưng thay đổi giá trị lịch sử. Hai phép so sánh trả lời các câu hỏi khác nhau: thích ứng với bộ nhớ có tạo lợi ích vòng kín hay không, và chính sách đã thích ứng nhạy thế nào với nội dung cụ thể của bộ nhớ. Một tập trạng thái xác nhận độc lập với phát triển và nhiều hạt giống sẽ cho phép ước lượng chênh lệch ghép cặp cùng độ bất định ở cấp nhóm trạng thái. Chỉ đổi hạt giống trên các trạng thái đã dùng để phát triển không tạo một tập xác nhận độc lập.
+% claim-id: e6-retention
+Thực nghiệm E6 đánh giá khả năng duy trì kỹ năng thao tác cơ sở sau khi tinh chỉnh thông qua việc đối đầu giữa B0 gốc và F1-off trên 10 tác vụ của bộ benchmark LIBERO-10, với 5 trạng thái khởi tạo cho mỗi tác vụ (tổng cộng 50 cặp đối sánh). Cả hai điều kiện đều chạy trên cùng trạng thái và cùng seed ngẫu nhiên.
 
-Về khả năng duy trì kỹ năng trong RQ3, đánh giá chính F1 trên các tác vụ cơ sở ghép cặp với B0 là cách đo trực tiếp mức duy trì. Nếu mục tiêu là kiểm tra tính không kém hơn, cần xác định trước biên suy giảm có thể chấp nhận được và cỡ mẫu đủ để diễn giải biên đó. Cơ chế chọn lại trọng số B0 cho tác vụ cơ sở chỉ đo chất lượng của một quy tắc định tuyến và không định lượng kỹ năng của F1.
+\begin{table}[htbp]
+\centering\small
+\caption{Tỷ lệ thành công thực nghiệm E6 trên 10 tác vụ LIBERO-10}
+\label{tab:e6-retention-results}
+\begin{tabular}{l*{10}{c}r}
+\toprule
+\textbf{Mô hình} & \textbf{0} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} & \textbf{6} & \textbf{7} & \textbf{8} & \textbf{9} & \textbf{Tổng} \\
+\midrule
+B0     & 0 & 3 & 5 & 5 & 3 & 5 & 4 & 4 & 3 & 5 & 37/50 (74\%) \\
+F1-off & 2 & 1 & 2 & 5 & 2 & 0 & 2 & 3 & 3 & 3 & 23/50 (46\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-Đối với RQ2, cần tách các yếu tố có thể làm đổi giá trị hoặc thời điểm khả dụng của bằng chứng: quy ước ảnh, độ trễ xác nhận và số hành động giữa hai lần gọi chính sách. Trên cùng quỹ đạo, đo trước tác động lên quan sát rồi kiểm tra trong vòng kín; báo cả thời gian mô phỏng và thời gian thực. Cách này gắn mỗi phép đo với sai lệch cụ thể, từ lỗi biểu diễn đến hạn chế khi chính sách sử dụng bộ nhớ.
-
+Bảng~\ref{tab:e6-retention-results} ghi nhận 37/50 thành công ở B0 và 23/50 ở F1-off; trong 50 cặp, có 19 lượt chỉ B0 thành công, 5 lượt chỉ F1-off thành công, 18 lượt cả hai thành công và 8 lượt cả hai thất bại. Khoảng bootstrap ghép cặp 95\% cho chênh lệch F1-off trừ B0 là $[-42;-14]$ điểm phần trăm, có điều kiện trên roster LIBERO-10 local này. E6 mô tả khác biệt giữa hai cấu hình, không xác định nguyên nhân và không cô lập tác động nhân quả của memory.

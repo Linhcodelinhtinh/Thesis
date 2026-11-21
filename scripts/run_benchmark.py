@@ -254,6 +254,12 @@ def parse_args():
         default=None,
         help="Number of initial dummy steps to let simulator objects settle on the table (default 10 for MiniVLA, 0 otherwise).",
     )
+    parser.add_argument(
+        "--no-verify-provenance-files",
+        action="store_true",
+        default=False,
+        help="Skip verifying on-disk memory code SHA-256 against training snapshot manifest (automatic when memory-condition is off).",
+    )
     return parser.parse_args()
 
 
@@ -451,6 +457,8 @@ def main():
     if "adapter_path" in load_sig.parameters and args.adapter_path:
         print(f"Loading LoRA adapter from: {args.adapter_path}...")
         load_kwargs["adapter_path"] = args.adapter_path
+    if args.memory_condition == "off" or getattr(args, "no_verify_provenance_files", False):
+        load_kwargs["verify_provenance_files"] = False
     policy.load(args.checkpoint, **load_kwargs)
     if not policy.loaded:
         print(f"ERROR: Policy '{args.model_name}' failed to load from '{args.checkpoint}'.", file=sys.stderr)

@@ -1,0 +1,25 @@
+{
+  "classification": "CUSTOM_V2_XVLA_MEM_ADAPTER",
+  "model_name": "X-VLA-0.9B-Libero",
+  "base_checkpoint": "2toINF/X-VLA-Libero",
+  "base_checkpoint_revision": "129e71460678b7236cee6fc9707f09d9fa0c3590",
+  "required_base_tasks": 10,
+  "mem_tasks": ["T1", "T3"],
+  "memory_source": "predicted_rgb_v3",
+  "condition": "memory",
+  "adaptation": "lora_peft",
+  "lora_rank": 8,
+  "lora_alpha": 16,
+  "target_modules": "all-linear",
+  "modules_to_save": [
+    "transformer.soft_prompt_hub",
+    "transformer.action_encoder",
+    "transformer.action_decoder"
+  ],
+  "learning_rate": 0.0001,
+  "learning_coef": 1.0,
+  "steps": 5000,
+  "effective_batch_size": 32,
+  "base_fraction": 0.5,
+  "save_every": 500
+}

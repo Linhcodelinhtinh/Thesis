@@ -1,0 +1,1365 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-11-20T07:27:25.961769+00:00",
+  "status": "diagnostic_only_non_comparable",
+  "purpose": "Descriptive cross-environment reproducibility check of E6 B0 outcomes; not an official LIBERO score and not a causal policy comparison.",
+  "analysis_script": {
+    "path": "scripts/analyze_e6_cross_environment_reproduction.py",
+    "sha256": "4fb322b7a9a60f4b59ded555cb8c3f2dbcb89a28e91db53ab5ffcd8b494e5ac2"
+  },
+  "input_roots": {
+    "historical": "experiments/results/e6_retention_locked_50",
+    "reproduction": "experiments/results/e6_reproduce_historical_50_20261120_101024"
+  },
+  "matched_protocol": {
+    "suite": "libero_10",
+    "model": "smolvla_libero",
+    "checkpoint": "resources/checkpoints/smolvla_libero",
+    "model_config_sha256": "f70fa95d16eaf98b362e60e2ab839f875427185c4acdc6f015f38f96227026eb",
+    "base_seed": 42,
+    "seed_formula": "42 + (30 + task_id) * 100 + state_id",
+    "execution_horizon_s": 10,
+    "policy_chunk_size": 50,
+    "memory_condition": "off",
+    "episodes_per_task": 5
+  },
+  "historical_environment": {
+    "execution_tier": "LIBERO-DERIVED (HOST_WIN32_PY3.12)",
+    "certification": "NON-COMPARABLE_OFFICIAL_PAPER",
+    "python_version": "3.12.2",
+    "robosuite_version": "1.5.2",
+    "bddl_version": "3.6.0",
+    "git_commit": "657f325bf9778e1935012a153bbc8bf9d08be28f",
+    "model_config_sha256": "f70fa95d16eaf98b362e60e2ab839f875427185c4acdc6f015f38f96227026eb",
+    "base_seed": 42,
+    "num_steps_wait": 10,
+    "sample_level": "PILOT_5_STATES",
+    "model_name": "smolvla_libero",
+    "checkpoint": "resources/checkpoints/smolvla_libero",
+    "camera_resolution": 256,
+    "execution_horizon_s": 10,
+    "policy_chunk_size": 50,
+    "memory_condition": "off",
+    "non_comparable_reasons": [
+      "Operating system is win32 (official reference stack requires Linux)",
+      "Python version is 3.12.2 (official reference stack requires Python 3.8.13)",
+      "Camera resolution is 256x256 (official benchmark baseline uses 128x128)",
+      "robosuite version is 1.5.2 (official reference requires 1.4.0)",
+      "bddl version is 3.6.0 (official reference requires 1.0.1)",
+      "NumPy version is 2.5.4 (official reference requires 1.22.4)",
+      "robomimic version is 0.3.0 (official reference requires 0.2.0)"
+    ]
+  },
+  "reproduction_environment": {
+    "execution_tier": "LIBERO-DERIVED (HOST_LINUX_PY3.10)",
+    "certification": "NON-COMPARABLE_OFFICIAL_PAPER",
+    "python_version": "3.10.22",
+    "robosuite_version": "1.4.0",
+    "bddl_version": "1.0.1",
+    "git_commit": "02e05ffe4b2c1d46c1bfc998b06d21f094134ce9",
+    "model_config_sha256": "f70fa95d16eaf98b362e60e2ab839f875427185c4acdc6f015f38f96227026eb",
+    "base_seed": 42,
+    "num_steps_wait": 10,
+    "sample_level": "PILOT_5_STATES",
+    "model_name": "smolvla_libero",
+    "checkpoint": "resources/checkpoints/smolvla_libero",
+    "camera_resolution": 256,
+    "execution_horizon_s": 10,
+    "policy_chunk_size": 50,
+    "memory_condition": "off",
+    "non_comparable_reasons": [
+      "Python version is 3.10.22 (official reference stack requires Python 3.8.13)",
+      "Camera resolution is 256x256 (official benchmark baseline uses 128x128)",
+      "Max steps is 900 (official reference requires 1000)",
+      "NumPy version is 2.2.6 (official reference requires 1.22.4)",
+      "robomimic version is None (official reference requires 0.2.0)"
+    ]
+  },
+  "environment_differences": {
+    "execution_tier": {
+      "historical": "LIBERO-DERIVED (HOST_WIN32_PY3.12)",
+      "reproduction": "LIBERO-DERIVED (HOST_LINUX_PY3.10)"
+    },
+    "python_version": {
+      "historical": "3.12.2",
+      "reproduction": "3.10.22"
+    },
+    "robosuite_version": {
+      "historical": "1.5.2",
+      "reproduction": "1.4.0"
+    },
+    "bddl_version": {
+      "historical": "3.6.0",
+      "reproduction": "1.0.1"
+    },
+    "git_commit": {
+      "historical": "657f325bf9778e1935012a153bbc8bf9d08be28f",
+      "reproduction": "02e05ffe4b2c1d46c1bfc998b06d21f094134ce9"
+    },
+    "non_comparable_reasons": {
+      "historical": [
+        "Operating system is win32 (official reference stack requires Linux)",
+        "Python version is 3.12.2 (official reference stack requires Python 3.8.13)",
+        "Camera resolution is 256x256 (official benchmark baseline uses 128x128)",
+        "robosuite version is 1.5.2 (official reference requires 1.4.0)",
+        "bddl version is 3.6.0 (official reference requires 1.0.1)",
+        "NumPy version is 2.5.4 (official reference requires 1.22.4)",
+        "robomimic version is 0.3.0 (official reference requires 0.2.0)"
+      ],
+      "reproduction": [
+        "Python version is 3.10.22 (official reference stack requires Python 3.8.13)",
+        "Camera resolution is 256x256 (official benchmark baseline uses 128x128)",
+        "Max steps is 900 (official reference requires 1000)",
+        "NumPy version is 2.2.6 (official reference requires 1.22.4)",
+        "robomimic version is None (official reference requires 0.2.0)"
+      ]
+    }
+  },
+  "summary": {
+    "paired_episodes": 50,
+    "rosters_match": true,
+    "seeds_match": true,
+    "historical_successes": 37,
+    "reproduction_successes": 33,
+    "historical_success_rate": 0.74,
+    "reproduction_success_rate": 0.66,
+    "descriptive_difference_percentage_points": -8,
+    "outcome_agreements": 34,
+    "outcome_agreement_rate": 0.68,
+    "both_success": 27,
+    "historical_only_success": 10,
+    "reproduction_only_success": 6,
+    "both_fail": 7
+  },
+  "per_task": [
+    {
+      "task_id": 0,
+      "episodes": 5,
+      "historical_successes": 0,
+      "reproduction_successes": 0,
+      "outcome_agreements": 5
+    },
+    {
+      "task_id": 1,
+      "episodes": 5,
+      "historical_successes": 3,
+      "reproduction_successes": 4,
+      "outcome_agreements": 2
+    },
+    {
+      "task_id": 2,
+      "episodes": 5,
+      "historical_successes": 5,
+      "reproduction_successes": 5,
+      "outcome_agreements": 5
+    },
+    {
+      "task_id": 3,
+      "episodes": 5,
+      "historical_successes": 5,
+      "reproduction_successes": 5,
+      "outcome_agreements": 5
+    },
+    {
+      "task_id": 4,
+      "episodes": 5,
+      "historical_successes": 3,
+      "reproduction_successes": 3,
+      "outcome_agreements": 1
+    },
+    {
+      "task_id": 5,
+      "episodes": 5,
+      "historical_successes": 5,
+      "reproduction_successes": 1,
+      "outcome_agreements": 1
+    },
+    {
+      "task_id": 6,
+      "episodes": 5,
+      "historical_successes": 4,
+      "reproduction_successes": 3,
+      "outcome_agreements": 2
+    },
+    {
+      "task_id": 7,
+      "episodes": 5,
+      "historical_successes": 4,
+      "reproduction_successes": 3,
+      "outcome_agreements": 4
+    },
+    {
+      "task_id": 8,
+      "episodes": 5,
+      "historical_successes": 3,
+      "reproduction_successes": 4,
+      "outcome_agreements": 4
+    },
+    {
+      "task_id": 9,
+      "episodes": 5,
+      "historical_successes": 5,
+      "reproduction_successes": 5,
+      "outcome_agreements": 5
+    }
+  ],
+  "episode_pairs": [
+    {
+      "task_id": 0,
+      "state_id": 8,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket",
+      "seed": 3050,
+      "historical_success": false,
+      "reproduction_success": false,
+      "outcome_agreement": true,
+      "historical_num_steps": 1000,
+      "reproduction_num_steps": 900,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_8/episode.json",
+      "historical_episode_sha256": "66591de50b7cd66649ee35d1d22adb60aa90dd065e7e138fc033e6b3be1f7e74",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_0/libero_10_task0/init_8/episode.json",
+      "reproduction_episode_sha256": "6c7bf5834806e831ecd67ca42c79ba57557ccfd51b45d56c369396f915e44bc5"
+    },
+    {
+      "task_id": 0,
+      "state_id": 13,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket",
+      "seed": 3055,
+      "historical_success": false,
+      "reproduction_success": false,
+      "outcome_agreement": true,
+      "historical_num_steps": 1000,
+      "reproduction_num_steps": 900,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_13/episode.json",
+      "historical_episode_sha256": "098c5f0e80605c51542370bb3db2e8786c289bce01d7358f8402f4f72335a3cf",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_0/libero_10_task0/init_13/episode.json",
+      "reproduction_episode_sha256": "abedfb0b9d24a7aab8ba3fb8cdbae1c531410c1f5fb1836ac99928b4c8afb873"
+    },
+    {
+      "task_id": 0,
+      "state_id": 27,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket",
+      "seed": 3069,
+      "historical_success": false,
+      "reproduction_success": false,
+      "outcome_agreement": true,
+      "historical_num_steps": 1000,
+      "reproduction_num_steps": 900,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_27/episode.json",
+      "historical_episode_sha256": "563f8b30f546350beb04c1e57727773c18a1a29a7fda2dbc82e3ad1083633115",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_0/libero_10_task0/init_27/episode.json",
+      "reproduction_episode_sha256": "9e156ba61612dd6bc60fa4875f01941aefdc1c8f8e39374e8809b0e2bfe6d98b"
+    },
+    {
+      "task_id": 0,
+      "state_id": 45,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket",
+      "seed": 3087,
+      "historical_success": false,
+      "reproduction_success": false,
+      "outcome_agreement": true,
+      "historical_num_steps": 1000,
+      "reproduction_num_steps": 900,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_45/episode.json",
+      "historical_episode_sha256": "cbd78b4c9e45a3445ac714fbcd458a3250ecc517a79f7b12ad6a76527214e36e",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_0/libero_10_task0/init_45/episode.json",
+      "reproduction_episode_sha256": "528f2674fd6cb12add9939775eae60ca3d315d28075396cae42409ff2ca3c3b7"
+    },
+    {
+      "task_id": 0,
+      "state_id": 48,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket",
+      "seed": 3090,
+      "historical_success": false,
+      "reproduction_success": false,
+      "outcome_agreement": true,
+      "historical_num_steps": 1000,
+      "reproduction_num_steps": 900,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_48/episode.json",
+      "historical_episode_sha256": "567c302afd53da7cf8ca1291bbc4986a105c64c857065fbea3b21c10cf1024c5",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_0/libero_10_task0/init_48/episode.json",
+      "reproduction_episode_sha256": "badbd058fe154b0a5bdac66e94c15f11996a0a4b4fa28da7c13b5a7a0fbf08f3"
+    },
+    {
+      "task_id": 1,
+      "state_id": 17,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket",
+      "seed": 3159,
+      "historical_success": true,
+      "reproduction_success": false,
+      "outcome_agreement": false,
+      "historical_num_steps": 250,
+      "reproduction_num_steps": 900,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_17/episode.json",
+      "historical_episode_sha256": "6af40cc93e131875d542fd7dbcb5fd2dff6a52952fa468e063d861cba41fd5eb",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_1/libero_10_task1/init_17/episode.json",
+      "reproduction_episode_sha256": "359ba8fcef451c5784866da4499bf3702c40fb5ccfacb8a705d61e79a27ecd39"
+    },
+    {
+      "task_id": 1,
+      "state_id": 21,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket",
+      "seed": 3163,
+      "historical_success": false,
+      "reproduction_success": true,
+      "outcome_agreement": false,
+      "historical_num_steps": 1000,
+      "reproduction_num_steps": 253,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_21/episode.json",
+      "historical_episode_sha256": "b181e41668da7e86578cdf6e7eda9b7d1619a5914dcac22672d89d91b63d7c6c",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_1/libero_10_task1/init_21/episode.json",
+      "reproduction_episode_sha256": "802a2540f19d13fa1c57b3ac4f16fa84285be2f862c930b9b8911348471c9810"
+    },
+    {
+      "task_id": 1,
+      "state_id": 39,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket",
+      "seed": 3181,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 276,
+      "reproduction_num_steps": 397,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_39/episode.json",
+      "historical_episode_sha256": "52d669f8b9b52b754951eb5e6d15339855cd9333506945d161d85f501b5ce88b",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_1/libero_10_task1/init_39/episode.json",
+      "reproduction_episode_sha256": "07fec743d345ec999d0943dce6c013474a4229e2757146aaf2b1f27f9760b853"
+    },
+    {
+      "task_id": 1,
+      "state_id": 41,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket",
+      "seed": 3183,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 242,
+      "reproduction_num_steps": 317,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_41/episode.json",
+      "historical_episode_sha256": "e1d9723658410cd325a81007da5042f68b5df5492938f5d4eddce826113ab989",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_1/libero_10_task1/init_41/episode.json",
+      "reproduction_episode_sha256": "7d3061f9af6c0ca5e2c2c502ea8b640820c03107c53294909105ebc65e39e1bb"
+    },
+    {
+      "task_id": 1,
+      "state_id": 47,
+      "task_name": "LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket",
+      "seed": 3189,
+      "historical_success": false,
+      "reproduction_success": true,
+      "outcome_agreement": false,
+      "historical_num_steps": 1000,
+      "reproduction_num_steps": 238,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_47/episode.json",
+      "historical_episode_sha256": "69cd7d389640ad23234a584dd22602e6fc5965ab59c8261b7aafaebb3d7c77a3",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_1/libero_10_task1/init_47/episode.json",
+      "reproduction_episode_sha256": "be212a3fa27ca8cd9cefee18810a58272bf1dc931c2d5a4b1afe5596ff2fbd48"
+    },
+    {
+      "task_id": 2,
+      "state_id": 3,
+      "task_name": "KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it",
+      "seed": 3245,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 260,
+      "reproduction_num_steps": 254,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_3/episode.json",
+      "historical_episode_sha256": "3f9fc6e0e32c4c11eb34e613aa934a7ea49ce29255cd662664b9e5913f3188df",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_2/libero_10_task2/init_3/episode.json",
+      "reproduction_episode_sha256": "ebc597ddb9a578fd07d0de0d008d3a0d607122f8bb150c25b4c6ba2bc18f02b1"
+    },
+    {
+      "task_id": 2,
+      "state_id": 6,
+      "task_name": "KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it",
+      "seed": 3248,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 233,
+      "reproduction_num_steps": 237,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_6/episode.json",
+      "historical_episode_sha256": "a6217219658dc23dc9b92f00b43005cb2473723a165e905f55e2cbd73983ec66",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_2/libero_10_task2/init_6/episode.json",
+      "reproduction_episode_sha256": "6eb2a6f7f5dd40d99a0fd630d8e2e6a4e1dea135f1f448db8e173f11472230ca"
+    },
+    {
+      "task_id": 2,
+      "state_id": 12,
+      "task_name": "KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it",
+      "seed": 3254,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 261,
+      "reproduction_num_steps": 234,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_12/episode.json",
+      "historical_episode_sha256": "69890cd17d12a241934e3092a362779aac3696b0fe651c2ce2b326edc5665923",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_2/libero_10_task2/init_12/episode.json",
+      "reproduction_episode_sha256": "9ed0ba24fd4404519eb48063e73d0dfdf74db730cf10ed55bc76054496359caf"
+    },
+    {
+      "task_id": 2,
+      "state_id": 15,
+      "task_name": "KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it",
+      "seed": 3257,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 242,
+      "reproduction_num_steps": 224,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_15/episode.json",
+      "historical_episode_sha256": "b3f65a78a5179d99f3c74a53ae6d75243c5c2513ab32200569d671bba0993867",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_2/libero_10_task2/init_15/episode.json",
+      "reproduction_episode_sha256": "9888779d4fd39e625ef99c075b226b33cd5e56534437745720e5a70a4a336d46"
+    },
+    {
+      "task_id": 2,
+      "state_id": 40,
+      "task_name": "KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it",
+      "seed": 3282,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 244,
+      "reproduction_num_steps": 224,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_40/episode.json",
+      "historical_episode_sha256": "581e3fbe432584d06a217c50137b483b4a7d66cfabff0e52210d9cdbcc2cab13",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_2/libero_10_task2/init_40/episode.json",
+      "reproduction_episode_sha256": "3dccb20d1235078fe880564bb9a2b80ecf7d4afa66423278a00f2eb8cdf66756"
+    },
+    {
+      "task_id": 3,
+      "state_id": 19,
+      "task_name": "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+      "seed": 3361,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 281,
+      "reproduction_num_steps": 207,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_19/episode.json",
+      "historical_episode_sha256": "28a7310fa87457da3a4a369596abe8b841889221c51193d96e89f0cbf94141ee",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_3/libero_10_task3/init_19/episode.json",
+      "reproduction_episode_sha256": "712ee72c446b7649480517fec5617f79fdbb37dceed676ced39de8ebee1b54f4"
+    },
+    {
+      "task_id": 3,
+      "state_id": 38,
+      "task_name": "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+      "seed": 3380,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 246,
+      "reproduction_num_steps": 310,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_38/episode.json",
+      "historical_episode_sha256": "c6e34e32981f0593b38470f3604e24a4cab5d5f4c596f596b8f3b49ccb108b25",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_3/libero_10_task3/init_38/episode.json",
+      "reproduction_episode_sha256": "2169ce069d23f805eff8563daa8d20dcb57ab0e57ae0f9eb703318cb185dd225"
+    },
+    {
+      "task_id": 3,
+      "state_id": 44,
+      "task_name": "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+      "seed": 3386,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 211,
+      "reproduction_num_steps": 345,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_44/episode.json",
+      "historical_episode_sha256": "5b0a97f13f4e22dcf24cb944e67fa9a0b0678ed8b4a9e168a5707b8a693a3a5d",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_3/libero_10_task3/init_44/episode.json",
+      "reproduction_episode_sha256": "ab415021a5e9bf0bdfbf81cbbf6ac101bd6953e430419f297e1985121129cfea"
+    },
+    {
+      "task_id": 3,
+      "state_id": 47,
+      "task_name": "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+      "seed": 3389,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 236,
+      "reproduction_num_steps": 213,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_47/episode.json",
+      "historical_episode_sha256": "89bcccaf1fde20954725aff751ac09ed9e73fa3d1fb20bd6d6b472f1076906e3",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_3/libero_10_task3/init_47/episode.json",
+      "reproduction_episode_sha256": "d4e3832933cdc075ae56ce6a78713bc16d69ffbe51d858ea683977a8b79cdedb"
+    },
+    {
+      "task_id": 3,
+      "state_id": 49,
+      "task_name": "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+      "seed": 3391,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 338,
+      "reproduction_num_steps": 309,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_49/episode.json",
+      "historical_episode_sha256": "d70080a891de9ded9bf2d56eceaa313740716c1eb6d586eaddbe118db34d74b0",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_3/libero_10_task3/init_49/episode.json",
+      "reproduction_episode_sha256": "b65bf3a6ae08ff976b23c17fa948d856f17b2ec3c103cfa78f395e59aa33ce56"
+    },
+    {
+      "task_id": 4,
+      "state_id": 3,
+      "task_name": "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate",
+      "seed": 3445,
+      "historical_success": false,
+      "reproduction_success": true,
+      "outcome_agreement": false,
+      "historical_num_steps": 1000,
+      "reproduction_num_steps": 215,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_3/episode.json",
+      "historical_episode_sha256": "a7fc1d6a1f520a7810005261ec4d35f22c48e1c6e1bf62d910a2f7aa401dc296",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_4/libero_10_task4/init_3/episode.json",
+      "reproduction_episode_sha256": "b9401b2c968c5ed4efc92e1a17c9c8fa24fe2157325e7ab6d4d6a0d8f2ec97d9"
+    },
+    {
+      "task_id": 4,
+      "state_id": 14,
+      "task_name": "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate",
+      "seed": 3456,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 216,
+      "reproduction_num_steps": 209,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_14/episode.json",
+      "historical_episode_sha256": "d87623cec9175d55609ba4f1c033a6f1075698721dd2bd64f391d131574ade34",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_4/libero_10_task4/init_14/episode.json",
+      "reproduction_episode_sha256": "5d7de3ee4d7ceb0b342efc01c49303da8639df13a4de0864c8f90e60ce4b5a89"
+    },
+    {
+      "task_id": 4,
+      "state_id": 26,
+      "task_name": "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate",
+      "seed": 3468,
+      "historical_success": false,
+      "reproduction_success": true,
+      "outcome_agreement": false,
+      "historical_num_steps": 1000,
+      "reproduction_num_steps": 266,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_26/episode.json",
+      "historical_episode_sha256": "329eeff427a472605c6ff63b36b5ec67d02a13e2d380811314adc8c0531af96f",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_4/libero_10_task4/init_26/episode.json",
+      "reproduction_episode_sha256": "dbdfb64a51f8ed7b8bdd89062180c6a30a219b39021fd22cc309143b0b99db3e"
+    },
+    {
+      "task_id": 4,
+      "state_id": 33,
+      "task_name": "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate",
+      "seed": 3475,
+      "historical_success": true,
+      "reproduction_success": false,
+      "outcome_agreement": false,
+      "historical_num_steps": 247,
+      "reproduction_num_steps": 900,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_33/episode.json",
+      "historical_episode_sha256": "9b7f629fda5f43e3a130591022f473fbe2d543e4f15d046754f506ddcd1a97cf",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_4/libero_10_task4/init_33/episode.json",
+      "reproduction_episode_sha256": "29de640e34143928078bb74dffcdd0342c69fa69f1dcf955ec81dee3060d7139"
+    },
+    {
+      "task_id": 4,
+      "state_id": 44,
+      "task_name": "LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate",
+      "seed": 3486,
+      "historical_success": true,
+      "reproduction_success": false,
+      "outcome_agreement": false,
+      "historical_num_steps": 233,
+      "reproduction_num_steps": 900,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_44/episode.json",
+      "historical_episode_sha256": "cef7fe7bf62d04d96dea90b01dd60e2bf8900f82999f7589cf790df015b5bacb",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_4/libero_10_task4/init_44/episode.json",
+      "reproduction_episode_sha256": "6569d365684eb953c9233320f1ac4f2eb57b46e1ee7740a155ed0e1408a9a337"
+    },
+    {
+      "task_id": 5,
+      "state_id": 6,
+      "task_name": "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+      "seed": 3548,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 157,
+      "reproduction_num_steps": 157,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_6/episode.json",
+      "historical_episode_sha256": "fc09c6dc71003b0b9ef80e37021ac74b29295d29a15fc812fd733bacfd845afa",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_5/libero_10_task5/init_6/episode.json",
+      "reproduction_episode_sha256": "9629af8be35c8b354f1f93404dc93efd04b6e896ae36dc4e37b4c8c87f1aaa31"
+    },
+    {
+      "task_id": 5,
+      "state_id": 17,
+      "task_name": "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+      "seed": 3559,
+      "historical_success": true,
+      "reproduction_success": false,
+      "outcome_agreement": false,
+      "historical_num_steps": 202,
+      "reproduction_num_steps": 900,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_17/episode.json",
+      "historical_episode_sha256": "42bfc97a425ede3a3c6ebcda098d76e43b9f7a6ce8e6415cd340a9143bb70ec2",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_5/libero_10_task5/init_17/episode.json",
+      "reproduction_episode_sha256": "71404454ac24871e002ee3f4f9de15f2bd8b845138c63743aa14607fd7e19908"
+    },
+    {
+      "task_id": 5,
+      "state_id": 28,
+      "task_name": "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+      "seed": 3570,
+      "historical_success": true,
+      "reproduction_success": false,
+      "outcome_agreement": false,
+      "historical_num_steps": 154,
+      "reproduction_num_steps": 900,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_28/episode.json",
+      "historical_episode_sha256": "73535aea449a2f77dae36e9dd427c6443d591b1d8233ad1cbc12c3623c08c86e",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_5/libero_10_task5/init_28/episode.json",
+      "reproduction_episode_sha256": "ef0190a4f74da6ba573e344c4dedb8dfd3beb0aedb5889f639911373316a1263"
+    },
+    {
+      "task_id": 5,
+      "state_id": 31,
+      "task_name": "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+      "seed": 3573,
+      "historical_success": true,
+      "reproduction_success": false,
+      "outcome_agreement": false,
+      "historical_num_steps": 241,
+      "reproduction_num_steps": 900,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_31/episode.json",
+      "historical_episode_sha256": "cb3a048bc1b7205be07b2c7332a138d58dbee4988bbefb93aeb9db7469a05646",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_5/libero_10_task5/init_31/episode.json",
+      "reproduction_episode_sha256": "f88493fd6548639470f8ddeafb4988283fca468096f07f6f0bf5b88f18cd0996"
+    },
+    {
+      "task_id": 5,
+      "state_id": 42,
+      "task_name": "STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy",
+      "seed": 3584,
+      "historical_success": true,
+      "reproduction_success": false,
+      "outcome_agreement": false,
+      "historical_num_steps": 169,
+      "reproduction_num_steps": 900,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_42/episode.json",
+      "historical_episode_sha256": "70f67ea290db38df2c1076fcbf2004d43414365ec6f96f21d174c40f3bdabcd5",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_5/libero_10_task5/init_42/episode.json",
+      "reproduction_episode_sha256": "39c092611d25aec4b15a449f8a55d42ca911185067a761013c49fbd67c017213"
+    },
+    {
+      "task_id": 6,
+      "state_id": 3,
+      "task_name": "LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate",
+      "seed": 3645,
+      "historical_success": false,
+      "reproduction_success": true,
+      "outcome_agreement": false,
+      "historical_num_steps": 1000,
+      "reproduction_num_steps": 386,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_3/episode.json",
+      "historical_episode_sha256": "cee5c461de00c53d4fce0f42e5cb6d31ab579fa4f5d6e689f896052b1f60592f",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_6/libero_10_task6/init_3/episode.json",
+      "reproduction_episode_sha256": "caa3088200444920b34d112b6e6083b6051ef92484a33325889961ed056fa59f"
+    },
+    {
+      "task_id": 6,
+      "state_id": 5,
+      "task_name": "LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate",
+      "seed": 3647,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 222,
+      "reproduction_num_steps": 214,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_5/episode.json",
+      "historical_episode_sha256": "83ab71d07729a787317cfbc9cdee111d0e0e9faa80b97902d8f29b70fb162699",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_6/libero_10_task6/init_5/episode.json",
+      "reproduction_episode_sha256": "0fdcd8c8a2c0d0b6058f36643acbb2dba224664d5153ad0e452daa04107d5eb2"
+    },
+    {
+      "task_id": 6,
+      "state_id": 17,
+      "task_name": "LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate",
+      "seed": 3659,
+      "historical_success": true,
+      "reproduction_success": false,
+      "outcome_agreement": false,
+      "historical_num_steps": 224,
+      "reproduction_num_steps": 900,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_17/episode.json",
+      "historical_episode_sha256": "31e77813b3c6a38e259b9b7f66416e9a2f21c2d63ecb893c7883769197d7c92d",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_6/libero_10_task6/init_17/episode.json",
+      "reproduction_episode_sha256": "549eb3022357ec6579cd98acadbca4e1bee652ba8e77a2444611d086c294acb4"
+    },
+    {
+      "task_id": 6,
+      "state_id": 33,
+      "task_name": "LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate",
+      "seed": 3675,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 223,
+      "reproduction_num_steps": 230,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_33/episode.json",
+      "historical_episode_sha256": "edf9f186fd16a7c70ddb6949dfc1bac7aa3f0ab61f0403fba244a7c8f89d69c9",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_6/libero_10_task6/init_33/episode.json",
+      "reproduction_episode_sha256": "07e5bcb3fce8fc8ed01bb9e7eba7c7b2f06cc08dfabc3df515add8f61d84cda1"
+    },
+    {
+      "task_id": 6,
+      "state_id": 42,
+      "task_name": "LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate",
+      "seed": 3684,
+      "historical_success": true,
+      "reproduction_success": false,
+      "outcome_agreement": false,
+      "historical_num_steps": 217,
+      "reproduction_num_steps": 900,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_42/episode.json",
+      "historical_episode_sha256": "7ddde14b018125c1d35a09aa0002412a0021c0031a819dd270c4c906e6701e22",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_6/libero_10_task6/init_42/episode.json",
+      "reproduction_episode_sha256": "dd78874901636cb52fc1d4e97c92f7afda06a230912fbcbc3666a680b6c13c61"
+    },
+    {
+      "task_id": 7,
+      "state_id": 2,
+      "task_name": "LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket",
+      "seed": 3744,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 532,
+      "reproduction_num_steps": 250,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_2/episode.json",
+      "historical_episode_sha256": "df1c8a812f631cc3a43e66a52d98476944fc9b157af014149fe6ddceb52e0b43",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_7/libero_10_task7/init_2/episode.json",
+      "reproduction_episode_sha256": "280d9807631453d3d805ce27b8f2f5984faa6a3edf619dfac600d93bff6f38bc"
+    },
+    {
+      "task_id": 7,
+      "state_id": 12,
+      "task_name": "LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket",
+      "seed": 3754,
+      "historical_success": false,
+      "reproduction_success": false,
+      "outcome_agreement": true,
+      "historical_num_steps": 1000,
+      "reproduction_num_steps": 900,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_12/episode.json",
+      "historical_episode_sha256": "11ae65a2e51f389792808bc26464f8be4efcca56d4f1ba48012ef335e876c545",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_7/libero_10_task7/init_12/episode.json",
+      "reproduction_episode_sha256": "9584a94239bf770fb755e1ec12dc2688649c51f0a6a2e0dc5658981f7a457dea"
+    },
+    {
+      "task_id": 7,
+      "state_id": 40,
+      "task_name": "LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket",
+      "seed": 3782,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 330,
+      "reproduction_num_steps": 280,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_40/episode.json",
+      "historical_episode_sha256": "5b99ae7880bb8a925053dac14362d5a00dd04036bc52100be3e5f6600d1ab35a",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_7/libero_10_task7/init_40/episode.json",
+      "reproduction_episode_sha256": "61e97983f3cb2d4aa18a5f761f6fd62d7d54c05812aa003e83ee5657773ed184"
+    },
+    {
+      "task_id": 7,
+      "state_id": 41,
+      "task_name": "LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket",
+      "seed": 3783,
+      "historical_success": true,
+      "reproduction_success": false,
+      "outcome_agreement": false,
+      "historical_num_steps": 339,
+      "reproduction_num_steps": 900,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_41/episode.json",
+      "historical_episode_sha256": "2159861c5b645b5e527fefaad42a7785643784bcf07e487da0cf9adbcea1dd46",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_7/libero_10_task7/init_41/episode.json",
+      "reproduction_episode_sha256": "3dbf2e446efaed976d78ce1e279589f9f54d8c27a9150f21f8f3f21f75c4eacf"
+    },
+    {
+      "task_id": 7,
+      "state_id": 42,
+      "task_name": "LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket",
+      "seed": 3784,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 287,
+      "reproduction_num_steps": 248,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_42/episode.json",
+      "historical_episode_sha256": "e2e28d802d2fb6c598b3356f2a8a237ad22b90da177229886dd1eb08bfad9b8f",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_7/libero_10_task7/init_42/episode.json",
+      "reproduction_episode_sha256": "4febcaf6f9ef07e28920d10bcd175bee87eb5f17174d3e982ff02cc4298d0401"
+    },
+    {
+      "task_id": 8,
+      "state_id": 3,
+      "task_name": "KITCHEN_SCENE8_put_both_moka_pots_on_the_stove",
+      "seed": 3845,
+      "historical_success": false,
+      "reproduction_success": true,
+      "outcome_agreement": false,
+      "historical_num_steps": 1000,
+      "reproduction_num_steps": 373,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_3/episode.json",
+      "historical_episode_sha256": "18fbfd330bc11dcdaaf69ad383f0309bffe063f678fc1f467953f6e7ec0219f4",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_8/libero_10_task8/init_3/episode.json",
+      "reproduction_episode_sha256": "ed24cf181f4829146b47d0f3b20b5bd7c700862ef51598172f5bffd7cc383f41"
+    },
+    {
+      "task_id": 8,
+      "state_id": 8,
+      "task_name": "KITCHEN_SCENE8_put_both_moka_pots_on_the_stove",
+      "seed": 3850,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 520,
+      "reproduction_num_steps": 371,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_8/episode.json",
+      "historical_episode_sha256": "baccc56ce978d5b49e59fd3e531eb2e167f19984357508169e6874328895c2d3",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_8/libero_10_task8/init_8/episode.json",
+      "reproduction_episode_sha256": "3bf57a42efc0ae226f1ada8271d19143bfa86575af28daaca052ef1122efe7be"
+    },
+    {
+      "task_id": 8,
+      "state_id": 22,
+      "task_name": "KITCHEN_SCENE8_put_both_moka_pots_on_the_stove",
+      "seed": 3864,
+      "historical_success": false,
+      "reproduction_success": false,
+      "outcome_agreement": true,
+      "historical_num_steps": 1000,
+      "reproduction_num_steps": 900,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_22/episode.json",
+      "historical_episode_sha256": "4bd8381e9b524b824251045b66dbd8250f9a3cdb111c9ffdc8fe621edf80fcb3",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_8/libero_10_task8/init_22/episode.json",
+      "reproduction_episode_sha256": "97ef443238d6289318126a4050871652a0085eb738f7bfaf2bfca79f2f84d773"
+    },
+    {
+      "task_id": 8,
+      "state_id": 33,
+      "task_name": "KITCHEN_SCENE8_put_both_moka_pots_on_the_stove",
+      "seed": 3875,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 473,
+      "reproduction_num_steps": 356,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_33/episode.json",
+      "historical_episode_sha256": "ea0e78fbf20526ec385f26dfb0509d4ffdd9d3ddced2998b05bf2dabfe24cb96",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_8/libero_10_task8/init_33/episode.json",
+      "reproduction_episode_sha256": "5dce37ec0ad24f7b864f375786a3985b10cdd721da9346adbf0fe126437c4ade"
+    },
+    {
+      "task_id": 8,
+      "state_id": 35,
+      "task_name": "KITCHEN_SCENE8_put_both_moka_pots_on_the_stove",
+      "seed": 3877,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 389,
+      "reproduction_num_steps": 425,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_35/episode.json",
+      "historical_episode_sha256": "79e77515720a0089038e19cb2d66b86ed9ad9a587ac4b3702d1df183dc2b4517",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_8/libero_10_task8/init_35/episode.json",
+      "reproduction_episode_sha256": "84269a0cefbec8376b1de9fe6196e4ff5779e9e2b5b4ab66d8d542bafd766d0c"
+    },
+    {
+      "task_id": 9,
+      "state_id": 3,
+      "task_name": "KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it",
+      "seed": 3945,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 260,
+      "reproduction_num_steps": 640,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_3/episode.json",
+      "historical_episode_sha256": "76229b16fac5e674368fb1013898e33692c572a48314633f69ddf9c62590dd74",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_9/libero_10_task9/init_3/episode.json",
+      "reproduction_episode_sha256": "9604eea3336764b9c934c70c477ff2145d9cdd1122dfd1bd2187ec3caed328d8"
+    },
+    {
+      "task_id": 9,
+      "state_id": 14,
+      "task_name": "KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it",
+      "seed": 3956,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 918,
+      "reproduction_num_steps": 320,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_14/episode.json",
+      "historical_episode_sha256": "a0ea813ea56ce8ac6ea1bf37d3b3bbab40195160f1286c199dbbcd802e243f31",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_9/libero_10_task9/init_14/episode.json",
+      "reproduction_episode_sha256": "f9edb4f130aa4d2b08a3e7bd3fb0c5bfa23f7dc1e67d47748d3a61a9f64bbba9"
+    },
+    {
+      "task_id": 9,
+      "state_id": 43,
+      "task_name": "KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it",
+      "seed": 3985,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 500,
+      "reproduction_num_steps": 244,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_43/episode.json",
+      "historical_episode_sha256": "6f7af222ad4dc893164ccd2b0a29168688b622814d26d122acd2e3ba697e46e7",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_9/libero_10_task9/init_43/episode.json",
+      "reproduction_episode_sha256": "920848ed387e0c3221a467517e17d8d53ad4bf9c8a0cfab01a5f7301c9604169"
+    },
+    {
+      "task_id": 9,
+      "state_id": 45,
+      "task_name": "KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it",
+      "seed": 3987,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 288,
+      "reproduction_num_steps": 612,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_45/episode.json",
+      "historical_episode_sha256": "d9b0b9c575af8e04f2b9b8cb3540cfbb0d6f6786e6f38a1493811b6e76f23233",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_9/libero_10_task9/init_45/episode.json",
+      "reproduction_episode_sha256": "15ac1d43d6ed32b7bece5b71bec0b45899591f378e133268e5bd25b9c64d9e7a"
+    },
+    {
+      "task_id": 9,
+      "state_id": 49,
+      "task_name": "KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it",
+      "seed": 3991,
+      "historical_success": true,
+      "reproduction_success": true,
+      "outcome_agreement": true,
+      "historical_num_steps": 264,
+      "reproduction_num_steps": 262,
+      "historical_episode_path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_49/episode.json",
+      "historical_episode_sha256": "5fa6c0e793c6183fa51f655cac8db5f0196ee326f3986412187185c1cb5ba5da",
+      "reproduction_episode_path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_9/libero_10_task9/init_49/episode.json",
+      "reproduction_episode_sha256": "8db44d6f18df879174560dd8bff7e54a648250cc05835b359bf82b2170bf26dd"
+    }
+  ],
+  "source_files": [
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_8/episode.json",
+      "sha256": "66591de50b7cd66649ee35d1d22adb60aa90dd065e7e138fc033e6b3be1f7e74"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_0/libero_10_task0/init_8/episode.json",
+      "sha256": "6c7bf5834806e831ecd67ca42c79ba57557ccfd51b45d56c369396f915e44bc5"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_13/episode.json",
+      "sha256": "098c5f0e80605c51542370bb3db2e8786c289bce01d7358f8402f4f72335a3cf"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_0/libero_10_task0/init_13/episode.json",
+      "sha256": "abedfb0b9d24a7aab8ba3fb8cdbae1c531410c1f5fb1836ac99928b4c8afb873"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_27/episode.json",
+      "sha256": "563f8b30f546350beb04c1e57727773c18a1a29a7fda2dbc82e3ad1083633115"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_0/libero_10_task0/init_27/episode.json",
+      "sha256": "9e156ba61612dd6bc60fa4875f01941aefdc1c8f8e39374e8809b0e2bfe6d98b"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_45/episode.json",
+      "sha256": "cbd78b4c9e45a3445ac714fbcd458a3250ecc517a79f7b12ad6a76527214e36e"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_0/libero_10_task0/init_45/episode.json",
+      "sha256": "528f2674fd6cb12add9939775eae60ca3d315d28075396cae42409ff2ca3c3b7"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_48/episode.json",
+      "sha256": "567c302afd53da7cf8ca1291bbc4986a105c64c857065fbea3b21c10cf1024c5"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_0/libero_10_task0/init_48/episode.json",
+      "sha256": "badbd058fe154b0a5bdac66e94c15f11996a0a4b4fa28da7c13b5a7a0fbf08f3"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_17/episode.json",
+      "sha256": "6af40cc93e131875d542fd7dbcb5fd2dff6a52952fa468e063d861cba41fd5eb"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_1/libero_10_task1/init_17/episode.json",
+      "sha256": "359ba8fcef451c5784866da4499bf3702c40fb5ccfacb8a705d61e79a27ecd39"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_21/episode.json",
+      "sha256": "b181e41668da7e86578cdf6e7eda9b7d1619a5914dcac22672d89d91b63d7c6c"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_1/libero_10_task1/init_21/episode.json",
+      "sha256": "802a2540f19d13fa1c57b3ac4f16fa84285be2f862c930b9b8911348471c9810"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_39/episode.json",
+      "sha256": "52d669f8b9b52b754951eb5e6d15339855cd9333506945d161d85f501b5ce88b"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_1/libero_10_task1/init_39/episode.json",
+      "sha256": "07fec743d345ec999d0943dce6c013474a4229e2757146aaf2b1f27f9760b853"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_41/episode.json",
+      "sha256": "e1d9723658410cd325a81007da5042f68b5df5492938f5d4eddce826113ab989"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_1/libero_10_task1/init_41/episode.json",
+      "sha256": "7d3061f9af6c0ca5e2c2c502ea8b640820c03107c53294909105ebc65e39e1bb"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_47/episode.json",
+      "sha256": "69cd7d389640ad23234a584dd22602e6fc5965ab59c8261b7aafaebb3d7c77a3"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_1/libero_10_task1/init_47/episode.json",
+      "sha256": "be212a3fa27ca8cd9cefee18810a58272bf1dc931c2d5a4b1afe5596ff2fbd48"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_3/episode.json",
+      "sha256": "3f9fc6e0e32c4c11eb34e613aa934a7ea49ce29255cd662664b9e5913f3188df"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_2/libero_10_task2/init_3/episode.json",
+      "sha256": "ebc597ddb9a578fd07d0de0d008d3a0d607122f8bb150c25b4c6ba2bc18f02b1"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_6/episode.json",
+      "sha256": "a6217219658dc23dc9b92f00b43005cb2473723a165e905f55e2cbd73983ec66"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_2/libero_10_task2/init_6/episode.json",
+      "sha256": "6eb2a6f7f5dd40d99a0fd630d8e2e6a4e1dea135f1f448db8e173f11472230ca"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_12/episode.json",
+      "sha256": "69890cd17d12a241934e3092a362779aac3696b0fe651c2ce2b326edc5665923"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_2/libero_10_task2/init_12/episode.json",
+      "sha256": "9ed0ba24fd4404519eb48063e73d0dfdf74db730cf10ed55bc76054496359caf"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_15/episode.json",
+      "sha256": "b3f65a78a5179d99f3c74a53ae6d75243c5c2513ab32200569d671bba0993867"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_2/libero_10_task2/init_15/episode.json",
+      "sha256": "9888779d4fd39e625ef99c075b226b33cd5e56534437745720e5a70a4a336d46"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_40/episode.json",
+      "sha256": "581e3fbe432584d06a217c50137b483b4a7d66cfabff0e52210d9cdbcc2cab13"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_2/libero_10_task2/init_40/episode.json",
+      "sha256": "3dccb20d1235078fe880564bb9a2b80ecf7d4afa66423278a00f2eb8cdf66756"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_19/episode.json",
+      "sha256": "28a7310fa87457da3a4a369596abe8b841889221c51193d96e89f0cbf94141ee"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_3/libero_10_task3/init_19/episode.json",
+      "sha256": "712ee72c446b7649480517fec5617f79fdbb37dceed676ced39de8ebee1b54f4"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_38/episode.json",
+      "sha256": "c6e34e32981f0593b38470f3604e24a4cab5d5f4c596f596b8f3b49ccb108b25"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_3/libero_10_task3/init_38/episode.json",
+      "sha256": "2169ce069d23f805eff8563daa8d20dcb57ab0e57ae0f9eb703318cb185dd225"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_44/episode.json",
+      "sha256": "5b0a97f13f4e22dcf24cb944e67fa9a0b0678ed8b4a9e168a5707b8a693a3a5d"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_3/libero_10_task3/init_44/episode.json",
+      "sha256": "ab415021a5e9bf0bdfbf81cbbf6ac101bd6953e430419f297e1985121129cfea"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_47/episode.json",
+      "sha256": "89bcccaf1fde20954725aff751ac09ed9e73fa3d1fb20bd6d6b472f1076906e3"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_3/libero_10_task3/init_47/episode.json",
+      "sha256": "d4e3832933cdc075ae56ce6a78713bc16d69ffbe51d858ea683977a8b79cdedb"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_49/episode.json",
+      "sha256": "d70080a891de9ded9bf2d56eceaa313740716c1eb6d586eaddbe118db34d74b0"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_3/libero_10_task3/init_49/episode.json",
+      "sha256": "b65bf3a6ae08ff976b23c17fa948d856f17b2ec3c103cfa78f395e59aa33ce56"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_3/episode.json",
+      "sha256": "a7fc1d6a1f520a7810005261ec4d35f22c48e1c6e1bf62d910a2f7aa401dc296"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_4/libero_10_task4/init_3/episode.json",
+      "sha256": "b9401b2c968c5ed4efc92e1a17c9c8fa24fe2157325e7ab6d4d6a0d8f2ec97d9"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_14/episode.json",
+      "sha256": "d87623cec9175d55609ba4f1c033a6f1075698721dd2bd64f391d131574ade34"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_4/libero_10_task4/init_14/episode.json",
+      "sha256": "5d7de3ee4d7ceb0b342efc01c49303da8639df13a4de0864c8f90e60ce4b5a89"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_26/episode.json",
+      "sha256": "329eeff427a472605c6ff63b36b5ec67d02a13e2d380811314adc8c0531af96f"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_4/libero_10_task4/init_26/episode.json",
+      "sha256": "dbdfb64a51f8ed7b8bdd89062180c6a30a219b39021fd22cc309143b0b99db3e"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_33/episode.json",
+      "sha256": "9b7f629fda5f43e3a130591022f473fbe2d543e4f15d046754f506ddcd1a97cf"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_4/libero_10_task4/init_33/episode.json",
+      "sha256": "29de640e34143928078bb74dffcdd0342c69fa69f1dcf955ec81dee3060d7139"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_44/episode.json",
+      "sha256": "cef7fe7bf62d04d96dea90b01dd60e2bf8900f82999f7589cf790df015b5bacb"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_4/libero_10_task4/init_44/episode.json",
+      "sha256": "6569d365684eb953c9233320f1ac4f2eb57b46e1ee7740a155ed0e1408a9a337"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_6/episode.json",
+      "sha256": "fc09c6dc71003b0b9ef80e37021ac74b29295d29a15fc812fd733bacfd845afa"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_5/libero_10_task5/init_6/episode.json",
+      "sha256": "9629af8be35c8b354f1f93404dc93efd04b6e896ae36dc4e37b4c8c87f1aaa31"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_17/episode.json",
+      "sha256": "42bfc97a425ede3a3c6ebcda098d76e43b9f7a6ce8e6415cd340a9143bb70ec2"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_5/libero_10_task5/init_17/episode.json",
+      "sha256": "71404454ac24871e002ee3f4f9de15f2bd8b845138c63743aa14607fd7e19908"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_28/episode.json",
+      "sha256": "73535aea449a2f77dae36e9dd427c6443d591b1d8233ad1cbc12c3623c08c86e"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_5/libero_10_task5/init_28/episode.json",
+      "sha256": "ef0190a4f74da6ba573e344c4dedb8dfd3beb0aedb5889f639911373316a1263"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_31/episode.json",
+      "sha256": "cb3a048bc1b7205be07b2c7332a138d58dbee4988bbefb93aeb9db7469a05646"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_5/libero_10_task5/init_31/episode.json",
+      "sha256": "f88493fd6548639470f8ddeafb4988283fca468096f07f6f0bf5b88f18cd0996"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_42/episode.json",
+      "sha256": "70f67ea290db38df2c1076fcbf2004d43414365ec6f96f21d174c40f3bdabcd5"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_5/libero_10_task5/init_42/episode.json",
+      "sha256": "39c092611d25aec4b15a449f8a55d42ca911185067a761013c49fbd67c017213"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_3/episode.json",
+      "sha256": "cee5c461de00c53d4fce0f42e5cb6d31ab579fa4f5d6e689f896052b1f60592f"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_6/libero_10_task6/init_3/episode.json",
+      "sha256": "caa3088200444920b34d112b6e6083b6051ef92484a33325889961ed056fa59f"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_5/episode.json",
+      "sha256": "83ab71d07729a787317cfbc9cdee111d0e0e9faa80b97902d8f29b70fb162699"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_6/libero_10_task6/init_5/episode.json",
+      "sha256": "0fdcd8c8a2c0d0b6058f36643acbb2dba224664d5153ad0e452daa04107d5eb2"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_17/episode.json",
+      "sha256": "31e77813b3c6a38e259b9b7f66416e9a2f21c2d63ecb893c7883769197d7c92d"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_6/libero_10_task6/init_17/episode.json",
+      "sha256": "549eb3022357ec6579cd98acadbca4e1bee652ba8e77a2444611d086c294acb4"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_33/episode.json",
+      "sha256": "edf9f186fd16a7c70ddb6949dfc1bac7aa3f0ab61f0403fba244a7c8f89d69c9"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_6/libero_10_task6/init_33/episode.json",
+      "sha256": "07e5bcb3fce8fc8ed01bb9e7eba7c7b2f06cc08dfabc3df515add8f61d84cda1"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_42/episode.json",
+      "sha256": "7ddde14b018125c1d35a09aa0002412a0021c0031a819dd270c4c906e6701e22"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_6/libero_10_task6/init_42/episode.json",
+      "sha256": "dd78874901636cb52fc1d4e97c92f7afda06a230912fbcbc3666a680b6c13c61"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_2/episode.json",
+      "sha256": "df1c8a812f631cc3a43e66a52d98476944fc9b157af014149fe6ddceb52e0b43"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_7/libero_10_task7/init_2/episode.json",
+      "sha256": "280d9807631453d3d805ce27b8f2f5984faa6a3edf619dfac600d93bff6f38bc"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_12/episode.json",
+      "sha256": "11ae65a2e51f389792808bc26464f8be4efcca56d4f1ba48012ef335e876c545"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_7/libero_10_task7/init_12/episode.json",
+      "sha256": "9584a94239bf770fb755e1ec12dc2688649c51f0a6a2e0dc5658981f7a457dea"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_40/episode.json",
+      "sha256": "5b99ae7880bb8a925053dac14362d5a00dd04036bc52100be3e5f6600d1ab35a"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_7/libero_10_task7/init_40/episode.json",
+      "sha256": "61e97983f3cb2d4aa18a5f761f6fd62d7d54c05812aa003e83ee5657773ed184"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_41/episode.json",
+      "sha256": "2159861c5b645b5e527fefaad42a7785643784bcf07e487da0cf9adbcea1dd46"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_7/libero_10_task7/init_41/episode.json",
+      "sha256": "3dbf2e446efaed976d78ce1e279589f9f54d8c27a9150f21f8f3f21f75c4eacf"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_42/episode.json",
+      "sha256": "e2e28d802d2fb6c598b3356f2a8a237ad22b90da177229886dd1eb08bfad9b8f"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_7/libero_10_task7/init_42/episode.json",
+      "sha256": "4febcaf6f9ef07e28920d10bcd175bee87eb5f17174d3e982ff02cc4298d0401"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_3/episode.json",
+      "sha256": "18fbfd330bc11dcdaaf69ad383f0309bffe063f678fc1f467953f6e7ec0219f4"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_8/libero_10_task8/init_3/episode.json",
+      "sha256": "ed24cf181f4829146b47d0f3b20b5bd7c700862ef51598172f5bffd7cc383f41"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_8/episode.json",
+      "sha256": "baccc56ce978d5b49e59fd3e531eb2e167f19984357508169e6874328895c2d3"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_8/libero_10_task8/init_8/episode.json",
+      "sha256": "3bf57a42efc0ae226f1ada8271d19143bfa86575af28daaca052ef1122efe7be"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_22/episode.json",
+      "sha256": "4bd8381e9b524b824251045b66dbd8250f9a3cdb111c9ffdc8fe621edf80fcb3"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_8/libero_10_task8/init_22/episode.json",
+      "sha256": "97ef443238d6289318126a4050871652a0085eb738f7bfaf2bfca79f2f84d773"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_33/episode.json",
+      "sha256": "ea0e78fbf20526ec385f26dfb0509d4ffdd9d3ddced2998b05bf2dabfe24cb96"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_8/libero_10_task8/init_33/episode.json",
+      "sha256": "5dce37ec0ad24f7b864f375786a3985b10cdd721da9346adbf0fe126437c4ade"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_35/episode.json",
+      "sha256": "79e77515720a0089038e19cb2d66b86ed9ad9a587ac4b3702d1df183dc2b4517"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_8/libero_10_task8/init_35/episode.json",
+      "sha256": "84269a0cefbec8376b1de9fe6196e4ff5779e9e2b5b4ab66d8d542bafd766d0c"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_3/episode.json",
+      "sha256": "76229b16fac5e674368fb1013898e33692c572a48314633f69ddf9c62590dd74"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_9/libero_10_task9/init_3/episode.json",
+      "sha256": "9604eea3336764b9c934c70c477ff2145d9cdd1122dfd1bd2187ec3caed328d8"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_14/episode.json",
+      "sha256": "a0ea813ea56ce8ac6ea1bf37d3b3bbab40195160f1286c199dbbcd802e243f31"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_9/libero_10_task9/init_14/episode.json",
+      "sha256": "f9edb4f130aa4d2b08a3e7bd3fb0c5bfa23f7dc1e67d47748d3a61a9f64bbba9"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_43/episode.json",
+      "sha256": "6f7af222ad4dc893164ccd2b0a29168688b622814d26d122acd2e3ba697e46e7"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_9/libero_10_task9/init_43/episode.json",
+      "sha256": "920848ed387e0c3221a467517e17d8d53ad4bf9c8a0cfab01a5f7301c9604169"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_45/episode.json",
+      "sha256": "d9b0b9c575af8e04f2b9b8cb3540cfbb0d6f6786e6f38a1493811b6e76f23233"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_9/libero_10_task9/init_45/episode.json",
+      "sha256": "15ac1d43d6ed32b7bece5b71bec0b45899591f378e133268e5bd25b9c64d9e7a"
+    },
+    {
+      "path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_49/episode.json",
+      "sha256": "5fa6c0e793c6183fa51f655cac8db5f0196ee326f3986412187185c1cb5ba5da"
+    },
+    {
+      "path": "experiments/results/e6_reproduce_historical_50_20261120_101024/task_9/libero_10_task9/init_49/episode.json",
+      "sha256": "8db44d6f18df879174560dd8bff7e54a648250cc05835b359bf82b2170bf26dd"
+    }
+  ],
+  "limitations": [
+    "The historical run used Windows Python 3.12.2, robosuite 1.5.2, BDDL 3.6.0, and source commit 657f325b; the reproduction used WSL/Linux Python 3.10.22, robosuite 1.4.0, BDDL 1.0.1, and source commit 02e05ffe.",
+    "Platform, Python, simulator, BDDL, and source revision changed together; outcome flips cannot be attributed to the policy or to a single environment component.",
+    "This diagnostic is not comparable with official LIBERO paper scores and does not generalize beyond the fixed 50 task/state/seed pairs."
+  ]
+}

@@ -102,11 +102,52 @@ def validate_matched_adapters(f0, f1):
         raise ValueError("Unmatched F0/F1 training arguments")
 
 
-def validate_runtime(manifest, writer, renderer):
+def validate_runtime(manifest, writer, renderer, *, writer_override=None,
+                     runtime_writer_source_sha256=None, runtime_writer_config=None):
     from dataclasses import asdict
     if adapter_training_condition(manifest) != "memory":
         raise ValueError("Predicted memory requires a memory-trained adapter")
-    contract = verify_memory_code(manifest["memory_provenance"])
+    if writer_override is None:
+        if runtime_writer_source_sha256 is not None or runtime_writer_config is not None:
+            raise ValueError("Runtime writer override metadata requires an explicit writer version")
+        contract = verify_memory_code(manifest["memory_provenance"])
+    else:
+        # An override is non-comparable with the training writer. Permit it only
+        # when the caller supplies the source and config snapshot captured during
+        # preflight, then verify that the same implementation is active now.
+        contract = verify_memory_code(manifest["memory_provenance"], verify_files_on_disk=False)
+        from src.memory.relation_writer_versions import (
+            RELATION_WRITERS,
+            versioned_relation_source_hashes,
+        )
+        from src.memory.relation_pipeline import relation_config
+        from src.interfaces.relation_memory_text import RelationMemoryRenderer
+        from src.interfaces.relation_memory_text_v3 import RelationMemoryRendererV3
+
+        if writer_override not in RELATION_WRITERS:
+            raise ValueError("Unknown explicit runtime writer override")
+        if not runtime_writer_source_sha256 or not runtime_writer_config:
+            raise ValueError("Runtime writer override requires its preflight source/config snapshot")
+        if versioned_relation_source_hashes(ROOT, writer_override) != runtime_writer_source_sha256:
+            raise ValueError("Runtime writer source changed after preflight")
+        expected_config = relation_config(renderer.strategy, writer_override)
+        if runtime_writer_config != expected_config:
+            raise ValueError("Runtime writer config changed after preflight")
+        expected_renderer = (RelationMemoryRendererV3 if writer_override == "rgb_relations_v3"
+                             else RelationMemoryRenderer)
+        if (not isinstance(writer, RELATION_WRITERS[writer_override])
+                or writer.VERSION != writer_override
+                or writer.image_convention != "libero_raw"
+                or not isinstance(renderer, expected_renderer)
+                or renderer.VERSION != expected_config["projection"]
+                or renderer.token_counter is not None
+                or renderer.max_total_tokens != expected_config["max_total_tokens"]
+                or not renderer.strict_tokenizer or renderer.allow_oracle
+                or renderer.strategy != expected_config["strategy"]
+                or getattr(getattr(writer, "detector", None), "provenance", None) != contract["detector"]):
+            raise ValueError("Explicit runtime writer differs from its preflight snapshot")
+        return contract
+
     from src.memory.relation_writer_versions import RELATION_WRITERS, relation_config, versioned_relation_source_hashes
     if contract.get("writer") in RELATION_WRITERS:
         version = contract["writer"]

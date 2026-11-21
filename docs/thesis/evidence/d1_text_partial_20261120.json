@@ -1,0 +1,61 @@
+{
+  "experiment_id": "D1-text-parity-attempt-2026-11-20",
+  "status": "interrupted_incomplete",
+  "stage": "development_only",
+  "classification": "CUSTOM_V2_LIBERO_MEM",
+  "comparability": "NON-COMPARABLE_OFFICIAL_PAPER",
+  "protocol": {
+    "decision_mode": "text",
+    "decision_exposure": "projected",
+    "task": "T1",
+    "split": "seen",
+    "source_demo": "demo_1",
+    "state_idx": 0,
+    "initial_state_sha256": "7586850c6c9f89cb522e28c192350b33be6fd1ad7369d92c86d137aa33fe7beb",
+    "policy_seed": 42,
+    "writer": "rgb_relations_v1",
+    "writer_source_override": true,
+    "max_policy_actions": 1000
+  },
+  "partial_progress": {
+    "actions_written": 616,
+    "last_action_step": 615,
+    "queries_written": 62,
+    "memory_trace_rows": 616,
+    "terminal_summary_exists": false,
+    "episode_status_file": "running"
+  },
+  "interruption": {
+    "reason": "Stopped after several minutes without action-log progress while the detector worker was blocked in WSL /mnt/d p9_client_rpc I/O. A separate E6 task-2 rollout was concurrently using the same WSL/GPU resources and was left untouched.",
+    "policy_outcome_scored": false,
+    "shadow_comparator_run": false,
+    "parity_claim_permitted": false
+  },
+  "provenance_files": [
+    {
+      "path": "experiments/evaluation/decision_evidence_d1_text_t1_20261120_wsl/run_manifest.json",
+      "sha256": "489f9d372399a63e29820edff646f102d7b4ff58a9887537840397bd2403e4f3"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_d1_text_t1_20261120_wsl/episodes/T1_F1_seen_state0/status.json",
+      "sha256": "14cff0467f0c277246c0405895b91e31ce490e43a8ce937c2691034bf0745df0"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_d1_text_t1_20261120_wsl/episodes/T1_F1_seen_state0/actions.jsonl",
+      "sha256": "3ea68b87d70f91c497cd2f05c017375a6a8f2650cd0cb35cd11c0ddcbdd54ee9"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_d1_text_t1_20261120_wsl/episodes/T1_F1_seen_state0/queries.jsonl",
+      "sha256": "e289bfff0888d3944e912f0125e4a40e0f7869fb4ab71d92b6530459997b9d35"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_d1_text_t1_20261120_wsl/episodes/T1_F1_seen_state0/memory_trace.jsonl",
+      "sha256": "c295da65727b39cbf44914188275678505704af4a627921be535478826d9efbc"
+    },
+    {
+      "path": "experiments/evaluation/decision_evidence_d1_text_t1_20261120_wsl/episodes/T1_F1_seen_state0/agentview_image.mp4",
+      "sha256": "cb2beb41008082f9dfffdf357048280b8f96d7dbc568893068ffe2cf6f24f36a",
+      "complete_video": false
+    }
+  ]
+}

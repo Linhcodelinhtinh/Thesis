@@ -1,0 +1,1226 @@
+{
+  "analysis_id": "e2-paired-state-group-bootstrap-2026-11-20",
+  "generated_at_utc": "2026-11-20T04:39:27.489232+00:00",
+  "classification": "CUSTOM_V2_LIBERO_MEM_RAW_UNSEEN",
+  "comparability": "NON-COMPARABLE_OFFICIAL_PAPER",
+  "arms": {
+    "F0": "V2 no-memory adapter",
+    "F1": "V2 memory adapter with rgb_relations_v1"
+  },
+  "method": {
+    "estimand": "paired success-rate difference (F1 minus F0)",
+    "bootstrap": "10,000 paired state-group resamples; each sampled group retains its matched T1/T3 outcomes",
+    "interval": "two-sided 95% percentile interval",
+    "seed": 42,
+    "scope_note": "Descriptive uncertainty conditional on the 20 locked unseen state groups and one policy seed. It does not generalize across seeds or official LIBERO."
+  },
+  "overall": {
+    "paired_task_state_units": 40,
+    "state_groups": 20,
+    "f0_successes": 4,
+    "f1_successes": 0,
+    "f0_success_rate": 0.1,
+    "f1_success_rate": 0.0,
+    "paired_difference_f1_minus_f0": -0.1,
+    "paired_outcomes": {
+      "both_success": 0,
+      "f0_only": 4,
+      "f1_only": 0,
+      "both_failure": 36
+    }
+  },
+  "paired_difference_bootstrap_95": [
+    -0.2,
+    -0.025
+  ],
+  "per_task": [
+    {
+      "task": "T1",
+      "paired_units": 20,
+      "f0_successes": 3,
+      "f1_successes": 0,
+      "paired_difference_f1_minus_f0": -0.15
+    },
+    {
+      "task": "T3",
+      "paired_units": 20,
+      "f0_successes": 1,
+      "f1_successes": 0,
+      "paired_difference_f1_minus_f0": -0.05
+    }
+  ],
+  "pairs": [
+    {
+      "task": "T1",
+      "state_idx": 0,
+      "state_group_sha256": "f8d4a140f72b0a750b5fe73e1dd855b35ef6cf3b00e6bc02555224fa3796c580",
+      "source_demo": "demo_101",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "6e20075b79c55a9b5f63deee9da91f83a46f8701ea4ce0f2153e71cf3e8364b8",
+      "f1_summary_sha256": "dab0e42221268888d3122827141dd0ff0a19d034f4625a2710232b16d18d94dd"
+    },
+    {
+      "task": "T1",
+      "state_idx": 1,
+      "state_group_sha256": "4469c9859ffd8edd48b222ba1033e11ede22ab550ed828b4ef4789e0d49ef2db",
+      "source_demo": "demo_102",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "161c247bc24621c8aaaefb6a4c5a423e8eca4f0142758260dad3acbf4cabac5e",
+      "f1_summary_sha256": "4df270a457cfd7d665e2d278b7fed0612aa3cd555db96de4516bf2df54075e6a"
+    },
+    {
+      "task": "T1",
+      "state_idx": 2,
+      "state_group_sha256": "59a03024ea33e447e9c23025e2c8e07b1719483417676f14bc01f480f7720a22",
+      "source_demo": "demo_103",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "3361fe823feae273222ca462ad1676202e25c3f6ac61ce693dbba049cdbc84b3",
+      "f1_summary_sha256": "20a977854252bc5270740c0a0af8c096ecc7185c9911894e4f45fb263c900b0c"
+    },
+    {
+      "task": "T1",
+      "state_idx": 3,
+      "state_group_sha256": "c8a7c698455063d049b4087b75581f9dff8b6c123f8c6ebc7614d9613b48dfed",
+      "source_demo": "demo_104",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "a6bc3c34cf8a9153fd247e0bb9a3b72aacc06b7bb1a6b9fe1a13de447494ef9d",
+      "f1_summary_sha256": "5599545ef6f3cf0d3423e18dee18ac5c6be3be83c95e28fc1a31c4bf38c5caf3"
+    },
+    {
+      "task": "T1",
+      "state_idx": 4,
+      "state_group_sha256": "61c7a9f8b845580c410e633ad63d99e46fb8a4901913d91493b8dceb23087931",
+      "source_demo": "demo_105",
+      "policy_seed": 42,
+      "f0_success": true,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": -1,
+      "f0_summary_sha256": "b4ffc88f59106df755cab469c4720a1a16ae183d66554ac7db5286bd2ba3d01d",
+      "f1_summary_sha256": "a2201f8eef20a9d03e2da145b56782239f9c970d85cd7876982787690b944d2d"
+    },
+    {
+      "task": "T1",
+      "state_idx": 5,
+      "state_group_sha256": "3c077afb1e0c388661627d5a1d2c1717a376c08d26f08a38218e40506550c7dc",
+      "source_demo": "demo_106",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "30c7ae9797211428b293a3f97ce3d4fc69c6548195a163b7df4e093019b6099d",
+      "f1_summary_sha256": "cd36025fd58dc0399126965993908825a4428e667591f6b6d69d5713f70f81aa"
+    },
+    {
+      "task": "T1",
+      "state_idx": 6,
+      "state_group_sha256": "c1597336ade993c893b5d0c94b9127fadfe7e7a6368b41339682c5e987ed1d43",
+      "source_demo": "demo_107",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "55eabbdc50e511668100e3cd4f70ab96af26fa6ea65b1807fe37d7c1bb990831",
+      "f1_summary_sha256": "f7f67839d7413cffa59935e5a72481c116d2387fa4b4b74e5cdab87622729f20"
+    },
+    {
+      "task": "T1",
+      "state_idx": 7,
+      "state_group_sha256": "0cf0a04bbb09ec50014dadbb8275c3f86ae196fb917c1a5ecedef848969f363f",
+      "source_demo": "demo_108",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "ce0c49bb1c39b3e0a543cf191ff216684a2749e6334061baa9b692c3d43c5edf",
+      "f1_summary_sha256": "64e0ba53d0a12ce228d774426ddd29f604f7acabc4cd51ff9e462c63a4549ac5"
+    },
+    {
+      "task": "T1",
+      "state_idx": 8,
+      "state_group_sha256": "a46af0f2e1f7b2cc628249f0dc6c435230235aa2a9711d44603c7144dc4a57a9",
+      "source_demo": "demo_109",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "267afd7329dfc85a0e1f56db211abbec1d5c7ac9b8cce1f8bec30aea675afa06",
+      "f1_summary_sha256": "35e27a98f8b049e3ef6de32ab2f096c31c78552bec3eed77ed302396bb00e90d"
+    },
+    {
+      "task": "T1",
+      "state_idx": 9,
+      "state_group_sha256": "750522acea960a4555e896d8db70fe17c06cfcc42a5785baccfe395fdfec424f",
+      "source_demo": "demo_110",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "ca25b7091397e7395ebeefefd72108c9745a29b19578c8f945ba4b4fef427357",
+      "f1_summary_sha256": "c8728360bfe29c533e98424367491570fd9be4df4ae0ca1541964c24c3d9f2fd"
+    },
+    {
+      "task": "T1",
+      "state_idx": 10,
+      "state_group_sha256": "8cd9722464dfe155ebabf87baaf22c7c6668a4bdb0c0dea186aee1fd114975b0",
+      "source_demo": "demo_111",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "c0d8d17f9aba4223d42d61ccc7f4159bfc19101c225f96a89e9a0246ef7f3243",
+      "f1_summary_sha256": "a55a81a17364c0734987f0cd282bf59da2e1191c3b94733001514a589fe9c640"
+    },
+    {
+      "task": "T1",
+      "state_idx": 11,
+      "state_group_sha256": "14cda118e3647a0c946d9c304c9ab5c2c3e44a349337a48f8920946c9a513831",
+      "source_demo": "demo_112",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "49a0ed2e42cf03f40b608528fea63faf309dfe5c4ff9a44f23313721bd67e563",
+      "f1_summary_sha256": "241d9f7c85b1ea086e7406b2f48b335c64d6b0f49ef022fe24931afa4968a030"
+    },
+    {
+      "task": "T1",
+      "state_idx": 12,
+      "state_group_sha256": "a89276025da10c18fbea176bfadaa64b509ec6045f730ad98ddcc80a80be2a21",
+      "source_demo": "demo_113",
+      "policy_seed": 42,
+      "f0_success": true,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": -1,
+      "f0_summary_sha256": "c9eac2ab24efe216f529521d25e40de5be264a91f138d43cdf5e09d30ad2dc4d",
+      "f1_summary_sha256": "bd533e7279d66dc95bb7f9eabd8b4fe904ddef91a29772b380c7e4c4ecf46c0e"
+    },
+    {
+      "task": "T1",
+      "state_idx": 13,
+      "state_group_sha256": "580610000c662a67bc4af3b709eec24527c07ed878e1c0ea77e7bfb21881f111",
+      "source_demo": "demo_114",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "5c41e312d5b239c84eebd532aa3d9568ca5456c20ea3d54e8e9bec9be090eea7",
+      "f1_summary_sha256": "9e2a35211e78c89ed77a71b4fbaf8339d85fedf43376d645f0141f8e6f7984a3"
+    },
+    {
+      "task": "T1",
+      "state_idx": 14,
+      "state_group_sha256": "7965e7d9fe4fa8d33e3ca136c7595b72d34129aae751525fc04aca76773146c5",
+      "source_demo": "demo_115",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "fd0d52578a5e6afc8f87dbc65e4d4416b06871b22950c0a89a83578b53896754",
+      "f1_summary_sha256": "c4d096d5de3931c20a3254e8228cba064798c5409e011cf2393bcc9ee3607bc2"
+    },
+    {
+      "task": "T1",
+      "state_idx": 15,
+      "state_group_sha256": "560f27fe6f1fd0af34f8134ab2650cdf8c17baeb54688ae373a7986217f6daa7",
+      "source_demo": "demo_116",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "c94406ae85180068a40732d0391dc17562b00a9b508d013a280017facdc1e94b",
+      "f1_summary_sha256": "c9e50a8ad5695a822edc26f8847ce73289ccccaaa6c3681cff9e579680880862"
+    },
+    {
+      "task": "T1",
+      "state_idx": 16,
+      "state_group_sha256": "29019d4034ee536f34177ec6f878cddad3d9a62bc762e4c240d6c84ff986a220",
+      "source_demo": "demo_117",
+      "policy_seed": 42,
+      "f0_success": true,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": -1,
+      "f0_summary_sha256": "74ec7474bb0136ecbf8d298188b89786fe0d7a4684fd8c52dc394fbce487ce10",
+      "f1_summary_sha256": "747ad242b0d33464c734415f11cfd52f33cb06e730662b3619639a048c26fae8"
+    },
+    {
+      "task": "T1",
+      "state_idx": 17,
+      "state_group_sha256": "51319c03f86f8baedd1ecfad405c56988b2588555bbe6655bd72e04e9bd39db0",
+      "source_demo": "demo_118",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "a414caeddd28ca80183d3f58dba010ea5ce6fb1ca1d98acdf8285b8b45a96632",
+      "f1_summary_sha256": "6216c56c5370a0e00c4d9449a17a04ab93010623e739327fb7661c165e40e473"
+    },
+    {
+      "task": "T1",
+      "state_idx": 18,
+      "state_group_sha256": "04162a8b26e07bb315e0e07fa2ac17646dd1861f2b46ac52fe51877e542a22ef",
+      "source_demo": "demo_119",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "411e498684c3190450d4b4682a955245ccb0d9fa153e1052c3660f0aaf092d6c",
+      "f1_summary_sha256": "d656bdb5655b03dd1289e72f7f482192c8e83d07f5c62c82a9f9dda24e4c66dd"
+    },
+    {
+      "task": "T1",
+      "state_idx": 19,
+      "state_group_sha256": "94aede068b962d2579332da00b137df3185254616f9de2f86cca9b2d781a9be0",
+      "source_demo": "demo_120",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "d276d55e67d9b9a54d96d87712b496c7c97593003087b88d67fca217f42b0a91",
+      "f1_summary_sha256": "daefc8649cd6339f13f198926ff7daf8e635ac217112af0307f9488a5ae32574"
+    },
+    {
+      "task": "T3",
+      "state_idx": 0,
+      "state_group_sha256": "f8d4a140f72b0a750b5fe73e1dd855b35ef6cf3b00e6bc02555224fa3796c580",
+      "source_demo": "demo_101",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "8bb245a09a9af73a44afdf80cd817cee48732d61cc1e881bade72b4171efac2a",
+      "f1_summary_sha256": "16eb0b2970c6368c6955651e731e68dde218e334ddb6c57ae6b6eb11ca69b4b9"
+    },
+    {
+      "task": "T3",
+      "state_idx": 1,
+      "state_group_sha256": "4469c9859ffd8edd48b222ba1033e11ede22ab550ed828b4ef4789e0d49ef2db",
+      "source_demo": "demo_102",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "bd728eef8f171a0b1ec1560e84573228912e0d9d83ce9fa57a15df0e4e371632",
+      "f1_summary_sha256": "53e8e24f5866bb3018cfdcff90fb04e202747916d3f9cf8ddb31d8b75320f095"
+    },
+    {
+      "task": "T3",
+      "state_idx": 2,
+      "state_group_sha256": "59a03024ea33e447e9c23025e2c8e07b1719483417676f14bc01f480f7720a22",
+      "source_demo": "demo_103",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "d6a8957fbf10d46df4d7d5d5c0b1e4ad34b368d293611c34e240645e3a43f1e5",
+      "f1_summary_sha256": "cdddd0a6096daa90f6ad6377082a49ce5e5f4913de06dbf404ea9872cb0f2327"
+    },
+    {
+      "task": "T3",
+      "state_idx": 3,
+      "state_group_sha256": "c8a7c698455063d049b4087b75581f9dff8b6c123f8c6ebc7614d9613b48dfed",
+      "source_demo": "demo_104",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "2eb5838818c3baa1bcabcb32e5b2bffeb719c9f155d8c6aa206df38616c0047a",
+      "f1_summary_sha256": "65bbad15f83f6882537e81d1defb16e6fe2d9f82d281c5dc8d984943768a8a3e"
+    },
+    {
+      "task": "T3",
+      "state_idx": 4,
+      "state_group_sha256": "61c7a9f8b845580c410e633ad63d99e46fb8a4901913d91493b8dceb23087931",
+      "source_demo": "demo_105",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "8d306c808115a109c77fbf72050432924dbd0e5e12eafe51fc116704a46fa1e8",
+      "f1_summary_sha256": "384537d5edca12e0038e400c71d39bfbe5487b35626c1effcff228d76a01cb5f"
+    },
+    {
+      "task": "T3",
+      "state_idx": 5,
+      "state_group_sha256": "3c077afb1e0c388661627d5a1d2c1717a376c08d26f08a38218e40506550c7dc",
+      "source_demo": "demo_106",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "8cfd760af9e8f49da8d516f68c1bb26a4f3ad4e0bf3a15aa7a7f65e77c965df3",
+      "f1_summary_sha256": "e24550d3795baa96a244d92e2fac9d6bcd6d1e0a678079efb8e051b8c472ce07"
+    },
+    {
+      "task": "T3",
+      "state_idx": 6,
+      "state_group_sha256": "c1597336ade993c893b5d0c94b9127fadfe7e7a6368b41339682c5e987ed1d43",
+      "source_demo": "demo_107",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "f5195aff94d43d886d337ff464eccad26f7482676d3e3a66d104caa85ed80263",
+      "f1_summary_sha256": "560c5bbd18102f73b730bbb475786df81eccfc5250d846691d101bdc2547a125"
+    },
+    {
+      "task": "T3",
+      "state_idx": 7,
+      "state_group_sha256": "0cf0a04bbb09ec50014dadbb8275c3f86ae196fb917c1a5ecedef848969f363f",
+      "source_demo": "demo_108",
+      "policy_seed": 42,
+      "f0_success": true,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": -1,
+      "f0_summary_sha256": "50b01c4a76e8d510ecabb2cd551ebf5104b350cb81e6429a1ebb50bdcc10a484",
+      "f1_summary_sha256": "8447c7c86b483d2db55c1e01b890b0018f6bc21a00a00121983fd955e27d17ec"
+    },
+    {
+      "task": "T3",
+      "state_idx": 8,
+      "state_group_sha256": "a46af0f2e1f7b2cc628249f0dc6c435230235aa2a9711d44603c7144dc4a57a9",
+      "source_demo": "demo_109",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "98f32bea30c79ba761c7c9ac8d70270a5e3ad0c0aa5fa271cb9d2c466a350ced",
+      "f1_summary_sha256": "3881e506f2403b1f5d570479b680fcf2cd553a863d77bfae651b69d2b44ba95a"
+    },
+    {
+      "task": "T3",
+      "state_idx": 9,
+      "state_group_sha256": "750522acea960a4555e896d8db70fe17c06cfcc42a5785baccfe395fdfec424f",
+      "source_demo": "demo_110",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "db48e40093c76231896f0f611b3e9f5eff04c606563270fba4e480413cf18d99",
+      "f1_summary_sha256": "21c7ac0083c442da8938d263520e0c137de3c41376ac365c2e3337fd636d13ea"
+    },
+    {
+      "task": "T3",
+      "state_idx": 10,
+      "state_group_sha256": "8cd9722464dfe155ebabf87baaf22c7c6668a4bdb0c0dea186aee1fd114975b0",
+      "source_demo": "demo_111",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "41160eaff34e5ba615eb04a906251b24ea3738ab0ba90ea2cb85b4341a496bb1",
+      "f1_summary_sha256": "74e263e832e187fad6ea8836de59ead6bec5f68595bb732521083b5ab3043dd6"
+    },
+    {
+      "task": "T3",
+      "state_idx": 11,
+      "state_group_sha256": "14cda118e3647a0c946d9c304c9ab5c2c3e44a349337a48f8920946c9a513831",
+      "source_demo": "demo_112",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "1ceb55213cb9bf5eaee9e09961fe718bd6453c2faf765a757d2df36e60ce0f2a",
+      "f1_summary_sha256": "8e23106ff27538dcbed2f8135179a2b3632c5885cff64400c2b124ab1c63d678"
+    },
+    {
+      "task": "T3",
+      "state_idx": 12,
+      "state_group_sha256": "a89276025da10c18fbea176bfadaa64b509ec6045f730ad98ddcc80a80be2a21",
+      "source_demo": "demo_113",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "f37d4b770f51a52e38e45ed3fe591b9e6447ddb8453dc0131f6854e4acc57d62",
+      "f1_summary_sha256": "5b6bcb115ee756ade38e5028a30fe5d676957c0d37c899852697948936cd7b7f"
+    },
+    {
+      "task": "T3",
+      "state_idx": 13,
+      "state_group_sha256": "580610000c662a67bc4af3b709eec24527c07ed878e1c0ea77e7bfb21881f111",
+      "source_demo": "demo_114",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "d83eed95cb0a6e3e523ce67a33f67631c63605cb292bd519169298b72b5c6663",
+      "f1_summary_sha256": "a430138b8d64b0217a4444f5bef4c9e610c61004ac43d6768ce8f0f2cb9ec07d"
+    },
+    {
+      "task": "T3",
+      "state_idx": 14,
+      "state_group_sha256": "7965e7d9fe4fa8d33e3ca136c7595b72d34129aae751525fc04aca76773146c5",
+      "source_demo": "demo_115",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "2fe1a5683be7471683cd2b8200492f01aaa190e2633102ec205d502efa94899b",
+      "f1_summary_sha256": "0cba1d8c78858f54786ca7974f8aa430aeaa59709dc04598b79f34537ffec2c5"
+    },
+    {
+      "task": "T3",
+      "state_idx": 15,
+      "state_group_sha256": "560f27fe6f1fd0af34f8134ab2650cdf8c17baeb54688ae373a7986217f6daa7",
+      "source_demo": "demo_116",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "608af22d761920112e7140d20f5d1d03783f614f5e604f89f9c393a97a3fe0cc",
+      "f1_summary_sha256": "00dba0b5cace01f1a96552075a4b18ee6ce18fb444ac1f2ba8171cfa99781153"
+    },
+    {
+      "task": "T3",
+      "state_idx": 16,
+      "state_group_sha256": "29019d4034ee536f34177ec6f878cddad3d9a62bc762e4c240d6c84ff986a220",
+      "source_demo": "demo_117",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "5c376684473a83860b552c5f5ab02075b6bb0177aeaa23fbd74ab36c976cbef8",
+      "f1_summary_sha256": "27870d0d3db94758302615d68694ae74b495fd24ac73060dc1a1ddc10b126e48"
+    },
+    {
+      "task": "T3",
+      "state_idx": 17,
+      "state_group_sha256": "51319c03f86f8baedd1ecfad405c56988b2588555bbe6655bd72e04e9bd39db0",
+      "source_demo": "demo_118",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "b952f2903fee8fdb7dcc3cfd0e8a7e510a5497d1c5fde88a6402911adbe103f1",
+      "f1_summary_sha256": "047897ec7f41f54dd0bd714b00ab1475fb9ab8c0a199199be35596678dff8678"
+    },
+    {
+      "task": "T3",
+      "state_idx": 18,
+      "state_group_sha256": "04162a8b26e07bb315e0e07fa2ac17646dd1861f2b46ac52fe51877e542a22ef",
+      "source_demo": "demo_119",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "a2965e7aba9161e609cd78966b3493d3b41d527749fe446cd7b9897ea7df64d9",
+      "f1_summary_sha256": "28e510290c511ed05b42bad736bd5a7ec9b96b51b1c0b913a572d3b2b6e8327a"
+    },
+    {
+      "task": "T3",
+      "state_idx": 19,
+      "state_group_sha256": "94aede068b962d2579332da00b137df3185254616f9de2f86cca9b2d781a9be0",
+      "source_demo": "demo_120",
+      "policy_seed": 42,
+      "f0_success": false,
+      "f1_success": false,
+      "paired_difference_f1_minus_f0": 0,
+      "f0_summary_sha256": "a8efd6983e9a6751603972d29e7cab77aff785b1c3500bb3c80fc144bf88c69f",
+      "f1_summary_sha256": "1173c04e702a023674f9012955a6e1c82890579e8d944eb08b984b7f4150fd5b"
+    }
+  ],
+  "provenance": {
+    "run_root": "experiments/evaluation/e2_unseen_author_v2",
+    "source_files": [
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/episodes/T1_F0_unseen_state0/status.json",
+        "sha256": "51d861c8827a1a7044fc017c05101bc10bd0f45f4a8a6457d041d5a0f54049ee"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/episodes/T1_F0_unseen_state0/summary.json",
+        "sha256": "6e20075b79c55a9b5f63deee9da91f83a46f8701ea4ce0f2153e71cf3e8364b8"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/episodes/T1_F0_unseen_state1/status.json",
+        "sha256": "818b38c4f785709cda3e6623bbf10750edc414103f55e77ae7ff471b37a2ba37"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/episodes/T1_F0_unseen_state1/summary.json",
+        "sha256": "161c247bc24621c8aaaefb6a4c5a423e8eca4f0142758260dad3acbf4cabac5e"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/episodes/T1_F1_unseen_state0/status.json",
+        "sha256": "19cc3672dfa59af7c4cb8fd2619ffa628b800b06d2fdd274e80ce55cdd4f0e9e"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/episodes/T1_F1_unseen_state0/summary.json",
+        "sha256": "dab0e42221268888d3122827141dd0ff0a19d034f4625a2710232b16d18d94dd"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/episodes/T1_F1_unseen_state1/status.json",
+        "sha256": "802866f521c0ee1e69f5781fb5027b6122fbf6f88b1d03da46f27860bae1ecec"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/episodes/T1_F1_unseen_state1/summary.json",
+        "sha256": "4df270a457cfd7d665e2d278b7fed0612aa3cd555db96de4516bf2df54075e6a"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/episodes/T3_F0_unseen_state0/status.json",
+        "sha256": "1e18697cb32d715c5137540d105632f16763e0a1b5d41acad5d946a965cdf08c"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/episodes/T3_F0_unseen_state0/summary.json",
+        "sha256": "8bb245a09a9af73a44afdf80cd817cee48732d61cc1e881bade72b4171efac2a"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/episodes/T3_F0_unseen_state1/status.json",
+        "sha256": "95b6c276f71cd91bbb58c43469dec776648d5baae8abc4a6af281e1f78dae3d6"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/episodes/T3_F0_unseen_state1/summary.json",
+        "sha256": "bd728eef8f171a0b1ec1560e84573228912e0d9d83ce9fa57a15df0e4e371632"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/episodes/T3_F1_unseen_state0/status.json",
+        "sha256": "f8841b90898d72b649560886de12a715ccf31fdaae00a9180bcc3e56ba4a3d57"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/episodes/T3_F1_unseen_state0/summary.json",
+        "sha256": "16eb0b2970c6368c6955651e731e68dde218e334ddb6c57ae6b6eb11ca69b4b9"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/episodes/T3_F1_unseen_state1/status.json",
+        "sha256": "25bd18bf518801a88e63e3e01992d2727d9458f4b4c37c3372e18f9f8f1c8de9"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/episodes/T3_F1_unseen_state1/summary.json",
+        "sha256": "53e8e24f5866bb3018cfdcff90fb04e202747916d3f9cf8ddb31d8b75320f095"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/run_manifest.json",
+        "sha256": "8ae9a18ff2d0b9dbe2a2b23bb1b74e22bce868074b0da3c43f945c027f6e5b7e"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/episodes/T1_F0_unseen_state10/status.json",
+        "sha256": "e4658446ec59b027a23aaa1512f069f29cc685ae907bbce59e2c7fc8b59f790f"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/episodes/T1_F0_unseen_state10/summary.json",
+        "sha256": "c0d8d17f9aba4223d42d61ccc7f4159bfc19101c225f96a89e9a0246ef7f3243"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/episodes/T1_F0_unseen_state11/status.json",
+        "sha256": "125eb9c4bcbed1a6f7028d5580ed3e24ef3e2fd02a61e7918b7539ee6d882f1d"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/episodes/T1_F0_unseen_state11/summary.json",
+        "sha256": "49a0ed2e42cf03f40b608528fea63faf309dfe5c4ff9a44f23313721bd67e563"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/episodes/T1_F1_unseen_state10/status.json",
+        "sha256": "7aad06d66f4f016a1035126a73c4af05275a8a10be58c4ad38ec6ce6470e8b25"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/episodes/T1_F1_unseen_state10/summary.json",
+        "sha256": "a55a81a17364c0734987f0cd282bf59da2e1191c3b94733001514a589fe9c640"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/episodes/T1_F1_unseen_state11/status.json",
+        "sha256": "c176bdcdfbbfa8c9968cb2c9631b07019ebe305339fd9f1f399084075c8dcf50"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/episodes/T1_F1_unseen_state11/summary.json",
+        "sha256": "241d9f7c85b1ea086e7406b2f48b335c64d6b0f49ef022fe24931afa4968a030"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/episodes/T3_F0_unseen_state10/status.json",
+        "sha256": "125bc72501631ec264a4e88159f19c6662afa0199c1fa8bff74636ea4ca7bde4"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/episodes/T3_F0_unseen_state10/summary.json",
+        "sha256": "41160eaff34e5ba615eb04a906251b24ea3738ab0ba90ea2cb85b4341a496bb1"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/episodes/T3_F0_unseen_state11/status.json",
+        "sha256": "b99d71c21496e0ed154e05216257c132df5a73edf0f6b0fc4277a1ef445ef958"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/episodes/T3_F0_unseen_state11/summary.json",
+        "sha256": "1ceb55213cb9bf5eaee9e09961fe718bd6453c2faf765a757d2df36e60ce0f2a"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/episodes/T3_F1_unseen_state10/status.json",
+        "sha256": "d7c3abfcad50e41b01a69a25d2619418a4230c93473671be8aff34e85cfc157a"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/episodes/T3_F1_unseen_state10/summary.json",
+        "sha256": "74e263e832e187fad6ea8836de59ead6bec5f68595bb732521083b5ab3043dd6"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/episodes/T3_F1_unseen_state11/status.json",
+        "sha256": "12a4a49ca9c52378ac4f5c10c28109a3bfa5c206c1b5f32314b509d8e03360ef"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/episodes/T3_F1_unseen_state11/summary.json",
+        "sha256": "8e23106ff27538dcbed2f8135179a2b3632c5885cff64400c2b124ab1c63d678"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/run_manifest.json",
+        "sha256": "f3a2aae14cfea6614d5f4d9fa1088816fe17b31946ec7fb912cd4d57f4ac05fd"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/episodes/T1_F0_unseen_state12/status.json",
+        "sha256": "94d868b45ae08c30264537cb866eb6a4aacbf1668890c41663d4a441303f6739"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/episodes/T1_F0_unseen_state12/summary.json",
+        "sha256": "c9eac2ab24efe216f529521d25e40de5be264a91f138d43cdf5e09d30ad2dc4d"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/episodes/T1_F0_unseen_state13/status.json",
+        "sha256": "d6bdd2695e2f90f0edf7a9b2ecf23e7db5085af33fc2a0bfabaa417c5692300d"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/episodes/T1_F0_unseen_state13/summary.json",
+        "sha256": "5c41e312d5b239c84eebd532aa3d9568ca5456c20ea3d54e8e9bec9be090eea7"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/episodes/T1_F1_unseen_state12/status.json",
+        "sha256": "619f81546bf0709dfbfd03b484ce67ae80c3ad94f2b444d88806d16f3655db44"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/episodes/T1_F1_unseen_state12/summary.json",
+        "sha256": "bd533e7279d66dc95bb7f9eabd8b4fe904ddef91a29772b380c7e4c4ecf46c0e"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/episodes/T1_F1_unseen_state13/status.json",
+        "sha256": "f66b274791148a664abe784b908efbd7e6a5be6d57b3387aac0686885372af72"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/episodes/T1_F1_unseen_state13/summary.json",
+        "sha256": "9e2a35211e78c89ed77a71b4fbaf8339d85fedf43376d645f0141f8e6f7984a3"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/episodes/T3_F0_unseen_state12/status.json",
+        "sha256": "430cb7995b30fb5f449f6b87909b65ee23b827f86c7323eb5f788d85e1a7bbb7"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/episodes/T3_F0_unseen_state12/summary.json",
+        "sha256": "f37d4b770f51a52e38e45ed3fe591b9e6447ddb8453dc0131f6854e4acc57d62"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/episodes/T3_F0_unseen_state13/status.json",
+        "sha256": "f6a84813e5065fbbfa70c6a28c92a31aaa1fceed70232b27740c0c4b2445f5bf"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/episodes/T3_F0_unseen_state13/summary.json",
+        "sha256": "d83eed95cb0a6e3e523ce67a33f67631c63605cb292bd519169298b72b5c6663"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/episodes/T3_F1_unseen_state12/status.json",
+        "sha256": "c9db105e563f796f52bf8bbb98dcf1cef35b3bd54f233ad2bf144dcf3e86e8b8"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/episodes/T3_F1_unseen_state12/summary.json",
+        "sha256": "5b6bcb115ee756ade38e5028a30fe5d676957c0d37c899852697948936cd7b7f"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/episodes/T3_F1_unseen_state13/status.json",
+        "sha256": "4797172c25156b287980a210c2ec7e216435f9e5dcd190feb79667be6d0a9b65"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/episodes/T3_F1_unseen_state13/summary.json",
+        "sha256": "a430138b8d64b0217a4444f5bef4c9e610c61004ac43d6768ce8f0f2cb9ec07d"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/run_manifest.json",
+        "sha256": "358150bc7c44bb38a26527eb473d36510342e8c0adf3d68aac383fb00a1f9b7e"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/episodes/T1_F0_unseen_state14/status.json",
+        "sha256": "7bb76ecdb7b12b6b009d6523361700bf60703aaa0a3eb2d94925e4e295c16c4e"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/episodes/T1_F0_unseen_state14/summary.json",
+        "sha256": "fd0d52578a5e6afc8f87dbc65e4d4416b06871b22950c0a89a83578b53896754"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/episodes/T1_F0_unseen_state15/status.json",
+        "sha256": "4e8fec37524926fd40cb8796292f852b0d92fc1408caf99e23398799ba7d709e"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/episodes/T1_F0_unseen_state15/summary.json",
+        "sha256": "c94406ae85180068a40732d0391dc17562b00a9b508d013a280017facdc1e94b"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/episodes/T1_F1_unseen_state14/status.json",
+        "sha256": "c0a0c4b9267e6e00a7fc84f1b545cc41050e7cf92d3e4a99ec36dcac0a30a1c6"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/episodes/T1_F1_unseen_state14/summary.json",
+        "sha256": "c4d096d5de3931c20a3254e8228cba064798c5409e011cf2393bcc9ee3607bc2"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/episodes/T1_F1_unseen_state15/status.json",
+        "sha256": "7511238f9bbc22027f68bc32a37ca2be002ce034e6f17b97bfd6d0f8537923f3"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/episodes/T1_F1_unseen_state15/summary.json",
+        "sha256": "c9e50a8ad5695a822edc26f8847ce73289ccccaaa6c3681cff9e579680880862"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/episodes/T3_F0_unseen_state14/status.json",
+        "sha256": "3fd50b33104adf3182b61d64b079b0e5a78d9ba59c3514581d914ae4a67ad4b5"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/episodes/T3_F0_unseen_state14/summary.json",
+        "sha256": "2fe1a5683be7471683cd2b8200492f01aaa190e2633102ec205d502efa94899b"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/episodes/T3_F0_unseen_state15/status.json",
+        "sha256": "3e18b9fb7acdb2ad6ce9d4398f077994b9f2738182f4b64fde947659241af174"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/episodes/T3_F0_unseen_state15/summary.json",
+        "sha256": "608af22d761920112e7140d20f5d1d03783f614f5e604f89f9c393a97a3fe0cc"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/episodes/T3_F1_unseen_state14/status.json",
+        "sha256": "e4e810c4994a85fa6363bf09578dccf00d2491f443e90de95e9745b6d1c2d6d3"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/episodes/T3_F1_unseen_state14/summary.json",
+        "sha256": "0cba1d8c78858f54786ca7974f8aa430aeaa59709dc04598b79f34537ffec2c5"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/episodes/T3_F1_unseen_state15/status.json",
+        "sha256": "b1a18108465d86ccf8e94b2f20455def76c623c34804378528e859a16d5e061d"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/episodes/T3_F1_unseen_state15/summary.json",
+        "sha256": "00dba0b5cace01f1a96552075a4b18ee6ce18fb444ac1f2ba8171cfa99781153"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/run_manifest.json",
+        "sha256": "e83c202fc4626709804dffb006e1005c560cd788bef7d057d97ade1e83cd22cb"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/episodes/T1_F0_unseen_state16/status.json",
+        "sha256": "1ce8ebe8072dbfdf0ccabe3998351186a973f3f2c6b761ed166a06cc3e0342a3"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/episodes/T1_F0_unseen_state16/summary.json",
+        "sha256": "74ec7474bb0136ecbf8d298188b89786fe0d7a4684fd8c52dc394fbce487ce10"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/episodes/T1_F0_unseen_state17/status.json",
+        "sha256": "52f584ddc0344357fe09dba03191468ab49ca27561cfb75be17db44ef8d881c3"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/episodes/T1_F0_unseen_state17/summary.json",
+        "sha256": "a414caeddd28ca80183d3f58dba010ea5ce6fb1ca1d98acdf8285b8b45a96632"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/episodes/T1_F1_unseen_state16/status.json",
+        "sha256": "bc9601321fd28595161932f40ea783d958ac8c47d7fcdd0dd9f0eef44f1827dd"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/episodes/T1_F1_unseen_state16/summary.json",
+        "sha256": "747ad242b0d33464c734415f11cfd52f33cb06e730662b3619639a048c26fae8"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/episodes/T1_F1_unseen_state17/status.json",
+        "sha256": "59c67019cd16d544b55f95115045693a9122c5975e5b2538fa490dcb9520f5f5"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/episodes/T1_F1_unseen_state17/summary.json",
+        "sha256": "6216c56c5370a0e00c4d9449a17a04ab93010623e739327fb7661c165e40e473"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/episodes/T3_F0_unseen_state16/status.json",
+        "sha256": "5c2d7068bb39e247be378e8e862f01f4c4054348a942eb79da516c200dda3b1f"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/episodes/T3_F0_unseen_state16/summary.json",
+        "sha256": "5c376684473a83860b552c5f5ab02075b6bb0177aeaa23fbd74ab36c976cbef8"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/episodes/T3_F0_unseen_state17/status.json",
+        "sha256": "91fb3ea02f45c260b7b680c97432e90f7144368f7f00eae8b907cd24fedabb0d"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/episodes/T3_F0_unseen_state17/summary.json",
+        "sha256": "b952f2903fee8fdb7dcc3cfd0e8a7e510a5497d1c5fde88a6402911adbe103f1"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/episodes/T3_F1_unseen_state16/status.json",
+        "sha256": "d1075f58e6e42aa3adc9b3f795debf5584735fe89c1caa122515d1a5113841db"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/episodes/T3_F1_unseen_state16/summary.json",
+        "sha256": "27870d0d3db94758302615d68694ae74b495fd24ac73060dc1a1ddc10b126e48"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/episodes/T3_F1_unseen_state17/status.json",
+        "sha256": "001d5e9f27210a61ccd6deaea6b6a98b0a97ec299234a12f0adab5013aa3416c"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/episodes/T3_F1_unseen_state17/summary.json",
+        "sha256": "047897ec7f41f54dd0bd714b00ab1475fb9ab8c0a199199be35596678dff8678"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/run_manifest.json",
+        "sha256": "6392e1a90b06ebf899acc3bd103831228591ad99b2061c7bbae5bd4d9dbaa299"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/episodes/T1_F0_unseen_state18/status.json",
+        "sha256": "5d8e67b03d29ab01907c5ed7e178ffeb64292026d902aafeca6a27f7944ac813"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/episodes/T1_F0_unseen_state18/summary.json",
+        "sha256": "411e498684c3190450d4b4682a955245ccb0d9fa153e1052c3660f0aaf092d6c"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/episodes/T1_F0_unseen_state19/status.json",
+        "sha256": "960ff7ba589f275446363f045e3a13e178d2562e8d626ca921bb85884a2b8302"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/episodes/T1_F0_unseen_state19/summary.json",
+        "sha256": "d276d55e67d9b9a54d96d87712b496c7c97593003087b88d67fca217f42b0a91"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/episodes/T1_F1_unseen_state18/status.json",
+        "sha256": "a4dc7f7f9812620b8dda7c735503f8573d0a49156ad4e2f4603e1803b2a1b91c"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/episodes/T1_F1_unseen_state18/summary.json",
+        "sha256": "d656bdb5655b03dd1289e72f7f482192c8e83d07f5c62c82a9f9dda24e4c66dd"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/episodes/T1_F1_unseen_state19/status.json",
+        "sha256": "7fa1114bcaf37b66f45f6ed2f773f349c9a64877b30c7d85fea4a7d748b88a5a"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/episodes/T1_F1_unseen_state19/summary.json",
+        "sha256": "daefc8649cd6339f13f198926ff7daf8e635ac217112af0307f9488a5ae32574"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/episodes/T3_F0_unseen_state18/status.json",
+        "sha256": "8d7b47c1d35fba53a54e46834b2a253832637dafbc39ff565fdae89eca044020"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/episodes/T3_F0_unseen_state18/summary.json",
+        "sha256": "a2965e7aba9161e609cd78966b3493d3b41d527749fe446cd7b9897ea7df64d9"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/episodes/T3_F0_unseen_state19/status.json",
+        "sha256": "f22e70649304dff03703b4ea2bc6d000134a506c811c643e575c2411a95882e4"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/episodes/T3_F0_unseen_state19/summary.json",
+        "sha256": "a8efd6983e9a6751603972d29e7cab77aff785b1c3500bb3c80fc144bf88c69f"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/episodes/T3_F1_unseen_state18/status.json",
+        "sha256": "30d3af606baa72bf55d2e20728fb1ca97f8b4e4fcda7826f10304d77a6ee324a"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/episodes/T3_F1_unseen_state18/summary.json",
+        "sha256": "28e510290c511ed05b42bad736bd5a7ec9b96b51b1c0b913a572d3b2b6e8327a"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/episodes/T3_F1_unseen_state19/status.json",
+        "sha256": "c8a182f354a27f12877c845a401c4254e9e61bf04dbcda7858b2f4816c135873"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/episodes/T3_F1_unseen_state19/summary.json",
+        "sha256": "1173c04e702a023674f9012955a6e1c82890579e8d944eb08b984b7f4150fd5b"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/run_manifest.json",
+        "sha256": "37545c3a7a9efd542423ba8d64223c3675f3b976ca7beb74e7cae0ab3b1fcb7a"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/episodes/T1_F0_unseen_state2/status.json",
+        "sha256": "b0ef61ef14f48aa9fe4f1a1a6a88c2e15477e6d469edbad07ed6996147c4d637"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/episodes/T1_F0_unseen_state2/summary.json",
+        "sha256": "3361fe823feae273222ca462ad1676202e25c3f6ac61ce693dbba049cdbc84b3"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/episodes/T1_F0_unseen_state3/status.json",
+        "sha256": "83ce84e0a2912c5dd6851071969ad1e26111ea7bb39c61316e19ba8185718c3f"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/episodes/T1_F0_unseen_state3/summary.json",
+        "sha256": "a6bc3c34cf8a9153fd247e0bb9a3b72aacc06b7bb1a6b9fe1a13de447494ef9d"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/episodes/T1_F1_unseen_state2/status.json",
+        "sha256": "329fd30091cba59549bdce420a2658361fa9b5ec5457d473efaf49058387d80d"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/episodes/T1_F1_unseen_state2/summary.json",
+        "sha256": "20a977854252bc5270740c0a0af8c096ecc7185c9911894e4f45fb263c900b0c"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/episodes/T1_F1_unseen_state3/status.json",
+        "sha256": "25989c8a2eae2097cb2205f8803f15fedb5f75134b822926326f3ab4cc630be6"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/episodes/T1_F1_unseen_state3/summary.json",
+        "sha256": "5599545ef6f3cf0d3423e18dee18ac5c6be3be83c95e28fc1a31c4bf38c5caf3"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/episodes/T3_F0_unseen_state2/status.json",
+        "sha256": "5735a943bf31ccfa937521c938ed052df0d7660a905a5a4430df2a90dec9f61a"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/episodes/T3_F0_unseen_state2/summary.json",
+        "sha256": "d6a8957fbf10d46df4d7d5d5c0b1e4ad34b368d293611c34e240645e3a43f1e5"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/episodes/T3_F0_unseen_state3/status.json",
+        "sha256": "b48aee573e827ef3fa29e5603c9916c97673c820143258bde156626f8d2722eb"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/episodes/T3_F0_unseen_state3/summary.json",
+        "sha256": "2eb5838818c3baa1bcabcb32e5b2bffeb719c9f155d8c6aa206df38616c0047a"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/episodes/T3_F1_unseen_state2/status.json",
+        "sha256": "a072b5a299c4d4fa88faa9e90a0daea43b38865bb7b54e0fdc1e216e6057d39c"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/episodes/T3_F1_unseen_state2/summary.json",
+        "sha256": "cdddd0a6096daa90f6ad6377082a49ce5e5f4913de06dbf404ea9872cb0f2327"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/episodes/T3_F1_unseen_state3/status.json",
+        "sha256": "ec7bcd8cc1922a53f9fdb76e68307cc4fc32e2cba74804127841c25bf616d854"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/episodes/T3_F1_unseen_state3/summary.json",
+        "sha256": "65bbad15f83f6882537e81d1defb16e6fe2d9f82d281c5dc8d984943768a8a3e"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/run_manifest.json",
+        "sha256": "09d57c66393db1c98ec251391683c4747743b109a1e6269545ae79a4bc12665e"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/episodes/T1_F0_unseen_state4/status.json",
+        "sha256": "7a583dc438f7d8c9e885d27aee36e6278f6ec9c43644dbc8fc42a8ef5b803f8c"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/episodes/T1_F0_unseen_state4/summary.json",
+        "sha256": "b4ffc88f59106df755cab469c4720a1a16ae183d66554ac7db5286bd2ba3d01d"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/episodes/T1_F0_unseen_state5/status.json",
+        "sha256": "f5d54e10a1408c5a02885e274706741249a23351b95cfa818eae3ba04a221e05"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/episodes/T1_F0_unseen_state5/summary.json",
+        "sha256": "30c7ae9797211428b293a3f97ce3d4fc69c6548195a163b7df4e093019b6099d"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/episodes/T1_F1_unseen_state4/status.json",
+        "sha256": "4c25c3824682b0156b484ce1cec1fa1f08ef9347320a52c475ff879ce1b16386"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/episodes/T1_F1_unseen_state4/summary.json",
+        "sha256": "a2201f8eef20a9d03e2da145b56782239f9c970d85cd7876982787690b944d2d"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/episodes/T1_F1_unseen_state5/status.json",
+        "sha256": "85f2531dd0c46f26cfdea899ea350853d08866585b2ff7aaa9e5e230a3665995"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/episodes/T1_F1_unseen_state5/summary.json",
+        "sha256": "cd36025fd58dc0399126965993908825a4428e667591f6b6d69d5713f70f81aa"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/episodes/T3_F0_unseen_state4/status.json",
+        "sha256": "b988586dbfb6713a51186a6144b1399de58ab308b106ac3d8e7ce61327ffb047"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/episodes/T3_F0_unseen_state4/summary.json",
+        "sha256": "8d306c808115a109c77fbf72050432924dbd0e5e12eafe51fc116704a46fa1e8"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/episodes/T3_F0_unseen_state5/status.json",
+        "sha256": "3740f8fc65bd955923d889a3241f778bd6d505e2c1a78fcaa91b96e6a0998622"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/episodes/T3_F0_unseen_state5/summary.json",
+        "sha256": "8cfd760af9e8f49da8d516f68c1bb26a4f3ad4e0bf3a15aa7a7f65e77c965df3"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/episodes/T3_F1_unseen_state4/status.json",
+        "sha256": "733de2f21fadffae8591c5d10807c3ed1851a2d89d22cfb15d93fb6812b55735"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/episodes/T3_F1_unseen_state4/summary.json",
+        "sha256": "384537d5edca12e0038e400c71d39bfbe5487b35626c1effcff228d76a01cb5f"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/episodes/T3_F1_unseen_state5/status.json",
+        "sha256": "c60b5a4b6be6ad428aae33912e078daca750881702bbfe96cd4e27795b2eb95f"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/episodes/T3_F1_unseen_state5/summary.json",
+        "sha256": "e24550d3795baa96a244d92e2fac9d6bcd6d1e0a678079efb8e051b8c472ce07"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/run_manifest.json",
+        "sha256": "2bc62019c4e373ebc4173f1b63f2c0b69bc6b970cd497b02ff070d9c6f7b7a64"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/episodes/T1_F0_unseen_state6/status.json",
+        "sha256": "278f29c13adcf5806de48f3517aeb855bf805f1a4a401c87f0cbb391584c47cb"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/episodes/T1_F0_unseen_state6/summary.json",
+        "sha256": "55eabbdc50e511668100e3cd4f70ab96af26fa6ea65b1807fe37d7c1bb990831"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/episodes/T1_F0_unseen_state7/status.json",
+        "sha256": "315368f82e2413f944c69fdb77d15a5b6eb00e2e6eb94ee062f14259b875f119"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/episodes/T1_F0_unseen_state7/summary.json",
+        "sha256": "ce0c49bb1c39b3e0a543cf191ff216684a2749e6334061baa9b692c3d43c5edf"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/episodes/T1_F1_unseen_state6/status.json",
+        "sha256": "1ca191bd86bd651f10cffa94d315cbf999a477eaac86bd9cbe0cbaa05c4139d8"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/episodes/T1_F1_unseen_state6/summary.json",
+        "sha256": "f7f67839d7413cffa59935e5a72481c116d2387fa4b4b74e5cdab87622729f20"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/episodes/T1_F1_unseen_state7/status.json",
+        "sha256": "d651da708fff9176a562ec5feeeda8171a6fa7b4b6099a67a49b2e717561b95a"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/episodes/T1_F1_unseen_state7/summary.json",
+        "sha256": "64e0ba53d0a12ce228d774426ddd29f604f7acabc4cd51ff9e462c63a4549ac5"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/episodes/T3_F0_unseen_state6/status.json",
+        "sha256": "12e8e6c5cd50c1a055253a6da180799d2720e4fef2d33e65a466c086ba410bf5"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/episodes/T3_F0_unseen_state6/summary.json",
+        "sha256": "f5195aff94d43d886d337ff464eccad26f7482676d3e3a66d104caa85ed80263"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/episodes/T3_F0_unseen_state7/status.json",
+        "sha256": "c00091967ad9032b94e34213ca95559ff45d8c311d129b293e4c540cbe7d3afb"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/episodes/T3_F0_unseen_state7/summary.json",
+        "sha256": "50b01c4a76e8d510ecabb2cd551ebf5104b350cb81e6429a1ebb50bdcc10a484"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/episodes/T3_F1_unseen_state6/status.json",
+        "sha256": "9c33671241f5906dfeab59bdafbd54578d3d6e8295ace998f6fcef1e6bb8bb7a"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/episodes/T3_F1_unseen_state6/summary.json",
+        "sha256": "560c5bbd18102f73b730bbb475786df81eccfc5250d846691d101bdc2547a125"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/episodes/T3_F1_unseen_state7/status.json",
+        "sha256": "6c4efd522ce4506dd8be263d1e68adb58075ed7e1a88e0eea7e6cc94aa22e263"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/episodes/T3_F1_unseen_state7/summary.json",
+        "sha256": "8447c7c86b483d2db55c1e01b890b0018f6bc21a00a00121983fd955e27d17ec"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/run_manifest.json",
+        "sha256": "c4dcde01b93ed48bbf82d14f3dbea24aef7d8690febd4bd32f56ac6ddf2db709"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/episodes/T1_F0_unseen_state8/status.json",
+        "sha256": "d0a957df7de0f035c55eea396b26efc74b47306918c269b7a75167ba8d977d7a"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/episodes/T1_F0_unseen_state8/summary.json",
+        "sha256": "267afd7329dfc85a0e1f56db211abbec1d5c7ac9b8cce1f8bec30aea675afa06"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/episodes/T1_F0_unseen_state9/status.json",
+        "sha256": "47ca541c685a10dcc9fdc9bcbbdd14dd1ab1e61052301c98d77cc9ba193467be"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/episodes/T1_F0_unseen_state9/summary.json",
+        "sha256": "ca25b7091397e7395ebeefefd72108c9745a29b19578c8f945ba4b4fef427357"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/episodes/T1_F1_unseen_state8/status.json",
+        "sha256": "74cd9cb538aaaedcba03d11088029ac7e5c5e0f0d893f9d2414933146a7cca4d"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/episodes/T1_F1_unseen_state8/summary.json",
+        "sha256": "35e27a98f8b049e3ef6de32ab2f096c31c78552bec3eed77ed302396bb00e90d"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/episodes/T1_F1_unseen_state9/status.json",
+        "sha256": "315de2845d67af21383e8a13494e0462a3f266e261da211f85b2afbf435a8517"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/episodes/T1_F1_unseen_state9/summary.json",
+        "sha256": "c8728360bfe29c533e98424367491570fd9be4df4ae0ca1541964c24c3d9f2fd"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/episodes/T3_F0_unseen_state8/status.json",
+        "sha256": "580cca06101e60008d151ac1338b64e25bbfb3215462e861fe3bad13652710c6"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/episodes/T3_F0_unseen_state8/summary.json",
+        "sha256": "98f32bea30c79ba761c7c9ac8d70270a5e3ad0c0aa5fa271cb9d2c466a350ced"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/episodes/T3_F0_unseen_state9/status.json",
+        "sha256": "89beb84a6a8f3437458f7c493aea06d7cb0156789a7f5b935335c649f5e91b53"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/episodes/T3_F0_unseen_state9/summary.json",
+        "sha256": "db48e40093c76231896f0f611b3e9f5eff04c606563270fba4e480413cf18d99"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/episodes/T3_F1_unseen_state8/status.json",
+        "sha256": "9aef1ea5661424408faf318872b1feb111a626a2d929582afcb779d5848a405c"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/episodes/T3_F1_unseen_state8/summary.json",
+        "sha256": "3881e506f2403b1f5d570479b680fcf2cd553a863d77bfae651b69d2b44ba95a"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/episodes/T3_F1_unseen_state9/status.json",
+        "sha256": "ac37c07d822e4e1218d24990de8de4d239b831de7d0b9cac8e04022cc8908f2a"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/episodes/T3_F1_unseen_state9/summary.json",
+        "sha256": "21c7ac0083c442da8938d263520e0c137de3c41376ac365c2e3337fd636d13ea"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/run_manifest.json",
+        "sha256": "c4aaeb761ac2b0b08d59f3eda229898cb79fa1a7b1e1927f449f85162f65ec15"
+      },
+      {
+        "path": "experiments/evaluation/e2_unseen_author_v2/paired_e2_final.json",
+        "sha256": "1a0259aa34ac37dbd36aad84cd2e2593e352eaabddd5ec38465511518446a312"
+      }
+    ],
+    "split_lock_sha256": "8275e468382835c06f9cc738361df26b7452965850878e7ca882f392c9ca4165",
+    "analysis_code_path": "scripts/analyze_e2_paired_group_bootstrap.py",
+    "analysis_code_sha256": "6138e0c39148a1a0f304e71ce5c4710d8c67700a2d7ee340fcf66f7a6774a071"
+  }
+}

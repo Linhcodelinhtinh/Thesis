@@ -1,0 +1,55 @@
+{
+  "record_id": "d2-t1-event-success-video",
+  "classification": "CUSTOM_V2_LIBERO_MEM_NON_COMPARABLE_OFFICIAL_LIBERO",
+  "episode": {
+    "run": "experiments/evaluation/decision_event_dev12_t1_t3_20261120_wsl",
+    "run_manifest_sha256": "93dd0c74dc3257c538bc34c39d0ee20e87d5dd71472abe97dfcbfc4d1ab3c5f3",
+    "episode_id": "T1_F1_seen_state7",
+    "task": "T1",
+    "source_demo": "demo_8",
+    "split": "seen/development",
+    "state_idx": 7,
+    "initial_state_sha256": "04fd858d13c1cf680de900d219b6208a764e6886153ebda86f89bc580666941d",
+    "condition": "F1",
+    "decision_arm": "event-projected",
+    "policy_seed": 42,
+    "adapter_manifest_sha256": "624136821e330abac7a9c0fbfe4d59fdad0b3c3ae53c62e98c7da49e36b69d9e",
+    "weight_identity": "572bd889d5bd3cf0aba83cb4f806b83794fcb650a7b4853ac505d025a08e4aad",
+    "relation_writer": "rgb_relations_v1",
+    "outcome": {
+      "success": true,
+      "completed_subgoals": 1,
+      "total_subgoals": 1,
+      "scr": 1.0,
+      "overshot": false,
+      "total_policy_actions": 1000,
+      "subgoal_timestamp": 409,
+      "termination_reason": "success",
+      "queries": 102,
+      "evidence_backed_requery_steps": [3, 142, 180, 312]
+    },
+    "status_sha256": "a0fe9e71a76d29cb316d8f16cda89430eaabba74b62ae54c633456b12c768e76",
+    "artifact_sha256": {
+      "agentview_image.mp4": "651987c8a58d77b08a0da97fd837fe8a8a1b9077f5db8999f4c2569a5bf7168b",
+      "robot0_eye_in_hand_image.mp4": "d8652375d2d00153aa1ae5873464050c3ff1f7f45730ada544f49c6acbdd3525",
+      "summary.json": "dd05e30c67568c888dff2e95bf05e84771da0de7f5251057bd54646e8be0ab03",
+      "observations.jsonl": "7e529dda5b41e7b6d3c07ca71f43d66f3afc8929fb64219987f33a59e8df5622",
+      "memory_trace.jsonl": "ce090acb304b13b0ef61218ea0090de8888fd0f188348af883805b5acc338382",
+      "queries.jsonl": "c1bf257b38b36200ca63931c18fd06afc1c534980cd38d3f5a17bdd610d5f0bf",
+      "decisions.jsonl": "9fbbee0a6bc3f8b116f3e986a615968abe7a26b00b6bcf586595a95135fe6438"
+    }
+  },
+  "figure": {
+    "path": "docs/thesis/figures/libero_mem_d2_event_t1_state7_success.png",
+    "sha256": "bb749b5fcf541d0450edc655c9023355fc6f63f6f4aafb77e586d054dba6a399",
+    "source_frame_indices": [0, 142, 409, 1000],
+    "source_video_fps": 20,
+    "source_video_frames_per_camera": 1001,
+    "crop_xyxy_pixels": {
+      "agentview_image.mp4": [5, 20, 245, 200],
+      "robot0_eye_in_hand_image.mp4": [15, 25, 255, 205]
+    },
+    "layout": "agent view above wrist camera; four chronological frames; white 4 px separators"
+  },
+  "interpretation_limit": "One successful episode within a seen development cohort; the image documents a real rollout and does not establish that event-triggered retrieval caused success or improves success rate."
+}

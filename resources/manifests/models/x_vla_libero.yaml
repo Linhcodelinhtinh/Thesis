@@ -1,0 +1,37 @@
+model_id: x_vla_libero
+classification_tier: author-released
+repository: https://huggingface.co/2toINF/X-VLA-Libero
+revision: 129e71460678b7236cee6fc9707f09d9fa0c3590
+code_repository: https://github.com/2toinf/X-VLA
+code_revision: 6c4ecfb8be458ae7c0c96094e4b0add4174f4fe2
+checkpoint: resources/checkpoints/x_vla_libero
+sha256:
+  model.safetensors: 260cc58869125b826e93bcaa60bca3ea37bcc7aaf893d368a991ca14fde9f0c8
+  config.json: 872ac07859e9aec9e01f72f448f8df33ce9914d60c5edb8fe8be615abb23133f
+  preprocessor_config.json: 0a4e041cb57d07f735844a3d06a89bace2c9eb2a46eb6ddc2e6fbdae17504692
+  tokenizer_config.json: 79ffcf43af8ebda99d165f61d243180da2e2639952e41e71e11611c18770489c
+  tokenizer.json: 847bbeab6174d66a88898f729d52fa8d355fafe1bea101cf960dd404581df70e
+  vocab.json: 394fdc63c71aabe0a9b97117f5d62fb5fcc4d59b2b3ea929a3929e6a53217b3c
+training_distribution: LIBERO fine-tuned full checkpoint
+action_mode: ee6d
+action_head: flow_matching
+raw_action_dim: 20
+action_dim: 10
+simulator_action_dim: 7
+action_order: [absolute_xyz, rotation_matrix_first_two_columns, gripper_probability]
+action_normalization: Direct pose and native sigmoid gripper output
+simulator_decoder: Upstream LiberoAbsActionProcessor and Panda gripper threshold
+action_tokenizer: null
+vq_decoder: null
+chunk_size: 30
+execution_horizon: 30
+flow_steps: 10
+domain_id: 3
+control_frequency_hz: 20
+camera_render_size: [256, 256]
+model_input_size: [224, 224]
+camera_order: [agentview, robot0_eye_in_hand]
+rotate_agentview_180: true
+proprio_dim: 20
+proprio_source: Controller pose at the first query, previous chunk final pose thereafter
+inference_environment: Python 3.10 and CUDA FP32

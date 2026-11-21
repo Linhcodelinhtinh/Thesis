@@ -1,0 +1,68 @@
+{
+  "experiment_id": "E2-B0-raw-unseen-2026-11-21",
+  "classification": "CUSTOM_V2_LIBERO_MEM_UNSEEN_DESCRIPTIVE_NON_COMPARABLE_OFFICIAL_LIBERO",
+  "run_manifest": {
+    "path": "experiments/evaluation/e2_b0_raw_unseen_20261120_wsl/run_manifest.json",
+    "sha256": "6772177f0fe2fbd6fef7e7c0f77c9fc94813ed3be861f90ebafd3248332f05e4"
+  },
+  "paired_analysis": {
+    "path": "experiments/evaluation/e2_b0_unseen_paired_20261121_analysis.json",
+    "sha256": "32253d5e1a7fc82a972d9fa026a5effa4049b682448356de32ca28bcdadc5567"
+  },
+  "analyzer": {
+    "path": "scripts/analyze_e2_b0_baseline.py",
+    "sha256": "106f5cd02caa5e48e2e28b08a7ef688361cfbd07703a52a50d9521c4d36acddc"
+  },
+  "design": {
+    "split": "unseen",
+    "tasks": ["T1", "T3"],
+    "state_groups": 20,
+    "episodes_per_condition": 40,
+    "policy_seed": 42,
+    "initial_state_hashes_match_e2": "40/40",
+    "split_lock_sha256": "8275e468382835c06f9cc738361df26b7452965850878e7ca882f392c9ca4165"
+  },
+  "results": {
+    "B0": {
+      "successes": 0,
+      "episodes": 40,
+      "success_rate": 0.0,
+      "mean_scr": 0.016666666666666666,
+      "overshoots": 0,
+      "T1_successes": "0/20",
+      "T3_successes": "0/20",
+      "T3_state7_scr": 0.6666666666666666
+    },
+    "E2_F0": {
+      "successes": 4,
+      "episodes": 40,
+      "success_rate": 0.1
+    },
+    "E2_F1": {
+      "successes": 0,
+      "episodes": 40,
+      "success_rate": 0.0
+    }
+  },
+  "paired_deltas_B0_minus": {
+    "F0": {
+      "success_rate": -0.1,
+      "state_group_bootstrap_95": [-0.2, -0.025],
+      "mean_scr": -0.19166666666666665
+    },
+    "F1": {
+      "success_rate": 0.0,
+      "state_group_bootstrap_95": [0.0, 0.0],
+      "mean_scr": -0.025
+    }
+  },
+  "comparability_limits": {
+    "common_source_hashes": 134,
+    "matching_source_hashes": 115,
+    "mismatching_source_hashes": 19,
+    "B0_policy_runtime": "WSL Python 3.12.3, Torch 2.11.0+cu128, CUDA 12.8",
+    "E2_policy_runtime": "Windows Python 3.12.2, Torch 2.6.0+cu124, CUDA 12.4",
+    "simulator_runtime_matches": true,
+    "interpretation": "Paired initial states and one policy seed are verified, but source and policy-runtime differences make B0-vs-E2 descriptive only. Do not interpret as a causal adaptation or memory effect, and do not report as an official LIBERO score."
+  }
+}

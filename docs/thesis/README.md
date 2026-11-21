@@ -67,6 +67,6 @@ xelatex -interaction=nonstopmode -halt-on-error -file-line-error -no-shell-escap
 xelatex -interaction=nonstopmode -halt-on-error -file-line-error -no-shell-escape main.tex
 ```
 
-Bản PDF cập nhật gồm 62 trang, biên dịch đầy đủ bằng MiKTeX. Các trang có bảng và kết luận sửa đổi đã được render và rà bố cục. SHA-256 `c53d3ed1a6d88b1b4a1df8ce2274ecf817896a2adaae3ed0b9aea600d0adbbc3`. [Mở PDF](../../output/pdf/khoa-luan-luu-quang-linh-ban-thao.pdf) · [Biên bản kiểm định](evidence/document_validation.json)
+Bản PDF nháp gồm 47 trang. Chương 3 có sáu mục chính và nằm ở trang in 15–27. Chương 4 nằm ở trang in 28–31. SHA-256 `9e659bc5dc3eb41de25a9b4bd6ba5b786366fe84d2ecc5b08735cb58bacc679e`. [Mở PDF](../../output/pdf/khoa-luan-luu-quang-linh-ban-thao.pdf) · [Biên bản kiểm định](evidence/document_validation.json) · [Nguồn video và log Chương 4](evidence/closed_loop_cases.md)
 
 Lời cảm ơn và lời cam đoan là nội dung cá nhân cần tác giả tự hoàn thiện, đọc và xác nhận trước khi nộp; bản thảo không tạo chữ ký hoặc xác nhận thay tác giả.

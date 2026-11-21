@@ -1,0 +1,108 @@
+{
+  "experiment_id": "D2-calibration-shadow-event-preflight-2026-11-21",
+  "classification": "PREFLIGHT_BLOCKED_NO_ROLLOUT",
+  "preflight_manifest": {
+    "path": "experiments/evaluation/decision_shadow_cal8_t1_t3_20261121_wsl/run_manifest.json",
+    "sha256": "76bfa6d925b77a31bdf5d0b660dd2e5f689895aca200d088d84d83ef7fec84d1"
+  },
+  "adapter_manifest": {
+    "path": "experiments/training/results_f1_author_split_v2/output_f1/pretrained_model/mem_adapter_manifest.json",
+    "sha256": "624136821e330abac7a9c0fbfe4d59fdad0b3c3ae53c62e98c7da49e36b69d9e"
+  },
+  "attempted_design": {
+    "protocol": "libero_mem_decision_dev_v1",
+    "split": "seen",
+    "tasks": [
+      "T1",
+      "T3"
+    ],
+    "state_indices": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "policy_seed": 42,
+    "planned_arms": [
+      "shadow",
+      "event"
+    ],
+    "preflighted_arm": "shadow",
+    "event_arm_preflighted": false,
+    "rollouts_executed": 0
+  },
+  "failure": {
+    "reason": "Artifact hash/path mismatch: src/memory/relation_pipeline.py",
+    "first_mismatch": "src/memory/relation_pipeline.py",
+    "expected_sha256": "dc87ec452784cbae40b21ff89bbcec6d78e5f9de937022a2aa6eec83ac77550c",
+    "current_sha256": "efbb50a5aa3768244e2edbbfdbf7c96bc50e0f6e010fd029852ebce588a09d16"
+  },
+  "source_audit": [
+    {
+      "path": "src/memory/relation_pipeline.py",
+      "expected_sha256": "dc87ec452784cbae40b21ff89bbcec6d78e5f9de937022a2aa6eec83ac77550c",
+      "current_sha256": "efbb50a5aa3768244e2edbbfdbf7c96bc50e0f6e010fd029852ebce588a09d16",
+      "expected_revision_found_in_local_git_history": true,
+      "matching_revisions": [
+        "8be2301b89e0"
+      ]
+    },
+    {
+      "path": "src/memory/relation_memory.py",
+      "expected_sha256": "95f6c50d695a2cbc8b4dac60de7633182931a6e0f11f0f52b9e81b1a5bc07feb",
+      "current_sha256": "6e63a13f405cf632092580809b36c8fbd210584e342c4c5ea34634717f970b5c",
+      "expected_revision_found_in_local_git_history": true,
+      "matching_revisions": [
+        "8be2301b89e0"
+      ]
+    },
+    {
+      "path": "src/perception/relation_tracking.py",
+      "expected_sha256": "a14e184146f85dd53befdd830706d7e8d00f34ad6c5934f832c894c7ce433dcc",
+      "current_sha256": "b354b3a93f447b7b059c975d65b747611f59e69144ed94666e60bdaef2b4bd20",
+      "expected_revision_found_in_local_git_history": true,
+      "matching_revisions": [
+        "8be2301b89e0"
+      ]
+    },
+    {
+      "path": "src/perception/relation_detector.py",
+      "expected_sha256": "69b776b0174528cf347052754078009f4c667440d34f37864d6817935638f588",
+      "current_sha256": "04e8b9c0d7452f10ab5f21c972ab17bc65b01379e7f5c7829f516142235380a1",
+      "expected_revision_found_in_local_git_history": true,
+      "matching_revisions": [
+        "8be2301b89e0"
+      ]
+    },
+    {
+      "path": "src/perception/grounding_dino.py",
+      "expected_sha256": "c22afcd0a8c8e5b9f75a428493776d18c504e312b7d4abdc740baef7ab5c3ed6",
+      "current_sha256": "daace7dfc67a8716931c95204f6f74e43ddae1933dfb1d04e08e7d605b82c1b4",
+      "expected_revision_found_in_local_git_history": false,
+      "matching_revisions": []
+    },
+    {
+      "path": "src/perception/visual_evidence.py",
+      "expected_sha256": "a3fc4b799defe7051e720e7fe7d517cb9a16d8304422a4d250a918f0fd8ef058",
+      "current_sha256": "38bfdc93401a04836ba7d10ececab84b9acf78e0e12ecbe8e1a24b88196e337d",
+      "expected_revision_found_in_local_git_history": true,
+      "matching_revisions": [
+        "9a774499a21b"
+      ]
+    },
+    {
+      "path": "scripts/memory_detector_worker.py",
+      "expected_sha256": "0fe99a309021895bfc9b2f303700768dde2788455994fc0ead48a09d417fceb9",
+      "current_sha256": "c0ee8bac3807a25087e3a3677adc41312ae4b04e7ebcc18ed4a0455ea73f1b20",
+      "expected_revision_found_in_local_git_history": true,
+      "matching_revisions": [
+        "8be2301b89e0"
+      ]
+    }
+  ],
+  "disposition": "Fail-fast. The F1 export source hashes do not match the current checkout. Event was not preflighted because it uses the same checkpoint and writer source set. No policy episodes ran; restore all attested source files or create an export with matching provenance before retrying."
+}

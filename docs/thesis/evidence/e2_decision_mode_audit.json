@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "audit_id": "e2_memory_decision_activation_20261120",
+  "checked_at_utc": "2026-11-20T02:09:45Z",
+  "interpretation": "E2 supplied F1 memory text at fixed 10-action query boundaries; it did not evaluate evidence-triggered early requery or active memory-guided exploration.",
+  "batch_manifest_count": 10,
+  "decision_trace_files": [],
+  "runs": [
+    {
+      "path": "experiments/evaluation/e2_unseen_author_v2/batch-0-1/run_manifest.json",
+      "sha256": "8ae9a18ff2d0b9dbe2a2b23bb1b74e22bce868074b0da3c43f945c027f6e5b7e",
+      "status": "complete",
+      "decision_mode": null,
+      "execution_horizon": 10,
+      "completed_episodes": 8
+    },
+    {
+      "path": "experiments/evaluation/e2_unseen_author_v2/batch-10-11/run_manifest.json",
+      "sha256": "f3a2aae14cfea6614d5f4d9fa1088816fe17b31946ec7fb912cd4d57f4ac05fd",
+      "status": "complete",
+      "decision_mode": null,
+      "execution_horizon": 10,
+      "completed_episodes": 8
+    },
+    {
+      "path": "experiments/evaluation/e2_unseen_author_v2/batch-12-13/run_manifest.json",
+      "sha256": "358150bc7c44bb38a26527eb473d36510342e8c0adf3d68aac383fb00a1f9b7e",
+      "status": "complete",
+      "decision_mode": null,
+      "execution_horizon": 10,
+      "completed_episodes": 8
+    },
+    {
+      "path": "experiments/evaluation/e2_unseen_author_v2/batch-14-15/run_manifest.json",
+      "sha256": "e83c202fc4626709804dffb006e1005c560cd788bef7d057d97ade1e83cd22cb",
+      "status": "complete",
+      "decision_mode": null,
+      "execution_horizon": 10,
+      "completed_episodes": 8
+    },
+    {
+      "path": "experiments/evaluation/e2_unseen_author_v2/batch-16-17/run_manifest.json",
+      "sha256": "6392e1a90b06ebf899acc3bd103831228591ad99b2061c7bbae5bd4d9dbaa299",
+      "status": "complete",
+      "decision_mode": null,
+      "execution_horizon": 10,
+      "completed_episodes": 8
+    },
+    {
+      "path": "experiments/evaluation/e2_unseen_author_v2/batch-18-19/run_manifest.json",
+      "sha256": "37545c3a7a9efd542423ba8d64223c3675f3b976ca7beb74e7cae0ab3b1fcb7a",
+      "status": "complete",
+      "decision_mode": null,
+      "execution_horizon": 10,
+      "completed_episodes": 8
+    },
+    {
+      "path": "experiments/evaluation/e2_unseen_author_v2/batch-2-3/run_manifest.json",
+      "sha256": "09d57c66393db1c98ec251391683c4747743b109a1e6269545ae79a4bc12665e",
+      "status": "complete",
+      "decision_mode": null,
+      "execution_horizon": 10,
+      "completed_episodes": 8
+    },
+    {
+      "path": "experiments/evaluation/e2_unseen_author_v2/batch-4-5/run_manifest.json",
+      "sha256": "2bc62019c4e373ebc4173f1b63f2c0b69bc6b970cd497b02ff070d9c6f7b7a64",
+      "status": "complete",
+      "decision_mode": null,
+      "execution_horizon": 10,
+      "completed_episodes": 8
+    },
+    {
+      "path": "experiments/evaluation/e2_unseen_author_v2/batch-6-7/run_manifest.json",
+      "sha256": "c4dcde01b93ed48bbf82d14f3dbea24aef7d8690febd4bd32f56ac6ddf2db709",
+      "status": "complete",
+      "decision_mode": null,
+      "execution_horizon": 10,
+      "completed_episodes": 8
+    },
+    {
+      "path": "experiments/evaluation/e2_unseen_author_v2/batch-8-9/run_manifest.json",
+      "sha256": "c4aaeb761ac2b0b08d59f3eda229898cb79fa1a7b1e1927f449f85162f65ec15",
+      "status": "complete",
+      "decision_mode": null,
+      "execution_horizon": 10,
+      "completed_episodes": 8
+    }
+  ]
+}

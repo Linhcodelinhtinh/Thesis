@@ -250,3 +250,22 @@ This document records the architectural and design decisions for **VLA Policy Ev
   - Eliminates grasp-physics false negatives from the core memory evaluation signal.
   - Aligns research focus directly with structural memory capabilities (relations and occlusion) rather than low-level physical contact robustness.
   - Updates all roadmaps, handoff documents, and audit scripts to remove assumptions of running T2/T4.
+
+---
+
+## ADR-0016: Retirement of MiniVLA and Onboarding of X-VLA for LIBERO Evaluation
+- **Status**: Accepted (2026-11-19)
+- **Context**:
+  MiniVLA (Candidate B) was originally evaluated on `libero_10`. However, architectural and data provenance auditing revealed that upstream checkpoints (`Stanford-ILIAD/minivla-libero90-prismatic`) were trained strictly on `libero_90`, which shares zero tasks with `libero_10`. Furthermore, upstream never released a `libero_10` checkpoint. Retaining the 10.35 GB MiniVLA checkpoint placed severe storage strain on drive D: (~14.94 GB free space).
+- **Decision**:
+  1. **Retire MiniVLA artifacts**: Purge `resources/checkpoints/minivla_libero90`, `external/openvla-mini`, and obsolete `minivla_*` trial logs, reclaiming over 10.38 GB of disk storage (increasing free space to >25 GB).
+  2. **Adopt X-VLA (ICLR 2026, arXiv:2510.10274)**:
+     - Official codebase cloned to `external/X-VLA` (`https://github.com/2toinf/X-VLA`).
+     - Download official checkpoints: full model `2toINF/X-VLA-Libero` (3.28 GB) and long-horizon PEFT adapter `2toINF/X-VLA-libero-long-peft` (45.35 MB, reported 83.2% success rate on `libero_long`/`libero_10`).
+     - Register specification contract in `configs/models/x_vla_libero.yaml`.
+  3. **Provenance & Action Space Classification**:
+     - X-VLA operates in 10-DoF continuous action space (3 absolute position + 6 rotation EEF6D + 1 gripper) under `use_delta = False`.
+     - Evaluations of X-VLA are categorized as `NON-COMPARABLE_OFFICIAL_PAPER` relative to standard 7-DoF relative delta OSC policies.
+- **Consequences**:
+  - Resolves disk bottleneck and establishes a state-of-the-art alternative baseline on `libero_10`.
+  - Eliminates out-of-distribution evaluation confounders seen with MiniVLA on `libero_10`.

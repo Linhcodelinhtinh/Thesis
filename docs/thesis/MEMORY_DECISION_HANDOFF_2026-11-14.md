@@ -1,6 +1,6 @@
 # Bàn giao tích hợp quyết định từ memory
 
-> Các trạng thái gate bên dưới ghi theo ngày của tài liệu. Xem [đối chiếu cập nhật 19/11/2026](EXPERIMENT_CONFIGURATION_REGISTER.md) cho export F1 V2, kết quả E2/E6 và replay Relation V3.
+> Phần mô tả nguồn và replay bên dưới là ghi nhận lịch sử. Trạng thái gate hiện hành được cập nhật ngày 21/11/2026 trong bảng này và [sổ cấu hình thực nghiệm](EXPERIMENT_CONFIGURATION_REGISTER.md).
 
 
 **Cập nhật 15/11/2026.** Shards và alignment audit V2 T1/T3 đã hoàn tất. T7/T8/T9/T10 raw/refined sources đều có receipt xác nhận local SHA-256. RGB relation writer trên demo `demo_1` hoàn tất cho bốn task: T7 425 frame, T8 613 frame, T9 356 frame và T10 309 frame; cả bốn trả 0 fact memory và relation state `unknown` toàn bộ. T8/T9/T10 artifacts nằm tại `experiments/audits/relation-e1-20261115-t8-demo1`, `...-t9-demo1` và `...-t10-demo1`. T10 cũng có 927/927 identity observations ở trạng thái `unknown`. T7 identity observations gồm 92 `tracked`, 648 `ambiguous`, 1.385 `unknown`; phép audit detector-vs-exo-box annotations đã hash-check đủ 425 ảnh: tại IoU 0,5, bowl P/R là 0,893/0,747, plate P/R là 0,971/0,646. T7/T8/T9/T10 đều là demo train; chưa có nhãn blind identity/relation/containment. Artifact F0 V2 no-memory 5.000 bước đã tồn tại trước cập nhật này; B0/F0 runtime checks qua 4/4 lượt, và pilot development B0/F0 hoàn tất 4/4 full-horizon episodes trên một state/task, tất cả 0/4 success. Report giữ nhãn `NON-COMPARABLE_OFFICIAL_PAPER`. F1 V2 tương thích writer relation chưa có, do đó D1/D2 closed-loop vẫn chưa thể nghiệm thu; model training nằm ngoài phạm vi.
@@ -13,13 +13,13 @@ Giao thức development áp dụng cho F1 trên T1/T3 với khóa seen v2. Giữ
 
 | Gói | Đã có | Điều kiện còn mở |
 |---|---|---|
-| D0 | Khóa 20 cụm state seen, 12 development và 8 calibration. Khóa sơ bộ 125 query, tối đa 10 action/chunk, giữ thay đổi 2 quan sát và lịch cố định 8 action. | Đo query, wall-clock và lỗi quyết định trên rollout thật để chốt ngưỡng cho nghiên cứu xác nhận. |
-| D1 | Fact tham chiếu kèm version và evidence, tách quyền đọc projected/snapshot, shadow và nhật ký. Unit test so từng prompt, chunk và action với lịch gốc ở cùng RNG. | Kiểm lại parity với F1 thật. Nhãn điểm cam kết trên rollout còn thiếu. |
-| D2 | Runner cắt phần chunk chưa chạy và query trên quan sát mới. Lượt hết ngân sách kết thúc với abstention và tính failure. CLI, lịch cố định và tổng hợp paired đã có. | Smoke và pilot vòng kín cần F1 quan hệ P5. Kiểm số query và tổng thời gian thực đo của các arm trước khi diễn giải tác động. |
-| D3 | Phép kiểm offline ba giá trị cho intent start/finish đã gán nhãn. Khôi phục uncertainty từ evidence bất hợp lệ trong phép kiểm. | Thiếu nhãn vật đích/hiệu ứng và bộ đọc chunk đã hiệu chuẩn. Chưa cấp quyền reject trong runner. |
-| D4 | Đã xác định contract của một chunk và trace từng action. | Cần bộ đọc D3, đánh giá candidate recall và kiểm parity queue/cache/RNG trước khi bật chọn nhiều chunk. |
-| D5 | Kiểm hash BDDL T7/T9/T10. T7 raw 46,50 MiB, khóa 120 state; replay RGB chẩn đoán thấy cả hai nhánh Or. T8/T9/T10 raw/refined receipts đã xác minh; author-action replay upstream một demo/task đã chạy. T9/T10 báo terminal success; T8 ba milestone nhưng không terminal. Raw/refined T8 demo_1 có action/state đầu vào trùng chính xác; robot-state drift đầu ở bước 219, nguyên nhân chưa rõ. Writer index vẫn 0 memory, relation unknown; T10 identity unknown 927/927. | T8 terminal/runtime discrepancy, nhãn độc lập identity/containment và protocol vòng kín riêng vẫn mở. |
-| D6 | Tổng hợp paired theo state, bounds cho lượt thiếu, bootstrap mô tả trên roster đủ và probe can thiệp quy tắc đếm. | Cần trace đã gán nhãn, dữ liệu vòng kín và protocol xác nhận riêng. |
+| D0 | Replay offline trên demo/trace mẫu; query và wall-clock đã đo thực tế trong D2 | Chưa có nhãn độc lập về đúng/sai quyết định hoặc điểm commit; replay không đổi hành động |
+| D1 | Text/shadow parity chính xác trên 2 cặp T1/T3 seen state 0; prompt, query, action và chunk khớp | Hoàn tất plumbing/parity; chưa có nhãn điểm commit và không đo lợi ích của trigger |
+| D2 | Hoàn tất 24 cặp shadow/event closed loop trên T1/T3 seen states 0–11. Event phát 56 requery có event ID và evidence ID trong 22/24 episode; cả hai arm thành công 1/24 | Không cho thấy cải thiện SR; calibration states 12–19 dừng ở preflight do writer source hash mismatch, 0 episode. Cần khôi phục provenance, rồi mới chạy thêm/confirmatory roster và nhiều seed |
+| D3 | Rule probe offline ba giá trị cho intent start/finish và xử lý evidence bất hợp lệ | Thiếu nhãn độc lập target/effect/intent và reader chunk đã hiệu chuẩn; chưa cấp quyền reject trong runner |
+| D4 | Contract chunk đơn và trace từng action đã xác định | Phụ thuộc D3; còn thiếu candidate recall và parity queue/cache/RNG trước khi bật chọn nhiều chunk |
+| D5 | T7–T10 writer/source diagnostics và author-action replay upstream đã chạy; T9/T10 terminal success, T8 không terminal và robot-state drift đầu ở bước 219 | Chưa có nhãn blind identity/containment, T8 discrepancy chưa giải thích, và chưa có protocol policy closed loop riêng |
+| D6 | Tổng hợp paired theo state, bounds cho lượt thiếu, bootstrap mô tả và probe quy tắc đếm | Cần trace có nhãn độc lập và protocol xác nhận; chưa ước lượng lỗi quyết định hay efficacy |
 
 Metadata quyết định nằm trong một lớp chiếu riêng. Hash của toàn bộ writer/renderer khớp hai manifest index đã replay. Quyền `projected` dùng các fact thực sự có mặt trong prompt tại thời điểm query và các fact sẽ vào projection nếu query lại trên ảnh mới. Quyền `snapshot` đọc thêm trạng thái quan hệ, độ đầy đủ lịch sử và danh tính. Vì vậy replay snapshot có phạm vi thông tin rộng hơn arm projected.
 
@@ -58,11 +58,16 @@ Reports là `experiments/audits/t8-author-replay-upstream-20261115.json`, `.../t
 
 Mỗi dòng JSONL gắn `task`, `initial_state_sha256`, `policy_seed`, `decision_arm`, `episode_id`, `query_id`, `chunk_sha256`, `observation_step` và `annotation_source_sha256`. Người gán nhãn xem camera, instruction và prefix được đề xuất. Ghi `intent` với giá trị start_cycle, finish, approach, grasp, release, other hoặc unknown. Ghi `target` theo vật/vùng quan sát được hoặc null, `commit_step` theo bước sớm nhất có thể đánh giá hoặc null, `label_status` với clear, ambiguous hoặc unavailable. Dùng `executed` để phân biệt chunk có hậu quả quan sát được và ứng viên chỉ được gán nhãn ý định. Lưu `observed_effect` và nguồn nhãn hậu quả khi đã thi hành. Đối với trigger, ghi cửa sổ quan sát trong đó dữ kiện mới thực sự ảnh hưởng tới lựa chọn và phân loại lỗi tiến trình, danh tính hoặc thực thi. Giữ nhãn độc lập với dự đoán writer/selector. Giữ nguyên cụm state qua T1/T3 và qua các seed khi chia dữ liệu.
 
-### Việc chạy tiếp theo
+### Điều kiện mở lại các gap
 
-1. Trong phạm vi hiện tại, giữ nguyên artifact F0 V2 đã có và không chạy training. Bằng chứng B0/F0 E0 được lưu ở `experiments/evaluation/e0-f0-runtime-ext4-20261115` và `experiments/evaluation/e0-b0-f0-pilot-20261115`; cả bốn full-horizon episode hoàn tất nhưng không ghi nhận subgoal. F1 V2 và parity giữa F0/F1 vì vậy vẫn là gate mở. Nếu giai đoạn sau cho phép training, bàn giao P5–P6 có recipe và thứ tự smoke/reload tương ứng. [Bàn giao P5–P6](P5_P6_HANDOFF_2026-11-13.md).
-2. Sau khi có F1 đạt preflight, chạy từng arm trên một state mỗi task. So trace text/shadow và kiểm điểm cắt prefix của event. Sau đó mở các lô seen đã khóa để gán nhãn, đo trigger, coverage, success và compute. Với các lượt dành cho gán nhãn, thay `--no-save-video` bằng `--save-video` đồng nhất giữa các arm.
-3. Dùng T7 raw để kiểm evaluator trên quỹ đạo tác giả. Helper upstream lọc bằng quan hệ tập con của predicate và nhánh có thể cập nhật bộ đếm trong một lần gọi Or. Cần xác minh timing cả hai nhánh trước khi dùng một quy tắc kết thúc riêng. Tải T7 refined khi cần audit RGB. [Bàn giao nguồn](P0_P2_HANDOFF_2026-11-13.md). [Metadata hai bản T7](../../resources/manifests/libero_mem_t7_refined_source.json). [Khóa 120 trạng thái raw](../../resources/manifests/libero_mem_t7_raw_states_v1.json).
+- D2 đã xác nhận event requery có evidence trong closed loop; để kiểm efficacy cần roster xác nhận khóa trước, nhiều seed và cùng protocol/compute.
+- D3/D5 đã có đối chiếu offline `bowl_1.returns`–evaluator trên 48 trace D2: endpoint khớp event T1 10/12, T3 8/12, shadow T1 6/12, T3 10/12. Đây là cycle-count alignment mô tả, không phải blind writer accuracy.
+- D3–D4 vẫn cần nhãn độc lập intent/target/effect, reader chunk đã hiệu chuẩn, rồi mới đánh giá reject, candidate recall và parity queue/cache/RNG.
+- D5–D6 vẫn cần nhãn blind identity/relation/containment, làm rõ sai khác terminal T8, và trace đã gán nhãn trước khi kiểm lỗi quyết định.
+- E3 đã có fixed-trace renderer sweep trên 24 episode D2 (2.397 query; exact replay ở 48 token), chưa đo action/SR tại budget thấp. E4 đã có một diagnostic delay một query tại D2 state7 q142: exact replay control khớp 1.000/1.000 action và success; nhánh trì hoãn memory một query 0/1 success sau prefix khớp 142/142. Các mức delay, noise/corruption, labels và risk–coverage vẫn thiếu. E5 cũng còn incomplete: case này chỉ một state; state16 có tám nhánh và tất cả overshoot, còn fact-changing/fact-preserving và C0/L0 controls trên roster rộng chưa chạy.
+- Derived v1 cần exact perception source snapshot ghi trong export hoặc một export mới có provenance khớp. Preflight 21/11 dừng trước rollout với 0 episode; không bỏ qua mismatch hash.
+
+Lệnh development bên dưới được giữ để truy xuất cách gọi runner cũ; trạng thái và kết quả thực tế mới nhất xem trong bảng D0–D6 ở đầu tài liệu và [sổ trạng thái](STATUS_AND_CLAIMS.md).
 
 ```powershell
 $Policy = (Get-Command python).Source

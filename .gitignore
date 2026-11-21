@@ -38,6 +38,7 @@ experiments/pilot_sft_test*/
 *.webm
 *.png
 *.jpg
+!docs/thesis/figures/libero_mem_t3_success.png
 
 # OS files
 .DS_Store

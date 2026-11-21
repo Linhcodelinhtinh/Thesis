@@ -1,0 +1,38 @@
+{
+  "experiment_id": "derived-v1-closed-loop-preflight-2026-11-21",
+  "classification": "PREFLIGHT_BLOCKED_NO_ROLLOUT",
+  "preflight_manifest": {
+    "path": "experiments/evaluation/derived_f1_b0_test_preflight_20261121_retry/run_manifest.json",
+    "sha256": "72a7fe48495a00c5a1573317f04ba315b6d1ec21bad6ab106eb8b1f8740f332f"
+  },
+  "adapter_manifest": {
+    "path": "experiments/training/results_mem_derived/mem-adapter-v1/output/pretrained_model/mem_adapter_manifest.json",
+    "sha256": "92f0b38b9f18001b267c02c1041f60e98b1f950a0eeb38484adfac1d26a0584b"
+  },
+  "attempted_design": {
+    "conditions": [
+      "B0",
+      "F1"
+    ],
+    "tasks": [
+      "T1",
+      "T3"
+    ],
+    "split": "test",
+    "split_lock": "experiments/training/results_mem_derived/mem-adapter-v1/dataset-split.lock.json",
+    "states": "all",
+    "policy_seed": 42,
+    "rollouts_executed": 0
+  },
+  "failure": {
+    "reason": "Artifact hash/path mismatch: src/perception/grounding_dino.py",
+    "expected_sha256": "84e832234696c9b468fa53bca3998cfb174b30f913ec5a972048130d172138ed",
+    "current_sha256": "daace7dfc67a8716931c95204f6f74e43ddae1933dfb1d04e08e7d605b82c1b4"
+  },
+  "disposition": "Fail-fast. No writer/provenance override was attempted and no rollout was counted. A closed-loop run requires restoring the exact attested source snapshot or exporting a new checkpoint with matching provenance.",
+  "provenance_recovery_check": {
+    "path": "src/perception/grounding_dino.py",
+    "local_git_revisions_checked": 3,
+    "revision_matching_expected_sha256_found": false
+  }
+}

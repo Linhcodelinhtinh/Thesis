@@ -14,11 +14,6 @@ try:
 except Exception as exc:
     logger.debug("SmolVLA adapter not registered in current environment: %s", exc)
 
-try:
-    import src.models.minivla.adapter
-except Exception as exc:
-    logger.debug("MiniVLA adapter not registered in current environment: %s", exc)
-
 __all__ = [
     "VLAPolicy",
     "register_model",

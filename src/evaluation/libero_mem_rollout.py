@@ -88,6 +88,9 @@ class LiberoMemRolloutRunner:
         observer=None,
         stream_memory_trace: bool = False,
         execution_treatment=None,
+        memory_writer_override: Optional[str] = None,
+        runtime_writer_source_sha256: Optional[Dict[str, str]] = None,
+        runtime_writer_config: Optional[Dict[str, Any]] = None,
     ) -> None:
         self.env = env
         self.policy = policy_adapter
@@ -100,6 +103,9 @@ class LiberoMemRolloutRunner:
             raise ValueError("Streaming memory trace requires an episode recorder")
         self.stream_memory_trace = stream_memory_trace
         self.execution_treatment = execution_treatment
+        self.memory_writer_override = memory_writer_override
+        self.runtime_writer_source_sha256 = runtime_writer_source_sha256
+        self.runtime_writer_config = runtime_writer_config
         self.treatment = condition_spec(condition)
         self.action_shape = action_shape(policy_adapter, env)
         if not 1 <= execution_horizon <= self.action_shape[0] or max_steps < 1:
@@ -155,7 +161,13 @@ class LiberoMemRolloutRunner:
                 support_id="plate_A",
             )
             if getattr(self.policy, "mem_adapter_manifest", None) is not None:
-                self.policy.bind_memory_runtime(writer, self.renderer)
+                self.policy.bind_memory_runtime(
+                    writer,
+                    self.renderer,
+                    writer_override=self.memory_writer_override,
+                    runtime_writer_source_sha256=self.runtime_writer_source_sha256,
+                    runtime_writer_config=self.runtime_writer_config,
+                )
         elif self.condition == "O1":
             oracle_writer = LiberoMemOracleWriter(
                 episode_id=episode_id,

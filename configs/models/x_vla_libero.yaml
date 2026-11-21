@@ -1,0 +1,58 @@
+# X-VLA Model Specification (ICLR 2026 / arXiv:2510.10274)
+# Soft-Prompted Transformer as Scalable Cross-Embodiment Vision-Language-Action Model
+
+model_id: "x_vla_libero"
+model_name: "X-VLA-0.9B-Libero"
+role: "ALTERNATIVE_VLA_BASELINE"
+status: "EVALUATION_CANDIDATE"
+runner: "scripts/run_x_vla_libero.py"
+manifest: "resources/manifests/models/x_vla_libero.yaml"
+
+provenance:
+  repository: "https://huggingface.co/2toINF/X-VLA-Libero"
+  peft_adapter: "https://huggingface.co/2toINF/X-VLA-libero-long-peft"
+  codebase: "https://github.com/2toinf/X-VLA"
+  paper: "https://arxiv.org/abs/2510.10274"
+  backbone: "microsoft/Florence-2-large"
+  parameters: "0.9B"
+  execution_tier: "X-VLA author client on the pinned LIBERO reference stack"
+  certification: "NON-COMPARABLE_OFFICIAL_PAPER"
+
+model_contract:
+  input_resolution: [224, 224]
+  render_resolution: [256, 256]
+  camera_order:
+    - "agentview"
+    - "robot0_eye_in_hand"
+  action_dim: 10
+  raw_action_dim: 20
+  simulator_action_dim: 7
+  chunk_size: 30
+  execution_horizon: 30
+  proprio_dim: 20
+  domain_id: 3
+  flow_steps: 10
+  action_semantics:
+    - "abs_eef_x"
+    - "abs_eef_y"
+    - "abs_eef_z"
+    - "eef_rot6d_0"
+    - "eef_rot6d_1"
+    - "eef_rot6d_2"
+    - "eef_rot6d_3"
+    - "eef_rot6d_4"
+    - "eef_rot6d_5"
+    - "gripper_action"
+  action_space: "continuous"
+  action_head: "flow_matching"
+  controller_mode: "absolute_pose"
+  use_delta: false
+
+simulation_contract:
+  robot: "Panda"
+  gripper: "PandaGripper"
+  controller: "OSC_POSE"
+  control_frequency_hz: 20
+  environment_horizon: 1000
+  settling_steps_in_delta_mode: 10
+  libero_10_policy_step_limit: 900

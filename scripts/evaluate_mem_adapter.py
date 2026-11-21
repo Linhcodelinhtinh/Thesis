@@ -364,6 +364,7 @@ def main(argv=None):
                     if args.relation_writer:
                         treatment["training_memory_source"] = memory_contract["writer"]
                         treatment["writer_override"] = True
+                        treatment["runtime_writer_config"] = writer_cfg
                 manifest["adapter_manifest_sha256"] = treatment["adapter_manifest_sha256"]
                 write_json(output / "adapter_manifest.json", adapter)
                 verify_files(args.detector_model, adapter["memory_provenance"][0]["detector"]["files"])
@@ -485,7 +486,12 @@ def main(argv=None):
                                     execution_horizon=protocol["rollout"]["execution_horizon"],
                                     max_steps=protocol["rollout"]["horizon_policy_actions"],
                                     renderer=renderer, writer_factory=factory, observer=recorder,
-                                    stream_memory_trace=args.stream_memory_trace, execution_treatment=execution)
+                                    stream_memory_trace=args.stream_memory_trace, execution_treatment=execution,
+                                    memory_writer_override=(args.relation_writer if condition == "F1" else None),
+                                    runtime_writer_source_sha256=manifest.get("treatments", {}).get(condition, {}).get(
+                                        "runtime_writer_source_sha256"),
+                                    runtime_writer_config=manifest.get("treatments", {}).get(condition, {}).get(
+                                        "runtime_writer_config"))
                                 result = runner.run_episode(ep_id, row["instruction"], row["state_idx"])
                                 recorder.finish(result=result)
                             except BaseException as exc:

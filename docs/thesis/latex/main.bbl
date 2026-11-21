@@ -100,6 +100,79 @@ Edward~J. Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean
 \newblock arXiv:2106.09685v1, 2021.
 \newblock \url{https://arxiv.org/abs/2106.09685v1}.
 
+\bibitem{saycan2022}
+Michael Ahn, Anthony Brohan, Noah Brown, Yevgen Chebotar, Omar Cortes, Byron
+  David, Chelsea Finn, Chuyuan Fu, Keerthana Gopalakrishnan, Karol Hausman,
+  Alex Herzog, Daniel Ho, Jasmine Hsu, Julian Ibarz, Brian Ichter, Alex Irpan,
+  Eric Jang, Rosario~Jauregui Ruano, Kyle Jeffrey, Sally Jesmonth, Nikhil~J.
+  Joshi, Ryan Julian, Dmitry Kalashnikov, Yuheng Kuang, Kuang-Huei Lee, Sergey
+  Levine, Yao Lu, Linda Luu, Carolina Parada, Peter Pastor, Jornell Quiambao,
+  Kanishka Rao, Jarek Rettinghouse, Diego Reyes, Pierre Sermanet, Nicolas
+  Sievers, Clayton Tan, Alexander Toshev, Vincent Vanhoucke, Fei Xia, Ted Xiao,
+  Peng Xu, Sichun Xu, Mengyuan Yan, and Andy Zeng.
+\newblock Do as {I} can, not as {I} say: Grounding language in robotic
+  affordances.
+\newblock In {\em Proceedings of the 6th Conference on Robot Learning}, volume
+  205 of {\em Proceedings of Machine Learning Research}, pages 264--277, 2023.
+\newblock \url{https://proceedings.mlr.press/v205/ahn23a.html}.
+
+\bibitem{innermonologue2022}
+Wenlong Huang, Fei Xia, Ted Xiao, Harris Chan, Jacky Liang, Pete Florence, Andy
+  Zeng, Jonathan Tompson, Igor Mordatch, Yevgen Chebotar, Pierre Sermanet, Noah
+  Brown, Tomas Jackson, Linda Luu, Sergey Levine, Karol Hausman, and Brian
+  Ichter.
+\newblock Inner monologue: Embodied reasoning through language models.
+\newblock In {\em Proceedings of the 6th Conference on Robot Learning}, volume
+  205 of {\em Proceedings of Machine Learning Research}, pages 1769--1782,
+  2023.
+\newblock \url{https://proceedings.mlr.press/v205/huang23a.html}.
+
+\bibitem{codeaspolicies2023}
+Jacky Liang, Wenlong Huang, Fei Xia, Peng Xu, Karol Hausman, Brian Ichter, Pete
+  Florence, and Andy Zeng.
+\newblock Code as policies: Language model programs for embodied control.
+\newblock {\em IEEE Robotics and Automation Letters}, 8(8):4793--4800, 2023.
+\newblock \url{https://doi.org/10.1109/LRA.2023.3289033}.
+
+\bibitem{voxposer2023}
+Wenlong Huang, Chen Wang, Ruohan Zhang, Yunzhu Li, Jiajun Wu, and Li~Fei-Fei.
+\newblock {VoxPoser}: Composable 3d value maps for robotic manipulation with
+  language models.
+\newblock In {\em Proceedings of the 7th Conference on Robot Learning}, volume
+  229 of {\em Proceedings of Machine Learning Research}, pages 540--562, 2023.
+\newblock \url{https://proceedings.mlr.press/v229/huang23c.html}.
+
+\bibitem{garrett2021tamp}
+Caelan~Reed Garrett, Tom{\'a}s Lozano-P{\'e}rez, and Leslie~Pack Kaelbling.
+\newblock Integrated task and motion planning.
+\newblock {\em Annual Review of Control, Robotics, and Autonomous Systems},
+  4:265--293, 2021.
+\newblock \url{https://doi.org/10.1146/annurev-control-061920-093710}.
+
+\bibitem{rt12022}
+Anthony Brohan, Noah Brown, Justice Carbajal, Yevgen Chebotar, Joseph Dabis,
+  Chelsea Finn, Keerthana Gopalakrishnan, Karol Hausman, Alex Herzog, Jasmine
+  Hsu, Julian Ibarz, Brian Ichter, Alex Irpan, Tomas Jackson, Sally Jesmonth,
+  Nikhil~J. Joshi, Ryan Julian, Dmitry Kalashnikov, Yuheng Kuang, Isabel Leal,
+  Kuang-Huei Lee, Sergey Levine, Yao Lu, Utsav Malla, Deeksha Manjunath, Igor
+  Mordatch, Ofir Nachum, Carolina Parada, Jichao Peng, Roberto Martin-Martin,
+  Pierre Sermanet, Paul~R. Shankland, Dhruv Shah, Quan Vuong, Alexander Toshev,
+  Vincent Vanhoucke, Fei Xia, Ted Xiao, Peng Xu, Sichun Xu, Tianhe Yu, and Andy
+  Zeng.
+\newblock {RT-1}: Robotics transformer for real-world control at scale.
+\newblock In {\em Robotics: Science and Systems XIX}, 2023.
+\newblock \url{https://doi.org/10.15607/RSS.2023.XIX.017}.
+
+\bibitem{octo2024}
+{Octo Model Team}, Dibya Ghosh, Homer Walke, Karl Pertsch, Kevin Black, Oier
+  Mees, Sudeep Dasari, Joey Hejna, Tobias Kreiman, Charles Xu, Jianlan Luo,
+  You~Liang Tan, Lawrence~Yunliang Chen, Pannag~R. Sanketi, Quan Vuong, Ted
+  Xiao, Dorsa Sadigh, Chelsea Finn, and Sergey Levine.
+\newblock Octo: An open-source generalist robot policy for navigation and
+  manipulation.
+\newblock In {\em Robotics: Science and Systems XX}, 2024.
+\newblock \url{https://doi.org/10.15607/RSS.2024.XX.077}.
+
 \bibitem{smoLSTM2026}
 Jan-Gerrit Habekost, Parsa~Mastouri Kashani, Connor G\"ade, Matthias Kerzel,
   Philipp Allgeuer, Cornelius Weber, Stefan Wermter, and Jae~Hee Lee.
@@ -124,6 +197,12 @@ Rodrigo~Toro Icarte, Toryn Klassen, Richard Valenzano, and Sheila McIlraith.
   2107--2116, 2018.
 \newblock \url{https://proceedings.mlr.press/v80/icarte18a.html}.
 
+\bibitem{flowmatching2023}
+Yaron Lipman, Ricky T.~Q. Chen, Heli Ben-Hamu, Maximilian Nickel, and Matt Le.
+\newblock Flow matching for generative modeling.
+\newblock arXiv:2210.02747v2, 2023.
+\newblock \url{https://arxiv.org/abs/2210.02747v2}.
+
 \bibitem{smolvlaCheckpoint}
 {LeRobot contributors}.
 \newblock {lerobot/smolvla\_libero}: Checkpoint và bộ xử lý.
@@ -131,12 +210,6 @@ Rodrigo~Toro Icarte, Toryn Klassen, Richard Valenzano, and Sheila McIlraith.
 \newblock Revision \path{31d453f7edd78c839a8bbc39744a292686daf0de}; truy cập
   11/11/2026.
   \url{https://huggingface.co/lerobot/smolvla_libero/tree/31d453f7edd78c839a8bbc39744a292686daf0de}.
-
-\bibitem{flowmatching2023}
-Yaron Lipman, Ricky T.~Q. Chen, Heli Ben-Hamu, Maximilian Nickel, and Matt Le.
-\newblock Flow matching for generative modeling.
-\newblock arXiv:2210.02747v2, 2023.
-\newblock \url{https://arxiv.org/abs/2210.02747v2}.
 
 \bibitem{balanceddiet2026}
 Octi Zhang, Mateo~Guaman Castro, Patrick Yin, Ignacio Dagnino, Abhishek Gupta,
