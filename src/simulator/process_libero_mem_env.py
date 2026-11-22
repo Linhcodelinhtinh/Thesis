@@ -23,6 +23,7 @@ def wsl_path(path):
 
 class ProcessLiberoMemEnv:
     use_real_sim = True
+    worker_script = "scripts/libero_mem_sim_worker.py"
 
     def __init__(self, task_name="T1", *, split_lock, split="val", purpose="evaluation",
                  python_executable=None, use_wsl=False, wsl_distro="Ubuntu-24.04", timeout_seconds=300):
@@ -42,10 +43,10 @@ class ProcessLiberoMemEnv:
         self.last_info = {}
         if use_wsl:
             command = ["wsl", "-d", wsl_distro, "--cd", wsl_path(ROOT), "--",
-                       "bash", "-c", f"export MUJOCO_GL=osmesa && exec '{python_executable}' scripts/libero_mem_sim_worker.py"]
+                       "bash", "-c", f"export MUJOCO_GL=osmesa && exec '{python_executable}' {self.worker_script}"]
             worker_lock = wsl_path(split_lock)
         else:
-            command = [str(python_executable), str(ROOT / "scripts/libero_mem_sim_worker.py")]
+            command = [str(python_executable), str(ROOT / self.worker_script)]
             worker_lock = str(Path(split_lock).absolute())
         self._process = subprocess.Popen(command, cwd=ROOT, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE, text=True, encoding="utf-8", bufsize=1,

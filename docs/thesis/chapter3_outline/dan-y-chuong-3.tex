@@ -58,8 +58,8 @@ Trạng thái bộ nhớ được biểu diễn bởi $M_t=(\mathcal O_t,\mathca
 
 \fig{02-su-kien-va-quan-he.pdf}{1}{\textbf{Hình 3.2.} Sự khác biệt về tuổi thọ hiệu lực giữa sự kiện lịch sử và quan hệ hiện hành qua khoảng che khuất. Sự kiện quá khứ giữ nguyên giá trị chân lý, trong khi quan hệ hiện hành chuyển sang trạng thái chưa xác định khi mất dấu.}
 
-\subh{3.2.3\enspace Nguyên lý trích xuất bằng chứng tổng quát}
-Quá trình trích xuất bằng chứng bao gồm: (1) Vị từ không gian chuẩn hóa $D_t = \|d_t \oslash \mathbf w_{\mathrm{ref}}\|_2$ nhằm triệt tiêu ảnh hưởng của khoảng cách và góc nhìn camera; (2) Cơ chế quản lý định danh và duy trì đối tượng tham chiếu mốc; và (3) Bộ lọc trễ thời gian thông qua cửa sổ $W_{\mathrm{confirm}}$ (yêu cầu vị từ thỏa mãn liên tục qua $p$ bước kế tiếp để chuyển từ candidate sang confirmed).
+\subh{3.2.3\enspace Nguyên lý trích xuất và kiểm định bằng chứng}
+Quá trình trích xuất và kiểm định bằng chứng bao gồm: (1) Chuẩn hóa quan hệ hình học theo kích thước vật thể $D_t = \|d_t \oslash \mathbf w_{\mathrm{ref}}\|_2$ nhằm loại bỏ sự phụ thuộc vào khoảng cách và góc nhìn camera; (2) Cơ chế bảo lưu danh tính thực thể khi bị che khuất; và (3) Cơ chế xác nhận trễ thời gian thông qua cửa sổ kiểm định $W_{\mathrm{confirm}}$ (yêu cầu điều kiện duy trì liên tục qua $p$ bước quan sát kế tiếp để chuyển từ candidate sang confirmed).
 
 \subh{3.2.4\enspace Động cơ máy trạng thái kiểm định tiến trình và Bất biến cấu trúc}
 Tiến độ tác vụ được mô hình hóa như một máy trạng thái hữu hạn với cặp chuyển trạng thái mở chu kỳ và đóng chu kỳ. Gọi $J_t$ là số biến cố mở chu kỳ đã xác nhận, $\hat z_t$ là số chu kỳ đã đóng thành công, $X_t$ là số chu kỳ mở bị hủy bỏ do mất dấu hoặc vi phạm điều kiện, và $\chi_t \in \{0, 1\}$ là cờ chu kỳ đang mở. Với khởi tạo rỗng, hệ thống thỏa mãn đẳng thức bất biến:

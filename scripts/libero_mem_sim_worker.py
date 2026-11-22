@@ -9,7 +9,7 @@ import traceback
 from dataclasses import asdict
 
 
-def main():
+def main(env_type=None):
     # Redirect native-library prints too, not just Python's stdout.
     transport = os.fdopen(os.dup(sys.stdout.fileno()), "w", buffering=1, encoding="utf-8")
     os.dup2(sys.stderr.fileno(), sys.stdout.fileno())
@@ -17,6 +17,8 @@ def main():
     root = Path(__file__).resolve().parents[1]
     sys.path.insert(0, str(root))
     from src.simulator.libero_mem_env import LiberoMemEnv
+    if env_type is None:
+        env_type = LiberoMemEnv
     from src.simulator.mem_ipc import decode_array, serialize_obs
 
     def send(value):
@@ -46,7 +48,7 @@ def main():
                 if command == "init":
                     if env is not None:
                         raise RuntimeError("Environment already initialized")
-                    env = LiberoMemEnv(task_name=request["task_name"], split_lock=request["split_lock"],
+                    env = env_type(task_name=request["task_name"], split_lock=request["split_lock"],
                                        split=request["split"], purpose=request["purpose"])
                     out = dict(task_name=env.task_name, protocol=env.protocol,
                         target_cycles=env.target_cycles, horizon=env.horizon, num_episodes=len(env.episodes))
@@ -63,6 +65,8 @@ def main():
                 elif command == "close":
                     send(dict(id=request_id, status="ok"))
                     break
+                elif command == "decode_xvla" and hasattr(env, "decode_xvla"):
+                    out = dict(actions=env.decode_xvla(decode_array(request["chunk"])).tolist())
                 else:
                     raise ValueError("Unknown worker command")
                 send(dict(id=request_id, status="ok", **out))

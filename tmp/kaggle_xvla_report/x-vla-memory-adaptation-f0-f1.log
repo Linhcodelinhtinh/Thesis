@@ -1,0 +1,898 @@
+[{"stream_name":"stderr","time":8.349415891,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.349472801,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.349477932,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.349480859,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":8.982118589,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.98215845,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.982176117,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.982180495,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":10.150894054,"data":"{'/kaggle/working': 19.5, '/kaggle/tmp': 2514.6} GiB free\n"}
+,{"stream_name":"stderr","time":30.413148855,"data":"ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\n"}
+,{"stream_name":"stderr","time":30.413202341,"data":"gradio-client 2.7.2 requires huggingface-hub\u003c3.0,\u003e=1.16.0, but you have huggingface-hub 0.36.2 which is incompatible.\n"}
+,{"stream_name":"stderr","time":30.413209975,"data":"gradio 6.30.0 requires huggingface-hub\u003c3.0,\u003e=1.16.0, but you have huggingface-hub 0.36.2 which is incompatible.\n"}
+,{"stream_name":"stderr","time":30.413214958,"data":"gradio 6.30.0 requires pillow\u003c13.0,\u003e=8.0, but you have pillow 13.0.0 which is incompatible.\n"}
+,{"stream_name":"stderr","time":30.413219814,"data":"diffusers 0.42.0 requires huggingface-hub\u003c3.0,\u003e=1.32.0, but you have huggingface-hub 0.36.2 which is incompatible.\n"}
+,{"stream_name":"stderr","time":30.413224233,"data":"diffusers 0.42.0 requires safetensors\u003e=0.8.0, but you have safetensors 0.4.5 which is incompatible.\n"}
+,{"stream_name":"stderr","time":30.615521919,"data":"ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\n"}
+,{"stream_name":"stderr","time":30.615561778,"data":"gradio-client 2.7.2 requires huggingface-hub\u003c3.0,\u003e=1.16.0, but you have huggingface-hub 0.36.2 which is incompatible.\n"}
+,{"stream_name":"stderr","time":30.615568015,"data":"gradio 6.30.0 requires huggingface-hub\u003c3.0,\u003e=1.16.0, but you have huggingface-hub 0.36.2 which is incompatible.\n"}
+,{"stream_name":"stderr","time":30.615572132,"data":"gradio 6.30.0 requires pillow\u003c13.0,\u003e=8.0, but you have pillow 13.0.0 which is incompatible.\n"}
+,{"stream_name":"stderr","time":30.615575818,"data":"diffusers 0.42.0 requires huggingface-hub\u003c3.0,\u003e=1.32.0, but you have huggingface-hub 0.36.2 which is incompatible.\n"}
+,{"stream_name":"stderr","time":30.615596979,"data":"diffusers 0.42.0 requires safetensors\u003e=0.8.0, but you have safetensors 0.4.5 which is incompatible.\n"}
+,{"stream_name":"stderr","time":30.615601507,"data":"\n"}
+,{"stream_name":"stderr","time":30.615604828,"data":"ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\n"}
+,{"stream_name":"stderr","time":30.615608771,"data":"gradio-client 2.7.2 requires huggingface-hub\u003c3.0,\u003e=1.16.0, but you have huggingface-hub 0.36.2 which is incompatible.\n"}
+,{"stream_name":"stderr","time":30.615629296,"data":"gradio 6.30.0 requires huggingface-hub\u003c3.0,\u003e=1.16.0, but you have huggingface-hub 0.36.2 which is incompatible.\n"}
+,{"stream_name":"stderr","time":30.615633795,"data":"gradio 6.30.0 requires pillow\u003c13.0,\u003e=8.0, but you have pillow 13.0.0 which is incompatible.\n"}
+,{"stream_name":"stderr","time":30.615638264,"data":"diffusers 0.42.0 requires huggingface-hub\u003c3.0,\u003e=1.32.0, but you have huggingface-hub 0.36.2 which is incompatible.\n"}
+,{"stream_name":"stderr","time":30.615642116,"data":"diffusers 0.42.0 requires safetensors\u003e=0.8.0, but you have safetensors 0.4.5 which is incompatible.\n"}
+,{"stream_name":"stdout","time":38.003378238,"data":"2.11.0+cu130 2 ['Tesla T4', 'Tesla T4']\n"}
+,{"stream_name":"stdout","time":58.958266638,"data":"code /kaggle/working/code/xvla_v2 \n"}
+,{"stream_name":"stdout","time":58.958311484,"data":"X-VLA /kaggle/working/code/X-VLA \n"}
+,{"stream_name":"stdout","time":58.958318661,"data":"model /kaggle/tmp/x_vla_libero \n"}
+,{"stream_name":"stdout","time":58.958324004,"data":"shards /kaggle/input/datasets/luquanglinh/libero-mem-t1-t3-shards-v2/dataset\n"}
+,{"stream_name":"stdout","time":59.303959661,"data":"$ /usr/bin/python3 /kaggle/working/code/xvla_v2/build_xvla_v2_dataset.py --shards-root /kaggle/input/datasets/luquanglinh/libero-mem-t1-t3-shards-v2/dataset --out /kaggle/working/xvla_v2 --tokenizer /kaggle/tmp/x_vla_libero\n"}
+,{"stream_name":"stdout","time":81.008437763,"data":"{\"shard\": \"shards/base__KITCHEN_SCENE3_turn_on_the_stove_and_put_the_moka_pot_on_it.hdf5\", \"episodes\": 40, \"sec\": 9.0}\n"}
+,{"stream_name":"stdout","time":88.685469815,"data":"{\"shard\": \"shards/base__KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it.hdf5\", \"episodes\": 40, \"sec\": 16.6}\n"}
+,{"stream_name":"stdout","time":96.514763814,"data":"{\"shard\": \"shards/base__KITCHEN_SCENE6_put_the_yellow_and_white_mug_in_the_microwave_and_close_it.hdf5\", \"episodes\": 40, \"sec\": 24.5}\n"}
+,{"stream_name":"stdout","time":102.788405008,"data":"{\"shard\": \"shards/base__KITCHEN_SCENE8_put_both_moka_pots_on_the_stove.hdf5\", \"episodes\": 40, \"sec\": 30.7}\n"}
+,{"stream_name":"stdout","time":109.348969983,"data":"{\"shard\": \"shards/base__LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket.hdf5\", \"episodes\": 40, \"sec\": 37.3}\n"}
+,{"stream_name":"stdout","time":115.152577126,"data":"{\"shard\": \"shards/base__LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket.hdf5\", \"episodes\": 40, \"sec\": 43.1}\n"}
+,{"stream_name":"stdout","time":122.405947759,"data":"{\"shard\": \"shards/base__LIVING_ROOM_SCENE2_put_both_the_cream_cheese_box_and_the_butter_in_the_basket.hdf5\", \"episodes\": 40, \"sec\": 50.4}\n"}
+,{"stream_name":"stdout","time":130.929364476,"data":"{\"shard\": \"shards/base__LIVING_ROOM_SCENE5_put_the_white_mug_on_the_left_plate_and_put_the_yellow_and_white_mug_on_the_right_plate.hdf5\", \"episodes\": 40, \"sec\": 58.9}\n"}
+,{"stream_name":"stdout","time":138.84815449,"data":"{\"shard\": \"shards/base__LIVING_ROOM_SCENE6_put_the_white_mug_on_the_plate_and_put_the_chocolate_pudding_to_the_right_of_the_plate.hdf5\", \"episodes\": 40, \"sec\": 66.8}\n"}
+,{"stream_name":"stdout","time":146.456123695,"data":"{\"shard\": \"shards/base__STUDY_SCENE1_pick_up_the_book_and_place_it_in_the_back_compartment_of_the_caddy.hdf5\", \"episodes\": 40, \"sec\": 74.4}\n"}
+,{"stream_name":"stdout","time":164.792752332,"data":"{\"shard\": \"shards/mem__KITCHEN_SCENE1_1_pick_up_the_bowl_and_place_it_back_on_the_plate.hdf5\", \"episodes\": 100, \"sec\": 92.7}\n"}
+,{"stream_name":"stdout","time":180.472434336,"data":"{\"shard\": \"shards/mem__KITCHEN_SCENE1_3_lift_the_bowl_and_place_it_back_on_the_plate_3_times.hdf5\", \"episodes\": 98, \"sec\": 108.4}\n"}
+,{"stream_name":"stdout","time":183.135562542,"data":"The repository for /kaggle/tmp/x_vla_libero contains custom code which must be executed to correctly load the model. You can inspect the repository content at https://hf.co//kaggle/tmp/x_vla_libero.\n"}
+,{"stream_name":"stdout","time":183.135593282,"data":"You can avoid this prompt in future by passing the argument `trust_remote_code=True`.\n"}
+,{"stream_name":"stdout","time":183.135598652,"data":"\n"}
+,{"stream_name":"stdout","time":183.135602246,"data":"Do you wish to run the custom code? [y/N] {\n"}
+,{"stream_name":"stdout","time":183.135605975,"data":" \"train_episodes\": {\n"}
+,{"stream_name":"stdout","time":183.135610003,"data":"  \"base\": 400,\n"}
+,{"stream_name":"stdout","time":183.13561356,"data":"  \"mem\": 198\n"}
+,{"stream_name":"stdout","time":183.135617242,"data":" },\n"}
+,{"stream_name":"stdout","time":183.135621115,"data":" \"frames\": {\n"}
+,{"stream_name":"stdout","time":183.135624605,"data":"  \"base\": 109945,\n"}
+,{"stream_name":"stdout","time":183.135628276,"data":"  \"mem\": 42857\n"}
+,{"stream_name":"stdout","time":183.135631485,"data":" },\n"}
+,{"stream_name":"stdout","time":183.135635216,"data":" \"sampler_frames\": {\n"}
+,{"stream_name":"stdout","time":183.13563889,"data":"  \"shown_with_memory\": 38850,\n"}
+,{"stream_name":"stdout","time":183.135642264,"data":"  \"shown_total_base\": 105945,\n"}
+,{"stream_name":"stdout","time":183.13564549,"data":"  \"shown_total_mem\": 40877\n"}
+,{"stream_name":"stdout","time":183.135649464,"data":" },\n"}
+,{"stream_name":"stdout","time":183.135652799,"data":" \"tracking\": {\n"}
+,{"stream_name":"stdout","time":183.1356561,"data":"  \"base\": {\n"}
+,{"stream_name":"stdout","time":183.13565937,"data":"   \"pos_track_median_m\": {\n"}
+,{"stream_name":"stdout","time":183.135662902,"data":"    \"median\": 0.020154280879721716,\n"}
+,{"stream_name":"stdout","time":183.135666414,"data":"    \"max\": 0.03229501751996681\n"}
+,{"stream_name":"stdout","time":183.135669792,"data":"   },\n"}
+,{"stream_name":"stdout","time":183.13567292,"data":"   \"pos_track_p95_m\": {\n"}
+,{"stream_name":"stdout","time":183.13567622,"data":"    \"median\": 0.03644368816273311,\n"}
+,{"stream_name":"stdout","time":183.135681204,"data":"    \"max\": 0.05506763338625517\n"}
+,{"stream_name":"stdout","time":183.135689717,"data":"   },\n"}
+,{"stream_name":"stdout","time":183.135692108,"data":"   \"rot_track_median_deg\": {\n"}
+,{"stream_name":"stdout","time":183.13569444,"data":"    \"median\": 1.476746552492552,\n"}
+,{"stream_name":"stdout","time":183.135696724,"data":"    \"max\": 4.5631127283691955\n"}
+,{"stream_name":"stdout","time":183.135699155,"data":"   },\n"}
+,{"stream_name":"stdout","time":183.135701283,"data":"   \"rot_track_p95_deg\": {\n"}
+,{"stream_name":"stdout","time":183.135703652,"data":"    \"median\": 4.078154487167396,\n"}
+,{"stream_name":"stdout","time":183.135705918,"data":"    \"max\": 10.418966434872178\n"}
+,{"stream_name":"stdout","time":183.135708167,"data":"   }\n"}
+,{"stream_name":"stdout","time":183.135710332,"data":"  },\n"}
+,{"stream_name":"stdout","time":183.135712523,"data":"  \"mem\": {\n"}
+,{"stream_name":"stdout","time":183.135714708,"data":"   \"pos_track_median_m\": {\n"}
+,{"stream_name":"stdout","time":183.13571695,"data":"    \"median\": 0.01475475598035457,\n"}
+,{"stream_name":"stdout","time":183.135719195,"data":"    \"max\": 0.014880100081516991\n"}
+,{"stream_name":"stdout","time":183.135721533,"data":"   },\n"}
+,{"stream_name":"stdout","time":183.135732056,"data":"   \"pos_track_p95_m\": {\n"}
+,{"stream_name":"stdout","time":183.1357345,"data":"    \"median\": 0.02088409022039614,\n"}
+,{"stream_name":"stdout","time":183.135736741,"data":"    \"max\": 0.02371731564868088\n"}
+,{"stream_name":"stdout","time":183.135739065,"data":"   },\n"}
+,{"stream_name":"stdout","time":183.135741192,"data":"   \"rot_track_median_deg\": {\n"}
+,{"stream_name":"stdout","time":183.135743438,"data":"    \"median\": 0.12350404572369644,\n"}
+,{"stream_name":"stdout","time":183.135745659,"data":"    \"max\": 0.23572618357919412\n"}
+,{"stream_name":"stdout","time":183.135747871,"data":"   },\n"}
+,{"stream_name":"stdout","time":183.135749994,"data":"   \"rot_track_p95_deg\": {\n"}
+,{"stream_name":"stdout","time":183.135752228,"data":"    \"median\": 0.6585702991368145,\n"}
+,{"stream_name":"stdout","time":183.135754447,"data":"    \"max\": 1.462912456362226\n"}
+,{"stream_name":"stdout","time":183.135756676,"data":"   }\n"}
+,{"stream_name":"stdout","time":183.135758815,"data":"  }\n"}
+,{"stream_name":"stdout","time":183.135760998,"data":" },\n"}
+,{"stream_name":"stdout","time":183.13576311,"data":" \"token_check\": {\n"}
+,{"stream_name":"stdout","time":183.135765379,"data":"  \"distinct_prompts\": 30,\n"}
+,{"stream_name":"stdout","time":183.13576762,"data":"  \"max_tokens\": 28,\n"}
+,{"stream_name":"stdout","time":183.135769833,"data":"  \"limit\": 50,\n"}
+,{"stream_name":"stdout","time":183.135772207,"data":"  \"over_limit\": 0,\n"}
+,{"stream_name":"stdout","time":183.135774399,"data":"  \"examples_over\": [],\n"}
+,{"stream_name":"stdout","time":183.135776707,"data":"  \"longest\": \"lift the bowl and place it back on the plate 3 times Memory: bowl: 0 observed returns. History incomplete. Lift observed.\"\n"}
+,{"stream_name":"stdout","time":183.135779348,"data":" }\n"}
+,{"stream_name":"stdout","time":183.135781484,"data":"}\n"}
+,{"stream_name":"stdout","time":186.494200237,"data":"{\n"}
+,{"stream_name":"stdout","time":186.494227996,"data":" \"train_episodes\": {\n"}
+,{"stream_name":"stdout","time":186.494253472,"data":"  \"base\": 400,\n"}
+,{"stream_name":"stdout","time":186.494257623,"data":"  \"mem\": 198\n"}
+,{"stream_name":"stdout","time":186.494261255,"data":" },\n"}
+,{"stream_name":"stdout","time":186.494264322,"data":" \"frames\": {\n"}
+,{"stream_name":"stdout","time":186.49426747,"data":"  \"base\": 109945,\n"}
+,{"stream_name":"stdout","time":186.494270738,"data":"  \"mem\": 42857\n"}
+,{"stream_name":"stdout","time":186.49427423,"data":" },\n"}
+,{"stream_name":"stdout","time":186.494278372,"data":" \"sampler_frames\": {\n"}
+,{"stream_name":"stdout","time":186.494282177,"data":"  \"shown_with_memory\": 38850,\n"}
+,{"stream_name":"stdout","time":186.494285663,"data":"  \"shown_total_base\": 105945,\n"}
+,{"stream_name":"stdout","time":186.494288951,"data":"  \"shown_total_mem\": 40877\n"}
+,{"stream_name":"stdout","time":186.494292395,"data":" },\n"}
+,{"stream_name":"stdout","time":186.494296395,"data":" \"zero_rotation_rows\": 48334,\n"}
+,{"stream_name":"stdout","time":186.494299875,"data":" \"token_check\": {\n"}
+,{"stream_name":"stdout","time":186.494303237,"data":"  \"distinct_prompts\": 30,\n"}
+,{"stream_name":"stdout","time":186.494306714,"data":"  \"max_tokens\": 28,\n"}
+,{"stream_name":"stdout","time":186.494310415,"data":"  \"limit\": 50,\n"}
+,{"stream_name":"stdout","time":186.494313704,"data":"  \"over_limit\": 0,\n"}
+,{"stream_name":"stdout","time":186.494316966,"data":"  \"examples_over\": [],\n"}
+,{"stream_name":"stdout","time":186.494330789,"data":"  \"longest\": \"lift the bowl and place it back on the plate 3 times Memory: bowl: 0 observed returns. History incomplete. Lift observed.\"\n"}
+,{"stream_name":"stdout","time":186.494334834,"data":" }\n"}
+,{"stream_name":"stdout","time":186.494338287,"data":"}\n"}
+,{"stream_name":"stdout","time":186.515445305,"data":"$ /usr/bin/python3 /kaggle/working/code/xvla_v2/check_xvla_alignment.py --xvla-root /kaggle/working/code/X-VLA --models /kaggle/tmp/x_vla_libero --metas /kaggle/working/xvla_v2/metas_f0 --episodes 20 --per-episode 6 --out /kaggle/working/xvla_v2/alignment_base.json\n"}
+,{"stream_name":"stdout","time":213.774258213,"data":"WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stdout","time":213.774288881,"data":"I0000 00:00:1795245679.842077     141 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.\n"}
+,{"stream_name":"stdout","time":218.161752123,"data":"Florence2ForConditionalGeneration has generative capabilities, as `prepare_inputs_for_generation` is explicitly overwritten. However, it doesn't directly inherit from `GenerationMixin`. From 👉v4.50👈 onwards, `PreTrainedModel` will NOT inherit from `GenerationMixin`, and this model will lose the ability to call `generate` and other related functions.\n"}
+,{"stream_name":"stdout","time":218.161780703,"data":"  - If you're using `trust_remote_code=True`, you can get rid of this warning by loading the model with an auto class. See https://huggingface.co/docs/transformers/en/model_doc/auto#auto-classes\n"}
+,{"stream_name":"stdout","time":218.161786517,"data":"  - If you are the owner of the model architecture code, please modify your model class such that it inherits from `GenerationMixin` (after `PreTrainedModel`, otherwise you'll get an exception).\n"}
+,{"stream_name":"stdout","time":218.161791222,"data":"  - If you are not the owner of the model architecture class, please contact the model code owner to update it.\n"}
+,{"stream_name":"stdout","time":220.534015354,"data":"Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.\n"}
+,{"stream_name":"stdout","time":240.832581119,"data":"done LIVING_ROOM_SCENE6_put_the_white_mug_on_ demo_6\n"}
+,{"stream_name":"stdout","time":257.01698702,"data":"done KITCHEN_SCENE6_put_the_yellow_and_white_ demo_8\n"}
+,{"stream_name":"stdout","time":273.819940855,"data":"done KITCHEN_SCENE6_put_the_yellow_and_white_ demo_36\n"}
+,{"stream_name":"stdout","time":290.659835027,"data":"done STUDY_SCENE1_pick_up_the_book_and_place_ demo_23\n"}
+,{"stream_name":"stdout","time":308.539048966,"data":"done LIVING_ROOM_SCENE1_put_both_the_alphabet demo_5\n"}
+,{"stream_name":"stdout","time":327.859303381,"data":"done LIVING_ROOM_SCENE2_put_both_the_alphabet demo_9\n"}
+,{"stream_name":"stdout","time":347.333525233,"data":"done LIVING_ROOM_SCENE2_put_both_the_alphabet demo_34\n"}
+,{"stream_name":"stdout","time":365.314354085,"data":"done STUDY_SCENE1_pick_up_the_book_and_place_ demo_36\n"}
+,{"stream_name":"stdout","time":383.332170343,"data":"done LIVING_ROOM_SCENE2_put_both_the_cream_ch demo_12\n"}
+,{"stream_name":"stdout","time":402.566172261,"data":"done LIVING_ROOM_SCENE2_put_both_the_cream_ch demo_24\n"}
+,{"stream_name":"stdout","time":421.847038477,"data":"done KITCHEN_SCENE4_put_the_black_bowl_in_the demo_39\n"}
+,{"stream_name":"stdout","time":441.238366904,"data":"done LIVING_ROOM_SCENE5_put_the_white_mug_on_ demo_7\n"}
+,{"stream_name":"stdout","time":459.48050957,"data":"done LIVING_ROOM_SCENE2_put_both_the_cream_ch demo_22\n"}
+,{"stream_name":"stdout","time":478.273229436,"data":"done KITCHEN_SCENE3_turn_on_the_stove_and_put demo_17\n"}
+,{"stream_name":"stdout","time":496.483290578,"data":"done LIVING_ROOM_SCENE2_put_both_the_alphabet demo_28\n"}
+,{"stream_name":"stdout","time":515.618337789,"data":"done KITCHEN_SCENE3_turn_on_the_stove_and_put demo_42\n"}
+,{"stream_name":"stdout","time":534.182323841,"data":"done LIVING_ROOM_SCENE6_put_the_white_mug_on_ demo_12\n"}
+,{"stream_name":"stdout","time":553.416981262,"data":"done LIVING_ROOM_SCENE1_put_both_the_alphabet demo_7\n"}
+,{"stream_name":"stdout","time":571.858003707,"data":"done LIVING_ROOM_SCENE5_put_the_white_mug_on_ demo_19\n"}
+,{"stream_name":"stdout","time":591.04575266,"data":"done KITCHEN_SCENE3_turn_on_the_stove_and_put demo_28\n"}
+,{"stream_name":"stdout","time":591.045780801,"data":"{\n"}
+,{"stream_name":"stdout","time":591.045786881,"data":" \"summary\": {\n"}
+,{"stream_name":"stdout","time":591.045792401,"data":"  \"reference\": {\n"}
+,{"stream_name":"stdout","time":591.045797409,"data":"   \"pos0\": {\n"}
+,{"stream_name":"stdout","time":591.04580242,"data":"    \"median\": 0.6779369505046977,\n"}
+,{"stream_name":"stdout","time":591.04580713,"data":"    \"p90\": 1.7818957830518476\n"}
+,{"stream_name":"stdout","time":591.045811893,"data":"   },\n"}
+,{"stream_name":"stdout","time":591.045817178,"data":"   \"posall\": {\n"}
+,{"stream_name":"stdout","time":591.045822029,"data":"    \"median\": 1.7166246795056774,\n"}
+,{"stream_name":"stdout","time":591.045827229,"data":"    \"p90\": 4.42808049455034\n"}
+,{"stream_name":"stdout","time":591.045832362,"data":"   },\n"}
+,{"stream_name":"stdout","time":591.04583724,"data":"   \"rot0\": {\n"}
+,{"stream_name":"stdout","time":591.045842121,"data":"    \"median\": 0.7160173735109898,\n"}
+,{"stream_name":"stdout","time":591.045847419,"data":"    \"p90\": 1.4133260351102817\n"}
+,{"stream_name":"stdout","time":591.045852678,"data":"   },\n"}
+,{"stream_name":"stdout","time":591.045857474,"data":"   \"rotall\": {\n"}
+,{"stream_name":"stdout","time":591.045862305,"data":"    \"median\": 2.4318213449376094,\n"}
+,{"stream_name":"stdout","time":591.045866951,"data":"    \"p90\": 6.593366523094749\n"}
+,{"stream_name":"stdout","time":591.045871616,"data":"   }\n"}
+,{"stream_name":"stdout","time":591.045876553,"data":"  },\n"}
+,{"stream_name":"stdout","time":591.045881822,"data":"  \"body_frame\": {\n"}
+,{"stream_name":"stdout","time":591.045886956,"data":"   \"pos0\": {\n"}
+,{"stream_name":"stdout","time":591.045892231,"data":"    \"median\": 0.6779369505046977,\n"}
+,{"stream_name":"stdout","time":591.045897642,"data":"    \"p90\": 1.7818957830518476\n"}
+,{"stream_name":"stdout","time":591.045902826,"data":"   },\n"}
+,{"stream_name":"stdout","time":591.04590789,"data":"   \"posall\": {\n"}
+,{"stream_name":"stdout","time":591.045912819,"data":"    \"median\": 1.7166246795056774,\n"}
+,{"stream_name":"stdout","time":591.045917568,"data":"    \"p90\": 4.42808049455034\n"}
+,{"stream_name":"stdout","time":591.045921737,"data":"   },\n"}
+,{"stream_name":"stdout","time":591.045925831,"data":"   \"rot0\": {\n"}
+,{"stream_name":"stdout","time":591.045930429,"data":"    \"median\": 90.03738780293811,\n"}
+,{"stream_name":"stdout","time":591.045934901,"data":"    \"p90\": 90.58823401383798\n"}
+,{"stream_name":"stdout","time":591.04593914,"data":"   },\n"}
+,{"stream_name":"stdout","time":591.045943695,"data":"   \"rotall\": {\n"}
+,{"stream_name":"stdout","time":591.045948708,"data":"    \"median\": 90.29644460982153,\n"}
+,{"stream_name":"stdout","time":591.04596183,"data":"    \"p90\": 93.2714381498588\n"}
+,{"stream_name":"stdout","time":591.04596616,"data":"   }\n"}
+,{"stream_name":"stdout","time":591.045969796,"data":"  },\n"}
+,{"stream_name":"stdout","time":591.045973115,"data":"  \"no_flip\": {\n"}
+,{"stream_name":"stdout","time":591.045976758,"data":"   \"pos0\": {\n"}
+,{"stream_name":"stdout","time":591.045980756,"data":"    \"median\": 5.678557885969488,\n"}
+,{"stream_name":"stdout","time":591.045984383,"data":"    \"p90\": 15.518129616478998\n"}
+,{"stream_name":"stdout","time":591.045988411,"data":"   },\n"}
+,{"stream_name":"stdout","time":591.045991553,"data":"   \"posall\": {\n"}
+,{"stream_name":"stdout","time":591.045994648,"data":"    \"median\": 7.876904078424543,\n"}
+,{"stream_name":"stdout","time":591.045998068,"data":"    \"p90\": 15.07826037858349\n"}
+,{"stream_name":"stdout","time":591.046001307,"data":"   },\n"}
+,{"stream_name":"stdout","time":591.04600448,"data":"   \"rot0\": {\n"}
+,{"stream_name":"stdout","time":591.046007782,"data":"    \"median\": 1.2336036543047264,\n"}
+,{"stream_name":"stdout","time":591.046011233,"data":"    \"p90\": 2.063028737699631\n"}
+,{"stream_name":"stdout","time":591.04601482,"data":"   },\n"}
+,{"stream_name":"stdout","time":591.046018481,"data":"   \"rotall\": {\n"}
+,{"stream_name":"stdout","time":591.046023083,"data":"    \"median\": 5.703947059079857,\n"}
+,{"stream_name":"stdout","time":591.046027072,"data":"    \"p90\": 10.381697215356564\n"}
+,{"stream_name":"stdout","time":591.046030695,"data":"   }\n"}
+,{"stream_name":"stdout","time":591.046034217,"data":"  },\n"}
+,{"stream_name":"stdout","time":591.046037764,"data":"  \"frame_offset+1\": {\n"}
+,{"stream_name":"stdout","time":591.046041552,"data":"   \"pos0\": {\n"}
+,{"stream_name":"stdout","time":591.046044626,"data":"    \"median\": 0.6977132627729024,\n"}
+,{"stream_name":"stdout","time":591.046047976,"data":"    \"p90\": 1.7253014188443856\n"}
+,{"stream_name":"stdout","time":591.046051441,"data":"   },\n"}
+,{"stream_name":"stdout","time":591.046054732,"data":"   \"posall\": {\n"}
+,{"stream_name":"stdout","time":591.046057983,"data":"    \"median\": 1.7540659047774918,\n"}
+,{"stream_name":"stdout","time":591.046061381,"data":"    \"p90\": 4.3950254898902354\n"}
+,{"stream_name":"stdout","time":591.046064756,"data":"   },\n"}
+,{"stream_name":"stdout","time":591.046068021,"data":"   \"rot0\": {\n"}
+,{"stream_name":"stdout","time":591.046071643,"data":"    \"median\": 0.7419207811991286,\n"}
+,{"stream_name":"stdout","time":591.046075531,"data":"    \"p90\": 1.3624333375329436\n"}
+,{"stream_name":"stdout","time":591.046079272,"data":"   },\n"}
+,{"stream_name":"stdout","time":591.046082859,"data":"   \"rotall\": {\n"}
+,{"stream_name":"stdout","time":591.046086017,"data":"    \"median\": 2.4532285283874837,\n"}
+,{"stream_name":"stdout","time":591.046089576,"data":"    \"p90\": 6.545403714728426\n"}
+,{"stream_name":"stdout","time":591.046093448,"data":"   }\n"}
+,{"stream_name":"stdout","time":591.046097064,"data":"  }\n"}
+,{"stream_name":"stdout","time":591.046100471,"data":" },\n"}
+,{"stream_name":"stdout","time":591.046104575,"data":" \"verdict\": {\n"}
+,{"stream_name":"stdout","time":591.046108211,"data":"  \"rotation_frame_ok\": true,\n"}
+,{"stream_name":"stdout","time":591.046111665,"data":"  \"flip_ok\": true,\n"}
+,{"stream_name":"stdout","time":591.046115005,"data":"  \"reference_first_action_cm\": 0.6779369505046977,\n"}
+,{"stream_name":"stdout","time":591.046118537,"data":"  \"reference_first_action_deg\": 0.7160173735109898\n"}
+,{"stream_name":"stdout","time":591.046125795,"data":" }\n"}
+,{"stream_name":"stdout","time":591.046129138,"data":"}\n"}
+,{"stream_name":"stdout","time":595.219957744,"data":"{'rotation_frame_ok': True, 'flip_ok': True, 'reference_first_action_cm': 0.6779369505046977, 'reference_first_action_deg': 0.7160173735109898}\n"}
+,{"stream_name":"stdout","time":595.247561901,"data":"$ /usr/bin/python3 -m accelerate.commands.launch --num_processes 2 --num_machines 1 --mixed_precision fp16 --dynamo_backend no --multi_gpu /kaggle/working/code/xvla_v2/train_xvla_mem.py --xvla-root /kaggle/working/code/X-VLA --models /kaggle/tmp/x_vla_libero --metas /kaggle/working/xvla_v2/metas_f1 --output-dir /kaggle/working/runs/smoke_f1 --batch-size 4 --grad-accum 4 --iters 20 --save-interval 20 --learning-rate 5e-05 --learning-coef 0.5 --freeze-steps 0 --warmup-steps 250 --min-lr-ratio 0.1 --use-cosine-decay --seed 42 --resume auto --log-interval 5\n"}
+,{"stream_name":"stdout","time":606.363374957,"data":"WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stdout","time":606.363425437,"data":"I0000 00:00:1795246072.430382     173 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.\n"}
+,{"stream_name":"stdout","time":606.363431659,"data":"WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stdout","time":606.363435808,"data":"I0000 00:00:1795246072.493034     172 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.\n"}
+,{"stream_name":"stdout","time":608.848481416,"data":"Florence2ForConditionalGeneration has generative capabilities, as `prepare_inputs_for_generation` is explicitly overwritten. However, it doesn't directly inherit from `GenerationMixin`. From 👉v4.50👈 onwards, `PreTrainedModel` will NOT inherit from `GenerationMixin`, and this model will lose the ability to call `generate` and other related functions.\n"}
+,{"stream_name":"stdout","time":608.848518359,"data":"  - If you're using `trust_remote_code=True`, you can get rid of this warning by loading the model with an auto class. See https://huggingface.co/docs/transformers/en/model_doc/auto#auto-classes\n"}
+,{"stream_name":"stdout","time":608.848524212,"data":"  - If you are the owner of the model architecture code, please modify your model class such that it inherits from `GenerationMixin` (after `PreTrainedModel`, otherwise you'll get an exception).\n"}
+,{"stream_name":"stdout","time":608.848528786,"data":"  - If you are not the owner of the model architecture class, please contact the model code owner to update it.\n"}
+,{"stream_name":"stdout","time":608.848533238,"data":"Florence2ForConditionalGeneration has generative capabilities, as `prepare_inputs_for_generation` is explicitly overwritten. However, it doesn't directly inherit from `GenerationMixin`. From 👉v4.50👈 onwards, `PreTrainedModel` will NOT inherit from `GenerationMixin`, and this model will lose the ability to call `generate` and other related functions.\n"}
+,{"stream_name":"stdout","time":608.848538744,"data":"  - If you're using `trust_remote_code=True`, you can get rid of this warning by loading the model with an auto class. See https://huggingface.co/docs/transformers/en/model_doc/auto#auto-classes\n"}
+,{"stream_name":"stdout","time":608.848543257,"data":"  - If you are the owner of the model architecture code, please modify your model class such that it inherits from `GenerationMixin` (after `PreTrainedModel`, otherwise you'll get an exception).\n"}
+,{"stream_name":"stdout","time":608.848547781,"data":"  - If you are not the owner of the model architecture class, please contact the model code owner to update it.\n"}
+,{"stream_name":"stdout","time":610.203907265,"data":"Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.\n"}
+,{"stream_name":"stdout","time":610.203978646,"data":"trainable params: 11,868,760 || all params: 891,351,216 || trainable%: 1.3315\n"}
+,{"stream_name":"stdout","time":610.203984269,"data":"07:27:56 | INFO | xvla_v2 | trainable by part: {'vlm': 4849664, 'transformer_lora': 3178496, 'modules_to_save': 3840600}\n"}
+,{"stream_name":"stdout","time":610.203988545,"data":"Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.\n"}
+,{"stream_name":"stdout","time":610.504381163,"data":"use action mode: ee6d\n"}
+,{"stream_name":"stdout","time":610.504416968,"data":"== dataset xvla_v2_f1_base with 400 trajs\n"}
+,{"stream_name":"stdout","time":610.504423235,"data":"== dataset xvla_v2_f1_mem with 198 trajs\n"}
+,{"stream_name":"stdout","time":610.504427705,"data":"use action mode: ee6d\n"}
+,{"stream_name":"stdout","time":610.504432775,"data":"== dataset xvla_v2_f1_base with 400 trajs\n"}
+,{"stream_name":"stdout","time":610.504437669,"data":"== dataset xvla_v2_f1_mem with 198 trajs\n"}
+,{"stream_name":"stdout","time":617.674883121,"data":"[rank1]:[W1121 07:28:03.265244324 reducer.cpp:1502] Warning: find_unused_parameters=True was specified in DDP constructor, but did not find any unused parameters in the forward pass. This flag results in an extra traversal of the autograd graph every iteration,  which can adversely affect performance. If your model indeed never has any unused parameters in the forward pass, consider turning this flag off. Note that this warning may be a false positive if your model has flow control causing later iterations to have unused parameters. (function operator())\n"}
+,{"stream_name":"stdout","time":617.67492644,"data":"[rank0]:[W1121 07:28:03.404693426 reducer.cpp:1502] Warning: find_unused_parameters=True was specified in DDP constructor, but did not find any unused parameters in the forward pass. This flag results in an extra traversal of the autograd graph every iteration,  which can adversely affect performance. If your model indeed never has any unused parameters in the forward pass, consider turning this flag off. Note that this warning may be a false positive if your model has flow control causing later iterations to have unused parameters. (function operator())\n"}
+,{"stream_name":"stdout","time":629.462058696,"data":"07:28:15 | INFO | xvla_v2 | [5/20] loss=1.3036 mem=0.53 hasmem=0.53 3.36s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":643.90787183,"data":"07:28:29 | INFO | xvla_v2 | [10/20] loss=1.2945 mem=0.54 hasmem=0.54 2.89s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":658.85665856,"data":"07:28:44 | INFO | xvla_v2 | [15/20] loss=0.5507 mem=0.46 hasmem=0.46 2.99s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":673.288066954,"data":"07:28:59 | INFO | xvla_v2 | [20/20] loss=1.2932 mem=0.46 hasmem=0.46 2.88s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":673.687448946,"data":"07:28:59 | INFO | xvla_v2 | saved /kaggle/working/runs/smoke_f1/ckpt-20\n"}
+,{"stream_name":"stdout","time":673.687486817,"data":"/usr/local/lib/python3.13/dist-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.\n"}
+,{"stream_name":"stdout","time":673.687491676,"data":"  return func(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":677.311035338,"data":"$ /usr/bin/python3 -m accelerate.commands.launch --num_processes 2 --num_machines 1 --mixed_precision fp16 --dynamo_backend no --multi_gpu /kaggle/working/code/xvla_v2/train_xvla_mem.py --xvla-root /kaggle/working/code/X-VLA --models /kaggle/tmp/x_vla_libero --metas /kaggle/working/xvla_v2/metas_f1 --output-dir /kaggle/working/runs/smoke_f1 --batch-size 4 --grad-accum 4 --iters 30 --save-interval 10 --learning-rate 5e-05 --learning-coef 0.5 --freeze-steps 0 --warmup-steps 250 --min-lr-ratio 0.1 --use-cosine-decay --seed 42 --resume auto --log-interval 5\n"}
+,{"stream_name":"stdout","time":688.270732381,"data":"WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stdout","time":688.270765919,"data":"I0000 00:00:1795246154.338002     246 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.\n"}
+,{"stream_name":"stdout","time":688.270771673,"data":"WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stdout","time":688.270776005,"data":"I0000 00:00:1795246154.492900     245 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.\n"}
+,{"stream_name":"stdout","time":690.673634522,"data":"Florence2ForConditionalGeneration has generative capabilities, as `prepare_inputs_for_generation` is explicitly overwritten. However, it doesn't directly inherit from `GenerationMixin`. From 👉v4.50👈 onwards, `PreTrainedModel` will NOT inherit from `GenerationMixin`, and this model will lose the ability to call `generate` and other related functions.\n"}
+,{"stream_name":"stdout","time":690.67366966,"data":"  - If you're using `trust_remote_code=True`, you can get rid of this warning by loading the model with an auto class. See https://huggingface.co/docs/transformers/en/model_doc/auto#auto-classes\n"}
+,{"stream_name":"stdout","time":690.673675334,"data":"  - If you are the owner of the model architecture code, please modify your model class such that it inherits from `GenerationMixin` (after `PreTrainedModel`, otherwise you'll get an exception).\n"}
+,{"stream_name":"stdout","time":690.673680032,"data":"  - If you are not the owner of the model architecture class, please contact the model code owner to update it.\n"}
+,{"stream_name":"stdout","time":690.6736841,"data":"Florence2ForConditionalGeneration has generative capabilities, as `prepare_inputs_for_generation` is explicitly overwritten. However, it doesn't directly inherit from `GenerationMixin`. From 👉v4.50👈 onwards, `PreTrainedModel` will NOT inherit from `GenerationMixin`, and this model will lose the ability to call `generate` and other related functions.\n"}
+,{"stream_name":"stdout","time":690.673688991,"data":"  - If you're using `trust_remote_code=True`, you can get rid of this warning by loading the model with an auto class. See https://huggingface.co/docs/transformers/en/model_doc/auto#auto-classes\n"}
+,{"stream_name":"stdout","time":690.673693246,"data":"  - If you are the owner of the model architecture code, please modify your model class such that it inherits from `GenerationMixin` (after `PreTrainedModel`, otherwise you'll get an exception).\n"}
+,{"stream_name":"stdout","time":690.673698033,"data":"  - If you are not the owner of the model architecture class, please contact the model code owner to update it.\n"}
+,{"stream_name":"stdout","time":692.376569168,"data":"trainable params: 11,868,760 || all params: 891,351,216 || trainable%: 1.3315\n"}
+,{"stream_name":"stdout","time":692.376602301,"data":"07:29:18 | INFO | xvla_v2 | trainable by part: {'vlm': 4849664, 'transformer_lora': 3178496, 'modules_to_save': 3840600}\n"}
+,{"stream_name":"stdout","time":692.376607587,"data":"Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.\n"}
+,{"stream_name":"stdout","time":692.376626697,"data":"Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.\n"}
+,{"stream_name":"stdout","time":692.692619381,"data":"use action mode: ee6d\n"}
+,{"stream_name":"stdout","time":692.692653077,"data":"== dataset xvla_v2_f1_base with 400 trajs\n"}
+,{"stream_name":"stdout","time":692.692657479,"data":"== dataset xvla_v2_f1_mem with 198 trajs\n"}
+,{"stream_name":"stdout","time":692.692661116,"data":"use action mode: ee6d\n"}
+,{"stream_name":"stdout","time":692.692664668,"data":"== dataset xvla_v2_f1_base with 400 trajs\n"}
+,{"stream_name":"stdout","time":692.692668144,"data":"== dataset xvla_v2_f1_mem with 198 trajs\n"}
+,{"stream_name":"stdout","time":692.96189965,"data":"07:29:19 | INFO | xvla_v2 | resumed from /kaggle/working/runs/smoke_f1/ckpt-20 at step 20\n"}
+,{"stream_name":"stdout","time":699.438848823,"data":"[rank0]:[W1121 07:29:25.033514446 reducer.cpp:1502] Warning: find_unused_parameters=True was specified in DDP constructor, but did not find any unused parameters in the forward pass. This flag results in an extra traversal of the autograd graph every iteration,  which can adversely affect performance. If your model indeed never has any unused parameters in the forward pass, consider turning this flag off. Note that this warning may be a false positive if your model has flow control causing later iterations to have unused parameters. (function operator())\n"}
+,{"stream_name":"stdout","time":699.89945797,"data":"[rank1]:[W1121 07:29:25.494043506 reducer.cpp:1502] Warning: find_unused_parameters=True was specified in DDP constructor, but did not find any unused parameters in the forward pass. This flag results in an extra traversal of the autograd graph every iteration,  which can adversely affect performance. If your model indeed never has any unused parameters in the forward pass, consider turning this flag off. Note that this warning may be a false positive if your model has flow control causing later iterations to have unused parameters. (function operator())\n"}
+,{"stream_name":"stdout","time":711.662851509,"data":"07:29:37 | INFO | xvla_v2 | [25/30] loss=0.1330 mem=0.54 hasmem=0.54 3.35s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":726.135785899,"data":"07:29:52 | INFO | xvla_v2 | [30/30] loss=1.2471 mem=0.60 hasmem=0.59 2.90s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":726.532318562,"data":"07:29:52 | INFO | xvla_v2 | saved /kaggle/working/runs/smoke_f1/ckpt-30\n"}
+,{"stream_name":"stdout","time":726.532356692,"data":"/usr/local/lib/python3.13/dist-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.\n"}
+,{"stream_name":"stdout","time":726.532361287,"data":"  return func(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":730.373001207,"data":"{\"position_loss\": 0.633434534072876, \"rotate6D_loss\": 0.03334571421146393, \"gripper_loss\": 0.6264124512672424, \"step\": 20, \"loss_total\": 1.2931926250457764, \"sec_per_update\": 2.8848666191101073, \"frac_mem\": 0.4625, \"frac_has_memory\": 0.4625, \"lr\": {\"vlm\": 1.9e-06, \"transformer_core\": 3.8e-06, \"soft_prompts\": 1.9e-06, \"action_heads\": 3.8e-06}, \"peak_vram_gib\": 10.142130851745605}\n"}
+,{"stream_name":"stdout","time":730.373032947,"data":"{\"position_loss\": 0.07570824027061462, \"rotate6D_loss\": 0.005062691867351532, \"gripper_loss\": 0.05218319222331047, \"step\": 25, \"loss_total\": 0.13295412063598633, \"sec_per_update\": 3.3507198810577394, \"frac_mem\": 0.5375, \"frac_has_memory\": 0.5375, \"lr\": {\"vlm\": 2.4000000000000003e-06, \"transformer_core\": 4.800000000000001e-06, \"soft_prompts\": 2.4000000000000003e-06, \"action_heads\": 4.800000000000001e-06}, \"peak_vram_gib\": 10.14046573638916}\n"}
+,{"stream_name":"stdout","time":730.373059831,"data":"{\"position_loss\": 0.2481337934732437, \"rotate6D_loss\": 0.006065067835152149, \"gripper_loss\": 0.9928600788116455, \"step\": 30, \"loss_total\": 1.2470588684082031, \"sec_per_update\": 2.8965260982513428, \"frac_mem\": 0.6, \"frac_has_memory\": 0.5875, \"lr\": {\"vlm\": 2.9e-06, \"transformer_core\": 5.8e-06, \"soft_prompts\": 2.9e-06, \"action_heads\": 5.8e-06}, \"peak_vram_gib\": 10.14046573638916}\n"}
+,{"stream_name":"stdout","time":730.414718303,"data":"$ /usr/bin/python3 -m accelerate.commands.launch --num_processes 2 --num_machines 1 --mixed_precision fp16 --dynamo_backend no --multi_gpu /kaggle/working/code/xvla_v2/train_xvla_mem.py --xvla-root /kaggle/working/code/X-VLA --models /kaggle/tmp/x_vla_libero --metas /kaggle/working/xvla_v2/metas_f0 --output-dir /kaggle/working/runs/f0 --batch-size 4 --grad-accum 4 --iters 5000 --save-interval 500 --learning-rate 5e-05 --learning-coef 0.5 --freeze-steps 0 --warmup-steps 250 --min-lr-ratio 0.1 --use-cosine-decay --seed 42 --resume auto --max-hours 10.50\n"}
+,{"stream_name":"stdout","time":741.737042458,"data":"WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stdout","time":741.737124611,"data":"I0000 00:00:1795246207.804202     320 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.\n"}
+,{"stream_name":"stdout","time":741.737132953,"data":"WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stdout","time":741.737137635,"data":"I0000 00:00:1795246207.819438     319 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.\n"}
+,{"stream_name":"stdout","time":744.260285642,"data":"Florence2ForConditionalGeneration has generative capabilities, as `prepare_inputs_for_generation` is explicitly overwritten. However, it doesn't directly inherit from `GenerationMixin`. From 👉v4.50👈 onwards, `PreTrainedModel` will NOT inherit from `GenerationMixin`, and this model will lose the ability to call `generate` and other related functions.\n"}
+,{"stream_name":"stdout","time":744.260339926,"data":"  - If you're using `trust_remote_code=True`, you can get rid of this warning by loading the model with an auto class. See https://huggingface.co/docs/transformers/en/model_doc/auto#auto-classes\n"}
+,{"stream_name":"stdout","time":744.260347168,"data":"  - If you are the owner of the model architecture code, please modify your model class such that it inherits from `GenerationMixin` (after `PreTrainedModel`, otherwise you'll get an exception).\n"}
+,{"stream_name":"stdout","time":744.26035242,"data":"  - If you are not the owner of the model architecture class, please contact the model code owner to update it.\n"}
+,{"stream_name":"stdout","time":744.260357214,"data":"Florence2ForConditionalGeneration has generative capabilities, as `prepare_inputs_for_generation` is explicitly overwritten. However, it doesn't directly inherit from `GenerationMixin`. From 👉v4.50👈 onwards, `PreTrainedModel` will NOT inherit from `GenerationMixin`, and this model will lose the ability to call `generate` and other related functions.\n"}
+,{"stream_name":"stdout","time":744.26036295,"data":"  - If you're using `trust_remote_code=True`, you can get rid of this warning by loading the model with an auto class. See https://huggingface.co/docs/transformers/en/model_doc/auto#auto-classes\n"}
+,{"stream_name":"stdout","time":744.260380463,"data":"  - If you are the owner of the model architecture code, please modify your model class such that it inherits from `GenerationMixin` (after `PreTrainedModel`, otherwise you'll get an exception).\n"}
+,{"stream_name":"stdout","time":744.26038457,"data":"  - If you are not the owner of the model architecture class, please contact the model code owner to update it.\n"}
+,{"stream_name":"stdout","time":745.604606352,"data":"Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.\n"}
+,{"stream_name":"stdout","time":745.604641784,"data":"trainable params: 11,868,760 || all params: 891,351,216 || trainable%: 1.3315\n"}
+,{"stream_name":"stdout","time":745.604646542,"data":"07:30:11 | INFO | xvla_v2 | trainable by part: {'vlm': 4849664, 'transformer_lora': 3178496, 'modules_to_save': 3840600}\n"}
+,{"stream_name":"stdout","time":745.604650672,"data":"Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.\n"}
+,{"stream_name":"stdout","time":745.906015745,"data":"use action mode: ee6d\n"}
+,{"stream_name":"stdout","time":745.906053042,"data":"== dataset xvla_v2_f0_base with 400 trajs\n"}
+,{"stream_name":"stdout","time":745.906058986,"data":"== dataset xvla_v2_f0_mem with 198 trajs\n"}
+,{"stream_name":"stdout","time":745.906063762,"data":"use action mode: ee6d\n"}
+,{"stream_name":"stdout","time":745.906068273,"data":"== dataset xvla_v2_f0_base with 400 trajs\n"}
+,{"stream_name":"stdout","time":745.906072683,"data":"== dataset xvla_v2_f0_mem with 198 trajs\n"}
+,{"stream_name":"stdout","time":751.226363741,"data":"[rank1]:[W1121 07:30:17.818226421 reducer.cpp:1502] Warning: find_unused_parameters=True was specified in DDP constructor, but did not find any unused parameters in the forward pass. This flag results in an extra traversal of the autograd graph every iteration,  which can adversely affect performance. If your model indeed never has any unused parameters in the forward pass, consider turning this flag off. Note that this warning may be a false positive if your model has flow control causing later iterations to have unused parameters. (function operator())\n"}
+,{"stream_name":"stdout","time":751.2263983,"data":"[rank0]:[W1121 07:30:17.984793603 reducer.cpp:1502] Warning: find_unused_parameters=True was specified in DDP constructor, but did not find any unused parameters in the forward pass. This flag results in an extra traversal of the autograd graph every iteration,  which can adversely affect performance. If your model indeed never has any unused parameters in the forward pass, consider turning this flag off. Note that this warning may be a false positive if your model has flow control causing later iterations to have unused parameters. (function operator())\n"}
+,{"stream_name":"stdout","time":806.327575388,"data":"07:31:12 | INFO | xvla_v2 | [20/5000] loss=1.2157 mem=0.50 hasmem=0.00 2.94s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":863.118515917,"data":"07:32:09 | INFO | xvla_v2 | [40/5000] loss=0.6191 mem=0.52 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":920.091926814,"data":"07:33:06 | INFO | xvla_v2 | [60/5000] loss=0.8746 mem=0.49 hasmem=0.00 2.85s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":977.194533338,"data":"07:34:03 | INFO | xvla_v2 | [80/5000] loss=0.9875 mem=0.47 hasmem=0.00 2.86s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":1034.068215296,"data":"07:35:00 | INFO | xvla_v2 | [100/5000] loss=1.1125 mem=0.47 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":1090.846431979,"data":"07:35:56 | INFO | xvla_v2 | [120/5000] loss=0.9711 mem=0.50 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":1147.775907567,"data":"07:36:53 | INFO | xvla_v2 | [140/5000] loss=0.8558 mem=0.50 hasmem=0.00 2.85s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":1204.781388818,"data":"07:37:50 | INFO | xvla_v2 | [160/5000] loss=0.7479 mem=0.45 hasmem=0.00 2.85s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":1261.803001925,"data":"07:38:47 | INFO | xvla_v2 | [180/5000] loss=0.8106 mem=0.51 hasmem=0.00 2.85s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":1318.844123163,"data":"07:39:44 | INFO | xvla_v2 | [200/5000] loss=0.1322 mem=0.52 hasmem=0.00 2.85s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":1376.081127028,"data":"07:40:42 | INFO | xvla_v2 | [220/5000] loss=0.4870 mem=0.54 hasmem=0.00 2.86s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":1433.045102261,"data":"07:41:39 | INFO | xvla_v2 | [240/5000] loss=1.0764 mem=0.48 hasmem=0.00 2.85s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":1489.94006691,"data":"07:42:35 | INFO | xvla_v2 | [260/5000] loss=0.1468 mem=0.47 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":1546.901338382,"data":"07:43:32 | INFO | xvla_v2 | [280/5000] loss=0.2483 mem=0.48 hasmem=0.00 2.85s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":1603.923184687,"data":"07:44:29 | INFO | xvla_v2 | [300/5000] loss=0.4558 mem=0.50 hasmem=0.00 2.85s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":1661.108926014,"data":"07:45:27 | INFO | xvla_v2 | [320/5000] loss=0.2103 mem=0.51 hasmem=0.00 2.86s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":1718.060683628,"data":"07:46:24 | INFO | xvla_v2 | [340/5000] loss=0.2795 mem=0.53 hasmem=0.00 2.85s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":1774.89476594,"data":"07:47:20 | INFO | xvla_v2 | [360/5000] loss=0.4712 mem=0.46 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":1831.58094225,"data":"07:48:17 | INFO | xvla_v2 | [380/5000] loss=0.7339 mem=0.52 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":1888.221852145,"data":"07:49:14 | INFO | xvla_v2 | [400/5000] loss=0.2570 mem=0.43 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":1944.774820831,"data":"07:50:10 | INFO | xvla_v2 | [420/5000] loss=0.4056 mem=0.42 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2001.226720005,"data":"07:51:07 | INFO | xvla_v2 | [440/5000] loss=0.1205 mem=0.50 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2057.656487252,"data":"07:52:03 | INFO | xvla_v2 | [460/5000] loss=0.7864 mem=0.52 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2114.052153999,"data":"07:53:00 | INFO | xvla_v2 | [480/5000] loss=0.5355 mem=0.44 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2170.51474146,"data":"07:53:56 | INFO | xvla_v2 | [500/5000] loss=0.9162 mem=0.48 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2170.896925896,"data":"07:53:56 | INFO | xvla_v2 | saved /kaggle/working/runs/f0/ckpt-500\n"}
+,{"stream_name":"stdout","time":2227.715306281,"data":"07:54:53 | INFO | xvla_v2 | [520/5000] loss=0.1442 mem=0.51 hasmem=0.00 2.86s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2284.28622452,"data":"07:55:50 | INFO | xvla_v2 | [540/5000] loss=0.2506 mem=0.50 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2340.88630428,"data":"07:56:46 | INFO | xvla_v2 | [560/5000] loss=0.3333 mem=0.53 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2397.403544138,"data":"07:57:43 | INFO | xvla_v2 | [580/5000] loss=0.0552 mem=0.46 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2453.942806769,"data":"07:58:40 | INFO | xvla_v2 | [600/5000] loss=0.2907 mem=0.53 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2510.444410706,"data":"07:59:36 | INFO | xvla_v2 | [620/5000] loss=0.1292 mem=0.47 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2566.92069168,"data":"08:00:32 | INFO | xvla_v2 | [640/5000] loss=0.1605 mem=0.52 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2623.427958143,"data":"08:01:29 | INFO | xvla_v2 | [660/5000] loss=0.4040 mem=0.51 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2680.096734369,"data":"08:02:26 | INFO | xvla_v2 | [680/5000] loss=0.3611 mem=0.50 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2736.625704362,"data":"08:03:22 | INFO | xvla_v2 | [700/5000] loss=0.7163 mem=0.47 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2793.254602068,"data":"08:04:19 | INFO | xvla_v2 | [720/5000] loss=0.0913 mem=0.56 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2849.982807972,"data":"08:05:16 | INFO | xvla_v2 | [740/5000] loss=0.3565 mem=0.50 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2906.64914905,"data":"08:06:12 | INFO | xvla_v2 | [760/5000] loss=0.4269 mem=0.51 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":2963.452449243,"data":"08:07:09 | INFO | xvla_v2 | [780/5000] loss=0.2039 mem=0.50 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3019.973228608,"data":"08:08:06 | INFO | xvla_v2 | [800/5000] loss=0.1863 mem=0.54 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3076.367000233,"data":"08:09:02 | INFO | xvla_v2 | [820/5000] loss=0.0884 mem=0.47 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3133.073141472,"data":"08:09:59 | INFO | xvla_v2 | [840/5000] loss=0.0684 mem=0.49 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3189.990987966,"data":"08:10:56 | INFO | xvla_v2 | [860/5000] loss=0.3597 mem=0.51 hasmem=0.00 2.85s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3246.931606968,"data":"08:11:52 | INFO | xvla_v2 | [880/5000] loss=0.6281 mem=0.51 hasmem=0.00 2.85s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3303.750844753,"data":"08:12:49 | INFO | xvla_v2 | [900/5000] loss=0.7153 mem=0.47 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3360.362978828,"data":"08:13:46 | INFO | xvla_v2 | [920/5000] loss=0.3142 mem=0.47 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3416.975507946,"data":"08:14:43 | INFO | xvla_v2 | [940/5000] loss=0.3344 mem=0.49 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3473.684074834,"data":"08:15:39 | INFO | xvla_v2 | [960/5000] loss=0.3068 mem=0.53 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3530.312481777,"data":"08:16:36 | INFO | xvla_v2 | [980/5000] loss=0.1254 mem=0.50 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3587.069084905,"data":"08:17:33 | INFO | xvla_v2 | [1000/5000] loss=0.2409 mem=0.51 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3587.422528633,"data":"08:17:33 | INFO | xvla_v2 | saved /kaggle/working/runs/f0/ckpt-1000\n"}
+,{"stream_name":"stdout","time":3644.093420541,"data":"08:18:30 | INFO | xvla_v2 | [1020/5000] loss=0.1469 mem=0.51 hasmem=0.00 2.85s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3700.637795555,"data":"08:19:26 | INFO | xvla_v2 | [1040/5000] loss=0.1073 mem=0.50 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3757.26108726,"data":"08:20:23 | INFO | xvla_v2 | [1060/5000] loss=0.0718 mem=0.47 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3813.88813768,"data":"08:21:19 | INFO | xvla_v2 | [1080/5000] loss=0.1911 mem=0.48 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3870.336959587,"data":"08:22:16 | INFO | xvla_v2 | [1100/5000] loss=0.0663 mem=0.47 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3927.169031419,"data":"08:23:13 | INFO | xvla_v2 | [1120/5000] loss=0.2395 mem=0.50 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":3983.951846212,"data":"08:24:10 | INFO | xvla_v2 | [1140/5000] loss=0.1318 mem=0.51 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":4040.95322649,"data":"08:25:07 | INFO | xvla_v2 | [1160/5000] loss=0.2609 mem=0.49 hasmem=0.00 2.85s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":4098.027750767,"data":"08:26:04 | INFO | xvla_v2 | [1180/5000] loss=0.9859 mem=0.52 hasmem=0.00 2.85s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":4154.678743964,"data":"08:27:00 | INFO | xvla_v2 | [1200/5000] loss=0.2988 mem=0.47 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":4211.148713814,"data":"08:27:57 | INFO | xvla_v2 | [1220/5000] loss=0.0519 mem=0.51 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":4267.638431707,"data":"08:28:53 | INFO | xvla_v2 | [1240/5000] loss=0.2106 mem=0.49 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":4324.674345929,"data":"08:29:50 | INFO | xvla_v2 | [1260/5000] loss=0.0768 mem=0.47 hasmem=0.00 2.85s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":4381.830000224,"data":"08:30:47 | INFO | xvla_v2 | [1280/5000] loss=0.2105 mem=0.50 hasmem=0.00 2.86s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":4438.689140498,"data":"08:31:44 | INFO | xvla_v2 | [1300/5000] loss=0.0817 mem=0.50 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":4495.342094372,"data":"08:32:41 | INFO | xvla_v2 | [1320/5000] loss=0.2581 mem=0.52 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":4551.77510444,"data":"08:33:37 | INFO | xvla_v2 | [1340/5000] loss=0.1481 mem=0.46 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":4608.103343529,"data":"08:34:34 | INFO | xvla_v2 | [1360/5000] loss=0.1531 mem=0.47 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":4664.746287215,"data":"08:35:30 | INFO | xvla_v2 | [1380/5000] loss=0.2714 mem=0.50 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":4721.469517909,"data":"08:36:27 | INFO | xvla_v2 | [1400/5000] loss=0.4714 mem=0.48 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":4777.954807743,"data":"08:37:24 | INFO | xvla_v2 | [1420/5000] loss=0.1495 mem=0.53 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":4834.231953632,"data":"08:38:20 | INFO | xvla_v2 | [1440/5000] loss=0.3276 mem=0.53 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":4890.474521324,"data":"08:39:16 | INFO | xvla_v2 | [1460/5000] loss=0.2142 mem=0.48 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":4946.773318149,"data":"08:40:12 | INFO | xvla_v2 | [1480/5000] loss=0.4120 mem=0.51 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5002.995423408,"data":"08:41:09 | INFO | xvla_v2 | [1500/5000] loss=0.2849 mem=0.48 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5003.336835513,"data":"08:41:09 | INFO | xvla_v2 | saved /kaggle/working/runs/f0/ckpt-1500\n"}
+,{"stream_name":"stdout","time":5059.705946474,"data":"08:42:05 | INFO | xvla_v2 | [1520/5000] loss=0.2052 mem=0.46 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5116.003985166,"data":"08:43:02 | INFO | xvla_v2 | [1540/5000] loss=0.1439 mem=0.47 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5172.424185862,"data":"08:43:58 | INFO | xvla_v2 | [1560/5000] loss=0.2989 mem=0.49 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5228.951478975,"data":"08:44:55 | INFO | xvla_v2 | [1580/5000] loss=0.1333 mem=0.45 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5285.305438913,"data":"08:45:51 | INFO | xvla_v2 | [1600/5000] loss=0.3932 mem=0.46 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5341.429775425,"data":"08:46:47 | INFO | xvla_v2 | [1620/5000] loss=0.2369 mem=0.48 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5397.590078691,"data":"08:47:43 | INFO | xvla_v2 | [1640/5000] loss=0.5026 mem=0.51 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5453.823004094,"data":"08:48:39 | INFO | xvla_v2 | [1660/5000] loss=0.2658 mem=0.48 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5510.044816523,"data":"08:49:36 | INFO | xvla_v2 | [1680/5000] loss=0.1863 mem=0.52 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5566.307906717,"data":"08:50:32 | INFO | xvla_v2 | [1700/5000] loss=0.5234 mem=0.51 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5622.837137409,"data":"08:51:28 | INFO | xvla_v2 | [1720/5000] loss=0.4266 mem=0.52 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5679.541608509,"data":"08:52:25 | INFO | xvla_v2 | [1740/5000] loss=0.2599 mem=0.50 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5736.320940855,"data":"08:53:22 | INFO | xvla_v2 | [1760/5000] loss=0.2061 mem=0.53 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5792.761928739,"data":"08:54:18 | INFO | xvla_v2 | [1780/5000] loss=0.3207 mem=0.50 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5849.27052313,"data":"08:55:15 | INFO | xvla_v2 | [1800/5000] loss=0.2649 mem=0.55 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5905.844550957,"data":"08:56:11 | INFO | xvla_v2 | [1820/5000] loss=0.2664 mem=0.47 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":5962.327378338,"data":"08:57:08 | INFO | xvla_v2 | [1840/5000] loss=0.3176 mem=0.50 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6018.663603934,"data":"08:58:04 | INFO | xvla_v2 | [1860/5000] loss=0.1179 mem=0.48 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6075.13875937,"data":"08:59:01 | INFO | xvla_v2 | [1880/5000] loss=0.3475 mem=0.52 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6131.613774468,"data":"08:59:57 | INFO | xvla_v2 | [1900/5000] loss=0.1613 mem=0.46 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6187.885770434,"data":"09:00:53 | INFO | xvla_v2 | [1920/5000] loss=0.4744 mem=0.48 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6244.129439433,"data":"09:01:50 | INFO | xvla_v2 | [1940/5000] loss=0.1779 mem=0.48 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6300.344952575,"data":"09:02:46 | INFO | xvla_v2 | [1960/5000] loss=0.5240 mem=0.52 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6356.589281842,"data":"09:03:42 | INFO | xvla_v2 | [1980/5000] loss=0.0745 mem=0.52 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6412.912567136,"data":"09:04:38 | INFO | xvla_v2 | [2000/5000] loss=0.4126 mem=0.49 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6413.255437657,"data":"09:04:39 | INFO | xvla_v2 | saved /kaggle/working/runs/f0/ckpt-2000\n"}
+,{"stream_name":"stdout","time":6469.726156913,"data":"09:05:35 | INFO | xvla_v2 | [2020/5000] loss=0.0738 mem=0.49 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6526.146907171,"data":"09:06:32 | INFO | xvla_v2 | [2040/5000] loss=0.0918 mem=0.55 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6582.588405533,"data":"09:07:28 | INFO | xvla_v2 | [2060/5000] loss=0.0742 mem=0.57 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6639.219268841,"data":"09:08:25 | INFO | xvla_v2 | [2080/5000] loss=0.1539 mem=0.54 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6695.886736419,"data":"09:09:21 | INFO | xvla_v2 | [2100/5000] loss=0.0684 mem=0.50 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6752.46651593,"data":"09:10:18 | INFO | xvla_v2 | [2120/5000] loss=0.0957 mem=0.45 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6808.921426534,"data":"09:11:14 | INFO | xvla_v2 | [2140/5000] loss=0.0520 mem=0.52 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6865.494120329,"data":"09:12:11 | INFO | xvla_v2 | [2160/5000] loss=0.1374 mem=0.51 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6922.029103088,"data":"09:13:08 | INFO | xvla_v2 | [2180/5000] loss=0.3809 mem=0.55 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":6978.352793818,"data":"09:14:04 | INFO | xvla_v2 | [2200/5000] loss=0.1311 mem=0.47 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7034.69619895,"data":"09:15:00 | INFO | xvla_v2 | [2220/5000] loss=0.3964 mem=0.49 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7091.045161934,"data":"09:15:57 | INFO | xvla_v2 | [2240/5000] loss=0.1829 mem=0.52 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7147.233519388,"data":"09:16:53 | INFO | xvla_v2 | [2260/5000] loss=0.1289 mem=0.53 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7203.645096922,"data":"09:17:49 | INFO | xvla_v2 | [2280/5000] loss=1.0366 mem=0.52 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7259.961429524,"data":"09:18:46 | INFO | xvla_v2 | [2300/5000] loss=0.3119 mem=0.53 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7316.384428633,"data":"09:19:42 | INFO | xvla_v2 | [2320/5000] loss=0.0826 mem=0.49 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7372.491185557,"data":"09:20:38 | INFO | xvla_v2 | [2340/5000] loss=0.1208 mem=0.53 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7428.619779267,"data":"09:21:34 | INFO | xvla_v2 | [2360/5000] loss=0.1045 mem=0.49 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7484.783158566,"data":"09:22:30 | INFO | xvla_v2 | [2380/5000] loss=0.2933 mem=0.51 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7541.784470432,"data":"09:23:27 | INFO | xvla_v2 | [2400/5000] loss=0.2549 mem=0.45 hasmem=0.00 2.85s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7598.162842587,"data":"09:24:24 | INFO | xvla_v2 | [2420/5000] loss=0.2280 mem=0.43 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7654.74401771,"data":"09:25:20 | INFO | xvla_v2 | [2440/5000] loss=0.0650 mem=0.49 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7711.176915305,"data":"09:26:17 | INFO | xvla_v2 | [2460/5000] loss=0.2815 mem=0.53 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7767.64874897,"data":"09:27:13 | INFO | xvla_v2 | [2480/5000] loss=0.1283 mem=0.47 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7824.375967979,"data":"09:28:10 | INFO | xvla_v2 | [2500/5000] loss=0.1185 mem=0.46 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7824.751353154,"data":"09:28:10 | INFO | xvla_v2 | saved /kaggle/working/runs/f0/ckpt-2500\n"}
+,{"stream_name":"stdout","time":7881.303059693,"data":"09:29:07 | INFO | xvla_v2 | [2520/5000] loss=0.0275 mem=0.48 hasmem=0.00 2.85s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7937.731810721,"data":"09:30:03 | INFO | xvla_v2 | [2540/5000] loss=0.1341 mem=0.51 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":7994.111415148,"data":"09:31:00 | INFO | xvla_v2 | [2560/5000] loss=0.1126 mem=0.47 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":8050.462317487,"data":"09:31:56 | INFO | xvla_v2 | [2580/5000] loss=0.0545 mem=0.51 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":8106.812897893,"data":"09:32:52 | INFO | xvla_v2 | [2600/5000] loss=0.1104 mem=0.53 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":8163.303967935,"data":"09:33:49 | INFO | xvla_v2 | [2620/5000] loss=0.5898 mem=0.53 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":8219.477593937,"data":"09:34:45 | INFO | xvla_v2 | [2640/5000] loss=0.1778 mem=0.45 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":8275.638439394,"data":"09:35:41 | INFO | xvla_v2 | [2660/5000] loss=0.1244 mem=0.46 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":8331.982131669,"data":"09:36:38 | INFO | xvla_v2 | [2680/5000] loss=0.2137 mem=0.48 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":8388.32488124,"data":"09:37:34 | INFO | xvla_v2 | [2700/5000] loss=0.0514 mem=0.52 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":8444.653783826,"data":"09:38:30 | INFO | xvla_v2 | [2720/5000] loss=0.4556 mem=0.53 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":8501.050493389,"data":"09:39:27 | INFO | xvla_v2 | [2740/5000] loss=0.2180 mem=0.47 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":8557.423417914,"data":"09:40:23 | INFO | xvla_v2 | [2760/5000] loss=0.1630 mem=0.51 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":8613.766147163,"data":"09:41:19 | INFO | xvla_v2 | [2780/5000] loss=0.0685 mem=0.49 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":8670.145738491,"data":"09:42:16 | INFO | xvla_v2 | [2800/5000] loss=0.2172 mem=0.46 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":8726.532694961,"data":"09:43:12 | INFO | xvla_v2 | [2820/5000] loss=0.0461 mem=0.44 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":8782.805568762,"data":"09:44:08 | INFO | xvla_v2 | [2840/5000] loss=0.0988 mem=0.48 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":8839.198412046,"data":"09:45:05 | INFO | xvla_v2 | [2860/5000] loss=0.1703 mem=0.50 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":8895.65189292,"data":"09:46:01 | INFO | xvla_v2 | [2880/5000] loss=0.2322 mem=0.47 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":8952.018040774,"data":"09:46:58 | INFO | xvla_v2 | [2900/5000] loss=0.0431 mem=0.50 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9008.09196761,"data":"09:47:54 | INFO | xvla_v2 | [2920/5000] loss=0.1925 mem=0.47 hasmem=0.00 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9064.382124122,"data":"09:48:50 | INFO | xvla_v2 | [2940/5000] loss=0.1087 mem=0.49 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9120.627709888,"data":"09:49:46 | INFO | xvla_v2 | [2960/5000] loss=0.5318 mem=0.49 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9176.919540247,"data":"09:50:42 | INFO | xvla_v2 | [2980/5000] loss=0.1946 mem=0.55 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9233.308018962,"data":"09:51:39 | INFO | xvla_v2 | [3000/5000] loss=0.2072 mem=0.48 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9233.647209013,"data":"09:51:39 | INFO | xvla_v2 | saved /kaggle/working/runs/f0/ckpt-3000\n"}
+,{"stream_name":"stdout","time":9290.083556563,"data":"09:52:36 | INFO | xvla_v2 | [3020/5000] loss=0.1567 mem=0.46 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9346.52036215,"data":"09:53:32 | INFO | xvla_v2 | [3040/5000] loss=0.2021 mem=0.49 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9402.797940667,"data":"09:54:28 | INFO | xvla_v2 | [3060/5000] loss=0.2557 mem=0.52 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9458.9983747,"data":"09:55:25 | INFO | xvla_v2 | [3080/5000] loss=0.1355 mem=0.49 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9515.447026911,"data":"09:56:21 | INFO | xvla_v2 | [3100/5000] loss=0.3337 mem=0.54 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9571.841367766,"data":"09:57:17 | INFO | xvla_v2 | [3120/5000] loss=0.2555 mem=0.48 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9628.266373312,"data":"09:58:14 | INFO | xvla_v2 | [3140/5000] loss=0.3009 mem=0.47 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9684.70066896,"data":"09:59:10 | INFO | xvla_v2 | [3160/5000] loss=0.1431 mem=0.49 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9741.264090651,"data":"10:00:07 | INFO | xvla_v2 | [3180/5000] loss=0.1624 mem=0.53 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9797.650985953,"data":"10:01:03 | INFO | xvla_v2 | [3200/5000] loss=0.1167 mem=0.47 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9854.117771207,"data":"10:02:00 | INFO | xvla_v2 | [3220/5000] loss=0.1603 mem=0.49 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9910.624361355,"data":"10:02:56 | INFO | xvla_v2 | [3240/5000] loss=0.2210 mem=0.50 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":9967.127635709,"data":"10:03:53 | INFO | xvla_v2 | [3260/5000] loss=0.0741 mem=0.42 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10023.576748204,"data":"10:04:49 | INFO | xvla_v2 | [3280/5000] loss=0.3179 mem=0.48 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10080.162136256,"data":"10:05:46 | INFO | xvla_v2 | [3300/5000] loss=0.3404 mem=0.47 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10136.734141133,"data":"10:06:42 | INFO | xvla_v2 | [3320/5000] loss=0.2634 mem=0.53 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10193.230588842,"data":"10:07:39 | INFO | xvla_v2 | [3340/5000] loss=0.2704 mem=0.49 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10249.575313429,"data":"10:08:35 | INFO | xvla_v2 | [3360/5000] loss=0.0908 mem=0.50 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10305.859302045,"data":"10:09:31 | INFO | xvla_v2 | [3380/5000] loss=0.1336 mem=0.47 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10362.192543996,"data":"10:10:28 | INFO | xvla_v2 | [3400/5000] loss=0.4507 mem=0.54 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10418.567719886,"data":"10:11:24 | INFO | xvla_v2 | [3420/5000] loss=0.2284 mem=0.56 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10475.047168145,"data":"10:12:21 | INFO | xvla_v2 | [3440/5000] loss=0.6467 mem=0.49 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10531.579184585,"data":"10:13:17 | INFO | xvla_v2 | [3460/5000] loss=2.3538 mem=0.55 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10588.155322229,"data":"10:14:14 | INFO | xvla_v2 | [3480/5000] loss=0.2762 mem=0.47 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10644.848200962,"data":"10:15:10 | INFO | xvla_v2 | [3500/5000] loss=0.1815 mem=0.51 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10645.202167305,"data":"10:15:11 | INFO | xvla_v2 | saved /kaggle/working/runs/f0/ckpt-3500\n"}
+,{"stream_name":"stdout","time":10701.708635376,"data":"10:16:07 | INFO | xvla_v2 | [3520/5000] loss=0.2572 mem=0.48 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10758.187145821,"data":"10:17:04 | INFO | xvla_v2 | [3540/5000] loss=0.2865 mem=0.48 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10814.589846806,"data":"10:18:00 | INFO | xvla_v2 | [3560/5000] loss=1.1298 mem=0.56 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10870.880794283,"data":"10:18:56 | INFO | xvla_v2 | [3580/5000] loss=0.2559 mem=0.50 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10927.147517078,"data":"10:19:53 | INFO | xvla_v2 | [3600/5000] loss=0.2008 mem=0.52 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":10983.357183562,"data":"10:20:49 | INFO | xvla_v2 | [3620/5000] loss=0.3256 mem=0.50 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11039.5106852,"data":"10:21:45 | INFO | xvla_v2 | [3640/5000] loss=0.1803 mem=0.46 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11095.687932432,"data":"10:22:41 | INFO | xvla_v2 | [3660/5000] loss=0.7183 mem=0.50 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11152.002324485,"data":"10:23:38 | INFO | xvla_v2 | [3680/5000] loss=0.5623 mem=0.52 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11208.580681192,"data":"10:24:34 | INFO | xvla_v2 | [3700/5000] loss=0.0609 mem=0.49 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11264.92908648,"data":"10:25:30 | INFO | xvla_v2 | [3720/5000] loss=0.1678 mem=0.53 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11321.338594216,"data":"10:26:27 | INFO | xvla_v2 | [3740/5000] loss=0.1542 mem=0.55 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11377.821037912,"data":"10:27:23 | INFO | xvla_v2 | [3760/5000] loss=0.2079 mem=0.53 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11433.881862506,"data":"10:28:19 | INFO | xvla_v2 | [3780/5000] loss=0.1608 mem=0.47 hasmem=0.00 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11489.902541059,"data":"10:29:15 | INFO | xvla_v2 | [3800/5000] loss=0.2347 mem=0.52 hasmem=0.00 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11546.043841846,"data":"10:30:12 | INFO | xvla_v2 | [3820/5000] loss=0.1048 mem=0.53 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11602.550679923,"data":"10:31:08 | INFO | xvla_v2 | [3840/5000] loss=0.0878 mem=0.50 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11659.060400169,"data":"10:32:05 | INFO | xvla_v2 | [3860/5000] loss=0.0942 mem=0.53 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11715.630174237,"data":"10:33:01 | INFO | xvla_v2 | [3880/5000] loss=0.1682 mem=0.48 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11772.186618761,"data":"10:33:58 | INFO | xvla_v2 | [3900/5000] loss=0.1721 mem=0.47 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11828.689539323,"data":"10:34:54 | INFO | xvla_v2 | [3920/5000] loss=0.0943 mem=0.56 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11885.15644273,"data":"10:35:51 | INFO | xvla_v2 | [3940/5000] loss=0.0772 mem=0.51 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11941.598648254,"data":"10:36:47 | INFO | xvla_v2 | [3960/5000] loss=0.1762 mem=0.48 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":11997.963189674,"data":"10:37:44 | INFO | xvla_v2 | [3980/5000] loss=0.1224 mem=0.47 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":12054.271576091,"data":"10:38:40 | INFO | xvla_v2 | [4000/5000] loss=0.1536 mem=0.51 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":12054.613991636,"data":"10:38:40 | INFO | xvla_v2 | saved /kaggle/working/runs/f0/ckpt-4000\n"}
+,{"stream_name":"stdout","time":12110.97087528,"data":"10:39:37 | INFO | xvla_v2 | [4020/5000] loss=0.1001 mem=0.48 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":12167.340202588,"data":"10:40:33 | INFO | xvla_v2 | [4040/5000] loss=0.1870 mem=0.49 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":12223.549111548,"data":"10:41:29 | INFO | xvla_v2 | [4060/5000] loss=0.1069 mem=0.49 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":12279.748050012,"data":"10:42:25 | INFO | xvla_v2 | [4080/5000] loss=0.4916 mem=0.56 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":12335.806370089,"data":"10:43:21 | INFO | xvla_v2 | [4100/5000] loss=0.1101 mem=0.51 hasmem=0.00 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":12392.014354085,"data":"10:44:18 | INFO | xvla_v2 | [4120/5000] loss=0.1547 mem=0.52 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":12448.136408269,"data":"10:45:14 | INFO | xvla_v2 | [4140/5000] loss=0.1110 mem=0.48 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":12504.305740956,"data":"10:46:10 | INFO | xvla_v2 | [4160/5000] loss=0.2329 mem=0.55 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":12561.198266555,"data":"10:47:07 | INFO | xvla_v2 | [4180/5000] loss=0.2601 mem=0.49 hasmem=0.00 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":12617.511893252,"data":"10:48:03 | INFO | xvla_v2 | [4200/5000] loss=0.1187 mem=0.49 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":12673.755640557,"data":"10:48:59 | INFO | xvla_v2 | [4220/5000] loss=0.0937 mem=0.50 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":12729.702433214,"data":"10:49:55 | INFO | xvla_v2 | [4240/5000] loss=0.1943 mem=0.51 hasmem=0.00 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":12785.840188146,"data":"10:50:51 | INFO | xvla_v2 | [4260/5000] loss=0.1792 mem=0.47 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":12841.943337418,"data":"10:51:47 | INFO | xvla_v2 | [4280/5000] loss=0.0525 mem=0.48 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":12898.008391541,"data":"10:52:44 | INFO | xvla_v2 | [4300/5000] loss=0.2430 mem=0.48 hasmem=0.00 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":12954.195375372,"data":"10:53:40 | INFO | xvla_v2 | [4320/5000] loss=0.1830 mem=0.52 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13010.410487905,"data":"10:54:36 | INFO | xvla_v2 | [4340/5000] loss=0.3066 mem=0.50 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13066.723039871,"data":"10:55:32 | INFO | xvla_v2 | [4360/5000] loss=0.2092 mem=0.46 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13122.947644234,"data":"10:56:28 | INFO | xvla_v2 | [4380/5000] loss=0.1525 mem=0.54 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13179.310454599,"data":"10:57:25 | INFO | xvla_v2 | [4400/5000] loss=0.1951 mem=0.53 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13235.82921392,"data":"10:58:21 | INFO | xvla_v2 | [4420/5000] loss=0.2669 mem=0.48 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13292.172372007,"data":"10:59:18 | INFO | xvla_v2 | [4440/5000] loss=0.3283 mem=0.53 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13348.561356596,"data":"11:00:14 | INFO | xvla_v2 | [4460/5000] loss=0.0534 mem=0.56 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13404.763430066,"data":"11:01:10 | INFO | xvla_v2 | [4480/5000] loss=0.1966 mem=0.53 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13460.935308267,"data":"11:02:06 | INFO | xvla_v2 | [4500/5000] loss=0.0600 mem=0.49 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13461.322291923,"data":"11:02:07 | INFO | xvla_v2 | saved /kaggle/working/runs/f0/ckpt-4500\n"}
+,{"stream_name":"stdout","time":13517.585659802,"data":"11:03:03 | INFO | xvla_v2 | [4520/5000] loss=0.2358 mem=0.50 hasmem=0.00 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13573.90192791,"data":"11:03:59 | INFO | xvla_v2 | [4540/5000] loss=0.1000 mem=0.48 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13630.05157803,"data":"11:04:56 | INFO | xvla_v2 | [4560/5000] loss=0.2625 mem=0.52 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13686.228530425,"data":"11:05:52 | INFO | xvla_v2 | [4580/5000] loss=0.2122 mem=0.48 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13742.43289033,"data":"11:06:48 | INFO | xvla_v2 | [4600/5000] loss=0.1027 mem=0.53 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13798.571323725,"data":"11:07:44 | INFO | xvla_v2 | [4620/5000] loss=0.1154 mem=0.48 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13854.749220391,"data":"11:08:40 | INFO | xvla_v2 | [4640/5000] loss=0.0927 mem=0.56 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13910.938751442,"data":"11:09:36 | INFO | xvla_v2 | [4660/5000] loss=0.1062 mem=0.49 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":13967.240341776,"data":"11:10:33 | INFO | xvla_v2 | [4680/5000] loss=0.1539 mem=0.50 hasmem=0.00 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":14023.392996258,"data":"11:11:29 | INFO | xvla_v2 | [4700/5000] loss=0.0728 mem=0.52 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":14079.518549785,"data":"11:12:25 | INFO | xvla_v2 | [4720/5000] loss=0.0372 mem=0.51 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":14135.624620961,"data":"11:13:21 | INFO | xvla_v2 | [4740/5000] loss=0.3249 mem=0.49 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":14191.776428111,"data":"11:14:17 | INFO | xvla_v2 | [4760/5000] loss=0.0963 mem=0.47 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":14247.921101491,"data":"11:15:13 | INFO | xvla_v2 | [4780/5000] loss=0.3922 mem=0.51 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":14304.020844919,"data":"11:16:10 | INFO | xvla_v2 | [4800/5000] loss=0.0980 mem=0.52 hasmem=0.00 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":14360.177103097,"data":"11:17:06 | INFO | xvla_v2 | [4820/5000] loss=0.0795 mem=0.51 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":14416.31551058,"data":"11:18:02 | INFO | xvla_v2 | [4840/5000] loss=0.0511 mem=0.49 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":14472.444311042,"data":"11:18:58 | INFO | xvla_v2 | [4860/5000] loss=0.1070 mem=0.45 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":14528.625961859,"data":"11:19:54 | INFO | xvla_v2 | [4880/5000] loss=0.2458 mem=0.55 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":14584.809993535,"data":"11:20:50 | INFO | xvla_v2 | [4900/5000] loss=0.0478 mem=0.51 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":14641.110101941,"data":"11:21:47 | INFO | xvla_v2 | [4920/5000] loss=0.1836 mem=0.44 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":14697.386716871,"data":"11:22:43 | INFO | xvla_v2 | [4940/5000] loss=0.2269 mem=0.50 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":14753.609769634,"data":"11:23:39 | INFO | xvla_v2 | [4960/5000] loss=0.3186 mem=0.51 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":14809.791742272,"data":"11:24:35 | INFO | xvla_v2 | [4980/5000] loss=0.2035 mem=0.51 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":14865.952577175,"data":"11:25:31 | INFO | xvla_v2 | [5000/5000] loss=0.2929 mem=0.47 hasmem=0.00 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":14866.306655145,"data":"11:25:32 | INFO | xvla_v2 | saved /kaggle/working/runs/f0/ckpt-5000\n"}
+,{"stream_name":"stdout","time":14866.306686898,"data":"/usr/local/lib/python3.13/dist-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.\n"}
+,{"stream_name":"stdout","time":14866.3066946,"data":"  return func(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":14870.006518456,"data":"F0 step 5000 / 5000\n"}
+,{"stream_name":"stdout","time":14870.006554906,"data":"$ /usr/bin/python3 -m accelerate.commands.launch --num_processes 2 --num_machines 1 --mixed_precision fp16 --dynamo_backend no --multi_gpu /kaggle/working/code/xvla_v2/train_xvla_mem.py --xvla-root /kaggle/working/code/X-VLA --models /kaggle/tmp/x_vla_libero --metas /kaggle/working/xvla_v2/metas_f1 --output-dir /kaggle/working/runs/f1 --batch-size 4 --grad-accum 4 --iters 5000 --save-interval 500 --learning-rate 5e-05 --learning-coef 0.5 --freeze-steps 0 --warmup-steps 250 --min-lr-ratio 0.1 --use-cosine-decay --seed 42 --resume auto --max-hours 6.57\n"}
+,{"stream_name":"stdout","time":14881.768643809,"data":"WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stdout","time":14881.768681585,"data":"I0000 00:00:1795260347.835712     393 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.\n"}
+,{"stream_name":"stdout","time":14881.768689074,"data":"WARNING: All log messages before absl::InitializeLog() is called are written to STDERR\n"}
+,{"stream_name":"stdout","time":14881.768694477,"data":"I0000 00:00:1795260347.892841     392 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.\n"}
+,{"stream_name":"stdout","time":14884.337803497,"data":"Florence2ForConditionalGeneration has generative capabilities, as `prepare_inputs_for_generation` is explicitly overwritten. However, it doesn't directly inherit from `GenerationMixin`. From 👉v4.50👈 onwards, `PreTrainedModel` will NOT inherit from `GenerationMixin`, and this model will lose the ability to call `generate` and other related functions.\n"}
+,{"stream_name":"stdout","time":14884.3378366,"data":"  - If you're using `trust_remote_code=True`, you can get rid of this warning by loading the model with an auto class. See https://huggingface.co/docs/transformers/en/model_doc/auto#auto-classes\n"}
+,{"stream_name":"stdout","time":14884.337856553,"data":"  - If you are the owner of the model architecture code, please modify your model class such that it inherits from `GenerationMixin` (after `PreTrainedModel`, otherwise you'll get an exception).\n"}
+,{"stream_name":"stdout","time":14884.33786161,"data":"  - If you are not the owner of the model architecture class, please contact the model code owner to update it.\n"}
+,{"stream_name":"stdout","time":14884.337866333,"data":"Florence2ForConditionalGeneration has generative capabilities, as `prepare_inputs_for_generation` is explicitly overwritten. However, it doesn't directly inherit from `GenerationMixin`. From 👉v4.50👈 onwards, `PreTrainedModel` will NOT inherit from `GenerationMixin`, and this model will lose the ability to call `generate` and other related functions.\n"}
+,{"stream_name":"stdout","time":14884.337883894,"data":"  - If you're using `trust_remote_code=True`, you can get rid of this warning by loading the model with an auto class. See https://huggingface.co/docs/transformers/en/model_doc/auto#auto-classes\n"}
+,{"stream_name":"stdout","time":14884.337887828,"data":"  - If you are the owner of the model architecture code, please modify your model class such that it inherits from `GenerationMixin` (after `PreTrainedModel`, otherwise you'll get an exception).\n"}
+,{"stream_name":"stdout","time":14884.337891668,"data":"  - If you are not the owner of the model architecture class, please contact the model code owner to update it.\n"}
+,{"stream_name":"stdout","time":14885.685779526,"data":"Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.\n"}
+,{"stream_name":"stdout","time":14885.68581626,"data":"trainable params: 11,868,760 || all params: 891,351,216 || trainable%: 1.3315\n"}
+,{"stream_name":"stdout","time":14885.685821533,"data":"11:25:51 | INFO | xvla_v2 | trainable by part: {'vlm': 4849664, 'transformer_lora': 3178496, 'modules_to_save': 3840600}\n"}
+,{"stream_name":"stdout","time":14885.68582604,"data":"Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.\n"}
+,{"stream_name":"stdout","time":14885.989878226,"data":"use action mode: ee6d\n"}
+,{"stream_name":"stdout","time":14885.989919915,"data":"== dataset xvla_v2_f1_base with 400 trajs\n"}
+,{"stream_name":"stdout","time":14885.989925437,"data":"== dataset xvla_v2_f1_mem with 198 trajs\n"}
+,{"stream_name":"stdout","time":14885.989930815,"data":"use action mode: ee6d\n"}
+,{"stream_name":"stdout","time":14885.989934761,"data":"== dataset xvla_v2_f1_base with 400 trajs\n"}
+,{"stream_name":"stdout","time":14885.989939649,"data":"== dataset xvla_v2_f1_mem with 198 trajs\n"}
+,{"stream_name":"stdout","time":14891.418864918,"data":"[rank0]:[W1121 11:25:57.013187764 reducer.cpp:1502] Warning: find_unused_parameters=True was specified in DDP constructor, but did not find any unused parameters in the forward pass. This flag results in an extra traversal of the autograd graph every iteration,  which can adversely affect performance. If your model indeed never has any unused parameters in the forward pass, consider turning this flag off. Note that this warning may be a false positive if your model has flow control causing later iterations to have unused parameters. (function operator())\n"}
+,{"stream_name":"stdout","time":14891.418901671,"data":"[rank1]:[W1121 11:25:57.017965023 reducer.cpp:1502] Warning: find_unused_parameters=True was specified in DDP constructor, but did not find any unused parameters in the forward pass. This flag results in an extra traversal of the autograd graph every iteration,  which can adversely affect performance. If your model indeed never has any unused parameters in the forward pass, consider turning this flag off. Note that this warning may be a false positive if your model has flow control causing later iterations to have unused parameters. (function operator())\n"}
+,{"stream_name":"stdout","time":14946.130409145,"data":"11:26:52 | INFO | xvla_v2 | [20/5000] loss=1.2933 mem=0.50 hasmem=0.50 2.92s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15001.512338859,"data":"11:27:47 | INFO | xvla_v2 | [40/5000] loss=0.6289 mem=0.52 hasmem=0.51 2.77s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15057.657466394,"data":"11:28:43 | INFO | xvla_v2 | [60/5000] loss=0.9608 mem=0.49 hasmem=0.49 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15113.73945336,"data":"11:29:39 | INFO | xvla_v2 | [80/5000] loss=1.0393 mem=0.47 hasmem=0.47 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15169.808810468,"data":"11:30:35 | INFO | xvla_v2 | [100/5000] loss=1.1584 mem=0.47 hasmem=0.47 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15225.788329832,"data":"11:31:31 | INFO | xvla_v2 | [120/5000] loss=0.9793 mem=0.50 hasmem=0.49 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15281.839227693,"data":"11:32:27 | INFO | xvla_v2 | [140/5000] loss=0.8712 mem=0.50 hasmem=0.49 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15337.7775452,"data":"11:33:23 | INFO | xvla_v2 | [160/5000] loss=0.7633 mem=0.45 hasmem=0.45 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15393.850917215,"data":"11:34:19 | INFO | xvla_v2 | [180/5000] loss=0.8424 mem=0.51 hasmem=0.51 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15449.891162982,"data":"11:35:15 | INFO | xvla_v2 | [200/5000] loss=0.1309 mem=0.52 hasmem=0.52 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15505.973824297,"data":"11:36:12 | INFO | xvla_v2 | [220/5000] loss=0.4748 mem=0.54 hasmem=0.54 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15562.134354616,"data":"11:37:08 | INFO | xvla_v2 | [240/5000] loss=1.0717 mem=0.48 hasmem=0.47 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15618.25961126,"data":"11:38:04 | INFO | xvla_v2 | [260/5000] loss=0.1468 mem=0.47 hasmem=0.47 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15674.428855321,"data":"11:39:00 | INFO | xvla_v2 | [280/5000] loss=0.2475 mem=0.48 hasmem=0.48 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15730.563930461,"data":"11:39:56 | INFO | xvla_v2 | [300/5000] loss=0.4478 mem=0.50 hasmem=0.50 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15786.69572197,"data":"11:40:52 | INFO | xvla_v2 | [320/5000] loss=0.2022 mem=0.51 hasmem=0.51 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15842.889176905,"data":"11:41:48 | INFO | xvla_v2 | [340/5000] loss=0.2835 mem=0.53 hasmem=0.53 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15899.034396478,"data":"11:42:45 | INFO | xvla_v2 | [360/5000] loss=0.4775 mem=0.46 hasmem=0.45 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":15955.100331864,"data":"11:43:41 | INFO | xvla_v2 | [380/5000] loss=0.7294 mem=0.52 hasmem=0.52 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16011.199960143,"data":"11:44:37 | INFO | xvla_v2 | [400/5000] loss=0.2671 mem=0.43 hasmem=0.43 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16067.20358155,"data":"11:45:33 | INFO | xvla_v2 | [420/5000] loss=0.4097 mem=0.42 hasmem=0.42 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16123.162299739,"data":"11:46:29 | INFO | xvla_v2 | [440/5000] loss=0.1242 mem=0.50 hasmem=0.50 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16179.114358794,"data":"11:47:25 | INFO | xvla_v2 | [460/5000] loss=0.7919 mem=0.52 hasmem=0.51 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16235.128273936,"data":"11:48:21 | INFO | xvla_v2 | [480/5000] loss=0.5407 mem=0.44 hasmem=0.44 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16291.11232645,"data":"11:49:17 | INFO | xvla_v2 | [500/5000] loss=0.9094 mem=0.48 hasmem=0.48 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16291.519977196,"data":"11:49:17 | INFO | xvla_v2 | saved /kaggle/working/runs/f1/ckpt-500\n"}
+,{"stream_name":"stdout","time":16347.36716258,"data":"11:50:13 | INFO | xvla_v2 | [520/5000] loss=0.1408 mem=0.51 hasmem=0.50 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16403.269512553,"data":"11:51:09 | INFO | xvla_v2 | [540/5000] loss=0.2473 mem=0.50 hasmem=0.50 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16459.274944459,"data":"11:52:05 | INFO | xvla_v2 | [560/5000] loss=0.3148 mem=0.53 hasmem=0.52 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16515.254915347,"data":"11:53:01 | INFO | xvla_v2 | [580/5000] loss=0.0577 mem=0.46 hasmem=0.46 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16571.306111187,"data":"11:53:57 | INFO | xvla_v2 | [600/5000] loss=0.2716 mem=0.53 hasmem=0.52 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16627.344389782,"data":"11:54:53 | INFO | xvla_v2 | [620/5000] loss=0.1262 mem=0.47 hasmem=0.47 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16683.456262175,"data":"11:55:49 | INFO | xvla_v2 | [640/5000] loss=0.1496 mem=0.52 hasmem=0.52 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16739.485996609,"data":"11:56:45 | INFO | xvla_v2 | [660/5000] loss=0.4273 mem=0.51 hasmem=0.51 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16795.60689689,"data":"11:57:41 | INFO | xvla_v2 | [680/5000] loss=0.3553 mem=0.50 hasmem=0.50 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16851.766620494,"data":"11:58:37 | INFO | xvla_v2 | [700/5000] loss=0.7322 mem=0.47 hasmem=0.47 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16907.887749028,"data":"11:59:33 | INFO | xvla_v2 | [720/5000] loss=0.0876 mem=0.56 hasmem=0.56 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":16964.087257949,"data":"12:00:30 | INFO | xvla_v2 | [740/5000] loss=0.3560 mem=0.50 hasmem=0.50 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17019.958988537,"data":"12:01:26 | INFO | xvla_v2 | [760/5000] loss=0.3993 mem=0.51 hasmem=0.51 2.79s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17075.815943833,"data":"12:02:21 | INFO | xvla_v2 | [780/5000] loss=0.2118 mem=0.50 hasmem=0.50 2.79s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17131.764145276,"data":"12:03:17 | INFO | xvla_v2 | [800/5000] loss=0.1857 mem=0.54 hasmem=0.54 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17187.864367859,"data":"12:04:13 | INFO | xvla_v2 | [820/5000] loss=0.0854 mem=0.47 hasmem=0.46 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17243.907285322,"data":"12:05:09 | INFO | xvla_v2 | [840/5000] loss=0.0681 mem=0.49 hasmem=0.25 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17300.035769709,"data":"12:06:06 | INFO | xvla_v2 | [860/5000] loss=0.3575 mem=0.51 hasmem=0.25 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17356.159020063,"data":"12:07:02 | INFO | xvla_v2 | [880/5000] loss=0.6383 mem=0.51 hasmem=0.26 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17412.33090373,"data":"12:07:58 | INFO | xvla_v2 | [900/5000] loss=0.7275 mem=0.47 hasmem=0.32 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17468.471213426,"data":"12:08:54 | INFO | xvla_v2 | [920/5000] loss=0.3168 mem=0.47 hasmem=0.35 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17524.585302392,"data":"12:09:50 | INFO | xvla_v2 | [940/5000] loss=0.3372 mem=0.49 hasmem=0.38 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17580.7655175,"data":"12:10:46 | INFO | xvla_v2 | [960/5000] loss=0.2845 mem=0.53 hasmem=0.40 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17636.969257667,"data":"12:11:43 | INFO | xvla_v2 | [980/5000] loss=0.1095 mem=0.50 hasmem=0.50 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17693.14001929,"data":"12:12:39 | INFO | xvla_v2 | [1000/5000] loss=0.2217 mem=0.51 hasmem=0.51 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17693.489956018,"data":"12:12:39 | INFO | xvla_v2 | saved /kaggle/working/runs/f1/ckpt-1000\n"}
+,{"stream_name":"stdout","time":17749.571927072,"data":"12:13:35 | INFO | xvla_v2 | [1020/5000] loss=0.1501 mem=0.51 hasmem=0.51 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17805.642681934,"data":"12:14:31 | INFO | xvla_v2 | [1040/5000] loss=0.0986 mem=0.50 hasmem=0.38 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17861.769146571,"data":"12:15:27 | INFO | xvla_v2 | [1060/5000] loss=0.0788 mem=0.47 hasmem=0.36 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17917.975633573,"data":"12:16:24 | INFO | xvla_v2 | [1080/5000] loss=0.2291 mem=0.48 hasmem=0.37 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":17974.077092977,"data":"12:17:20 | INFO | xvla_v2 | [1100/5000] loss=0.0694 mem=0.47 hasmem=0.34 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18030.140745683,"data":"12:18:16 | INFO | xvla_v2 | [1120/5000] loss=0.2208 mem=0.50 hasmem=0.49 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18086.166302636,"data":"12:19:12 | INFO | xvla_v2 | [1140/5000] loss=0.1271 mem=0.51 hasmem=0.50 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18142.303139611,"data":"12:20:08 | INFO | xvla_v2 | [1160/5000] loss=0.2632 mem=0.49 hasmem=0.42 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18198.48325538,"data":"12:21:04 | INFO | xvla_v2 | [1180/5000] loss=1.0299 mem=0.52 hasmem=0.41 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18254.551536525,"data":"12:22:00 | INFO | xvla_v2 | [1200/5000] loss=0.2878 mem=0.47 hasmem=0.35 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18310.631951272,"data":"12:22:56 | INFO | xvla_v2 | [1220/5000] loss=0.0533 mem=0.51 hasmem=0.40 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18366.640279563,"data":"12:23:52 | INFO | xvla_v2 | [1240/5000] loss=0.2134 mem=0.49 hasmem=0.37 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18422.591910268,"data":"12:24:48 | INFO | xvla_v2 | [1260/5000] loss=0.0800 mem=0.47 hasmem=0.36 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18478.63700138,"data":"12:25:44 | INFO | xvla_v2 | [1280/5000] loss=0.2315 mem=0.50 hasmem=0.36 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18534.618607297,"data":"12:26:40 | INFO | xvla_v2 | [1300/5000] loss=0.0939 mem=0.50 hasmem=0.38 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18590.660624368,"data":"12:27:36 | INFO | xvla_v2 | [1320/5000] loss=0.2833 mem=0.52 hasmem=0.49 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18646.638991275,"data":"12:28:32 | INFO | xvla_v2 | [1340/5000] loss=0.1456 mem=0.46 hasmem=0.46 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18702.619194964,"data":"12:29:28 | INFO | xvla_v2 | [1360/5000] loss=0.1616 mem=0.47 hasmem=0.47 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18758.58540343,"data":"12:30:24 | INFO | xvla_v2 | [1380/5000] loss=0.2762 mem=0.50 hasmem=0.50 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18814.681048124,"data":"12:31:20 | INFO | xvla_v2 | [1400/5000] loss=0.5275 mem=0.48 hasmem=0.48 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18870.656246406,"data":"12:32:16 | INFO | xvla_v2 | [1420/5000] loss=0.1465 mem=0.53 hasmem=0.53 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18926.648989702,"data":"12:33:12 | INFO | xvla_v2 | [1440/5000] loss=0.3506 mem=0.53 hasmem=0.53 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":18982.60408515,"data":"12:34:08 | INFO | xvla_v2 | [1460/5000] loss=0.1931 mem=0.48 hasmem=0.48 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19038.618573367,"data":"12:35:04 | INFO | xvla_v2 | [1480/5000] loss=0.4490 mem=0.51 hasmem=0.51 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19094.621666034,"data":"12:36:00 | INFO | xvla_v2 | [1500/5000] loss=0.2719 mem=0.48 hasmem=0.47 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19094.961303786,"data":"12:36:01 | INFO | xvla_v2 | saved /kaggle/working/runs/f1/ckpt-1500\n"}
+,{"stream_name":"stdout","time":19150.902909659,"data":"12:36:56 | INFO | xvla_v2 | [1520/5000] loss=0.1780 mem=0.46 hasmem=0.46 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19206.796915853,"data":"12:37:52 | INFO | xvla_v2 | [1540/5000] loss=0.1457 mem=0.47 hasmem=0.47 2.79s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19262.767515999,"data":"12:38:48 | INFO | xvla_v2 | [1560/5000] loss=0.2666 mem=0.49 hasmem=0.39 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19318.746948376,"data":"12:39:44 | INFO | xvla_v2 | [1580/5000] loss=0.1282 mem=0.45 hasmem=0.34 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19374.65852949,"data":"12:40:40 | INFO | xvla_v2 | [1600/5000] loss=0.3845 mem=0.46 hasmem=0.34 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19430.495811922,"data":"12:41:36 | INFO | xvla_v2 | [1620/5000] loss=0.1884 mem=0.48 hasmem=0.40 2.79s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19486.368437488,"data":"12:42:32 | INFO | xvla_v2 | [1640/5000] loss=0.4357 mem=0.51 hasmem=0.51 2.79s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19542.381392055,"data":"12:43:28 | INFO | xvla_v2 | [1660/5000] loss=0.2246 mem=0.48 hasmem=0.48 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19598.479455069,"data":"12:44:24 | INFO | xvla_v2 | [1680/5000] loss=0.1797 mem=0.52 hasmem=0.52 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19654.491550979,"data":"12:45:20 | INFO | xvla_v2 | [1700/5000] loss=0.4652 mem=0.51 hasmem=0.51 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19710.488398696,"data":"12:46:16 | INFO | xvla_v2 | [1720/5000] loss=0.4085 mem=0.52 hasmem=0.52 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19766.43758521,"data":"12:47:12 | INFO | xvla_v2 | [1740/5000] loss=0.3000 mem=0.50 hasmem=0.50 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19822.35170583,"data":"12:48:08 | INFO | xvla_v2 | [1760/5000] loss=0.2295 mem=0.53 hasmem=0.53 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19878.163594478,"data":"12:49:04 | INFO | xvla_v2 | [1780/5000] loss=0.3662 mem=0.50 hasmem=0.50 2.79s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19934.098545233,"data":"12:50:00 | INFO | xvla_v2 | [1800/5000] loss=0.2865 mem=0.55 hasmem=0.54 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":19990.179105803,"data":"12:50:56 | INFO | xvla_v2 | [1820/5000] loss=0.2675 mem=0.47 hasmem=0.47 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20046.229050549,"data":"12:51:52 | INFO | xvla_v2 | [1840/5000] loss=0.2700 mem=0.50 hasmem=0.50 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20102.161800896,"data":"12:52:48 | INFO | xvla_v2 | [1860/5000] loss=0.1172 mem=0.48 hasmem=0.48 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20158.058581341,"data":"12:53:44 | INFO | xvla_v2 | [1880/5000] loss=0.3514 mem=0.52 hasmem=0.52 2.79s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20213.890895597,"data":"12:54:39 | INFO | xvla_v2 | [1900/5000] loss=0.1565 mem=0.46 hasmem=0.45 2.79s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20270.03565993,"data":"12:55:36 | INFO | xvla_v2 | [1920/5000] loss=0.2934 mem=0.48 hasmem=0.48 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20326.204536052,"data":"12:56:32 | INFO | xvla_v2 | [1940/5000] loss=0.1591 mem=0.48 hasmem=0.48 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20382.303501426,"data":"12:57:28 | INFO | xvla_v2 | [1960/5000] loss=0.2680 mem=0.52 hasmem=0.51 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20438.254391301,"data":"12:58:24 | INFO | xvla_v2 | [1980/5000] loss=0.0699 mem=0.52 hasmem=0.52 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20494.170214144,"data":"12:59:20 | INFO | xvla_v2 | [2000/5000] loss=0.3878 mem=0.49 hasmem=0.48 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20494.53883654,"data":"12:59:20 | INFO | xvla_v2 | saved /kaggle/working/runs/f1/ckpt-2000\n"}
+,{"stream_name":"stdout","time":20550.704141696,"data":"13:00:16 | INFO | xvla_v2 | [2020/5000] loss=0.0632 mem=0.49 hasmem=0.49 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20606.987552651,"data":"13:01:13 | INFO | xvla_v2 | [2040/5000] loss=0.0834 mem=0.55 hasmem=0.55 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20663.016119294,"data":"13:02:09 | INFO | xvla_v2 | [2060/5000] loss=0.0687 mem=0.57 hasmem=0.56 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20719.029515966,"data":"13:03:05 | INFO | xvla_v2 | [2080/5000] loss=0.1675 mem=0.54 hasmem=0.54 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20775.108324849,"data":"13:04:01 | INFO | xvla_v2 | [2100/5000] loss=0.0761 mem=0.50 hasmem=0.50 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20831.269620519,"data":"13:04:57 | INFO | xvla_v2 | [2120/5000] loss=0.0917 mem=0.45 hasmem=0.45 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20887.335383858,"data":"13:05:53 | INFO | xvla_v2 | [2140/5000] loss=0.0509 mem=0.52 hasmem=0.51 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20943.303433884,"data":"13:06:49 | INFO | xvla_v2 | [2160/5000] loss=0.1236 mem=0.51 hasmem=0.51 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":20999.146195,"data":"13:07:45 | INFO | xvla_v2 | [2180/5000] loss=0.2495 mem=0.55 hasmem=0.55 2.79s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":21055.098688137,"data":"13:08:41 | INFO | xvla_v2 | [2200/5000] loss=0.1157 mem=0.47 hasmem=0.47 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":21111.228283971,"data":"13:09:37 | INFO | xvla_v2 | [2220/5000] loss=0.1841 mem=0.49 hasmem=0.48 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":21167.32444808,"data":"13:10:33 | INFO | xvla_v2 | [2240/5000] loss=0.1807 mem=0.52 hasmem=0.47 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":21223.259538859,"data":"13:11:29 | INFO | xvla_v2 | [2260/5000] loss=0.1219 mem=0.53 hasmem=0.38 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":21279.103122927,"data":"13:12:25 | INFO | xvla_v2 | [2280/5000] loss=0.5018 mem=0.52 hasmem=0.39 2.79s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":21334.90532297,"data":"13:13:20 | INFO | xvla_v2 | [2300/5000] loss=0.2822 mem=0.53 hasmem=0.41 2.79s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":21390.878528917,"data":"13:14:16 | INFO | xvla_v2 | [2320/5000] loss=0.0996 mem=0.49 hasmem=0.36 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":21447.05560943,"data":"13:15:13 | INFO | xvla_v2 | [2340/5000] loss=0.1258 mem=0.53 hasmem=0.40 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":21503.182053115,"data":"13:16:09 | INFO | xvla_v2 | [2360/5000] loss=0.1025 mem=0.49 hasmem=0.39 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":21559.085612011,"data":"13:17:05 | INFO | xvla_v2 | [2380/5000] loss=0.3113 mem=0.51 hasmem=0.50 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":21615.622486098,"data":"13:18:01 | INFO | xvla_v2 | [2400/5000] loss=0.2528 mem=0.45 hasmem=0.45 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":21671.757841192,"data":"13:18:57 | INFO | xvla_v2 | [2420/5000] loss=0.2805 mem=0.43 hasmem=0.43 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":21727.990732819,"data":"13:19:54 | INFO | xvla_v2 | [2440/5000] loss=0.0583 mem=0.49 hasmem=0.49 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":21784.122716281,"data":"13:20:50 | INFO | xvla_v2 | [2460/5000] loss=0.2650 mem=0.53 hasmem=0.53 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":21840.259476994,"data":"13:21:46 | INFO | xvla_v2 | [2480/5000] loss=0.1519 mem=0.47 hasmem=0.47 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":21896.705396783,"data":"13:22:42 | INFO | xvla_v2 | [2500/5000] loss=0.1195 mem=0.46 hasmem=0.46 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":21897.067418663,"data":"13:22:43 | INFO | xvla_v2 | saved /kaggle/working/runs/f1/ckpt-2500\n"}
+,{"stream_name":"stdout","time":21953.471318111,"data":"13:23:39 | INFO | xvla_v2 | [2520/5000] loss=0.0287 mem=0.48 hasmem=0.48 2.84s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22009.587975599,"data":"13:24:35 | INFO | xvla_v2 | [2540/5000] loss=0.0717 mem=0.51 hasmem=0.51 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22065.611579814,"data":"13:25:31 | INFO | xvla_v2 | [2560/5000] loss=0.1150 mem=0.47 hasmem=0.47 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22121.65939952,"data":"13:26:27 | INFO | xvla_v2 | [2580/5000] loss=0.0479 mem=0.51 hasmem=0.51 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22177.725224256,"data":"13:27:23 | INFO | xvla_v2 | [2600/5000] loss=0.0881 mem=0.53 hasmem=0.53 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22233.861952221,"data":"13:28:19 | INFO | xvla_v2 | [2620/5000] loss=0.5336 mem=0.53 hasmem=0.53 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22289.84316325,"data":"13:29:15 | INFO | xvla_v2 | [2640/5000] loss=0.1852 mem=0.45 hasmem=0.45 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22346.019642839,"data":"13:30:12 | INFO | xvla_v2 | [2660/5000] loss=0.1277 mem=0.46 hasmem=0.46 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22402.379750914,"data":"13:31:08 | INFO | xvla_v2 | [2680/5000] loss=0.1896 mem=0.48 hasmem=0.48 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22458.659930056,"data":"13:32:04 | INFO | xvla_v2 | [2700/5000] loss=0.0546 mem=0.52 hasmem=0.51 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22514.941850652,"data":"13:33:00 | INFO | xvla_v2 | [2720/5000] loss=0.1843 mem=0.53 hasmem=0.53 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22571.151377406,"data":"13:33:57 | INFO | xvla_v2 | [2740/5000] loss=0.1759 mem=0.47 hasmem=0.47 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22627.407214873,"data":"13:34:53 | INFO | xvla_v2 | [2760/5000] loss=0.1784 mem=0.51 hasmem=0.51 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22683.484372434,"data":"13:35:49 | INFO | xvla_v2 | [2780/5000] loss=0.0622 mem=0.49 hasmem=0.48 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22739.692107619,"data":"13:36:45 | INFO | xvla_v2 | [2800/5000] loss=0.2452 mem=0.46 hasmem=0.46 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22795.852308802,"data":"13:37:41 | INFO | xvla_v2 | [2820/5000] loss=0.0471 mem=0.44 hasmem=0.44 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22852.018619167,"data":"13:38:38 | INFO | xvla_v2 | [2840/5000] loss=0.1093 mem=0.48 hasmem=0.48 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22908.103946689,"data":"13:39:34 | INFO | xvla_v2 | [2860/5000] loss=0.1956 mem=0.50 hasmem=0.50 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":22964.253296651,"data":"13:40:30 | INFO | xvla_v2 | [2880/5000] loss=0.0656 mem=0.47 hasmem=0.47 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23020.392029341,"data":"13:41:26 | INFO | xvla_v2 | [2900/5000] loss=0.0682 mem=0.50 hasmem=0.49 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23076.535609024,"data":"13:42:22 | INFO | xvla_v2 | [2920/5000] loss=0.1651 mem=0.47 hasmem=0.47 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23132.667555112,"data":"13:43:18 | INFO | xvla_v2 | [2940/5000] loss=0.1047 mem=0.49 hasmem=0.49 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23188.794359096,"data":"13:44:14 | INFO | xvla_v2 | [2960/5000] loss=0.5109 mem=0.49 hasmem=0.49 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23244.912188625,"data":"13:45:10 | INFO | xvla_v2 | [2980/5000] loss=0.1216 mem=0.55 hasmem=0.55 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23301.131097187,"data":"13:46:07 | INFO | xvla_v2 | [3000/5000] loss=0.2122 mem=0.48 hasmem=0.48 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23301.497705318,"data":"13:46:07 | INFO | xvla_v2 | saved /kaggle/working/runs/f1/ckpt-3000\n"}
+,{"stream_name":"stdout","time":23357.827919159,"data":"13:47:03 | INFO | xvla_v2 | [3020/5000] loss=0.1437 mem=0.46 hasmem=0.46 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23414.119399841,"data":"13:48:00 | INFO | xvla_v2 | [3040/5000] loss=0.2131 mem=0.49 hasmem=0.48 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23470.207115182,"data":"13:48:56 | INFO | xvla_v2 | [3060/5000] loss=0.2530 mem=0.52 hasmem=0.52 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23526.16989288,"data":"13:49:52 | INFO | xvla_v2 | [3080/5000] loss=0.1410 mem=0.49 hasmem=0.49 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23582.136925426,"data":"13:50:48 | INFO | xvla_v2 | [3100/5000] loss=0.3340 mem=0.54 hasmem=0.53 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23638.062719765,"data":"13:51:44 | INFO | xvla_v2 | [3120/5000] loss=0.2365 mem=0.48 hasmem=0.47 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23693.981107609,"data":"13:52:40 | INFO | xvla_v2 | [3140/5000] loss=0.2809 mem=0.47 hasmem=0.47 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23749.953058481,"data":"13:53:35 | INFO | xvla_v2 | [3160/5000] loss=0.1518 mem=0.49 hasmem=0.49 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23805.928932317,"data":"13:54:31 | INFO | xvla_v2 | [3180/5000] loss=0.1751 mem=0.53 hasmem=0.52 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23861.993951306,"data":"13:55:28 | INFO | xvla_v2 | [3200/5000] loss=0.1443 mem=0.47 hasmem=0.46 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23918.111647569,"data":"13:56:24 | INFO | xvla_v2 | [3220/5000] loss=0.1448 mem=0.49 hasmem=0.49 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":23974.32340207,"data":"13:57:20 | INFO | xvla_v2 | [3240/5000] loss=0.2307 mem=0.50 hasmem=0.49 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24030.560375129,"data":"13:58:16 | INFO | xvla_v2 | [3260/5000] loss=0.0714 mem=0.42 hasmem=0.41 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24086.736183533,"data":"13:59:12 | INFO | xvla_v2 | [3280/5000] loss=0.3745 mem=0.48 hasmem=0.48 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24143.007311641,"data":"14:00:09 | INFO | xvla_v2 | [3300/5000] loss=0.2502 mem=0.47 hasmem=0.34 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24199.311607,"data":"14:01:05 | INFO | xvla_v2 | [3320/5000] loss=0.2630 mem=0.53 hasmem=0.38 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24255.823790296,"data":"14:02:01 | INFO | xvla_v2 | [3340/5000] loss=0.3570 mem=0.49 hasmem=0.38 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24312.15270441,"data":"14:02:58 | INFO | xvla_v2 | [3360/5000] loss=0.0941 mem=0.50 hasmem=0.37 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24368.261695368,"data":"14:03:54 | INFO | xvla_v2 | [3380/5000] loss=0.1381 mem=0.47 hasmem=0.35 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24424.478286076,"data":"14:04:50 | INFO | xvla_v2 | [3400/5000] loss=0.4319 mem=0.54 hasmem=0.42 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24480.74732596,"data":"14:05:46 | INFO | xvla_v2 | [3420/5000] loss=0.2058 mem=0.56 hasmem=0.43 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24536.889025761,"data":"14:06:42 | INFO | xvla_v2 | [3440/5000] loss=0.7282 mem=0.49 hasmem=0.35 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24593.040491372,"data":"14:07:39 | INFO | xvla_v2 | [3460/5000] loss=2.3214 mem=0.55 hasmem=0.41 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24649.138346876,"data":"14:08:35 | INFO | xvla_v2 | [3480/5000] loss=0.2599 mem=0.47 hasmem=0.38 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24705.216798002,"data":"14:09:31 | INFO | xvla_v2 | [3500/5000] loss=0.1623 mem=0.51 hasmem=0.39 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24705.565131792,"data":"14:09:31 | INFO | xvla_v2 | saved /kaggle/working/runs/f1/ckpt-3500\n"}
+,{"stream_name":"stdout","time":24761.580423829,"data":"14:10:27 | INFO | xvla_v2 | [3520/5000] loss=0.2457 mem=0.48 hasmem=0.38 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24817.649209953,"data":"14:11:23 | INFO | xvla_v2 | [3540/5000] loss=0.1873 mem=0.48 hasmem=0.35 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24873.81938658,"data":"14:12:19 | INFO | xvla_v2 | [3560/5000] loss=1.1039 mem=0.56 hasmem=0.52 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24929.975519479,"data":"14:13:16 | INFO | xvla_v2 | [3580/5000] loss=0.2098 mem=0.50 hasmem=0.50 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":24986.134013198,"data":"14:14:12 | INFO | xvla_v2 | [3600/5000] loss=0.1606 mem=0.52 hasmem=0.51 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":25042.338925546,"data":"14:15:08 | INFO | xvla_v2 | [3620/5000] loss=0.3326 mem=0.50 hasmem=0.49 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":25098.408439204,"data":"14:16:04 | INFO | xvla_v2 | [3640/5000] loss=0.1893 mem=0.46 hasmem=0.45 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":25154.479794689,"data":"14:17:00 | INFO | xvla_v2 | [3660/5000] loss=0.6674 mem=0.50 hasmem=0.49 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":25210.683534363,"data":"14:17:56 | INFO | xvla_v2 | [3680/5000] loss=0.5179 mem=0.52 hasmem=0.51 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":25266.909388243,"data":"14:18:52 | INFO | xvla_v2 | [3700/5000] loss=0.0537 mem=0.49 hasmem=0.48 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":25323.044729555,"data":"14:19:49 | INFO | xvla_v2 | [3720/5000] loss=0.1932 mem=0.53 hasmem=0.52 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":25384.504019944,"data":"14:20:50 | INFO | xvla_v2 | [3740/5000] loss=0.1099 mem=0.55 hasmem=0.55 3.07s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":25440.973256693,"data":"14:21:47 | INFO | xvla_v2 | [3760/5000] loss=0.2497 mem=0.53 hasmem=0.53 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":25497.101612382,"data":"14:22:43 | INFO | xvla_v2 | [3780/5000] loss=0.1417 mem=0.47 hasmem=0.47 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":25553.352248979,"data":"14:23:39 | INFO | xvla_v2 | [3800/5000] loss=0.2396 mem=0.52 hasmem=0.50 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":25609.505854527,"data":"14:24:35 | INFO | xvla_v2 | [3820/5000] loss=0.1002 mem=0.53 hasmem=0.53 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":25665.497543709,"data":"14:25:31 | INFO | xvla_v2 | [3840/5000] loss=0.0796 mem=0.50 hasmem=0.50 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":25721.494979726,"data":"14:26:27 | INFO | xvla_v2 | [3860/5000] loss=0.0834 mem=0.53 hasmem=0.53 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":25777.528597228,"data":"14:27:23 | INFO | xvla_v2 | [3880/5000] loss=0.1696 mem=0.48 hasmem=0.48 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":25833.541533422,"data":"14:28:19 | INFO | xvla_v2 | [3900/5000] loss=0.2157 mem=0.47 hasmem=0.46 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":25889.459213089,"data":"14:29:15 | INFO | xvla_v2 | [3920/5000] loss=0.0844 mem=0.56 hasmem=0.56 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":25945.398155605,"data":"14:30:11 | INFO | xvla_v2 | [3940/5000] loss=0.2405 mem=0.51 hasmem=0.51 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26001.544867501,"data":"14:31:07 | INFO | xvla_v2 | [3960/5000] loss=0.1351 mem=0.48 hasmem=0.37 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26057.748161066,"data":"14:32:03 | INFO | xvla_v2 | [3980/5000] loss=0.1141 mem=0.47 hasmem=0.35 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26113.915277725,"data":"14:32:59 | INFO | xvla_v2 | [4000/5000] loss=0.1417 mem=0.51 hasmem=0.37 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26114.254742661,"data":"14:33:00 | INFO | xvla_v2 | saved /kaggle/working/runs/f1/ckpt-4000\n"}
+,{"stream_name":"stdout","time":26170.34250679,"data":"14:33:56 | INFO | xvla_v2 | [4020/5000] loss=0.0827 mem=0.48 hasmem=0.36 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26226.333570873,"data":"14:34:52 | INFO | xvla_v2 | [4040/5000] loss=0.1615 mem=0.49 hasmem=0.36 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26282.347070725,"data":"14:35:48 | INFO | xvla_v2 | [4060/5000] loss=0.0902 mem=0.49 hasmem=0.37 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26338.282589172,"data":"14:36:44 | INFO | xvla_v2 | [4080/5000] loss=0.1917 mem=0.56 hasmem=0.52 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26394.397923016,"data":"14:37:40 | INFO | xvla_v2 | [4100/5000] loss=0.0997 mem=0.51 hasmem=0.50 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26450.72307155,"data":"14:38:36 | INFO | xvla_v2 | [4120/5000] loss=0.1459 mem=0.52 hasmem=0.52 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26507.089126576,"data":"14:39:33 | INFO | xvla_v2 | [4140/5000] loss=0.1136 mem=0.48 hasmem=0.48 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26563.273893887,"data":"14:40:29 | INFO | xvla_v2 | [4160/5000] loss=0.2644 mem=0.55 hasmem=0.55 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26619.896750701,"data":"14:41:25 | INFO | xvla_v2 | [4180/5000] loss=0.1898 mem=0.49 hasmem=0.49 2.83s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26675.912181738,"data":"14:42:21 | INFO | xvla_v2 | [4200/5000] loss=0.1308 mem=0.49 hasmem=0.49 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26731.880312501,"data":"14:43:17 | INFO | xvla_v2 | [4220/5000] loss=0.1050 mem=0.50 hasmem=0.49 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26787.919762605,"data":"14:44:13 | INFO | xvla_v2 | [4240/5000] loss=0.2051 mem=0.51 hasmem=0.51 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26844.052365721,"data":"14:45:10 | INFO | xvla_v2 | [4260/5000] loss=0.1635 mem=0.47 hasmem=0.47 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26900.223163392,"data":"14:46:06 | INFO | xvla_v2 | [4280/5000] loss=0.0514 mem=0.48 hasmem=0.48 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":26956.267628206,"data":"14:47:02 | INFO | xvla_v2 | [4300/5000] loss=0.2006 mem=0.48 hasmem=0.48 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27012.330875945,"data":"14:47:58 | INFO | xvla_v2 | [4320/5000] loss=0.1867 mem=0.52 hasmem=0.52 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27068.411666833,"data":"14:48:54 | INFO | xvla_v2 | [4340/5000] loss=0.2566 mem=0.50 hasmem=0.49 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27124.509741758,"data":"14:49:50 | INFO | xvla_v2 | [4360/5000] loss=0.2060 mem=0.46 hasmem=0.46 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27180.438094444,"data":"14:50:46 | INFO | xvla_v2 | [4380/5000] loss=0.1512 mem=0.54 hasmem=0.53 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27236.451171261,"data":"14:51:42 | INFO | xvla_v2 | [4400/5000] loss=0.1948 mem=0.53 hasmem=0.52 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27292.456816844,"data":"14:52:38 | INFO | xvla_v2 | [4420/5000] loss=0.2373 mem=0.48 hasmem=0.48 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27348.41669835,"data":"14:53:34 | INFO | xvla_v2 | [4440/5000] loss=0.1401 mem=0.53 hasmem=0.53 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27404.524273539,"data":"14:54:30 | INFO | xvla_v2 | [4460/5000] loss=0.0616 mem=0.56 hasmem=0.56 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27460.546357709,"data":"14:55:26 | INFO | xvla_v2 | [4480/5000] loss=0.1695 mem=0.53 hasmem=0.53 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27516.679366399,"data":"14:56:22 | INFO | xvla_v2 | [4500/5000] loss=0.0645 mem=0.49 hasmem=0.49 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27517.002426301,"data":"14:56:23 | INFO | xvla_v2 | saved /kaggle/working/runs/f1/ckpt-4500\n"}
+,{"stream_name":"stdout","time":27573.143679847,"data":"14:57:19 | INFO | xvla_v2 | [4520/5000] loss=0.3269 mem=0.50 hasmem=0.50 2.82s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27629.286939988,"data":"14:58:15 | INFO | xvla_v2 | [4540/5000] loss=0.1337 mem=0.48 hasmem=0.47 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27685.455750819,"data":"14:59:11 | INFO | xvla_v2 | [4560/5000] loss=0.1963 mem=0.52 hasmem=0.52 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27741.607483899,"data":"15:00:07 | INFO | xvla_v2 | [4580/5000] loss=0.2398 mem=0.48 hasmem=0.47 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27797.773808983,"data":"15:01:03 | INFO | xvla_v2 | [4600/5000] loss=0.1086 mem=0.53 hasmem=0.53 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27853.898321423,"data":"15:01:59 | INFO | xvla_v2 | [4620/5000] loss=0.1129 mem=0.48 hasmem=0.47 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27910.011150559,"data":"15:02:56 | INFO | xvla_v2 | [4640/5000] loss=0.0873 mem=0.56 hasmem=0.56 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":27966.107425868,"data":"15:03:52 | INFO | xvla_v2 | [4660/5000] loss=0.1019 mem=0.49 hasmem=0.49 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28022.229953215,"data":"15:04:48 | INFO | xvla_v2 | [4680/5000] loss=0.1224 mem=0.50 hasmem=0.49 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28078.335760943,"data":"15:05:44 | INFO | xvla_v2 | [4700/5000] loss=0.0661 mem=0.52 hasmem=0.51 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28134.396782821,"data":"15:06:40 | INFO | xvla_v2 | [4720/5000] loss=0.0525 mem=0.51 hasmem=0.51 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28190.469562649,"data":"15:07:36 | INFO | xvla_v2 | [4740/5000] loss=0.0438 mem=0.49 hasmem=0.49 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28246.564216191,"data":"15:08:32 | INFO | xvla_v2 | [4760/5000] loss=0.0974 mem=0.47 hasmem=0.46 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28302.619461508,"data":"15:09:28 | INFO | xvla_v2 | [4780/5000] loss=0.3926 mem=0.51 hasmem=0.51 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28358.692393359,"data":"15:10:24 | INFO | xvla_v2 | [4800/5000] loss=0.1013 mem=0.52 hasmem=0.52 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28414.754803959,"data":"15:11:20 | INFO | xvla_v2 | [4820/5000] loss=0.0574 mem=0.51 hasmem=0.50 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28470.802416122,"data":"15:12:16 | INFO | xvla_v2 | [4840/5000] loss=0.0541 mem=0.49 hasmem=0.48 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28526.890737249,"data":"15:13:12 | INFO | xvla_v2 | [4860/5000] loss=0.1123 mem=0.45 hasmem=0.44 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28583.043558396,"data":"15:14:09 | INFO | xvla_v2 | [4880/5000] loss=0.2010 mem=0.55 hasmem=0.53 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28639.221509206,"data":"15:15:05 | INFO | xvla_v2 | [4900/5000] loss=0.0446 mem=0.51 hasmem=0.50 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28695.409252433,"data":"15:16:01 | INFO | xvla_v2 | [4920/5000] loss=0.1364 mem=0.44 hasmem=0.44 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28751.634445063,"data":"15:16:57 | INFO | xvla_v2 | [4940/5000] loss=0.2546 mem=0.50 hasmem=0.49 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28807.739739841,"data":"15:17:53 | INFO | xvla_v2 | [4960/5000] loss=0.2871 mem=0.51 hasmem=0.51 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28863.896065926,"data":"15:18:49 | INFO | xvla_v2 | [4980/5000] loss=0.1773 mem=0.51 hasmem=0.51 2.81s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28919.955207229,"data":"15:19:45 | INFO | xvla_v2 | [5000/5000] loss=0.2793 mem=0.47 hasmem=0.47 2.80s/upd vram=10.1G\n"}
+,{"stream_name":"stdout","time":28920.296327778,"data":"15:19:46 | INFO | xvla_v2 | saved /kaggle/working/runs/f1/ckpt-5000\n"}
+,{"stream_name":"stdout","time":28920.296354121,"data":"/usr/local/lib/python3.13/dist-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.\n"}
+,{"stream_name":"stdout","time":28920.296378223,"data":"  return func(*args, **kwargs)\n"}
+,{"stream_name":"stdout","time":28923.821464266,"data":"F1 step 5000 / 5000\n"}
+,{"stream_name":"stdout","time":28926.596990431,"data":"/kaggle/working/xvla_v2_f0_step5000.zip\n"}
+,{"stream_name":"stdout","time":28928.758019097,"data":"/kaggle/working/xvla_v2_f1_step5000.zip\n"}
+,{"stream_name":"stderr","time":28932.429668656,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":28932.429706097,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":28932.682468022,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":28932.682496252,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":28933.618348538,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":28933.800576318,"data":"[NbConvertApp] Writing 300540 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":28936.532380724,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":28937.172177634,"data":"[NbConvertApp] Writing 564022 bytes to __results__.html\n"}
+]

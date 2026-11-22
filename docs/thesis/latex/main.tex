@@ -61,26 +61,34 @@ POMDP & Quá trình quyết định Markov quan sát một phần\\
 FSM & Máy trạng thái hữu hạn\\
 LoRA & Thích ứng hạng thấp\\
 SFT & Tinh chỉnh có giám sát\\
+OSC & Bộ điều khiển không gian thao tác (Operational Space Controller)\\
 RQ & Câu hỏi nghiên cứu\\
 SR & Tỷ lệ lượt thực thi thành công\\
 SCR & Tỷ lệ mục tiêu thành phần đã hoàn thành\\
 RGB & Đỏ-lục-lam, biểu diễn ảnh màu\\
 IoU & Giao trên hợp giữa hai hộp giới hạn\\
-T1, T3 & Tác vụ nhấc và đặt lại bát một lần và ba lần\\
-B0 & Chính sách SmolVLA gốc\\
-F0 & Đối chứng thích ứng với cùng dữ liệu và ngân sách, bỏ đầu vào bộ nhớ\\
-F1 & Chính sách SmolVLA với adapter huấn luyện có bộ nhớ\\
-F1-off & Chính sách F1 với bộ nhớ bị tắt trong suy luận\\
-$H$ & Số bước trong chuỗi hành động dự đoán\\
-$s$ & Số hành động thực thi trước lần truy vấn tiếp theo\\
-$m_t$ & Trạng thái bộ nhớ khả dụng tại bước $t$\\
+LIBERO-10 & Nhóm 10 tác vụ chuỗi dài của LIBERO, dùng để đo duy trì kỹ năng\\
+T1, T3 & Tác vụ LIBERO-Mem nhấc và đặt lại bát một lần và ba lần\\
+OM, OS, OR, OO & Bốn nhóm năng lực bộ nhớ của LIBERO-Mem: chuyển động vật thể, trình tự tương tác, quan hệ giữa vật thể, che khuất vật thể\\
+B0 & Checkpoint đã công bố của một mô hình nền VLA, chưa qua tinh chỉnh của khóa luận\\
+F0 & Adapter đối chứng: cùng mô hình nền, dữ liệu và ngân sách với F1 nhưng chỉ nhận chỉ dẫn gốc\\
+F1 & Adapter được tinh chỉnh với lời nhắc có bộ nhớ sự kiện\\
+F1-off & Trọng số F1 nhưng chỉ nhận chỉ dẫn gốc khi suy luận\\
+Chế độ giám sát & Bộ điều phối chỉ ghi quyết định truy vấn sớm, không thực hiện; chính sách được truy vấn định kỳ\\
+Chế độ theo sự kiện & Bộ điều phối được phép truy vấn sớm khi bộ nhớ có dữ kiện mới đủ bằng chứng\\
+$H$ & Số bước trong đoạn hành động dự đoán\\
+$s$ & Số hành động thực thi trước lần truy vấn định kỳ tiếp theo\\
+$B$ & Ngân sách token của ngữ cảnh bộ nhớ\\
+$M_t$ & Trạng thái bộ nhớ sự kiện tại bước $t$\\
+$C_q$ & Ngữ cảnh văn bản chiếu từ bộ nhớ tại bước truy vấn $q$\\
 $o_t$ & Quan sát chính sách được phép sử dụng\\
 $x_t$ & Trạng thái đầy đủ của bài toán tại bước $t$\\
 $h_t$ & Lịch sử quan sát-hành động đến bước $t$\\
 $N$ & Số chu kỳ theo yêu cầu của tác vụ\\
 $z_t$ & Số chu kỳ đã hoàn tất theo định nghĩa tác vụ tại bước $t$\\
 $\hat z_t$ & Số chu kỳ bộ ghi đã xác nhận đến bước $t$\\
-$\tau_j,\upsilon_j$ & Thời điểm ước lượng sự kiện xảy ra và thời điểm bằng chứng khả dụng\\
+$\tau,\nu$ & Thời điểm ước lượng sự kiện xảy ra và thời điểm bằng chứng khả dụng\\
+$p$ & Số quan sát liên tiếp cần thiết để xác nhận một sự kiện\\
 \end{longtable}
 \mainmatter
 \input{content/chapter1}

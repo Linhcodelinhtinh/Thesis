@@ -2,11 +2,17 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Kiến trúc tổng thể của phương pháp. Bộ ghi cập nhật bộ nhớ sau từng bước quan sát. Bộ đọc trích xuất dữ kiện có căn cứ để chiếu thành văn bản cho VLA sinh đoạn hành động. Bộ điều phối giám sát trực tiếp thay đổi trong bộ nhớ để kích hoạt quyền ngắt đoạn hành động.}}{19}{figure.caption.2}%
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Sự khác biệt về tuổi thọ hiệu lực giữa sự kiện lịch sử và quan hệ hiện hành qua khoảng thời gian mất dấu hoặc che khuất.}}{21}{figure.caption.3}%
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Minh họa trục thời gian thể hiện mối quan hệ giữa thời điểm sự kiện diễn ra ($\tau $), thời điểm tích lũy đủ bằng chứng xác nhận ($\nu $), và thời điểm chính sách VLA truy vấn thông tin ($q$).}}{23}{figure.caption.4}%
-\contentsline {figure}{\numberline {3.4}{\ignorespaces Minh họa cơ chế truy vấn sớm theo bằng chứng. Khi bộ nhớ xác nhận hoàn thành mốc tiến độ tại bước 2, bộ điều phối kích hoạt truy vấn sớm tại bước 3 thay vì chờ hết chu kỳ định kỳ $K = 10$.}}{28}{figure.caption.5}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Vòng điều khiển VLA có bộ nhớ sự kiện}}{18}{figure.caption.2}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Sự kiện lịch sử và quan hệ hiện tại khi vật bị che khuất}}{21}{figure.caption.3}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Thời điểm xảy ra, xác nhận và truy vấn sự kiện}}{24}{figure.caption.4}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Phần đóng băng và phần tinh chỉnh LoRA trong SmolVLA}}{28}{figure.caption.5}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Truy vấn sớm khi có bằng chứng mới}}{29}{figure.caption.6}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Các khung trích từ video của lượt T1 event-projected thành công (seen state 7, seed 42). Hàng trên là camera ngoài, hàng dưới là camera cổ tay. Bước 142 có truy vấn theo bằng chứng; bộ chấm xác nhận mốc tại bước 409 và task kết thúc thành công ở bước 1.000. Đây là một lượt trong cohort development, không phải bằng chứng nhân quả riêng lẻ.}}{34}{figure.caption.8}%
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Mẫu lời nhắc bộ nhớ và ví dụ từ nhật ký T1}}{34}{figure.caption.7}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Ba mốc thao tác của lượt T3 thành công trong lần chạy thử sơ bộ}}{37}{figure.caption.9}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Lượt T1 thành công có truy vấn sớm}}{38}{figure.caption.11}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Cận cảnh robot gắp và nhấc bát trong lượt T1}}{38}{figure.caption.12}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Số lượt thành công theo tác vụ của SmolVLA trên LIBERO-10}}{42}{figure.caption.16}%
+\contentsline {figure}{\numberline {4.6}{\ignorespaces F1-off nhấc sách nhưng chưa đặt đúng ngăn trong LIBERO-10}}{42}{figure.caption.17}%
 \addvspace {10\p@ }
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

@@ -116,11 +116,12 @@ def validate_runtime(manifest, writer, renderer, *, writer_override=None,
         # when the caller supplies the source and config snapshot captured during
         # preflight, then verify that the same implementation is active now.
         contract = verify_memory_code(manifest["memory_provenance"], verify_files_on_disk=False)
-        from src.memory.relation_writer_versions import (
-            RELATION_WRITERS,
-            versioned_relation_source_hashes,
+        from src.memory.relation_sparse_versions import (
+            ALL_RELATION_WRITERS as RELATION_WRITERS,
+            core_version,
+            relation_config_for,
+            source_hashes_for,
         )
-        from src.memory.relation_pipeline import relation_config
         from src.interfaces.relation_memory_text import RelationMemoryRenderer
         from src.interfaces.relation_memory_text_v3 import RelationMemoryRendererV3
 
@@ -128,12 +129,13 @@ def validate_runtime(manifest, writer, renderer, *, writer_override=None,
             raise ValueError("Unknown explicit runtime writer override")
         if not runtime_writer_source_sha256 or not runtime_writer_config:
             raise ValueError("Runtime writer override requires its preflight source/config snapshot")
-        if versioned_relation_source_hashes(ROOT, writer_override) != runtime_writer_source_sha256:
+        if source_hashes_for(ROOT, writer_override) != runtime_writer_source_sha256:
             raise ValueError("Runtime writer source changed after preflight")
-        expected_config = relation_config(renderer.strategy, writer_override)
+        expected_config = relation_config_for(renderer.strategy, writer_override)
         if runtime_writer_config != expected_config:
             raise ValueError("Runtime writer config changed after preflight")
-        expected_renderer = (RelationMemoryRendererV3 if writer_override == "rgb_relations_v3"
+        # A sparse writer follows the prompt contract of the dense writer it wraps.
+        expected_renderer = (RelationMemoryRendererV3 if core_version(writer_override) == "rgb_relations_v3"
                              else RelationMemoryRenderer)
         if (not isinstance(writer, RELATION_WRITERS[writer_override])
                 or writer.VERSION != writer_override

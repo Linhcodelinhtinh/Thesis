@@ -1,0 +1,30 @@
+{
+ "arm": "F1",
+ "base_checkpoint": "2toINF/X-VLA-Libero",
+ "base_revision": "129e71460678b7236cee6fc9707f09d9fa0c3590",
+ "xvla_commit": "6c4ecfb8be458ae7c0c96094e4b0add4174f4fe2",
+ "steps": 5000,
+ "effective_batch": 32,
+ "lr": 5e-05,
+ "freeze_steps": 0,
+ "warmup_steps": 250,
+ "cosine": true,
+ "min_lr_ratio": 0.1,
+ "lr_coef": 0.5,
+ "seed": 42,
+ "trainable_parameters": {
+  "vlm": 4849664,
+  "transformer_lora": 3178496,
+  "modules_to_save": 3840600
+ },
+ "split_lock_sha256": "8275e468382835c06f9cc738361df26b7452965850878e7ca882f392c9ca4165",
+ "actions_h5_sha256": "a4d2314d1056b887e90143f09cb1d43f0cf1bf64be584321f9a3d844e069b7a1",
+ "memory_source": "predicted_rgb_relations_v1",
+ "prompt_mode_mem": "memory",
+ "files": {
+  "state.json": "9673d0ca7bf999dc75e5094fc224066c035f5a63a80b8050ac400b4072932450",
+  "README.md": "b0e66be50970321db866618c7d02d7fe8528e89fa2c67048149b97bc078f6471",
+  "adapter_config.json": "53d31320210c7d40dc6ea8704ed9e2215dad1c46eb2ce4d63ac31cf94b8f5e33",
+  "adapter_model.safetensors": "bcf92acc1926faefc1aab05d89d45c8b36aec9c463b64168fd1625eeecb563f8"
+ }
+}

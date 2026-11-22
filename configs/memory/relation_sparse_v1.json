@@ -1,0 +1,14 @@
+{
+  "keyframe_interval": 8,
+  "align_keyframes": true,
+  "dense_prefix_steps": 20,
+  "rest_confirm_frames": 2,
+  "dense_while_engaged": true,
+  "engaged_aperture_meters": 0.065,
+  "probe_score": 0.15,
+  "probe_motion_ratio": 0.08,
+  "probe_size_ratio": 0.15,
+  "probe_plate_motion_ratio": 0.08,
+  "probe_wrist": true,
+  "ring_buffer_frames": 16
+}

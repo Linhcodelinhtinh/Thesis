@@ -1,0 +1,75 @@
+{
+ "status": "complete",
+ "split_lock_sha256": "8275e468382835c06f9cc738361df26b7452965850878e7ca882f392c9ca4165",
+ "source_manifest_sha256": "fd5e7dca8d22598f3c3598af5c9bd35f775f98f0902b63c5787731e178522f87",
+ "memory_source": "predicted_rgb_relations_v1",
+ "rot_frame": "panda_rz_m90",
+ "train_episodes": {
+  "base": 400,
+  "mem": 198
+ },
+ "frames": {
+  "base": 109945,
+  "mem": 42857
+ },
+ "sampler_frames": {
+  "shown_with_memory": 38850,
+  "shown_total_base": 105945,
+  "shown_total_mem": 40877
+ },
+ "zero_rotation_rows": 48334,
+ "clipped_rows": 0,
+ "tracking": {
+  "base": {
+   "pos_track_median_m": {
+    "median": 0.020154280879721716,
+    "max": 0.03229501751996681
+   },
+   "pos_track_p95_m": {
+    "median": 0.03644368816273311,
+    "max": 0.05506763338625517
+   },
+   "rot_track_median_deg": {
+    "median": 1.476746552492552,
+    "max": 4.5631127283691955
+   },
+   "rot_track_p95_deg": {
+    "median": 4.078154487167396,
+    "max": 10.418966434872178
+   }
+  },
+  "mem": {
+   "pos_track_median_m": {
+    "median": 0.01475475598035457,
+    "max": 0.014880100081516991
+   },
+   "pos_track_p95_m": {
+    "median": 0.02088409022039614,
+    "max": 0.02371731564868088
+   },
+   "rot_track_median_deg": {
+    "median": 0.12350404572369644,
+    "max": 0.23572618357919412
+   },
+   "rot_track_p95_deg": {
+    "median": 0.6585702991368145,
+    "max": 1.462912456362226
+   }
+  }
+ },
+ "token_check": {
+  "distinct_prompts": 30,
+  "max_tokens": 28,
+  "limit": 50,
+  "over_limit": 0,
+  "examples_over": [],
+  "longest": "lift the bowl and place it back on the plate 3 times Memory: bowl: 0 observed returns. History incomplete. Lift observed."
+ },
+ "actions_h5_sha256": "a4d2314d1056b887e90143f09cb1d43f0cf1bf64be584321f9a3d844e069b7a1",
+ "code_sha256": {
+  "abs_actions.py": "3636b39fa09f7ddb36d8872cdec7005f6f837f1ee4a2c4fb4e3c4f17efd5964a",
+  "shard_handler.py": "99223373286ba953b3260bc1eb988853b2b9c62ac32aeb7d4358a9b48303dd4c",
+  "build_xvla_v2_dataset.py": "82b3c38969907768c8fbd2a3152e124fea7a90b2001efe345eb92a11c06907b8"
+ },
+ "note": "Analytic goals; confirm frame/offset with check_xvla_alignment.py (and optionally sim replay)"
+}

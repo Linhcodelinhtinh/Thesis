@@ -52,8 +52,11 @@ Từ thư mục gốc repository, dùng Python cho công cụ tài liệu; khôn
 ```powershell
 python -X utf8 docs/thesis/tools/collect_evidence.py
 python -X utf8 docs/thesis/tools/make_figures.py
+python -X utf8 docs/thesis/tools/build_thesis_figures.py
 python -X utf8 docs/thesis/tools/validate_draft.py
 ```
+
+`build_thesis_figures.py` dùng Matplotlib và FFmpeg để tạo các sơ đồ, biểu đồ E6 và dải ảnh trích từ video. Danh mục nguồn ghi đường dẫn, SHA-256, chỉ số khung, vùng cắt và góc xoay của các dải ảnh được tạo bởi lệnh này. [Nguồn hình thực nghiệm](evidence/thesis_figure_sources.json) · [Nguồn ảnh T1 và T3](evidence/closed_loop_cases.md).
 
 Collector chỉ đọc artifact và ghi snapshot trong thư mục này, không chạy simulator, policy hay training. Snapshot bao gồm split/alignment V2, replay quyết định, T7/T8/T9/T10 writer audit, author-action runtime diagnostics và T8 state-parity diagnostic. Các lần kiểm tra sau có thể nhìn thấy working tree khác; giữ snapshot đã dùng cho bản nộp cùng Git revision và hashes.
 
@@ -67,6 +70,6 @@ xelatex -interaction=nonstopmode -halt-on-error -file-line-error -no-shell-escap
 xelatex -interaction=nonstopmode -halt-on-error -file-line-error -no-shell-escape main.tex
 ```
 
-Bản PDF nháp gồm 47 trang. Chương 3 có sáu mục chính và nằm ở trang in 15–27. Chương 4 nằm ở trang in 28–31. SHA-256 `9e659bc5dc3eb41de25a9b4bd6ba5b786366fe84d2ecc5b08735cb58bacc679e`. [Mở PDF](../../output/pdf/khoa-luan-luu-quang-linh-ban-thao.pdf) · [Biên bản kiểm định](evidence/document_validation.json) · [Nguồn video và log Chương 4](evidence/closed_loop_cases.md)
+Bản PDF nháp gồm 63 trang và 11 hình trong Chương 3–4. SHA-256 `9bc2a73fadcd05fd91a7ff01816a99e5b6d11727bd647310e1febb830150ef42`. [Mở PDF](../../output/pdf/khoa-luan-luu-quang-linh-ban-thao.pdf) · [Nguồn video và log Chương 4](evidence/closed_loop_cases.md).
 
 Lời cảm ơn và lời cam đoan là nội dung cá nhân cần tác giả tự hoàn thiện, đọc và xác nhận trước khi nộp; bản thảo không tạo chữ ký hoặc xác nhận thay tác giả.

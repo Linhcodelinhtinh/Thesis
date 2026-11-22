@@ -12,10 +12,11 @@ Nhat Chung, Taisei Hanyu, Toan Nguyen, Huy Le, Frederick Bumgarner, Duy Minh~Ho
   Ngan Le.
 \newblock Rethinking progression of memory state in robotic manipulation: An
   object-centric perspective.
-\newblock Proceedings of the AAAI Conference on Human Computation and
-  Crowdsourcing / AAAI 2026, 40(5), 3407--3415; bản arXiv:2511.11478v3, 2026.
-\newblock \url{https://doi.org/10.1609/aaai.v40i5.37337}. Phiên bản paper
-  tách biệt với revision code sử dụng trong thực nghiệm.
+\newblock {\em Proceedings of the AAAI Conference on Artificial Intelligence},
+  40(5):3407--3415, 2026.
+\newblock Phiên bản paper tách biệt với revision code sử dụng trong
+  thực nghiệm.
+  \url{https://ojs.aaai.org/index.php/AAAI/article/view/37337}.
 
 \bibitem{robomme2026}
 Yinpei Dai, Hongze Fu, Jayjun Lee, Yuejiang Liu, Haoran Zhang, Jianing Yang,
@@ -43,17 +44,17 @@ Marcel Torne, Karl Pertsch, Homer Walke, Kyle Vedder, Suraj Nair, Brian Ichter,
   Finn, and Danny Driess.
 \newblock {MEM}: Multi-scale embodied memory for vision language action models.
 \newblock arXiv:2603.03596v2, 2026.
-\newblock \url{https://arxiv.org/abs/2603.03596v2}. Phiên bản PDF do tác
-  giả khóa luận cung cấp.
+\newblock Bản mới nhất được rà soát: v2.
+  \url{https://arxiv.org/abs/2603.03596v2}.
 
 \bibitem{memoryvla2026}
 Hao Shi, Bin Xie, Yingfei Liu, Lin Sun, Fengrong Liu, Tiancai Wang, Erjin Zhou,
   Haoqiang Fan, Xiangyu Zhang, and Gao Huang.
 \newblock {MemoryVLA}: Perceptual-cognitive memory in vision-language-action
   models for robotic manipulation.
-\newblock ICLR 2026; bản arXiv:2508.19236v2, 2026.
-\newblock \url{https://arxiv.org/abs/2508.19236v2}. Dùng phiên bản PDF
-  trong bộ tài liệu tham chiếu.
+\newblock In {\em The Fourteenth International Conference on Learning
+  Representations (ICLR 2026)}, 2026.
+\newblock \url{https://openreview.net/forum?id=54U3XHf7qq}.
 
 \bibitem{clockvla2026}
 Chubin Zhang and Bo~An.
@@ -63,11 +64,22 @@ Chubin Zhang and Bo~An.
 \newblock \url{https://arxiv.org/abs/2611.14488v1}.
 
 \bibitem{eventsync2026}
-Shuaihang Yuan et~al.
-\newblock {EventSync}: Event-synchronized multi-modal memory for robotic
+Jingjiao Zhao, Dong Jing, Mingyu Cao, Ruochuan Shi, Xiansheng Chen, Pengwei
+  Wang, and Zhiwu Lu.
+\newblock {EventSync}: Event-driven memory updates for history-dependent
   manipulation.
-\newblock arXiv:2610.27917, 2026.
+\newblock arXiv:2610.27917v1, 2026.
 \newblock \url{https://arxiv.org/abs/2610.27917}.
+
+\bibitem{xvla2025}
+Jinliang Zheng, Jianxiong Li, Zhihao Wang, Dongxiu Liu, Xirui Kang, Yuchun
+  Feng, Yinan Zheng, Jiayin Zou, Yilun Chen, Jia Zeng, Ya-Qin Zhang, Jiangmiao
+  Pang, Jingjing Liu, Tai Wang, and Xianyu Zhan.
+\newblock {X-VLA}: Soft-prompted transformer as scalable cross-embodiment
+  vision-language-action model.
+\newblock In {\em The Fourteenth International Conference on Learning
+  Representations (ICLR 2026)}, 2026.
+\newblock \url{https://openreview.net/forum?id=kt51kZH4aG}.
 
 \bibitem{liberomemSource}
 {LIBERO-Mem contributors}.
@@ -90,88 +102,95 @@ Shilong Liu, Zhaoyang Zeng, Tianhe Ren, Feng Li, Hao Zhang, Jie Yang, Qing
   Jiang, Chunyuan Li, Jianwei Yang, Hang Su, Jun Zhu, and Lei Zhang.
 \newblock Grounding {DINO}: Marrying {DINO} with grounded pre-training for
   open-set object detection.
-\newblock arXiv:2303.05499v5, 2024.
-\newblock \url{https://arxiv.org/abs/2303.05499v5}.
+\newblock In {\em Computer Vision -- ECCV 2024: 18th European Conference,
+  Milan, Italy, September 29--October 4, 2024, Proceedings, Part XLVII}, pages
+  38--55, 2024.
+\newblock \url{https://doi.org/10.1007/978-3-031-72970-6_3}.
 
 \bibitem{lora2021}
-Edward~J. Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean
-  Wang, Lu~Wang, and Weizhu Chen.
+Edward~J. Hu, Yuanzhi Li, Yelong Shen, Shean Wang, Phillip Wallis, Lu~Wang,
+  Zeyuan Allen-Zhu, and Weizhu Chen.
 \newblock {LoRA}: Low-rank adaptation of large language models.
-\newblock arXiv:2106.09685v1, 2021.
-\newblock \url{https://arxiv.org/abs/2106.09685v1}.
+\newblock In {\em The Tenth International Conference on Learning
+  Representations (ICLR 2022)}, 2022.
+\newblock \url{https://openreview.net/forum?id=nZeVKeeFYf9}.
 
 \bibitem{saycan2022}
-Michael Ahn, Anthony Brohan, Noah Brown, Yevgen Chebotar, Omar Cortes, Byron
-  David, Chelsea Finn, Chuyuan Fu, Keerthana Gopalakrishnan, Karol Hausman,
-  Alex Herzog, Daniel Ho, Jasmine Hsu, Julian Ibarz, Brian Ichter, Alex Irpan,
-  Eric Jang, Rosario~Jauregui Ruano, Kyle Jeffrey, Sally Jesmonth, Nikhil~J.
-  Joshi, Ryan Julian, Dmitry Kalashnikov, Yuheng Kuang, Kuang-Huei Lee, Sergey
-  Levine, Yao Lu, Linda Luu, Carolina Parada, Peter Pastor, Jornell Quiambao,
-  Kanishka Rao, Jarek Rettinghouse, Diego Reyes, Pierre Sermanet, Nicolas
-  Sievers, Clayton Tan, Alexander Toshev, Vincent Vanhoucke, Fei Xia, Ted Xiao,
-  Peng Xu, Sichun Xu, Mengyuan Yan, and Andy Zeng.
+Brian Ichter, Anthony Brohan, Yevgen Chebotar, Chelsea Finn, Karol Hausman,
+  Alexander Herzog, Daniel Ho, Julian Ibarz, Alex Irpan, Eric Jang, Ryan
+  Julian, Dmitry Kalashnikov, Sergey Levine, Yao Lu, Carolina Parada, Kanishka
+  Rao, Pierre Sermanet, Alexander~T. Toshev, Vincent Vanhoucke, Fei Xia, Ted
+  Xiao, Peng Xu, Mengyuan Yan, Noah Brown, Michael Ahn, Omar Cortes, Nicolas
+  Sievers, Clayton Tan, Sichun Xu, Diego Reyes, Jarek Rettinghouse, Jornell
+  Quiambao, Peter Pastor, Linda Luu, Kuang-Huei Lee, Yuheng Kuang, Sally
+  Jesmonth, Nikhil~J. Joshi, Kyle Jeffrey, Rosario~Jauregui Ruano, Jasmine Hsu,
+  Keerthana Gopalakrishnan, Byron David, Andy Zeng, and Chuyuan~Kelly Fu.
 \newblock Do as {I} can, not as {I} say: Grounding language in robotic
   affordances.
-\newblock In {\em Proceedings of the 6th Conference on Robot Learning}, volume
-  205 of {\em Proceedings of Machine Learning Research}, pages 264--277, 2023.
-\newblock \url{https://proceedings.mlr.press/v205/ahn23a.html}.
+\newblock In {\em Proceedings of The 6th Conference on Robot Learning}, volume
+  205 of {\em Proceedings of Machine Learning Research}, pages 287--318, 2023.
+\newblock \url{https://proceedings.mlr.press/v205/ichter23a.html}.
 
 \bibitem{innermonologue2022}
 Wenlong Huang, Fei Xia, Ted Xiao, Harris Chan, Jacky Liang, Pete Florence, Andy
-  Zeng, Jonathan Tompson, Igor Mordatch, Yevgen Chebotar, Pierre Sermanet, Noah
-  Brown, Tomas Jackson, Linda Luu, Sergey Levine, Karol Hausman, and Brian
+  Zeng, Jonathan Tompson, Igor Mordatch, Yevgen Chebotar, Pierre Sermanet,
+  Tomas Jackson, Noah Brown, Linda Luu, Sergey Levine, Karol Hausman, and Brian
   Ichter.
-\newblock Inner monologue: Embodied reasoning through language models.
-\newblock In {\em Proceedings of the 6th Conference on Robot Learning}, volume
+\newblock Inner monologue: Embodied reasoning through planning with language
+  models.
+\newblock In {\em Proceedings of The 6th Conference on Robot Learning}, volume
   205 of {\em Proceedings of Machine Learning Research}, pages 1769--1782,
   2023.
-\newblock \url{https://proceedings.mlr.press/v205/huang23a.html}.
+\newblock \url{https://proceedings.mlr.press/v205/huang23c.html}.
 
 \bibitem{codeaspolicies2023}
 Jacky Liang, Wenlong Huang, Fei Xia, Peng Xu, Karol Hausman, Brian Ichter, Pete
   Florence, and Andy Zeng.
 \newblock Code as policies: Language model programs for embodied control.
-\newblock {\em IEEE Robotics and Automation Letters}, 8(8):4793--4800, 2023.
-\newblock \url{https://doi.org/10.1109/LRA.2023.3289033}.
+\newblock In {\em 2023 IEEE International Conference on Robotics and Automation
+  (ICRA)}, pages 9493--9500, 2023.
+\newblock \url{https://doi.org/10.1109/ICRA48891.2023.10160591}.
 
 \bibitem{voxposer2023}
 Wenlong Huang, Chen Wang, Ruohan Zhang, Yunzhu Li, Jiajun Wu, and Li~Fei-Fei.
 \newblock {VoxPoser}: Composable 3d value maps for robotic manipulation with
   language models.
-\newblock In {\em Proceedings of the 7th Conference on Robot Learning}, volume
+\newblock In {\em Proceedings of The 7th Conference on Robot Learning}, volume
   229 of {\em Proceedings of Machine Learning Research}, pages 540--562, 2023.
-\newblock \url{https://proceedings.mlr.press/v229/huang23c.html}.
+\newblock \url{https://proceedings.mlr.press/v229/huang23b.html}.
 
 \bibitem{garrett2021tamp}
-Caelan~Reed Garrett, Tom{\'a}s Lozano-P{\'e}rez, and Leslie~Pack Kaelbling.
+Caelan~Reed Garrett, Rohan Chitnis, Rachel Holladay, Beomjoon Kim, Tom Silver,
+  Leslie~Pack Kaelbling, and Tom{\'a}s Lozano-P{\'e}rez.
 \newblock Integrated task and motion planning.
 \newblock {\em Annual Review of Control, Robotics, and Autonomous Systems},
   4:265--293, 2021.
-\newblock \url{https://doi.org/10.1146/annurev-control-061920-093710}.
+\newblock \url{https://doi.org/10.1146/annurev-control-091420-084139}.
 
 \bibitem{rt12022}
 Anthony Brohan, Noah Brown, Justice Carbajal, Yevgen Chebotar, Joseph Dabis,
-  Chelsea Finn, Keerthana Gopalakrishnan, Karol Hausman, Alex Herzog, Jasmine
-  Hsu, Julian Ibarz, Brian Ichter, Alex Irpan, Tomas Jackson, Sally Jesmonth,
-  Nikhil~J. Joshi, Ryan Julian, Dmitry Kalashnikov, Yuheng Kuang, Isabel Leal,
-  Kuang-Huei Lee, Sergey Levine, Yao Lu, Utsav Malla, Deeksha Manjunath, Igor
-  Mordatch, Ofir Nachum, Carolina Parada, Jichao Peng, Roberto Martin-Martin,
-  Pierre Sermanet, Paul~R. Shankland, Dhruv Shah, Quan Vuong, Alexander Toshev,
-  Vincent Vanhoucke, Fei Xia, Ted Xiao, Peng Xu, Sichun Xu, Tianhe Yu, and Andy
-  Zeng.
+  Chelsea Finn, Keerthana Gopalakrishnan, Karol Hausman, Alexander Herzog,
+  Jasmine Hsu, Julian Ibarz, Brian Ichter, Alex Irpan, Tomas Jackson, Sally
+  Jesmonth, Nikhil Joshi, Ryan Julian, Dmitry Kalashnikov, Yuheng Kuang, Isabel
+  Leal, Kuang-Huei Lee, Sergey Levine, Yao Lu, Utsav Malla, Deeksha Manjunath,
+  Igor Mordatch, Ofir Nachum, Carolina Parada, Jodilyn Peralta, Emily Perez,
+  Karl Pertsch, Jornell Quiambao, Kanishka Rao, Michael~S. Ryoo, Grecia
+  Salazar, Pannag~R. Sanketi, Kevin Sayed, Jaspiar Singh, Sumedh Sontakke,
+  Austin Stone, Clayton Tan, Huong Tran, Vincent Vanhoucke, Steve Vega, Quan~H.
+  Vuong, Fei Xia, Ted Xiao, Peng Xu, Sichun Xu, Tianhe Yu, and Brianna
+  Zitkovich.
 \newblock {RT-1}: Robotics transformer for real-world control at scale.
-\newblock In {\em Robotics: Science and Systems XIX}, 2023.
-\newblock \url{https://doi.org/10.15607/RSS.2023.XIX.017}.
+\newblock In {\em Proceedings of Robotics: Science and Systems XIX}, 2023.
+\newblock \url{https://doi.org/10.15607/RSS.2023.XIX.025}.
 
 \bibitem{octo2024}
-{Octo Model Team}, Dibya Ghosh, Homer Walke, Karl Pertsch, Kevin Black, Oier
-  Mees, Sudeep Dasari, Joey Hejna, Tobias Kreiman, Charles Xu, Jianlan Luo,
-  You~Liang Tan, Lawrence~Yunliang Chen, Pannag~R. Sanketi, Quan Vuong, Ted
-  Xiao, Dorsa Sadigh, Chelsea Finn, and Sergey Levine.
-\newblock Octo: An open-source generalist robot policy for navigation and
-  manipulation.
-\newblock In {\em Robotics: Science and Systems XX}, 2024.
-\newblock \url{https://doi.org/10.15607/RSS.2024.XX.077}.
+Dibya Ghosh, Homer~Rich Walke, Karl Pertsch, Kevin Black, Oier Mees, Sudeep
+  Dasari, Joey Hejna, Tobias Kreiman, Charles Xu, Jianlan Luo, You~Liang Tan,
+  Lawrence~Yunliang Chen, Quan Vuong, Ted Xiao, Pannag~R. Sanketi, Dorsa
+  Sadigh, Chelsea Finn, and Sergey Levine.
+\newblock {Octo}: An open-source generalist robot policy.
+\newblock In {\em Proceedings of Robotics: Science and Systems XX}, 2024.
+\newblock \url{https://doi.org/10.15607/RSS.2024.XX.090}.
 
 \bibitem{smoLSTM2026}
 Jan-Gerrit Habekost, Parsa~Mastouri Kashani, Connor G\"ade, Matthias Kerzel,
@@ -179,7 +198,9 @@ Jan-Gerrit Habekost, Parsa~Mastouri Kashani, Connor G\"ade, Matthias Kerzel,
 \newblock {SmoLSTM}: A compact vision-language-action model with recurrent
   memory that persists.
 \newblock arXiv:2609.22854v1, 2026.
-\newblock \url{https://arxiv.org/abs/2609.22854v1}.
+\newblock Bản arXiv; bài được ghi là submitted to ICRA 2027, chưa
+  phải bản xuất bản hội nghị.
+  \url{https://arxiv.org/abs/2609.22854v1}.
 
 \bibitem{imep2026}
 Keyuan Luo, Yi~Xie, Wanyun Ling, Yuanzhe Li, Ziyue Li, and Zhuoqi Zeng.
@@ -197,11 +218,42 @@ Rodrigo~Toro Icarte, Toryn Klassen, Richard Valenzano, and Sheila McIlraith.
   2107--2116, 2018.
 \newblock \url{https://proceedings.mlr.press/v80/icarte18a.html}.
 
+\bibitem{rt22023}
+Brianna Zitkovich, Tianhe Yu, Sichun Xu, Peng Xu, Ted Xiao, Fei Xia, Jialin Wu,
+  Paul Wohlhart, Stefan Welker, Ayzaan Wahid, Quan Vuong, Vincent Vanhoucke,
+  Huong Tran, Radu Soricut, Anikait Singh, Jaspiar Singh, Pierre Sermanet,
+  Pannag~R. Sanketi, Grecia Salazar, Michael~S. Ryoo, Krista Reymann, Kanishka
+  Rao, Karl Pertsch, Igor Mordatch, Henryk Michalewski, Yao Lu, Sergey Levine,
+  Lisa Lee, Tsang-Wei~Edward Lee, Isabel Leal, Yuheng Kuang, Dmitry
+  Kalashnikov, Ryan Julian, Nikhil~J. Joshi, Alex Irpan, Brian Ichter, Jasmine
+  Hsu, Alexander Herzog, Karol Hausman, Keerthana Gopalakrishnan, Chuyuan Fu,
+  Pete Florence, Chelsea Finn, Kumar~Avinava Dubey, Danny Driess, Tianli Ding,
+  Krzysztof~Marcin Choromanski, Xi~Chen, Yevgen Chebotar, Justice Carbajal,
+  Noah Brown, Anthony Brohan, Montserrat~Gonzalez Arenas, and Kehang Han.
+\newblock {RT-2}: Vision-language-action models transfer web knowledge to
+  robotic control.
+\newblock In {\em Proceedings of The 7th Conference on Robot Learning}, volume
+  229 of {\em Proceedings of Machine Learning Research}, pages 2165--2183,
+  2023.
+\newblock \url{https://proceedings.mlr.press/v229/zitkovich23a.html}.
+
+\bibitem{openvla2024}
+Moo~Jin Kim, Karl Pertsch, Siddharth Karamcheti, Ted Xiao, Ashwin Balakrishna,
+  Suraj Nair, Rafael Rafailov, Ethan~P. Foster, Pannag~R. Sanketi, Quan Vuong,
+  Thomas Kollar, Benjamin Burchfiel, Russ Tedrake, Dorsa Sadigh, Sergey Levine,
+  Percy Liang, and Chelsea Finn.
+\newblock {OpenVLA}: An open-source vision-language-action model.
+\newblock In {\em Proceedings of The 8th Conference on Robot Learning}, volume
+  270 of {\em Proceedings of Machine Learning Research}, pages 2679--2713,
+  2025.
+\newblock \url{https://proceedings.mlr.press/v270/kim25c.html}.
+
 \bibitem{flowmatching2023}
 Yaron Lipman, Ricky T.~Q. Chen, Heli Ben-Hamu, Maximilian Nickel, and Matt Le.
 \newblock Flow matching for generative modeling.
-\newblock arXiv:2210.02747v2, 2023.
-\newblock \url{https://arxiv.org/abs/2210.02747v2}.
+\newblock In {\em The Eleventh International Conference on Learning
+  Representations (ICLR 2023)}, 2023.
+\newblock \url{https://openreview.net/forum?id=PqvMRDCJT9t}.
 
 \bibitem{smolvlaCheckpoint}
 {LeRobot contributors}.
@@ -216,16 +268,17 @@ Octi Zhang, Mateo~Guaman Castro, Patrick Yin, Ignacio Dagnino, Abhishek Gupta,
   Rosario Scalise, and Byron Boots.
 \newblock A balanced data diet: Addressing the exploration bottleneck in
   mega-scale {RL} for robot control.
-\newblock CoRL 2026; bản arXiv:2610.12465v1, 2026.
-\newblock \url{https://arxiv.org/abs/2610.12465v1}. Dùng phiên bản PDF
-  trong bộ tài liệu tham chiếu.
+\newblock In {\em Conference on Robot Learning (CoRL)}, 2026.
+\newblock \url{https://sgs-rl.github.io/}.
 
 \bibitem{libero2023}
 Bo~Liu, Yifeng Zhu, Chongkai Gao, Yihao Feng, Qiang Liu, Yuke Zhu, and Peter
   Stone.
 \newblock {LIBERO}: Benchmarking knowledge transfer for lifelong robot
   learning.
-\newblock arXiv:2306.03310v1, 2023.
-\newblock \url{https://arxiv.org/abs/2306.03310v1}.
+\newblock In {\em Advances in Neural Information Processing Systems 36 (NeurIPS
+  2023), Datasets and Benchmarks Track}, 2023.
+\newblock
+  \url{https://proceedings.neurips.cc/paper_files/paper/2023/hash/8c3c666820ea055a77726d66fc7d447f-Abstract-Datasets_and_Benchmarks.html}.
 
 \end{thebibliography}

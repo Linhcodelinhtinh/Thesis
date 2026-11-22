@@ -375,7 +375,7 @@
     {
       "id": "closed_loop_case_provenance",
       "path": "docs/thesis/evidence/closed_loop_cases.md",
-      "sha256": "95cf7c7d5e67a615a374a171ea1b8338fce7bad33dec61ba03fa9d5c136af0d2",
+      "sha256": "ad8d0e179e4a8058cdf7bae4d990021d8416953613709da4cce43559c92c1d0c",
       "description": "Frame selection, crop coordinates, and outcome derivation for the reported closed-loop cases, including the D2 event pilot and the offline E2 projected-memory shadow replay."
     },
     {
@@ -818,9 +818,9 @@
     },
     {
       "id": "t3_success_figure",
-      "path": "docs/thesis/figures/libero_mem_t3_success.png",
-      "sha256": "0f2be1feb7d53077740d68fe5d927531b684c9c5968ed3e4f845dd0ddf69e69f",
-      "description": "Crops from the original two camera recordings at frames 190, 626, 863 and 1000."
+      "path": "docs/thesis/figures/t3-ba-moc.png",
+      "sha256": "0803b26d802e59b7e09c50addc3817ea32b282cd006d8ad8110133b9f3f1ac98",
+      "description": "Crops from both original camera recordings at frames 190, 626, 863 and 1000, rotated 180 degrees for display."
     },
     {
       "id": "t3_success_memory",
@@ -1058,14 +1058,14 @@
     },
     {
       "id": "d2_t1_event_success_crop",
-      "path": "docs/thesis/figures/libero_mem_d2_event_t1_state7_success.png",
-      "sha256": "bb749b5fcf541d0450edc655c9023355fc6f63f6f4aafb77e586d054dba6a399",
+      "path": "docs/thesis/figures/t1-truy-van-som.png",
+      "sha256": "e8a5ba6f30fb849ab728e92754fadab6434156b2a96b114c3997a56cd03e74ba",
       "description": "Contact sheet cropped from the actual successful D2 event-mode T1 state-7 video."
     },
     {
       "id": "d2_t1_event_success_receipt",
       "path": "docs/thesis/evidence/d2_t1_event_success_video_20261121.json",
-      "sha256": "c50d871c41d7dba50b90cf5755da83d6636dc16b5f86cb99339e1dbef5deaabf",
+      "sha256": "075fedeac7cdc8e85920bd4ddfa4765313624c8e0ffff31bbf8ab0b531fb9571",
       "description": "Provenance receipt for the D2 event-mode successful T1 rollout and its video crop."
     },
     {

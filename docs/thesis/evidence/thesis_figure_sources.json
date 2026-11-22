@@ -1,0 +1,91 @@
+{
+  "smolvla_lora": {
+    "paper": "https://arxiv.org/abs/2506.01844v1",
+    "checkpoint_config": {
+      "path": "resources/checkpoints/smolvla_libero/config.json",
+      "sha256": "5c9f3ba9f5f37ea7024c9501b0b20b1941f232989c2167853cb46d9071a70dd7"
+    },
+    "training_config": {
+      "path": "experiments/training/results_f1_author_split_v2/output_f1/run_config.json",
+      "sha256": "b8847c0c86d2239670d08fdb2e82a775c525e093d4786207c4fcc5da7b5db7c9"
+    }
+  },
+  "t1_memory_prompt": {
+    "queries": {
+      "path": "experiments/evaluation/decision_event_dev12_t1_t3_20261120_wsl/episodes/T1_F1_seen_state7/queries.jsonl",
+      "sha256": "c1bf257b38b36200ca63931c18fd06afc1c534980cd38d3f5a17bdd610d5f0bf"
+    },
+    "raw_query_step": 0,
+    "memory_query_step": 312,
+    "figure": {
+      "path": "docs/thesis/figures/loi-nhac-bo-nho.pdf",
+      "sha256": "87093f9a391852e0e96e45c5add40727498ae2d9dcabc302b69e30ec615fd40e"
+    }
+  },
+  "t1_grasp": {
+    "video": {
+      "path": "experiments/evaluation/decision_event_dev12_t1_t3_20261120_wsl/episodes/T1_F1_seen_state7/agentview_image.mp4",
+      "sha256": "651987c8a58d77b08a0da97fd837fe8a8a1b9077f5db8999f4c2569a5bf7168b"
+    },
+    "frame_indices": [
+      142,
+      240,
+      409
+    ],
+    "crop_whxy_pixels": [
+      148,
+      124,
+      73,
+      70
+    ],
+    "display_rotation_degrees": 180,
+    "figure": {
+      "path": "docs/thesis/figures/t1-gap-bat.png",
+      "sha256": "e4d09ee6e3586ac553c8fd16149af1b4e931ca23fcda985e1cc43e767c572b20"
+    }
+  },
+  "e6_degradation": {
+    "video": {
+      "path": "experiments/results/e6_retention_locked_50/F1_actual_task_5/libero_10_task5/init_17/video.mp4",
+      "sha256": "96ab882d1c7f2ec3f7e1db3a6b6ff7cd6dd4faa9509338051c630b99f6e659b2"
+    },
+    "frame_indices": [
+      0,
+      77,
+      103,
+      1000
+    ],
+    "crop_whxy_pixels": [
+      240,
+      200,
+      8,
+      35
+    ],
+    "display_rotation_degrees": 0,
+    "figure": {
+      "path": "docs/thesis/figures/e6-dat-sach.png",
+      "sha256": "c74e5e618d4ab250561b912bd5c453f31b44945826659d90b6808bc7c2c3a84e"
+    },
+    "episode_records": [
+      {
+        "path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_17/episode.json",
+        "sha256": "42bfc97a425ede3a3c6ebcda098d76e43b9f7a6ce8e6415cd340a9143bb70ec2"
+      },
+      {
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_5/libero_10_task5/init_17/episode.json",
+        "sha256": "dd6ddc9467a6860190353d0c6d1f23228779a47cc1d9a25ac56d40d86a25dc37"
+      }
+    ],
+    "comparability": "NON-COMPARABLE_OFFICIAL_PAPER"
+  },
+  "e6_retention_chart": {
+    "summary": {
+      "path": "docs/thesis/evidence/e6_retention_paired_bootstrap_20261120.json",
+      "sha256": "81fd03569fb1dc621e77037d582f0facbb2034d6872ec088c1e3595e962ad7d0"
+    },
+    "figure": {
+      "path": "docs/thesis/figures/duy-tri-e6.pdf",
+      "sha256": "3e5af109fc28f777a0d7dc9d600b5860abe77ba5e0ec3ec6d6a3556ec08254bf"
+    }
+  }
+}

@@ -40,8 +40,8 @@
     }
   },
   "figure": {
-    "path": "docs/thesis/figures/libero_mem_d2_event_t1_state7_success.png",
-    "sha256": "bb749b5fcf541d0450edc655c9023355fc6f63f6f4aafb77e586d054dba6a399",
+    "path": "docs/thesis/figures/t1-truy-van-som.png",
+    "sha256": "e8a5ba6f30fb849ab728e92754fadab6434156b2a96b114c3997a56cd03e74ba",
     "source_frame_indices": [0, 142, 409, 1000],
     "source_video_fps": 20,
     "source_video_frames_per_camera": 1001,
@@ -49,6 +49,7 @@
       "agentview_image.mp4": [5, 20, 245, 200],
       "robot0_eye_in_hand_image.mp4": [15, 25, 255, 205]
     },
+    "display_transform": "180-degree rotation of each frame after cropping",
     "layout": "agent view above wrist camera; four chronological frames; white 4 px separators"
   },
   "interpretation_limit": "One successful episode within a seen development cohort; the image documents a real rollout and does not establish that event-triggered retrieval caused success or improves success rate."

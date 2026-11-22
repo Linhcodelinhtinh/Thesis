@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (MiKTeX 26.5) (preloaded format=xelatex 2026.11.12)  21 NOV 2026 14:46
+This is XeTeX, Version 3.141592653-2.6-0.999998 (MiKTeX 26.5) (preloaded format=xelatex 2026.11.12)  22 NOV 2026 15:07
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1215,11 +1215,11 @@ chapter without number
 
 ]
 chapter without number
-[4
+) (frontmatter/declaration.tex [4
 
-]) (frontmatter/declaration.tex [5]
+]
 chapter without number
-) [6
+) [5
 
 ]
 chapter without number
@@ -1248,14 +1248,19 @@ chapter without number
 
 ]
 chapter without number
+
+Underfull \hbox (badness 1838) in paragraph at lines 78--78
+[]|\TU/TimesNewRoman(0)/m/n/13 Chế độ theo sự
+ []
+
 [5
 
-] (content/chapter1.tex
+] [6] (content/chapter1.tex
 chapter 1.
 [1
 
 
-] [2] [3] [4]) (content/chapter2.tex [5] [6]
+] [2] [3] [4] [5]) (content/chapter2.tex [6]
 chapter 2.
 [7
 
@@ -1264,65 +1269,76 @@ chapter 3.
 [17
 
 ]
-File: ../chapter3_outline/01-kien-truc.pdf Graphic file (type pdf)
-<use ../chapter3_outline/01-kien-truc.pdf>
+File: ../figures/vong-dieu-khien.pdf Graphic file (type pdf)
+<use ../figures/vong-dieu-khien.pdf>
  [18] [19] [20]
-File: ../chapter3_outline/02-su-kien-va-quan-he.pdf Graphic file (type pdf)
-<use ../chapter3_outline/02-su-kien-va-quan-he.pdf>
+File: ../figures/su-kien-che-khuat.pdf Graphic file (type pdf)
+<use ../figures/su-kien-che-khuat.pdf>
  [21] [22]
-File: ../figures/memory_timeline.png Graphic file (type bmp)
-<../figures/memory_timeline.png>
+File: ../figures/truc-bang-chung.pdf Graphic file (type pdf)
+<use ../figures/truc-bang-chung.pdf>
  [23] [24]
-LaTeX Font Info:    Calculating math sizes for size <11.86258> on input line 17
+LaTeX Font Info:    Calculating math sizes for size <11.86258> on input line 18
 3.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <11.86258> on input line 173.
+(Font)              <11.86258> on input line 183.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8.30376> on input line 173.
+(Font)              <8.30376> on input line 183.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5.93129> on input line 173.
- [25] [26] [27]
-File: ../chapter3_outline/03-truy-van-som.pdf Graphic file (type pdf)
-<use ../chapter3_outline/03-truy-van-som.pdf>
- [28])
-(content/chapter4.tex [29]
+(Font)              <5.93129> on input line 183.
+ [25] [26]
+File: ../figures/smolvla-lora.pdf Graphic file (type pdf)
+<use ../figures/smolvla-lora.pdf>
+ [27] [28]
+File: ../figures/truy-van-som.pdf Graphic file (type pdf)
+<use ../figures/truy-van-som.pdf>
+ [29])
+(content/chapter4.tex [30]
 chapter 4.
-[30
+[31
 
-] [31]
+] [32]
 LaTeX Font Info:    Font shape `TU/LatinModernMono(0)/m/n' will be
-(Font)              scaled to size 13.49055pt on input line 64.
- [32]
-File: ../figures/libero_mem_d2_event_t1_state7_success.png Graphic file (type b
-mp)
-<../figures/libero_mem_d2_event_t1_state7_success.png>
- [33]) (content/chapter5.tex [34]
+(Font)              scaled to size 13.49055pt on input line 59.
+File: ../figures/loi-nhac-bo-nho.pdf Graphic file (type pdf)
+<use ../figures/loi-nhac-bo-nho.pdf>
+ [33] [34] [35]
+File: ../figures/t3-ba-moc.png Graphic file (type bmp)
+<../figures/t3-ba-moc.png>
+ [36] [37]
+File: ../figures/t1-truy-van-som.png Graphic file (type bmp)
+<../figures/t1-truy-van-som.png>
+File: ../figures/t1-gap-bat.png Graphic file (type bmp)
+<../figures/t1-gap-bat.png>
+ [38] [39] [40] [41]
+File: ../figures/duy-tri-e6.pdf Graphic file (type pdf)
+<use ../figures/duy-tri-e6.pdf>
+File: ../figures/e6-dat-sach.png Graphic file (type bmp)
+<../figures/e6-dat-sach.png>
+ [42] [43])
+(content/chapter5.tex [44]
 chapter 5.
-) [35
+[45
 
-] (main.bbl
+]) [46] (main.bbl
 chapter without number
-[36
+[47
 
 
 
-] [37] [38] [39]) [40] (main.aux)
+] [48] [49] [50] [51]) [52] (main.aux)
  ***********
 LaTeX2e <2026-11-01>
 L3 programming layer <2026-09-09>
  ***********
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
  ) 
 Here is how much of TeX's memory you used:
- 31396 strings out of 402429
- 672194 string characters out of 5433152
+ 31482 strings out of 402429
+ 674004 string characters out of 5433152
  1257021 words of memory out of 5000000
- 60169 multiletter control sequences out of 15000+600000
- 672262 words of font info for 123 fonts, out of 8000000 for 9000
+ 60249 multiletter control sequences out of 15000+600000
+ 672270 words of font info for 124 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 108i,20n,113p,11229b,624s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 108i,20n,113p,11229b,677s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on main.pdf (51 pages).
+Output written on main.pdf (63 pages).

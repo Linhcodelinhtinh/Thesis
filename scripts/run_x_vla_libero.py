@@ -12,6 +12,7 @@ import sys
 import time
 from pathlib import Path
 
+import numpy as np
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +26,14 @@ from src.utils.file_hash import sha256_file
 
 LIBERO_REVISION = "8f1084e3132a39270c3a13ebe37270a43ece2a01"
 SUITES = ("libero_10", "libero_spatial", "libero_object", "libero_goal")
+E6_SEED_OFFSET = {"libero_10": 30}
+
+
+def episode_seed(suite, base_seed, task_id, state_id):
+    """Match the locked E6 task/state seed roster; preserve author defaults elsewhere."""
+    if suite in E6_SEED_OFFSET:
+        return base_seed + (E6_SEED_OFFSET[suite] + task_id) * 100 + state_id
+    return base_seed + state_id + 100
 
 
 def verify_checkout(path, revision):
@@ -60,7 +69,7 @@ def verify_adapter(adapter, manifest):
 
 
 @contextmanager
-def start_server(python, checkout, checkpoint, output, port, timeout, adapter=None):
+def start_server(python, checkout, checkpoint, output, port, timeout, adapter=None, seed=None):
     import requests
 
     with socket.socket() as sock:
@@ -74,6 +83,7 @@ def start_server(python, checkout, checkpoint, output, port, timeout, adapter=No
         "assert torch.cuda.is_available(), 'CUDA unavailable in the X-VLA environment'; "
         "assert transformers.__version__ == '4.51.3', 'Expected Transformers 4.51.3'; "
         "print(sys.version, torch.__version__, torch.version.cuda, torch.cuda.get_device_name(0)); "
+        + (f"torch.manual_seed({int(seed)}); torch.cuda.manual_seed_all({int(seed)}); " if seed is not None else "") +
         "runpy.run_module('deploy', run_name='__main__', alter_sys=True)"
     )
     with (output / "server.log").open("wb") as log:
@@ -123,12 +133,15 @@ def parse_args():
     parser.add_argument("--arm", choices=("B0", "F0", "F1-off"), default="B0",
                         help="Label only. LIBERO suites always receive the plain instruction, so F1 here is F1-off")
     parser.add_argument("--preflight-only", action="store_true", help="Validate resources and render one reset")
+    parser.add_argument("--runtime-check", action="store_true", help="Load the policy and execute one real action; no score")
     parser.add_argument("--output-dir", required=True, type=Path, help="New directory for this run")
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--timeout", type=float, default=600, help="HTTP and server startup timeout in seconds")
     args = parser.parse_args()
     if not args.preflight_only and (args.inference_python is None or not args.inference_python.is_file()):
         parser.error("--inference-python must point to the Python executable in the X-VLA env")
+    if args.preflight_only and args.runtime_check:
+        parser.error("--preflight-only and --runtime-check are mutually exclusive")
     for ids, bound in ((args.task_ids, 10), (args.initial_state_ids, 50)):
         if ids is not None and (len(set(ids)) != len(ids) or any(i < 0 or i >= bound for i in ids)):
             parser.error(f"IDs must be unique and belong to 0..{bound - 1}")
@@ -190,7 +203,10 @@ def main():
         "settling_steps": 10,
         "controller_use_delta": False,
         "simulator_seed_base": args.seed,
-        "inference_seed": None,
+        "inference_seed_base": args.seed,
+        "episode_seed_formula": ("base+(30+task_id)*100+state_id" if args.suite == "libero_10"
+                                 else "base+state_id+100"),
+        "inference_port_schedule": "base_plus_episode_index",
         "inference_python": str(args.inference_python.absolute()) if args.inference_python else None,
         "simulator_python": sys.version,
         "simulator_packages": versions,
@@ -198,6 +214,7 @@ def main():
         "mujoco_gl_requested": os.environ.get("MUJOCO_GL"),
         "asset_verification": assets,
         "preflight_only": args.preflight_only,
+        "runtime_check": args.runtime_check,
     })
     if args.preflight_only:
         env, instruction, obs = open_episode(evaluator, suite, task_ids[0], state_ids[0])
@@ -212,20 +229,54 @@ def main():
         print(f"LIBERO preflight passed: {output}")
         return
 
-    policy = make_client(upstream, args.port, args.timeout)
     summaries = []
-    with start_server(args.inference_python.absolute(), upstream_path, checkpoint, output, args.port, args.timeout,
-                      adapter=adapter):
-        for task_id in task_ids:
-            successes = 0
-            for state_id in state_ids:
-                episode_dir = output / f"task_{task_id:02d}" / f"init_{state_id:02d}"
-                print(f"{args.suite} task {task_id} state {state_id}", flush=True)
-                result = run_episode(upstream, evaluator, suite, task_id, state_id, policy, episode_dir)
-                successes += int(result["success"])
-            summaries.append({"task_id": task_id, "task_name": suite.get_task(task_id).name,
-                              "episodes": len(state_ids), "successes": successes,
-                              "success_rate": successes / len(state_ids)})
+    runtime_checks = []
+    episode_index = 0
+    for task_id in task_ids:
+        successes = 0
+        for state_id in state_ids:
+            print(f"{args.suite} task {task_id} state {state_id}", flush=True)
+            sim_seed = episode_seed(args.suite, args.seed, task_id, state_id)
+            episode_port = args.port + episode_index
+            if episode_port > 65535:
+                raise ValueError("Episode-specific inference port exceeds 65535")
+            episode_index += 1
+            evaluator.init_seed = sim_seed - state_id - 100
+            episode_dir = output / f"task_{task_id:02d}" / f"init_{state_id:02d}"
+            server_dir = output / "inference_servers" / f"task_{task_id:02d}" / f"init_{state_id:02d}"
+            server_dir.mkdir(parents=True, exist_ok=False)
+            policy = make_client(upstream, episode_port, args.timeout)
+            with start_server(args.inference_python.absolute(), upstream_path, checkpoint, server_dir,
+                              episode_port, args.timeout, adapter=adapter, seed=sim_seed):
+                if args.runtime_check:
+                    env, instruction, obs = open_episode(evaluator, suite, task_id, state_id)
+                    try:
+                        policy.reset()
+                        controller = env.env.robots[0].controller
+                        obs["robo_pos"] = controller.ee_pos
+                        obs["robo_ori"] = policy.processor.Mat_to_Rotate6D(controller.ee_ori_mat)
+                        action = policy.step(obs, instruction)
+                        if action.shape != (7,) or not np.isfinite(action).all():
+                            raise RuntimeError("XVLA runtime check returned an invalid native action")
+                        env.step(action)
+                        runtime_checks.append(dict(task_id=task_id, state_id=state_id, simulator_seed=sim_seed,
+                            action_shape=list(action.shape), finite=True, success_measured=False,
+                            score_generated=False))
+                    finally:
+                        env.close()
+                else:
+                    result = run_episode(upstream, evaluator, suite, task_id, state_id, policy, episode_dir)
+                    successes += int(result["success"])
+        if args.runtime_check:
+            break
+        summaries.append({"task_id": task_id, "task_name": suite.get_task(task_id).name,
+                          "episodes": len(state_ids), "successes": successes,
+                          "success_rate": successes / len(state_ids)})
+    if args.runtime_check:
+        write_json(output / "runtime_check.json", dict(status="passed", checks=runtime_checks,
+            note="One real decoded action per selected task; no benchmark success score."))
+        print(f"XVLA runtime check passed: {output}")
+        return
     total = sum(row["episodes"] for row in summaries)
     successes = sum(row["successes"] for row in summaries)
     write_json(output / "summary.json", {"suite": args.suite, "episodes": total,

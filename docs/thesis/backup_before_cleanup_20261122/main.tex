@@ -1,0 +1,97 @@
+% Canonical manuscript source: the LaTeX files in this directory.
+% THESIS_DRAFT.md is a historical snapshot; the abstract is author-owned and hash-locked.
+\documentclass[fontsize=13pt,paper=a4,DIV=calc,oneside,open=any,headings=normal,numbers=noenddot]{scrbook}
+\usepackage{lmodern}
+\usepackage{fontspec}
+\IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{\setmainfont{TeX Gyre Termes}}
+\setsansfont{TeX Gyre Heros}
+\setmonofont{Latin Modern Mono}[Scale=MatchLowercase]
+\usepackage[a4paper,top=2.5cm,bottom=3cm,left=3cm,right=2cm,headheight=21pt]{geometry}
+\usepackage{amsmath,amssymb,graphicx,booktabs,longtable,array}
+\usepackage{setspace,indentfirst,caption,scrlayer-scrpage,xurl}
+\usepackage[unicode,hidelinks,breaklinks=true]{hyperref}
+\usepackage{fvextra}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\setstretch{1.3}
+\setlength{\parindent}{1cm}
+\setlength{\parskip}{6pt}
+\setlength{\emergencystretch}{2em}
+\setlength{\LTpre}{8pt plus 2pt minus 2pt}
+\setlength{\LTpost}{8pt plus 2pt minus 2pt}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\setkomafont{disposition}{\normalfont\bfseries}
+\setkomafont{pageheadfoot}{\normalfont}
+\setlength{\footheight}{21pt}
+\RedeclareSectionCommand[beforeskip=0pt,afterskip=22pt]{chapter}
+\RedeclareSectionCommand[beforeskip=15pt plus 3pt minus 2pt,afterskip=8pt plus 2pt,afterindent=true]{section}
+\AddToHook{begindocument/end}{%
+  \renewcommand{\chaptername}{Chương}%
+  \renewcommand{\contentsname}{Mục lục}%
+  \renewcommand{\listfigurename}{Danh mục hình}%
+  \renewcommand{\listtablename}{Danh mục bảng}%
+  \renewcommand{\bibname}{Tài liệu tham khảo}%
+  \renewcommand{\appendixname}{Phụ lục}%
+}
+\captionsetup[figure]{name=Hình,position=bottom,labelfont=bf,labelsep=period}
+\captionsetup[table]{name=Bảng,position=top,labelfont=bf,labelsep=period}
+\clearpairofpagestyles
+\cfoot*{\pagemark}
+\newcommand{\thesistitle}{Nâng cao khả năng xử lý tác vụ chuỗi dài cho mô hình VLA trong điều khiển Robot}
+\hypersetup{pdftitle={\thesistitle},pdfauthor={Lưu Quang Linh},pdfsubject={Khóa luận về bộ nhớ sự kiện thị giác cho mô hình VLA},pdflang={vi-VN}}
+
+\begin{document}
+\pagenumbering{Roman}
+\input{frontmatter/cover}
+\pagestyle{empty}
+\input{frontmatter/acknowledgements}
+\input{content/abstract}
+\input{frontmatter/declaration}
+\frontmatter
+\pagestyle{scrheadings}
+\tableofcontents
+\listoffigures
+\listoftables
+\addchap{Danh mục ký hiệu và chữ viết tắt}
+\begin{longtable}{p{.20\textwidth}p{.74\textwidth}}
+VLA & Mô hình thị giác-ngôn ngữ-hành động\\
+VLM & Mô hình thị giác-ngôn ngữ\\
+POMDP & Quá trình quyết định Markov quan sát một phần\\
+FSM & Máy trạng thái hữu hạn\\
+LoRA & Thích ứng hạng thấp\\
+SFT & Tinh chỉnh có giám sát\\
+RQ & Câu hỏi nghiên cứu\\
+SR & Tỷ lệ lượt thực thi thành công\\
+SCR & Tỷ lệ mục tiêu thành phần đã hoàn thành\\
+RGB & Đỏ-lục-lam, biểu diễn ảnh màu\\
+IoU & Giao trên hợp giữa hai hộp giới hạn\\
+T1, T3 & Tác vụ nhấc và đặt lại bát một lần và ba lần\\
+B0 & Chính sách SmolVLA gốc\\
+F0 & Đối chứng thích ứng với cùng dữ liệu và ngân sách, bỏ đầu vào bộ nhớ\\
+F1 & Chính sách SmolVLA với adapter huấn luyện có bộ nhớ\\
+F1-off & Chính sách F1 với bộ nhớ bị tắt trong suy luận\\
+$H$ & Số bước trong chuỗi hành động dự đoán\\
+$s$ & Số hành động thực thi trước lần truy vấn tiếp theo\\
+$m_t$ & Trạng thái bộ nhớ khả dụng tại bước $t$\\
+$o_t$ & Quan sát chính sách được phép sử dụng\\
+$x_t$ & Trạng thái đầy đủ của bài toán tại bước $t$\\
+$h_t$ & Lịch sử quan sát-hành động đến bước $t$\\
+$N$ & Số chu kỳ theo yêu cầu của tác vụ\\
+$z_t$ & Số chu kỳ đã hoàn tất theo định nghĩa tác vụ tại bước $t$\\
+$\hat z_t$ & Số chu kỳ bộ ghi đã xác nhận đến bước $t$\\
+$\tau_j,\upsilon_j$ & Thời điểm ước lượng sự kiện xảy ra và thời điểm bằng chứng khả dụng\\
+\end{longtable}
+\mainmatter
+\input{content/chapter1}
+\input{content/chapter2}
+\input{content/chapter3}
+\input{content/chapter4}
+\input{content/chapter5}
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{Tài liệu tham khảo}
+\bibliographystyle{unsrt}
+\bibliography{references}
+% Phu luc duoc luu giu cuc bo tai appendices/provenance.tex, khong render ra ban in theo yeu cau.
+\end{document}

@@ -57,7 +57,8 @@ def parse_args(argv=None):
     p.add_argument("--decision-mode", choices=("text", "shadow", "event", "periodic"),
                    help="Opt into the separate F1 execution protocol on seen states")
     p.add_argument("--decision-exposure", choices=("projected", "snapshot"), default="projected")
-    p.add_argument("--relation-writer", choices=("rgb_relations_v1", "rgb_relations_v2", "rgb_relations_v3"),
+    p.add_argument("--relation-writer", choices=("rgb_relations_v1", "rgb_relations_v2", "rgb_relations_v3",
+                                                  "rgb_relations_sparse_v1", "rgb_relations_sparse_v3"),
                    help="Explicit runtime relation writer override; defaults to adapter training provenance")
     p.add_argument("--worker-timeout", type=int, default=300)
     p.add_argument("--git-executable", default=os.environ.get("MEM_EVAL_GIT", "git"),
@@ -86,6 +87,9 @@ def runtime_identity(python, use_wsl=False, distro="Ubuntu-24.04"):
     script = ROOT / "scripts/mem_eval_runtime.py"
     command = (["wsl", "-d", distro, "--exec", str(python), wsl_path(script)] if use_wsl
                else [str(python), str(script)])
+    if os.name != "nt" and str(python).lower().endswith(".exe"):
+        windows_script = subprocess.check_output(["wslpath", "-w", str(script)], text=True, timeout=30).strip()
+        command = [str(python), windows_script]
     return json.loads(subprocess.check_output(command, text=True, encoding="utf-8", timeout=120))
 
 
@@ -127,7 +131,14 @@ def detector_launcher(python, output):
     executable = Path(python).absolute()
     if os.name != "nt":
         wrapper = output / "detector-python.sh"
-        wrapper.write_text("#!/bin/sh\nexec " + shlex.quote(str(executable)) + ' "$@"\n', encoding="utf-8")
+        if executable.suffix.lower() == ".exe":
+            wrapper.write_text(
+                "#!/bin/bash\nexecutable=" + shlex.quote(str(executable)) +
+                '\nargs=()\nfor arg in "$@"; do\n'
+                '  case "$arg" in /mnt/*) args+=("$(wslpath -w "$arg")");; *) args+=("$arg");; esac\n'
+                'done\nexec "$executable" "${args[@]}"\n', encoding="utf-8")
+        else:
+            wrapper.write_text("#!/bin/sh\nexec " + shlex.quote(str(executable)) + ' "$@"\n', encoding="utf-8")
         wrapper.chmod(0o700)
         return str(wrapper)
     return str(executable)
@@ -189,7 +200,7 @@ def report(output, rows, expected, status):
 
 
 def check_runtime_episode(env, policy, renderer, factory, recorder, row, condition):
-    """Two real actions solely to probe interfaces; never a shortened score."""
+    """Three real actions to probe policy interfaces and writer text; no score."""
     import numpy as np
     from src.evaluation.libero_mem_rollout import action_shape, bind_instruction_only
     expected_shape = action_shape(policy, env)
@@ -205,11 +216,11 @@ def check_runtime_episode(env, policy, renderer, factory, recorder, row, conditi
         snapshot = writer.step(step, obs, last_action) if writer else None
         if writer:
             recorder("memory", step=step, snapshot=snapshot.to_dict(), signals=writer.last_signals)
-        if step == 2:
-            break
         rendered = renderer.render(row["instruction"], snapshot, enabled=writer is not None)
         if rendered.tokenizer_truncated:
             raise ValueError("Runtime probe instruction exceeds token budget")
+        if writer is not None and step == 2 and not rendered.included_facts_count:
+            raise ValueError("Runtime probe did not produce a writer-generated memory instruction")
         chunk = policy.predict_action_chunk(obs, rendered.text)
         if not isinstance(chunk, np.ndarray) or chunk.shape != expected_shape or not np.isfinite(chunk).all():
             raise ValueError("Runtime probe returned invalid action chunk")
@@ -314,7 +325,8 @@ def main(argv=None):
         load_prompt_tokenizer(assets / "backbone")
         manifest["local_assets_lock_sha256"] = sha256_file(assets / "assets.json")
         from dataclasses import asdict
-        from src.memory.relation_writer_versions import RELATION_WRITERS, make_relation_pipeline
+        from src.memory.relation_sparse_versions import (ALL_RELATION_WRITERS, make_pipeline_for,
+                                                         relation_config_for, source_hashes_for)
         from src.training.mem_adapter_artifact import adapter_training_condition, validate_matched_adapters
         adapters = {}
         manifest["treatments"] = {}
@@ -328,8 +340,7 @@ def main(argv=None):
             adapter = validate_adapter(directory, args.base_checkpoint,
                                        verify_provenance_files=(args.relation_writer is None or condition != "F1"))
             if condition == "F1" and args.relation_writer:
-                from src.memory.relation_writer_versions import versioned_relation_source_hashes
-                current_writer_hashes = versioned_relation_source_hashes(ROOT, args.relation_writer)
+                current_writer_hashes = source_hashes_for(ROOT, args.relation_writer)
                 verify_files(ROOT, current_writer_hashes)
                 treatment["runtime_writer_source_sha256"] = current_writer_hashes
             if adapter_training_condition(adapter) != spec.weights:
@@ -354,9 +365,8 @@ def main(argv=None):
             if condition == "F1":
                 memory_contract = adapter["memory_provenance"][0]
                 effective_writer = args.relation_writer or memory_contract["writer"]
-                if effective_writer in RELATION_WRITERS:
-                    from src.memory.relation_pipeline import relation_config
-                    writer_cfg = (relation_config(strategy=memory_contract["writer_config"]["strategy"], writer_version=effective_writer)
+                if effective_writer in ALL_RELATION_WRITERS:
+                    writer_cfg = (relation_config_for(memory_contract["writer_config"]["strategy"], effective_writer)
                                   if args.relation_writer else memory_contract["writer_config"])
                     treatment.update(memory_source=effective_writer,
                                      projection=writer_cfg["projection"],
@@ -422,7 +432,7 @@ def main(argv=None):
                     manifest["detector_launcher_sha256"] = sha256_file(launcher) if launcher.endswith(".sh") else None
                     write_json(output / "run_manifest.json", manifest)
                     phase("Loading F1 detector")
-                    detector_type = (ProcessRelationDetector if effective_writer in RELATION_WRITERS
+                    detector_type = (ProcessRelationDetector if effective_writer in ALL_RELATION_WRITERS
                                      else ProcessVisualDetector)
                     detector = detector_type(launcher, args.detector_model, device="cuda", timeout_seconds=args.worker_timeout)
                     if effective_writer == "rgb_cycle_v3":
@@ -440,11 +450,11 @@ def main(argv=None):
                 del base_policy
                 renderer = LiberoMemTextRenderer(tokenizer=tokenizer, strict_tokenizer=True, max_total_tokens=48, allow_oracle=False)
                 for task in args.tasks:
-                    if condition == "F1" and effective_writer in RELATION_WRITERS:
+                    if condition == "F1" and effective_writer in ALL_RELATION_WRITERS:
                         suite = load_suite_source(source)
-                        factory, renderer = make_relation_pipeline(suite, task, detector, "libero_raw", tokenizer,
-                                                                   contract["writer_config"]["strategy"],
-                                                                   effective_writer)
+                        factory, renderer = make_pipeline_for(suite, task, detector, "libero_raw", tokenizer,
+                                                              contract["writer_config"]["strategy"],
+                                                              effective_writer)
                     phase(f"Starting {condition} {task} simulator")
                     env = ProcessLiberoMemEnv(task_name=task, split_lock=args.split_lock, split=args.split,
                         python_executable=args.sim_python, use_wsl=args.use_wsl,

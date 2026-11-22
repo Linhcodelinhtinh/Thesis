@@ -84,24 +84,60 @@ def cycle():
 
 
 def evidence():
-    fig, ax = canvas(3.36)
-    xs = [0.08,3.46,6.84]
-    headings = ["Quan sát được lần cuối","Sau khi che khuất","Khi có bằng chứng mới"]
-    rows = [
-        ("Quan sát","Vật A đi vào hộp X","Hai hộp ra khỏi tầm nhìn","A được thấy trong hộp Y"),
-        ("Lịch sử","Đã thấy A vào X","Giữ sự kiện đã ghi","Giữ sự kiện đã ghi"),
-        ("Hiện tại","A ở trong X","Vị trí chưa xác định","A ở trong Y"),
-    ]
-    for i,(x,h) in enumerate(zip(xs,headings)):
-        label(ax,x+1.50,3.10,h,12,weight="bold")
-        for j,(k,*values) in enumerate(rows):
-            y=2.13-.88*j
-            ax.add_patch(Rectangle((x,y-.28),3.08,.77,facecolor=[BLUE,GREEN,SAND][j],lw=0))
-            label(ax,x+.12,y+.27,k.upper(),8,GRAY,ha="left",weight="bold")
-            label(ax,x+.12,y-.02,values[i],10,ha="left")
-    for x in [3.20,6.58]:
-        arrow(ax,(x,1.67),(x+.22,1.67))
-    save(fig,"02-su-kien-va-quan-he.pdf")
+    red_bg = "#fde8e8"      # Mau do nhat (thay the mau vang SAND #fff2df)
+    red_border = "#f5b7b1"  # Vien do mem
+    red_tag = "#922b21"     # Nhan do dam
+    blue_border = "#b8d0eb"
+    green_border = "#b6ded2"
+    
+    with plt.rc_context({"font.family": "Constantia"}):
+        fig = plt.figure(figsize=(10.0, 3.75))
+        ax = fig.add_axes([0, 0, 1, 1], xlim=(0, 10.0), ylim=(0, 3.75), aspect="equal")
+        ax.axis("off")
+        
+        w = 2.48
+        margin = 0.40
+        gap = (10.0 - 2 * margin - 3 * w) / 2.0
+        xs = [margin, margin + w + gap, margin + 2 * (w + gap)]
+        
+        headings = ["Quan sát được lần cuối", "Sau khi che khuất", "Khi có bằng chứng mới"]
+        rows = [
+            ("Quan sát", "Vật A đi vào hộp X", "Hai hộp ra khỏi tầm nhìn", "A được thấy trong hộp Y"),
+            ("Lịch sử", "Đã thấy A vào X", "Giữ sự kiện đã ghi", "Giữ sự kiện đã ghi"),
+            ("Hiện tại", "A ở trong X", "Vị trí chưa xác định", "A ở trong Y"),
+        ]
+        
+        row_colors = [BLUE, GREEN, red_bg]
+        border_colors = [blue_border, green_border, red_border]
+        tag_colors = ["#1d5c96", "#0e6251", red_tag]
+        
+        for i, (x, h) in enumerate(zip(xs, headings)):
+            ax.text(x + w / 2, 3.40, h, ha="center", va="center",
+                    fontsize=13, color=INK, weight="bold")
+            for j, (k, *values) in enumerate(rows):
+                y = 2.32 - 0.95 * j
+                # Bo tron cac goc hinh chu nhat voi FancyBboxPatch
+                rect = FancyBboxPatch((x, y - 0.32), w, 0.82,
+                                      boxstyle="round,pad=0.02,rounding_size=0.14",
+                                      linewidth=1.2, edgecolor=border_colors[j], facecolor=row_colors[j])
+                ax.add_patch(rect)
+                # Nhan loai thong tin
+                ax.text(x + 0.16, y + 0.28, k.upper(), ha="left", va="center",
+                        fontsize=10.5, color=tag_colors[j], weight="bold")
+                # Noi dung su kien / quan he
+                ax.text(x + 0.16, y - 0.05, values[i], ha="left", va="center",
+                        fontsize=12.2, color=INK)
+        
+        y_mid = 1.46
+        for i in range(2):
+            arrow_start_x = xs[i] + w + 0.14
+            arrow_end_x = xs[i+1] - 0.14
+            ax.annotate("", xy=(arrow_end_x, y_mid), xytext=(arrow_start_x, y_mid),
+                        arrowprops={"arrowstyle": "-|>", "lw": 1.6, "color": INK,
+                                    "shrinkA": 1, "shrinkB": 1, "mutation_scale": 15})
+        fig.savefig(OUT / "02-su-kien-va-quan-he.png", dpi=200, facecolor="white")
+        save(fig, "02-su-kien-va-quan-he.pdf")
+
 
 
 def timeline():

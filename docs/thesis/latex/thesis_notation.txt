@@ -39,6 +39,4 @@ vẽ lại hình và đẩy lên sớm trong mục 3.
 
 bảng để phông chữ nhỏ hơn, bảng kẻ dọc vào đóng khung
 
-trang 43 chú ý lùi dòng dùng list số rất gpt ai genertaed stuff.
-
-verify citation chính xác, đầy đủ, tồn tại và uptodate. nếu có phiển bản đăng hội nghị, tạp chí,... thì dùng phiên bản public thay vì arxiv.
+verify citation chính xác, đầy đủ, tồn tại và uptodate. 
