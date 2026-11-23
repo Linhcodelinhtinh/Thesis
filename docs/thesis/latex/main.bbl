@@ -1,33 +1,5 @@
 \begin{thebibliography}{10}
 
-\bibitem{pomdp1998}
-Leslie~Pack Kaelbling, Michael~L. Littman, and Anthony~R. Cassandra.
-\newblock Planning and acting in partially observable stochastic domains.
-\newblock {\em Artificial Intelligence}, 101(1--2):99--134, 1998.
-\newblock \url{https://doi.org/10.1016/S0004-3702(98)00023-X}.
-
-\bibitem{liberomem2025}
-Nhat Chung, Taisei Hanyu, Toan Nguyen, Huy Le, Frederick Bumgarner, Duy Minh~Ho
-  Nguyen, Khoa Vo, Kashu Yamazaki, Chase Rainwater, Tung Kieu, Anh Nguyen, and
-  Ngan Le.
-\newblock Rethinking progression of memory state in robotic manipulation: An
-  object-centric perspective.
-\newblock {\em Proceedings of the AAAI Conference on Artificial Intelligence},
-  40(5):3407--3415, 2026.
-\newblock Phiên bản paper tách biệt với revision code sử dụng trong
-  thực nghiệm.
-  \url{https://ojs.aaai.org/index.php/AAAI/article/view/37337}.
-
-\bibitem{robomme2026}
-Yinpei Dai, Hongze Fu, Jayjun Lee, Yuejiang Liu, Haoran Zhang, Jianing Yang,
-  Chelsea Finn, Nima Fazeli, and Joyce Chai.
-\newblock {RoboMME}: Benchmarking and understanding memory for robotic
-  generalist policies.
-\newblock In {\em Proceedings of the 43rd International Conference on Machine
-  Learning}, volume 306 of {\em Proceedings of Machine Learning Research},
-  pages 22396--22450, 2026.
-\newblock \url{https://proceedings.mlr.press/v306/dai26c.html}.
-
 \bibitem{smolvla2025}
 Mustafa Shukor, Dana Aubakirova, Francesco Capuano, Pepijn Kooijmans, Steven
   Palma, Adil Zouitine, Michel Aractingi, Caroline Pascal, Martino Russi,
@@ -55,6 +27,28 @@ Hao Shi, Bin Xie, Yingfei Liu, Lin Sun, Fengrong Liu, Tiancai Wang, Erjin Zhou,
 \newblock In {\em The Fourteenth International Conference on Learning
   Representations (ICLR 2026)}, 2026.
 \newblock \url{https://openreview.net/forum?id=54U3XHf7qq}.
+
+\bibitem{liberomem2025}
+Nhat Chung, Taisei Hanyu, Toan Nguyen, Huy Le, Frederick Bumgarner, Duy Minh~Ho
+  Nguyen, Khoa Vo, Kashu Yamazaki, Chase Rainwater, Tung Kieu, Anh Nguyen, and
+  Ngan Le.
+\newblock Rethinking progression of memory state in robotic manipulation: An
+  object-centric perspective.
+\newblock {\em Proceedings of the AAAI Conference on Artificial Intelligence},
+  40(5):3407--3415, 2026.
+\newblock Phiên bản paper tách biệt với revision code sử dụng trong
+  thực nghiệm.
+  \url{https://ojs.aaai.org/index.php/AAAI/article/view/37337}.
+
+\bibitem{robomme2026}
+Yinpei Dai, Hongze Fu, Jayjun Lee, Yuejiang Liu, Haoran Zhang, Jianing Yang,
+  Chelsea Finn, Nima Fazeli, and Joyce Chai.
+\newblock {RoboMME}: Benchmarking and understanding memory for robotic
+  generalist policies.
+\newblock In {\em Proceedings of the 43rd International Conference on Machine
+  Learning}, volume 306 of {\em Proceedings of Machine Learning Research},
+  pages 22396--22450, 2026.
+\newblock \url{https://proceedings.mlr.press/v306/dai26c.html}.
 
 \bibitem{clockvla2026}
 Chubin Zhang and Bo~An.
@@ -201,6 +195,12 @@ Jan-Gerrit Habekost, Parsa~Mastouri Kashani, Connor G\"ade, Matthias Kerzel,
 \newblock Bản arXiv; bài được ghi là submitted to ICRA 2027, chưa
   phải bản xuất bản hội nghị.
   \url{https://arxiv.org/abs/2609.22854v1}.
+
+\bibitem{pomdp1998}
+Leslie~Pack Kaelbling, Michael~L. Littman, and Anthony~R. Cassandra.
+\newblock Planning and acting in partially observable stochastic domains.
+\newblock {\em Artificial Intelligence}, 101(1--2):99--134, 1998.
+\newblock \url{https://doi.org/10.1016/S0004-3702(98)00023-X}.
 
 \bibitem{imep2026}
 Keyuan Luo, Yi~Xie, Wanyun Ling, Yuanzhe Li, Ziyue Li, and Zhuoqi Zeng.

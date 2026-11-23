@@ -74,6 +74,14 @@ def make_handler_cls(DomainHandler):
                     raise ValueError(f"{path}:{ep['demo']} images {av.shape[0]} != actions {n}")
                 instruction = _decode(g.attrs["instruction"])
                 prompts = [_decode(p) for p in g["prompts"][()]] if self.mode == "memory" else None
+                if self.mode == "memory" and (overlay_path := self.meta.get("memory_overlay")):
+                    with h5py.File(overlay_path, "r") as overlay:
+                        labels = overlay[ep["shard"]][ep["demo"]]
+                        prompts = labels["prompts"].asstr()[()]
+                        eligible = labels["eligible"][()]
+                    if len(prompts) != n or eligible.shape != (n,):
+                        raise ValueError(f"Memory overlay length mismatch: {path}:{ep['demo']}")
+                    idxs = [idx for idx in idxs if eligible[idx + 1]]
                 for idx in idxs:
                     cur = t[idx]
                     q = np.linspace(cur, min(cur + self.qdur, float(t.max())), num_actions + 1)

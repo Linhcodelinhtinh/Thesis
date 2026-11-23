@@ -1,13 +1,47 @@
-\chapter{Kết luận}
+\chapter{Kết luận và thảo luận}
 
-Khóa luận nghiên cứu cách biểu diễn lịch sử thao tác bằng các sự kiện gắn với thực thể, bằng chứng quan sát và thời điểm khả dụng. Các mệnh đề hình thức chỉ bảo đảm quy tắc cập nhật và tính không nhìn trước của phép chiếu theo các giả định đã nêu; chúng không chứng minh độ chính xác của bộ ghi hay lợi ích điều khiển.
+\section{Tổng kết kết quả và đóng góp khoa học}
 
-Về thực nghiệm, đối sánh vòng kín trên SmolVLA với 20 trạng thái unseen ghi nhận F0 đạt 4/40 lượt thành công, F1 đạt 0/40; F1 không đạt mốc nào ở 37/40 lượt so với 30/40 của F0, còn trung vị thời gian thực của một lượt lần lượt khoảng 213 s với F0 và 1.066 s với F1. Lượt đối chiếu bổ sung với B0 đạt 0/40 trên cùng trạng thái khởi tạo, nhưng chạy trên môi trường phần mềm và phiên bản mã đánh giá khác lượt F0/F1 nên chỉ mang tính mô tả. Kiểm tra truy vấn theo sự kiện xác nhận cơ chế truy vấn sớm đã chạy trong vòng kín: có 56 lần gọi sớm ở 22/24 lượt; cả 56 lần đều ghi bằng chứng nhưng chỉ 41 lần dựa trên bằng chứng mới, còn 15 lần gắn nhãn ``History incomplete'' và dùng lại bằng chứng từ quan sát trước. Hai chế độ giám sát và theo sự kiện đều đạt 1/24 thành công; chênh lệch SCR trung bình là $+0{,}056$ với khoảng bootstrap 95\% $[-0{,}125; 0{,}250]$.
+Khóa luận đã nghiên cứu và phát triển phương pháp luận bộ nhớ sự kiện có bằng chứng nhằm giải quyết bài toán thao tác chuỗi dài cho các mô hình thị giác - ngôn ngữ - hành động (VLA) dưới các ràng buộc khắt khe về tài nguyên tính toán. Phương pháp tiếp cận bài toán qua việc trừu tượng hóa lịch sử thành các sự kiện chuyển đổi trạng thái thực thể có căn cứ xác thực, chứng minh các tính chất toán học bảo đảm tính cập nhật không nhìn trước và chiếu súc tích vào không gian ngữ cảnh ngôn ngữ của mô hình điều khiển.
 
-Ở nhóm hiệu chuẩn của kiểm tra truy vấn theo sự kiện, gồm các trạng thái 12--19, lần kiểm tra trước khi chạy phát hiện mã nguồn bộ ghi sự kiện khác với phiên bản đã ghi cùng adapter. Sau khi cho phép bỏ qua sai khác này, mỗi chế độ hoàn tất 16 lượt, đạt 1/16 thành công và khớp trạng thái khởi tạo ở cả 16 cặp. Chế độ giám sát có SCR trung bình 0,188 và 2/16 lượt vượt mốc; chế độ theo sự kiện có SCR trung bình 0,083 và không vượt mốc. Hai chế độ chạy trên hai phiên bản mã khác nhau của hệ thống đánh giá, nên đây là kết quả chẩn đoán, không thay cho một lượt hiệu chuẩn có kiểm tra nghiêm ngặt hay một nhóm xác nhận. Một lượt T1 thành công được minh họa bằng khung trích video ở Chương 4.
+Về mặt thực nghiệm, nghiên cứu đã thiết lập một quy trình đánh giá phân tách đa tầng từ dữ liệu ngoại tuyến đến điều khiển vòng kín, áp dụng nhất quán trên hai kiến trúc mô hình nền có nguyên lý dự đoán hành động khác biệt: SmolVLA (dự đoán chuyển động tương đối) và X-VLA (Flow Matching với tư thế tuyệt đối 6D). Kết quả thực nghiệm đã đem lại ba đóng góp khoa học cốt lõi:
 
-Đánh giá duy trì kỹ năng đo mức duy trì hiệu năng sau tinh chỉnh trên LIBERO-10 gốc bằng đối sánh với B0, checkpoint nền trước khi tinh chỉnh trong khóa luận, trên hai mô hình nền. Trên SmolVLA, B0 đạt 37/50 và F1-off đạt 23/50. Trên X-VLA, B0 đạt 47/50, F0 đạt 44/50 và F1-off đạt 46/50 trong 50 bộ ba ghép cặp. Kết quả X-VLA cho thấy không quan sát thấy suy giảm lớn trên danh sách trạng thái này, nhưng kết quả gần mức trần, chỉ có một seed cho mỗi trạng thái và không đủ để khẳng định tương đương. Trong đánh giá này, các cấu hình nhận chỉ dẫn gốc khi suy luận; F1-off giữ trọng số F1 đã tinh chỉnh với lời nhắc bộ nhớ. Với X-VLA, chưa có đủ lượt vòng kín trên LIBERO-Mem để kết luận về hiệu quả bộ nhớ trên mô hình này. Các kết quả đều theo giao thức nghiên cứu cục bộ, không phải điểm LIBERO chính thức và không tự xác lập quan hệ nhân quả.
+Thứ nhất, khóa luận hình thức hóa hiện tượng suy biến quan sát trong các tác vụ thao tác có tính lặp lại hoặc hoàn nguyên trạng thái dưới mô hình POMDP, chứng minh sự cần thiết phải phân định rạch ròi giữa biến tiến độ ước lượng từ cảm biến và biến tiến độ đặc quyền dùng để đánh giá.
 
-Đóng góp của nghiên cứu là tách phép đo bộ ghi, nội dung bộ nhớ thực sự được chiếu vào lời nhắc và kết quả hành động của chính sách. Kết quả hiện có cho thấy bộ điều phối theo sự kiện vận hành được trong vòng kín, nhưng chưa chứng minh bộ nhớ hoặc truy vấn sớm làm tăng tỷ lệ thành công; nguyên nhân các chênh lệch hiệu năng vẫn chưa được kiểm định. Các lượt vòng kín có bộ nhớ hiện mới được thực hiện với SmolVLA trong mô phỏng, theo giao thức phát triển của đề tài; phương pháp không giới hạn ở mô hình này và đã được chuẩn bị để lặp lại trên X-VLA.
+Thứ hai, khóa luận đề xuất kiến trúc bộ nhớ sự kiện kèm bằng chứng và cơ chế chiếu ngôn ngữ hiệu quả, cho phép nén toàn bộ tiến trình tương tác dài hạn thành tín hiệu ngữ nghĩa tường minh dưới ngân sách token nghiêm ngặt, tương thích tự nhiên với các mô hình VLA điều kiện hóa bằng chỉ dẫn văn bản.
 
-Hướng tiếp theo là lặp đối sánh vòng kín và kiểm tra truy vấn theo sự kiện trên danh sách trạng thái xác nhận đã khóa trước, với nhiều seed và phiên bản bộ ghi được cố định trước khi chạy; đồng thời thu nhãn độc lập cho ý định thao tác, vật mục tiêu, hiệu ứng lên môi trường và thời điểm sự kiện được xác nhận. Việc đối chiếu bộ đếm sự kiện với bộ chấm hiện mới dừng ở mức mô tả, còn bộ kết xuất lời nhắc mới được kiểm tra trên các vết chạy cố định; cần nhãn mù và đánh giá tác động lên hành động trước khi kết luận về độ tin cậy hay hiệu quả. Khóa luận đã hoàn tất hai can thiệp bỏ bộ nhớ tại một truy vấn trên các trạng thái được chọn; bước tiếp theo là mở rộng số trạng thái và thêm đối chứng giả hoặc thay thế dữ kiện có cùng mức biến đổi văn bản. Cần đánh giá X-VLA F1 có bộ nhớ bằng các lượt vòng kín LIBERO-Mem đủ số lượng, và có thể mở rộng cùng bộ điều kiện B0/F0/F1 sang các mô hình nền khác. Đánh giá duy trì kỹ năng cũng cần đối chứng được thiết kế trước về tỷ lệ trộn dữ liệu và tập tham số được cập nhật.
+Thứ ba, khóa luận xây dựng phương pháp luận đánh giá phân tách độc lập giữa năng lực trích xuất sự kiện, độ nhạy quyết định cục bộ và hiệu năng vòng kín, làm sáng tỏ các phương thức thất bại đặc thù của từng kiến trúc mô hình và cung cấp bằng chứng định lượng về vai trò của tín hiệu bộ nhớ trong điều khiển robot.
+
+\section{Thảo luận khoa học}
+
+Phân tích đối sánh vòng kín trên hai mô hình nền bộc lộ hai phương thức thất bại mang bản chất hoàn toàn đối lập khi tích hợp bộ nhớ ngữ cảnh:
+
+Trên mô hình SmolVLA, sự bổ sung thông tin bộ nhớ vào lời nhắc dẫn đến sự suy giảm khả năng phối hợp vận động cơ học ở giai đoạn đầu của tác vụ. Hiện tượng này phản ánh đặc tính nhạy cảm của các mô hình VLA có dung lượng tham số nhỏ đối với sự thay đổi phân phối đầu vào ngôn ngữ: việc phân bổ dung lượng biểu diễn cho việc tiếp nhận ngữ cảnh dài đã gây nhiễu loạn luồng sinh hành động liên tục, khiến robot không thể hoàn thành ngay cả những mốc tiếp cận vật thể cơ bản.
+
+Trái lại, trên mô hình X-VLA, chính sách thể hiện năng lực thao tác vật lý vượt trội, hoàn thành xuất sắc các chu kỳ kẹp nhấc và đạt tỷ lệ hoàn thành mốc trung gian rất cao. Tuy nhiên, tỷ lệ thành công toàn phần vẫn bị triệt tiêu hoàn toàn do hiện tượng lặp thao tác thừa (overshoot). Robot sau khi hoàn thành chu kỳ yêu cầu không nhận biết được điểm dừng và tiếp tục lặp lại động tác kẹp nhấc cho đến khi bị ngắt cưỡng bức. Kết quả này phản ánh tình trạng \emph{mù tiến độ nhận thức}: mô hình điều khiển liên tục vốn được tối ưu hóa để sinh chuỗi hành động trơn tru chứ không được trang bị cơ chế tự quyết định trạng thái kết thúc nhiệm vụ.
+
+Bài học kiến trúc then chốt rút ra từ thực nghiệm là: đối với các tác vụ thao tác chuỗi dài, việc chỉ đưa thông tin tiến độ vào lời nhắc ngôn ngữ là chưa đủ để bảo đảm thành công toàn phần. Để chuyển hóa tỷ lệ hoàn thành mốc cao thành kết quả thực tế, hệ thống điều khiển robot cần được trang bị một cơ chế bảo vệ dừng chính sách thời gian thực (Runtime Policy Halting Guard) hoạt động ở tầng ngoại vi. Bằng chứng xác nhận từ bộ nhớ sự kiện kết hợp với cảm nhận bản thể đóng vai trò là điều kiện ngắt chính sách độc lập, ngăn chặn robot rơi vào vòng lặp thao tác thừa mà không làm xáo trộn phân phối học của mạng nơ-ron điều khiển.
+
+\section{Hạn chế của nghiên cứu}
+
+Dù đạt được những phát hiện thực nghiệm có ý nghĩa, khóa luận ghi nhận một số rào cản và hạn chế kỹ thuật:
+
+Trước hết, toàn bộ các đánh giá vòng kín hiện mới được tiến hành trong môi trường mô phỏng vật lý robosuite và LIBERO. Mặc dù các yếu tố động học và tương tác tiếp xúc được mô phỏng chi tiết, môi trường vẫn chưa phản ánh đầy đủ các biến thiên ánh sáng phức tạp, nhiễu cảm biến thực tế, độ trễ truyền thông phần cứng và sự sai lệch tích lũy khi vận hành cánh tay robot vật lý.
+
+Thứ hai, việc sử dụng bộ nhận diện thị giác mở Grounding DINO để trích xuất mốc sự kiện đòi hỏi chi phí tính toán đáng kể, khiến thời gian thực thi của mỗi bước truy vấn kéo dài và làm giảm tần số điều khiển vòng kín tổng thể khi xử lý đồng bộ trên cùng một thiết bị phần cứng.
+
+Thứ ba, phạm vi đánh giá vòng kín có bộ nhớ trong nghiên cứu này tập trung chủ yếu vào hai tác vụ lặp lại chu kỳ (T1 và T3) của LIBERO-Mem. Mặc dù các khảo sát chẩn đoán ngoại tuyến đã bao quát các nhóm tác vụ chuyển động và quan hệ thực thể, việc kiểm chứng vòng kín toàn diện trên các tác vụ che khuất và hoán đổi vị trí vẫn cần được mở rộng.
+
+Cuối cùng, hiệu quả của cơ chế dừng dựa trên bộ nhớ hiện mới được định lượng thông qua phương pháp mô phỏng rẽ nhánh trên quỹ đạo đã ghi (fork replay). Dù phương pháp này bảo đảm tính kiểm soát và cho phép so sánh ghép cặp khách quan, kết quả vẫn cần được xác nhận bằng một đợt chạy vòng kín thực tế với cơ chế dừng được kích hoạt trực tiếp trong thời gian thực.
+
+\section{Hướng phát triển tiếp theo}
+
+Từ các kết luận và hạn chế nêu trên, các hướng nghiên cứu tiếp theo được xác định như sau:
+
+Trọng tâm ưu tiên hàng đầu là tích hợp trực tiếp cơ chế bảo vệ dừng chính sách thời gian thực (Runtime Policy Halting Guard) vào vòng lặp điều khiển kín của X-VLA, kết hợp tín hiệu xác nhận từ bộ ghi sự kiện và cảm nhận bản thể để kiểm chứng khả năng chuyển hóa tỷ lệ hoàn thành mốc thành tỷ lệ thành công toàn phần trên các tập trạng thái mở rộng.
+
+Hướng nghiên cứu thứ hai là tối ưu hóa hiệu năng tính toán và độ trễ của bộ trích xuất sự kiện thị giác. Việc chưng cất tri thức từ các mô hình thị giác lớn sang các mạng nơ-ron tích chập nhẹ hoặc mô-đun trích xuất đặc trưng chuyên biệt chạy cục bộ trên GPU biên sẽ giúp nâng cao đáng kể tần số điều khiển của hệ thống.
+
+Hướng nghiên cứu thứ ba là mở rộng phạm vi kiểm chứng sang toàn bộ 10 tác vụ phụ thuộc lịch sử của chuẩn benchmark LIBERO-Mem, bao quát đầy đủ bốn chiều không gian năng lực: chuyển động, trình tự thao tác, quan hệ không gian và che khuất vật thể.
+
+Cuối cùng, nghiên cứu hướng tới việc chuyển giao phương pháp luận bộ nhớ sự kiện và cơ chế dừng ngoại vi lên hệ thống cánh tay robot thực tế (như Franka Emika Panda vật lý), nhằm kiểm chứng độ bền vững của phương pháp dưới các điều kiện vận hành thực địa.

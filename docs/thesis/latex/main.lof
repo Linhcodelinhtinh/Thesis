@@ -2,17 +2,17 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces Vòng điều khiển VLA có bộ nhớ sự kiện}}{18}{figure.caption.2}%
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Sự kiện lịch sử và quan hệ hiện tại khi vật bị che khuất}}{21}{figure.caption.3}%
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Thời điểm xảy ra, xác nhận và truy vấn sự kiện}}{24}{figure.caption.4}%
-\contentsline {figure}{\numberline {3.4}{\ignorespaces Phần đóng băng và phần tinh chỉnh LoRA trong SmolVLA}}{28}{figure.caption.5}%
-\contentsline {figure}{\numberline {3.5}{\ignorespaces Truy vấn sớm khi có bằng chứng mới}}{29}{figure.caption.6}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Vòng điều khiển VLA có bộ nhớ sự kiện}}{16}{figure.caption.2}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Sự kiện lịch sử và quan hệ hiện tại khi vật bị che khuất}}{19}{figure.caption.3}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Thời điểm xảy ra, xác nhận và truy vấn sự kiện}}{21}{figure.caption.4}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Phần đóng băng và phần tinh chỉnh LoRA trong SmolVLA}}{25}{figure.caption.5}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Truy vấn sớm khi có bằng chứng mới}}{27}{figure.caption.6}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Mẫu lời nhắc bộ nhớ và ví dụ từ nhật ký T1}}{34}{figure.caption.7}%
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Ba mốc thao tác của lượt T3 thành công trong lần chạy thử sơ bộ}}{37}{figure.caption.9}%
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Lượt T1 thành công có truy vấn sớm}}{38}{figure.caption.11}%
-\contentsline {figure}{\numberline {4.4}{\ignorespaces Cận cảnh robot gắp và nhấc bát trong lượt T1}}{38}{figure.caption.12}%
-\contentsline {figure}{\numberline {4.5}{\ignorespaces Số lượt thành công theo tác vụ của SmolVLA trên LIBERO-10}}{42}{figure.caption.16}%
-\contentsline {figure}{\numberline {4.6}{\ignorespaces F1-off nhấc sách nhưng chưa đặt đúng ngăn trong LIBERO-10}}{42}{figure.caption.17}%
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Cấu trúc lời nhắc tích hợp bộ nhớ và ví dụ thực tế từ lượt chạy T1}}{30}{figure.caption.8}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Ba mốc thao tác của lượt T3 thành công trong lần chạy thử sơ bộ}}{33}{figure.caption.10}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Chuỗi hành vi của lượt T1 thành công khi kích hoạt truy vấn sớm}}{34}{figure.caption.12}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Cận cảnh quá trình kẹp và nhấc bát trong lượt chạy T1}}{34}{figure.caption.13}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Phân bố số lượt thành công theo từng tác vụ của SmolVLA trên LIBERO-10}}{40}{figure.caption.18}%
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Quá trình F1-off nhấc sách nhưng không thể đặt vào hộp ở tác vụ 5}}{40}{figure.caption.19}%
 \addvspace {10\p@ }
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

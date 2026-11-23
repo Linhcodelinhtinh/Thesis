@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (MiKTeX 26.5) (preloaded format=xelatex 2026.11.12)  22 NOV 2026 15:07
+This is XeTeX, Version 3.141592653-2.6-0.999998 (MiKTeX 26.5) (preloaded format=xelatex 2026.11.12)  23 NOV 2026 22:45
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1260,85 +1260,111 @@ chapter 1.
 [1
 
 
-] [2] [3] [4] [5]) (content/chapter2.tex [6]
+] [2] [3] [4]) (content/chapter2.tex [5]
 chapter 2.
-[7
+[6
 
-] [8] [9] [10] [11] [12] [13] [14] [15]) (content/chapter3.tex [16]
+] [7] [8] [9] [10] [11] [12] [13]) (content/chapter3.tex [14]
 chapter 3.
-[17
+[15
 
 ]
-File: ../figures/vong-dieu-khien.pdf Graphic file (type pdf)
-<use ../figures/vong-dieu-khien.pdf>
+File: figures/vong-dieu-khien.pdf Graphic file (type pdf)
+<use figures/vong-dieu-khien.pdf>
+ [16] [17]
+File: figures/su-kien-che-khuat.pdf Graphic file (type pdf)
+<use figures/su-kien-che-khuat.pdf>
  [18] [19] [20]
-File: ../figures/su-kien-che-khuat.pdf Graphic file (type pdf)
-<use ../figures/su-kien-che-khuat.pdf>
+File: figures/truc-bang-chung.pdf Graphic file (type pdf)
+<use figures/truc-bang-chung.pdf>
  [21] [22]
-File: ../figures/truc-bang-chung.pdf Graphic file (type pdf)
-<use ../figures/truc-bang-chung.pdf>
- [23] [24]
+Overfull \hbox (0.79997pt too wide) in alignment at lines 172--176
+ [] [] [] 
+ []
+
+
+Overfull \hbox (0.79997pt too wide) in alignment at lines 176--179
+ [] [] [] 
+ []
+
+
+Overfull \hbox (0.79997pt too wide) in alignment at lines 179--180
+ [] [] [] 
+ []
+
 LaTeX Font Info:    Calculating math sizes for size <11.86258> on input line 18
-3.
+1.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <11.86258> on input line 183.
+(Font)              <11.86258> on input line 181.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8.30376> on input line 183.
+(Font)              <8.30376> on input line 181.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5.93129> on input line 183.
- [25] [26]
-File: ../figures/smolvla-lora.pdf Graphic file (type pdf)
-<use ../figures/smolvla-lora.pdf>
- [27] [28]
-File: ../figures/truy-van-som.pdf Graphic file (type pdf)
-<use ../figures/truy-van-som.pdf>
- [29])
-(content/chapter4.tex [30]
+(Font)              <5.93129> on input line 181.
+
+Overfull \hbox (0.79997pt too wide) in alignment at lines 180--188
+ [] [] [] 
+ []
+
+[23] [24]
+File: figures/smolvla-lora.pdf Graphic file (type pdf)
+<use figures/smolvla-lora.pdf>
+ [25]
+File: figures/truy-van-som.pdf Graphic file (type pdf)
+<use figures/truy-van-som.pdf>
+ [26]) (content/chapter4.tex [27] [28]
 chapter 4.
-[31
+[29
 
-] [32]
+]
 LaTeX Font Info:    Font shape `TU/LatinModernMono(0)/m/n' will be
-(Font)              scaled to size 13.49055pt on input line 59.
-File: ../figures/loi-nhac-bo-nho.pdf Graphic file (type pdf)
-<use ../figures/loi-nhac-bo-nho.pdf>
- [33] [34] [35]
-File: ../figures/t3-ba-moc.png Graphic file (type bmp)
-<../figures/t3-ba-moc.png>
- [36] [37]
-File: ../figures/t1-truy-van-som.png Graphic file (type bmp)
-<../figures/t1-truy-van-som.png>
-File: ../figures/t1-gap-bat.png Graphic file (type bmp)
-<../figures/t1-gap-bat.png>
- [38] [39] [40] [41]
-File: ../figures/duy-tri-e6.pdf Graphic file (type pdf)
-<use ../figures/duy-tri-e6.pdf>
-File: ../figures/e6-dat-sach.png Graphic file (type bmp)
-<../figures/e6-dat-sach.png>
- [42] [43])
-(content/chapter5.tex [44]
+(Font)              scaled to size 13.49055pt on input line 51.
+File: figures/loi-nhac-bo-nho.pdf Graphic file (type pdf)
+<use figures/loi-nhac-bo-nho.pdf>
+ [30] [31] [32]
+File: figures/t3-ba-moc.png Graphic file (type bmp)
+<figures/t3-ba-moc.png>
+LaTeX Font Info:    Calculating math sizes for size <10.83347> on input line 13
+1.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10.83347> on input line 131.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <7.58339> on input line 131.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5.41673> on input line 131.
+ [33]
+File: figures/t1-truy-van-som.png Graphic file (type bmp)
+<figures/t1-truy-van-som.png>
+File: figures/t1-gap-bat.png Graphic file (type bmp)
+<figures/t1-gap-bat.png>
+ [34] [35] [36] [37] [38]
+File: figures/duy-tri-e6.pdf Graphic file (type pdf)
+<use figures/duy-tri-e6.pdf>
+File: figures/e6-dat-sach.png Graphic file (type bmp)
+<figures/e6-dat-sach.png>
+ [39] [40])
+(content/chapter5.tex [41]
 chapter 5.
-[45
+[42
 
-]) [46] (main.bbl
+] [43] [44]) [45] (main.bbl
 chapter without number
-[47
+[46
 
 
 
-] [48] [49] [50] [51]) [52] (main.aux)
+] [47] [48] [49] [50]) [51] (main.aux)
  ***********
 LaTeX2e <2026-11-01>
 L3 programming layer <2026-09-09>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 31482 strings out of 402429
- 674004 string characters out of 5433152
- 1257021 words of memory out of 5000000
- 60249 multiletter control sequences out of 15000+600000
- 672270 words of font info for 124 fonts, out of 8000000 for 9000
+ 31524 strings out of 402429
+ 674502 string characters out of 5433152
+ 1259021 words of memory out of 5000000
+ 60283 multiletter control sequences out of 15000+600000
+ 693132 words of font info for 143 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 108i,20n,113p,11229b,677s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 108i,20n,113p,11229b,610s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on main.pdf (63 pages).
+Output written on main.pdf (62 pages).

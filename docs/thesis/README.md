@@ -70,6 +70,6 @@ xelatex -interaction=nonstopmode -halt-on-error -file-line-error -no-shell-escap
 xelatex -interaction=nonstopmode -halt-on-error -file-line-error -no-shell-escape main.tex
 ```
 
-Bản PDF nháp gồm 63 trang và 11 hình trong Chương 3–4. SHA-256 `9bc2a73fadcd05fd91a7ff01816a99e5b6d11727bd647310e1febb830150ef42`. [Mở PDF](../../output/pdf/khoa-luan-luu-quang-linh-ban-thao.pdf) · [Nguồn video và log Chương 4](evidence/closed_loop_cases.md).
+Bản PDF nháp gồm 62 trang và 11 hình trong Chương 3–4. SHA-256 `8ec7b6c812f227e1d39b514b19f79c77ffe371bb267ed8c9efb25572426d954d`. [Mở PDF](../../output/pdf/khoa-luan-luu-quang-linh-ban-thao.pdf) · [Nguồn video và log Chương 4](evidence/closed_loop_cases.md).
 
 Lời cảm ơn và lời cam đoan là nội dung cá nhân cần tác giả tự hoàn thiện, đọc và xác nhận trước khi nộp; bản thảo không tạo chữ ký hoặc xác nhận thay tác giả.

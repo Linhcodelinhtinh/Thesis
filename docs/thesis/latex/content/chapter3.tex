@@ -4,11 +4,9 @@ Chương này trình bày chi tiết phương pháp bộ nhớ sự kiện có b
 
 \section{Phát biểu bài toán và tổng quan kiến trúc}
 
-Xét một tình huống minh họa: robot cần lấy đồ vật A từ một trong hai hộp kín X hoặc Y phân biệt. Trong kịch bản thứ nhất, quan sát cho thấy đồ vật A được đặt vào hộp X; ngược lại, ở kịch bản thứ hai, vật A được đưa vào hộp Y. Sau đó, cả hai hộp đều được đóng kín lại và môi trường chuyển về cùng một trạng thái quan sát thị giác. Giả sử các hộp không bị di chuyển hay tráo đổi, hành động tối ưu cho bài toán là mở hộp X ở kịch bản thứ nhất và mở hộp Y ở kịch bản thứ hai. Một chính sách Markovian thuần túy sẽ nhận được đầu vào hoàn toàn đồng nhất, do đó không thể đưa ra hành động tối ưu cho hai kịch bản. Tình huống phản ví dụ này chứng minh rằng thông tin lịch sử là điều kiện bắt buộc để ra quyết định chính xác dưới quan sát một phần POMDP. Để mô hình hóa toán học, gọi $x_t \in \mathcal X$ là trạng thái vật lý đầy đủ của môi trường tại bước $t$, $o_t \in \mathcal O$ là quan sát cảm biến mà robot nhận được và $a_t \in \mathcal A$ là hành động được thực thi. Biến tiến độ $z_t$ biểu thị đại lượng lịch sử thực tế có liên quan đến quyết định, như đã định nghĩa ở Chương 2. Biến $z_t$ là thuộc tính tích lũy từ chuỗi diễn biến quá khứ và không được môi trường cung cấp trực tiếp cho chính sách trong quá trình thực thi.
+Như đã phân tích tại Mục~\ref{sec:pomdp}, trong các tác vụ thao tác có tính lặp lại hoặc che khuất, các quan sát cảm biến tức thời $o_t$ có thể hoàn toàn đồng dạng dù trạng thái tiến độ thực tế $z_t$ khác biệt. Việc cung cấp toàn bộ lịch sử tương tác thô $h_t = (o_0, a_0, \ldots, a_{t-1}, o_t)$ cho mô hình VLA dưới dạng chuỗi video hay nhiều khung hình quá khứ sẽ nhanh chóng làm bùng nổ số lượng token đầu vào, vượt quá ngân sách ngữ cảnh và làm suy giảm tần số điều khiển của các mô hình VLA nhỏ gọn. Do đó, mục tiêu cốt lõi của phương pháp đề xuất là xây dựng một cơ chế bộ nhớ trung gian có cấu trúc: liên tục trích xuất và tích lũy các sự kiện quan hệ thực thể vào bộ nhớ sự kiện $M_t$, sau đó chiếu các dữ kiện có căn cứ thành chuỗi văn bản ngắn gọn $C_q$ dưới ngân sách token hữu hạn $B$ tại thời điểm truy vấn $q$.
 
-Một giải pháp trực tiếp trong học sâu là cung cấp toàn bộ lịch sử tương tác $h_t = (o_0, a_0, \ldots, a_{t-1}, o_t)$ cho mô hình VLA dưới dạng một chuỗi video hoặc tập hợp nhiều khung hình quá khứ. Tuy nhiên, hướng tiếp cận này gặp phải rào cản nghiêm trọng khi triển khai trên các mô hình VLA nhỏ gọn bị giới hạn nghiêm ngặt về độ dài ngữ cảnh đầu vào và khả năng biểu diễn. Việc duy trì một ngữ cảnh gồm hàng chục hoặc hàng trăm khung hình quá khứ sẽ làm bùng nổ số lượng token đầu vào, vượt quá ngân sách ngữ cảnh cho phép của mô hình và làm tăng chi phí tính toán. Hệ quả là độ trễ suy luận tăng cao, tần số điều khiển cánh tay robot suy giảm và lịch sử đã ghi nhận không thể được mô hình tiếp nhận đầy đủ. Do đó, mục tiêu cốt lõi của nghiên cứu là xây dựng một cơ chế bộ nhớ trung gian có cấu trúc: hệ thống liên tục trích xuất và tích lũy các sự kiện quan trọng vào một bộ nhớ sự kiện $M_t$, sau đó chỉ chiếu những dữ kiện thật sự cần thiết thành một chuỗi văn bản ngắn gọn $C_q$ dưới ngân sách token hữu hạn $B$ tại thời điểm truy vấn $q$.
-
-Hình~\ref{fig:architecture} tóm tắt vòng điều khiển qua bốn khối: bộ nhớ sự kiện, chính sách VLA, bộ điều phối và mô phỏng robot. Bộ nhớ sự kiện gồm bộ ghi trạng thái và bộ chiếu ngôn ngữ.
+Hình~\ref{fig:architecture} tóm tắt vòng điều khiển qua bốn khối: bộ nhớ sự kiện, chính sách VLA, bộ điều phối và mô phỏng robot. Bộ nhớ sự kiện gồm bộ ghi trạng thái và bộ chiếu ngôn ngữ. Đường nét đứt màu xám biểu thị luồng dữ kiện cập nhật từ bộ nhớ đến bộ điều phối. Mũi tên đỏ biểu thị yêu cầu truy vấn sớm khi có dữ kiện mới đủ căn cứ.
 
 \begin{equation}
 \begin{aligned}
@@ -21,7 +19,7 @@ A_q &\sim \pi_{\theta,\phi}(\cdot \mid o_q, C_q).
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=.96\textwidth]{../figures/vong-dieu-khien.pdf}
+\includegraphics[width=\linewidth]{figures/vong-dieu-khien.pdf}
 \caption{Vòng điều khiển VLA có bộ nhớ sự kiện}
 \label{fig:architecture}
 \end{figure}
@@ -73,7 +71,7 @@ Trong đó $\mathcal O_t$ là tập hợp các thực thể và giả thuyết �
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=.95\textwidth]{../figures/su-kien-che-khuat.pdf}
+\includegraphics[width=.95\textwidth]{figures/su-kien-che-khuat.pdf}
 \caption{Sự kiện lịch sử và quan hệ hiện tại khi vật bị che khuất}
 \label{fig:memory-evidence-states}
 \end{figure}
@@ -123,7 +121,7 @@ h_q = h'_q \implies M_q = M'_q \implies R_B(\ell, M_q) = R_B(\ell, M'_q).
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=.93\textwidth]{../figures/truc-bang-chung.pdf}
+\includegraphics[width=.93\textwidth]{figures/truc-bang-chung.pdf}
 \caption{Thời điểm xảy ra, xác nhận và truy vấn sự kiện}
 \label{fig:memory_timeline}
 \end{figure}
@@ -135,7 +133,7 @@ Mệnh đề 1 bảo đảm rằng ngữ cảnh được bộ nhớ cấp cho VL
 Để áp dụng khung bộ nhớ trên các lớp tác vụ khác nhau, hệ thống định nghĩa một giao thức bộ nhớ theo tác vụ $T_{\mathrm{spec}} = (\Phi, \Delta, \mathcal{F})$, trong đó $\Phi$ là tập các hàm vị từ, $\Delta$ là tập các quy tắc chuyển trạng thái FSM, và $\mathcal{F}$ là định dạng chuỗi chiếu văn bản. LIBERO-Mem \cite{liberomem2025} chia mười tác vụ thành bốn nhóm năng lực bộ nhớ: OM (Object Motion, nhớ lịch sử chuyển động và trạng thái tương tác của từng vật thể), OS (Object Sequence, nhớ số lần và thứ tự tương tác), OR (Object Relations, nhớ quan hệ và vị trí giữa nhiều vật thể) và OO (Object Occlusion, nhớ danh tính và vị trí vật thể khi bị che khuất). Một tác vụ có thể thuộc nhiều nhóm. Bảng~\ref{tab:memory-task-families} tổng hợp nhóm năng lực và các primitive lịch sử cần thiết cho mười tác vụ này.
 
 \begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.12}
-\begin{longtable}{>{\raggedright\arraybackslash}p{.12\textwidth}>{\raggedright\arraybackslash}p{.28\textwidth}>{\raggedright\arraybackslash}p{.52\textwidth}}
+\begin{longtable}{>{\raggedright\arraybackslash}p{.12\textwidth}|>{\raggedright\arraybackslash}p{.28\textwidth}|>{\raggedright\arraybackslash}p{.52\textwidth}}
 \caption{Dạng thông tin lịch sử theo tác vụ LIBERO-Mem}\label{tab:memory-task-families}\\
 \toprule
 \textbf{Tác vụ} & \textbf{Lớp bài toán lịch sử} & \textbf{Primitive trừu tượng cần biểu diễn} \\
@@ -171,7 +169,7 @@ L_t = -d_{t,y} / h_b.
 Trong đó $D_t$ đo độ lệch mặt bằng đã chuẩn hóa, $L_t$ đo độ dịch chuyển nâng lên theo phương thẳng đứng của ảnh. Bảng~\ref{tab:case-study-thresholds} trình bày chi tiết các tiêu chí định lượng được cấu hình cho trường hợp cụ thể hóa này.
 
 \begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}
-\begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.25\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.35\textwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.4\textwidth-2\tabcolsep\relax}}
+\begin{longtable}{>{\raggedright\arraybackslash}p{\dimexpr 0.25\textwidth-2\tabcolsep\relax}|>{\raggedright\arraybackslash}p{\dimexpr 0.35\textwidth-2\tabcolsep\relax}|>{\raggedright\arraybackslash}p{\dimexpr 0.4\textwidth-2\tabcolsep\relax}}
 \caption{Ngưỡng theo dõi chu kỳ thao tác}\label{tab:case-study-thresholds}\\
 \toprule
 \textbf{Đại lượng kiểm tra} & \textbf{Tiêu chí định lượng} & \textbf{Vai trò nhận thức trong quy trình} \\
@@ -225,7 +223,7 @@ Thứ ba, tập tham số thích ứng $\phi$ được chọn theo kiến trúc 
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=.96\linewidth]{../figures/smolvla-lora.pdf}
+\includegraphics[width=.96\linewidth]{figures/smolvla-lora.pdf}
 \caption{Phần đóng băng và phần tinh chỉnh LoRA trong SmolVLA}
 \label{fig:smolvla-lora}
 \end{figure}
@@ -254,14 +252,14 @@ Khi điều kiện ngắt được thỏa mãn tại $q'$, bộ điều phối l
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=.94\textwidth]{../figures/truy-van-som.pdf}
+\includegraphics[width=.94\textwidth]{figures/truy-van-som.pdf}
 \caption{Truy vấn sớm khi có bằng chứng mới}
 \label{fig:evidence-requery}
 \end{figure}
 
 Hiệu quả phản ứng của cơ chế ngắt động có thể được chứng minh qua định lý chặn trên thời gian trễ.
 
-\textbf{Mệnh đề 2 (Chặn trên độ trễ phản ứng với biến cố mới).} Giả sử robot đang thực thi đoạn hành động được sinh tại bước $q$. Một biến cố trạng thái mới xuất hiện trong môi trường tại thời điểm $r$ (với $q < r \le q + s$) và duy trì liên tục. Nếu không có biến cố nào khác kích hoạt trước đó, thời điểm tái truy vấn chính sách $q'$ thỏa mãn:
+\textbf{Mệnh đề 2: Upperbound của độ trễ với biến cố mới.} Giả sử robot đang thực thi đoạn hành động được sinh tại bước $q$. Một biến cố trạng thái mới xuất hiện trong môi trường tại thời điểm $r$ (với $q < r \le q + s$) và duy trì liên tục. Nếu không có biến cố nào khác kích hoạt trước đó, thời điểm tái truy vấn chính sách $q'$ thỏa mãn:
 
 \begin{equation}
 q' = \min(q + s,\ \max(q + k_{\min},\ r + p - 1)).

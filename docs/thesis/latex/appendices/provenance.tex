@@ -46,7 +46,7 @@ can thiệp lời nhắc trực tuyến tại T1 state 16 ghi nhận tám nhánh
 Bảng~\ref{tab:public-provenance} phân biệt nguồn benchmark chuẩn với các lựa chọn giao thức thực nghiệm cục bộ. Danh sách mẫu khởi tạo, ngưỡng kết thúc và lịch điều khiển được gắn nhãn custom khi có sự khác biệt với các phép đánh giá công bố chính thức. Toàn bộ mã băm Git commit và mã băm SHA-256 xác thực tính toàn vẹn của các tệp nguồn, artifact mô hình và báo cáo kiểm định được lưu trữ tập trung trong sổ kiểm định bằng chứng của đề tài.
 
 \begingroup\footnotesize\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.05}
-\begin{longtable}{>{\raggedright\arraybackslash}p{.23\textwidth}>{\raggedright\arraybackslash}p{.38\textwidth}>{\raggedright\arraybackslash}p{.31\textwidth}}
+\begin{longtable}{>{\raggedright\arraybackslash}p{.23\textwidth}|>{\raggedright\arraybackslash}p{.38\textwidth}|>{\raggedright\arraybackslash}p{.31\textwidth}}
 \caption{Nguồn và định danh thực nghiệm}\label{tab:public-provenance}\\
 \toprule
 \textbf{Thành phần} & \textbf{Định danh public hoặc nội dung} & \textbf{Phạm vi} \\
@@ -101,15 +101,14 @@ Các số liệu này được dẫn theo báo cáo V1 và dùng làm bối cả
 V1 dùng $s=50$ giữa hai lần truy vấn, còn đánh giá T1/T3 dùng $s=10$.
 Khác biệt về nhịp điều khiển và tập tác vụ giới hạn khả năng đối chiếu giữa hai giai đoạn.
 
-\section{Đối chiếu bản ghi sự kiện thị giác}
-Phép đo chẩn đoán ban đầu sử dụng sáu quỹ đạo mẫu từ ba nhóm trạng thái.
-Nhãn tham chiếu đánh dấu mốc tiến độ tích lũy trên các quỹ đạo mẫu.
-Các báo cáo ghép mốc, kết quả thành phần và bản lưu mã nguồn được đối chiếu
-toàn vẹn qua mã băm kiểm tra. Tập bằng chứng cũng ghi kết quả so khớp phiên bản của bộ theo dõi,
-bộ ghi và bộ dựng văn bản với phiên bản dùng trong lần đo.
-
-Các phép kiểm kỹ thuật đi kèm gồm đối chiếu đầu ra nhận dạng trên 12 khung hình,
-đối chiếu chỉ mục trên 162 mẫu, 49 kiểm thử thành phần và 47 kiểm thử hồi quy.
-Những phép kiểm này hỗ trợ đánh giá tính nhất quán của quy trình xử lý.
-Độ phù hợp của sự kiện được phân tích bằng mốc chú giải và các quỹ đạo
-trong Chương 4.
+\section{Bản kê thực nghiệm X-VLA V2 trên LIBERO-Mem}
+Chiến dịch đánh giá V2 trên mô hình X-VLA được triển khai nhằm kiểm chứng tính mở rộng kiến trúc và hiện tượng thao tác thừa chu kỳ, bao gồm 6 thực nghiệm thành phần:
+\begin{itemize}
+    \item \textbf{D1 Parity (\texttt{xvla\_d1\_parity\_20261123})}: Kiểm tra tính tương đương luồng quan sát giữa text và shadow tại trạng thái 0 của T1 (115 bước) và T3 (404 bước). Kết quả đạt 100\% parity về truy vấn, prompt và action chunk.
+    \item \textbf{D2 Cohort (\texttt{xvla\_d2\_event\_dev12\_t1\_t3\_20261123\_wsl})}: Hoàn tất 24/24 lượt chạy (12 T1, 12 T3) dưới F1-mem-on. Ghi nhận SR = 0/12, Mean SCR = 0,833 ở T1 và 0,528 ở T3; tỷ lệ overshot là 83,3\% (T1) và 33,3\% (T3).
+    \item \textbf{D3/D5 Cycle Alignment (\texttt{xvla\_d3\_d5\_d2\_trace\_analysis\_20261123\_results})}: Phân tích căn chỉnh chu kỳ trên 48 vết chạy D2 (xác minh hash toàn vẹn), ghi nhận độ trễ trích xuất chu kỳ trung vị từ -7 đến -83,5 bước so với evaluator.
+    \item \textbf{Writer Halt Replay (\texttt{xvla-e2-writer-halt-replay-20261123})}: Phân tích tái lập cơ chế dừng trên 40 lượt chạy (16 hoàn tất, 16 overshot), chứng minh cơ chế dừng dựa trên sự kiện có thể cứu vãn kịp thời 5-6 lượt T1 khỏi lỗi overshoot.
+    \item \textbf{E3 Token Budget Sweep (\texttt{xvla\_e3\_token\_budget\_d2\_20261123})}: Quét 1.319 truy vấn cố định, xác lập mức ngân sách 2/3 truyền tải trọn vẹn 100\% dữ kiện (272/272 T1, 825/825 T3) với độ dài prompt 21-26 tokens.
+    \item \textbf{E4/E5 Counterfactual Intervention (\texttt{xvla\_e4\_e5\_one\_query\_20261123})}: Can thiệp phản thực tế tại truy vấn 10 trên T1 state 10 (1.000 bước). Nhánh đối chứng tái lập 1.000/1.000 action; nhánh can thiệp gây sai khác ngay tại bước đầu ($L_2 = 0{,}0092$), phân kỳ hoàn toàn 990 bước tiếp theo.
+\end{itemize}
+Toàn bộ các thực nghiệm trên đều được phân loại \texttt{CUSTOM\_V2} và \texttt{NON-COMPARABLE\_OFFICIAL\_PAPER}.

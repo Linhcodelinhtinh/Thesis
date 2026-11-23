@@ -30,30 +30,62 @@ plt.rcParams.update({"font.family": "Constantia", "pdf.fonttype": 42})
 def save(fig, name):
     fig.savefig(FIGURES / name, facecolor="white",
                 metadata={"Creator": "build_thesis_figures.py", "CreationDate": None})
+    latex_figures = THESIS / "latex/figures"
+    if latex_figures.is_dir():
+        fig.savefig(latex_figures / name, facecolor="white",
+                    metadata={"Creator": "build_thesis_figures.py", "CreationDate": None})
     plt.close(fig)
 
 
+@plt.rc_context({
+    "font.family": "Constantia",
+    "mathtext.fontset": "custom",
+    "mathtext.rm": "Constantia",
+    "mathtext.it": "Constantia:style=italic",
+    "mathtext.fallback": None,
+})
 def architecture():
-    fig, ax = canvas(2.48)
+    fig, ax = canvas(4.10)
     modules = [
-        (.22, "Bộ nhớ sự kiện", "Ghi và chiếu dữ kiện", GREEN),
-        (2.78, "Chính sách VLA", "Sinh đoạn hành động", BLUE),
-        (5.34, "Bộ điều phối", "Chọn lịch truy vấn", ROSE),
-        (7.90, "Mô phỏng robot", "Thực thi hành động", BLUE),
+        (.15, 2.57, 2.60, "Bộ nhớ sự kiện", "Ghi và chiếu dữ kiện", GREEN),
+        (3.77, 2.57, 2.46, "Chính sách VLA", "Sinh đoạn hành động", BLUE),
+        (7.22, 2.57, 2.63, "Bộ điều phối", "Thực thi hoặc gọi lại VLA", ROSE),
+        (7.22, .40, 2.63, "Mô phỏng robot", "Cập nhật môi trường", BLUE),
     ]
-    for x, title, detail, fill in modules:
-        box(ax, x, 1.26, 1.88, .77, "", fill)
-        label(ax, x + .94, 1.77, title, 14, weight="bold")
-        label(ax, x + .94, 1.52, detail, 12.5)
-    for index, text in enumerate(("Lời nhắc", "Đoạn lệnh", "Hành động")):
-        x = modules[index][0] + 1.88
-        next_x = modules[index + 1][0]
-        arrow(ax, (x, 1.65), (next_x, 1.65))
-        label(ax, (x + next_x) / 2, 2.22, text, 12.5)
-    ax.plot([8.84, 8.84, 1.16], [1.26, .60, .60], color=TEAL, lw=1.3)
-    for x in (1.16, 3.72):
-        arrow(ax, (x, .60), (x, 1.26), TEAL)
-    label(ax, 6.10, .35, "Quan sát sau hành động", 13, TEAL)
+    for x, y, width, title, detail, fill in modules:
+        box(ax, x, y, width, .97, "", fill)
+        label(ax, x + width / 2, y + .62, title, 19.5)
+        label(ax, x + width / 2, y + .28, detail, 13.5)
+
+    for x, text in [(1.45, r"Chỉ dẫn gốc $\ell$"), (5, r"Quan sát tại truy vấn $o_q$")]:
+        label(ax, x, 3.94, text, 14)
+        arrow(ax, (x, 3.78), (x, 3.54))
+    for start, end, text, symbol in [
+        (2.75, 3.77, "Lời nhắc", r"$C_q$"),
+        (6.23, 7.22, "Đoạn lệnh", r"$A_q$"),
+    ]:
+        arrow(ax, (start, 3.02), (end, 3.02))
+        label(ax, (start + end) / 2, 3.25, text, 13)
+        label(ax, (start + end) / 2, 2.81, symbol, 13)
+
+    evidence_line = "#8b9aa4"
+    ax.plot([1.86, 1.86, 8.96], [2.57, 1.60, 1.60],
+            color=evidence_line, lw=1.0, ls="--")
+    ax.annotate("", xy=(8.96, 2.57), xytext=(8.96, 1.60),
+                arrowprops={"arrowstyle": "-|>", "color": evidence_line, "lw": 1.0,
+                            "ls": "--", "shrinkA": 0, "shrinkB": 1, "mutation_scale": 11})
+
+    ax.plot([8.65, 8.65, 5], [2.57, 2.13, 2.13], color=RED, lw=1.6, ls="--")
+    ax.annotate("", xy=(5, 2.57), xytext=(5, 2.13),
+                arrowprops={"arrowstyle": "-|>", "color": RED, "lw": 1.6, "ls": "--",
+                            "shrinkA": 0, "shrinkB": 1, "mutation_scale": 13})
+    label(ax, 6.78, 2.31, "Yêu cầu truy vấn sớm", 13.5, RED)
+
+    arrow(ax, (9.33, 2.57), (9.33, 1.37))
+    label(ax, 9.48, 1.97, r"$a_t$", 13, ha="left")
+    ax.plot([7.22, .70], [.88, .88], color=TEAL, lw=1.4)
+    arrow(ax, (.70, .88), (.70, 2.57), TEAL)
+    label(ax, 3.84, .64, r"Quan sát sau hành động $o_{t+1}$", 14, TEAL)
     save(fig, "vong-dieu-khien.pdf")
 
 
@@ -89,20 +121,18 @@ def smolvla():
     for center, text in [(1.70, "SigLIP"), (8.30, "Chiếu trạng thái")]:
         box(ax, center - 1.17, 2.61, 2.34, .62, "", ICE)
         snowflake(ax, center - .84, 2.92)
-        label(ax, center + .12, 2.92, text + "\nĐóng băng", 14, ICE_INK)
+        label(ax, center + .12, 2.92, text, 14, ICE_INK)
     box(ax, 3.83, 2.61, 2.34, .62, "Token hóa", "#ffffff", 14)
     for center in (1.70, 5.0, 8.30):
         arrow(ax, (center, 2.61), (center, 2.06))
     box(ax, .65, 1.42, 8.70, .62, "", ICE)
     snowflake(ax, 1.05, 1.73)
-    label(ax, 5, 1.73, "SmolLM2   ·   ghép và xử lý token   ·   đóng băng", 16, ICE_INK)
+    label(ax, 5, 1.73, "SmolLM2   ·   Xử lý token ngôn ngữ - thị giác", 16, ICE_INK)
     arrow(ax, (5, 1.42), (5, 1.11))
     box(ax, .65, .38, 8.70, .71, "", "#ffd9d6")
-    label(ax, 3.58, .73, "Action Expert   ·   flow matching   ·   50 hành động", 15, RED)
-    ax.plot([6.63, 6.63], [.51, .97], color="#bd676b", lw=.8)
-    flame(ax, 7.02, .73)
-    label(ax, 8.15, .73, r"LoRA trên $W_q, W_v$", 14, RED)
-    label(ax, 5, .15, "Ngọn lửa chỉ các tham số LoRA được cập nhật", 12, RED)
+    label(ax, 5, 0.73, "Action Expert   ·   Flow Matching   ·   Action chunking", 15, RED)
+    # ax.plot([6.63, 6.63], [.51, .97], color="#bd676b", lw=.8)
+    flame(ax, 1.05, .73)
     save(fig, "smolvla-lora.pdf")
 
 

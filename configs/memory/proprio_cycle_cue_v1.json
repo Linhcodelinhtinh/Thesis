@@ -1,0 +1,9 @@
+{
+  "closed_aperture_meters": 0.045,
+  "released_aperture_meters": 0.055,
+  "lift_meters": 0.08,
+  "touchdown_height_meters": 0.03,
+  "touchdown_xy_meters": 0.06,
+  "grasp_height_frames": 8,
+  "confirmation_frames": 2
+}

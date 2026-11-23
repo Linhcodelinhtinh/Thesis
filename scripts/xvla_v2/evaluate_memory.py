@@ -28,7 +28,10 @@ from scripts.run_x_vla_libero import start_server, verify_adapter, verify_checko
 from src.evaluation.mem_eval_io import EpisodeRecorder, evaluation_roster, write_json
 from src.evaluation.libero_mem_protocol import DEFAULT_PROTOCOL, source_digest, load_suite_source
 from src.evaluation.libero_mem_rollout import LiberoMemRolloutRunner
-from src.evaluation.memory_halt import HALT_MODES, HaltConfig, MemoryHaltPolicy, xvla_hold_chunk_factory
+from src.evaluation.memory_supervisor import DEFAULT_DECISION_PROTOCOL, execution_treatment, load_decision_protocol
+from src.evaluation.halt_sources import shadow_factory
+from src.evaluation.memory_halt import COUNT_SOURCES, HALT_MODES, HaltConfig, MemoryHaltPolicy, xvla_hold_chunk_factory
+from src.memory.proprio_cycle_cue import ProprioCueConfig
 from src.memory.visual_pipeline import load_prompt_tokenizer
 from src.memory.relation_pipeline import relation_pipeline
 from src.models.xvla_mem import XVLAMemPolicy
@@ -144,6 +147,8 @@ def main(argv=None):
     p.add_argument("--output-dir", type=Path, required=True)
     p.add_argument("--preflight-only", action="store_true")
     p.add_argument("--runtime-check", action="store_true", help="Two real actions on one selected state per task; no score")
+    p.add_argument("--decision-mode", choices=("text", "shadow", "event", "periodic"))
+    p.add_argument("--decision-exposure", choices=("projected", "snapshot"), default="projected")
     p.add_argument("--halt", choices=("off", *HALT_MODES), default="off",
                    help="Memory-gated halt treatment (separate condition; requires --memory on)")
     p.add_argument("--halt-confirm-queries", type=int, default=1)
@@ -152,6 +157,11 @@ def main(argv=None):
                    help="Ablation: halt on count + open gripper without the confirmed on-plate relation")
     p.add_argument("--halt-allow-closed-gripper", action="store_true",
                    help="Ablation: also halt (and open the gripper) when the count is reached while grasping")
+    p.add_argument("--halt-source", choices=COUNT_SOURCES, default="writer",
+                   help="Return count the halt reads: the prompt writer (default), a V4 shadow writer, V4 + proprio cue "
+                        "fused per cycle, or the simulator's confirmed cycles (privileged upper bound)")
+    p.add_argument("--freeze-detector-after-halt", action="store_true",
+                   help="Hold mode only: stop detector/shadow work once the halt latches (actions unchanged)")
     p.add_argument("--port", type=int, default=8010)
     p.add_argument("--timeout", type=int, default=600)
     a = p.parse_args(argv)
@@ -166,6 +176,17 @@ def main(argv=None):
         HaltConfig(1, mode=a.halt, confirm_queries=a.halt_confirm_queries, retract_m=a.halt_retract_m,
                    require_on_support=not a.halt_no_support_check,
                    require_gripper_open=not a.halt_allow_closed_gripper)
+    if a.halt == "off" and (a.halt_source != "writer" or a.freeze_detector_after_halt):
+        p.error("--halt-source and --freeze-detector-after-halt need --halt")
+    if a.freeze_detector_after_halt and a.halt != "hold":
+        p.error("--freeze-detector-after-halt is only valid with --halt hold (gripper_lock keeps querying the policy)")
+    if a.halt_source == "oracle" and not a.halt_no_support_check:
+        a.halt_no_support_check = True    # the simulator's confirmed cycle already encodes the plate predicate
+    if a.decision_mode and (a.split != "seen" or a.arm != "F1" or a.memory != "on" or a.halt != "off"):
+        p.error("Decision modes require F1 memory-on on seen states and no halt treatment")
+    decision_protocol = load_decision_protocol() if a.decision_mode else None
+    decision_execution = (execution_treatment(decision_protocol, a.decision_mode, a.decision_exposure)
+                          if decision_protocol else None)
     output = a.output_dir.absolute()
     output.mkdir(parents=True, exist_ok=False)
     manifest = dict(classification="CUSTOM_V2_XVLA_MEM", comparability="NON-COMPARABLE_OFFICIAL_PAPER",
@@ -185,6 +206,14 @@ def main(argv=None):
                 or shards["memory_source"] != export["memory_source"]):
             raise ValueError("Training shards provenance differs from XVLA export")
         protocol, lock, roster = evaluation_roster(a.split_lock, a.split, a.tasks, a.states)
+        if decision_protocol:
+            if (protocol["protocol_id"] != decision_protocol["parent_protocol_id"]
+                    or protocol["rollout"]["execution_horizon"] != decision_protocol["parent_execution_horizon"]
+                    or protocol["rollout"]["horizon_policy_actions"] != decision_protocol["policy_actions"]
+                    or lock["lock_sha256"] != decision_protocol["split_lock_sha256"]):
+                raise ValueError("Decision protocol differs from its locked parent")
+            manifest.update(decision_protocol=decision_protocol,
+                            decision_protocol_sha256=source_digest(DEFAULT_DECISION_PROTOCOL))
         if lock["lock_sha256"] != export["split_lock_sha256"]:
             raise ValueError("Evaluation split differs from training lock")
         contract = shards["memory_provenance"][0]
@@ -264,13 +293,22 @@ def main(argv=None):
                 name="memory_halt", mode=a.halt, confirm_queries=a.halt_confirm_queries,
                 retract_m=a.halt_retract_m, require_on_support=not a.halt_no_support_check,
                 require_gripper_open=not a.halt_allow_closed_gripper,
-                source_sha256=sha256_file(ROOT / "src/evaluation/memory_halt.py"))),
+                count_source=a.halt_source, freeze_detector_after_halt=a.freeze_detector_after_halt,
+                source_sha256=sha256_file(ROOT / "src/evaluation/memory_halt.py"),
+                shadow_source_sha256={name: sha256_file(ROOT / name) for name in (
+                    "src/evaluation/halt_sources.py", "src/memory/cycle_fusion.py", "src/memory/proprio_cycle_cue.py",
+                    "configs/memory/proprio_cycle_cue_v1.json", "src/memory/relation_cycle_writer_v4.py",
+                    "configs/memory/relation_plate_prior_v1.json")}
+                if a.halt_source in ("v4", "fused") else None)),
             shards_manifest_sha256=sha256_file(a.shards_manifest),
             reference_manifest_sha256={str(path): sha256_file(path) for path in (a.smolvla_reference or [])},
             execution=dict(control_delta=False, action_chunk=30, execution_horizon=10,
                            policy_actions=1000, warmup_delta_steps=20,
                            inference_seed_reset="server_restart_per_episode",
                            inference_port_schedule="base_plus_episode_index"))
+        if decision_execution:
+            manifest["decision_execution"] = dict(mode=decision_execution.mode,
+                exposure=decision_execution.exposure, arm=decision_execution.arm)
         write_json(output / "run_manifest.json", manifest)
         if a.require_matched_reference and audit["status"] != "MATCHED_TASK_PROTOCOL_CROSS_BACKBONE":
             raise ValueError("SmolVLA comparison gate: " + str(audit))
@@ -299,6 +337,8 @@ def main(argv=None):
             episode_index = 0
             for task in a.tasks:
                 factory, renderer = relation_pipeline(suite, task, detector, "libero_raw", prompt_tokenizer)
+                if a.halt != "off" and a.halt_source in ("v4", "fused"):
+                    factory = shadow_factory(factory, ProprioCueConfig.load())
                 env = ProcessXVLAMemEnv(task, split_lock=a.split_lock, split=a.split,
                                        python_executable=a.sim_python, timeout_seconds=a.timeout)
                 try:
@@ -311,11 +351,13 @@ def main(argv=None):
                             raise ValueError("Episode-specific inference port exceeds 65535")
                         episode_index += 1
                         runner_condition = "F1" if a.memory == "on" else "F0" if a.arm == "F0" else "F1-off"
-                        halt_suffix = "" if a.halt == "off" else f"-halt-{a.halt}"
+                        halt_suffix = "" if a.halt == "off" else (f"-halt-{a.halt}" + ("" if a.halt_source == "writer" else f"-{a.halt_source}"))
                         report_condition = f"{a.arm}-mem-{a.memory}{halt_suffix}"
                         ep_id = f"{task}_{a.arm}_mem-{a.memory}{halt_suffix}_{a.split}_state{row['state_idx']}"
                         metadata = dict(row, episode_id=ep_id, condition=report_condition, weight_arm=a.arm,
                                         memory=a.memory, policy_seed=a.policy_seed)
+                        if decision_execution:
+                            metadata["decision_arm"] = decision_execution.arm
                         server_dir = output / "servers" / ep_id
                         server_dir.mkdir(parents=True)
                         recorder = EpisodeRecorder(output / "episodes" / ep_id, metadata, True, fps=20)
@@ -326,7 +368,10 @@ def main(argv=None):
                                 require_on_support=not a.halt_no_support_check,
                                 require_gripper_open=not a.halt_allow_closed_gripper)
                             current_pose, make_hold = xvla_hold_chunk_factory(env, XVLAMemPolicy.chunk_size)
-                            policy = MemoryHaltPolicy(policy, halt_config, current_pose, make_hold, observer=recorder)
+                            policy = MemoryHaltPolicy(policy, halt_config, current_pose, make_hold, observer=recorder,
+                                count_source=a.halt_source, freeze_writer=a.freeze_detector_after_halt,
+                                oracle_count=(lambda env=env: env.last_info["eval_result"].confirmed_cycles)
+                                if a.halt_source == "oracle" else None)
                         try:
                             with start_server(a.inference_python.absolute(), ROOT / "external/X-VLA", a.checkpoint.absolute(),
                                     server_dir, episode_port, a.timeout, adapter=a.adapter_dir.absolute(), seed=a.policy_seed):
@@ -336,12 +381,14 @@ def main(argv=None):
                                 else:
                                     runner = LiberoMemRolloutRunner(env, policy, runner_condition, renderer=renderer,
                                         writer_factory=factory if a.memory == "on" else None, observer=recorder,
-                                        stream_memory_trace=True)
+                                        stream_memory_trace=True, execution_treatment=decision_execution)
                                     result = runner.run_episode(ep_id, row["instruction"], row["state_idx"])
                             if not a.runtime_check:
                                 np.savez_compressed(recorder.directory / "xvla_raw_chunks.npz", raw=np.stack(policy.raw_chunks))
                                 if a.halt != "off":
                                     write_json(recorder.directory / "memory_halt.json", policy.summary())
+                                    if getattr(factory, "created", None):
+                                        write_json(recorder.directory / "shadow_halt.json", factory.created[-1].summary())
                                 recorder.finish(result=result)
                         except BaseException as exc:
                             recorder.finish(error=exc)

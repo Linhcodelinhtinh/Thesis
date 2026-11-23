@@ -1,0 +1,5 @@
+{
+  "when_missing": true,
+  "when_ambiguous": true,
+  "max_consecutive_frames": null
+}

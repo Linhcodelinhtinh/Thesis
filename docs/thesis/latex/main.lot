@@ -1,19 +1,17 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {2.1}{\ignorespaces Biểu diễn lịch sử và vai trò trong quyết định}}{11}{table.2.1}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {3.1}{\ignorespaces Dạng thông tin lịch sử theo tác vụ LIBERO-Mem}}{24}{table.3.1}%
-\contentsline {table}{\numberline {3.2}{\ignorespaces Ngưỡng theo dõi chu kỳ thao tác}}{25}{table.3.2}%
+\contentsline {table}{\numberline {3.1}{\ignorespaces Dạng thông tin lịch sử theo tác vụ LIBERO-Mem}}{22}{table.3.1}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces Ngưỡng theo dõi chu kỳ thao tác}}{23}{table.3.2}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces Thực nghiệm theo câu hỏi và đóng góp}}{31}{table.4.1}%
-\contentsline {table}{\numberline {4.2}{\ignorespaces Các cấu hình đối chứng}}{33}{table.4.2}%
-\contentsline {table}{\numberline {4.3}{\ignorespaces Đối sánh vòng kín F0 và F1 trên T1/T3}}{36}{table.caption.8}%
-\contentsline {table}{\numberline {4.4}{\ignorespaces Truy vấn theo sự kiện trên nhóm phát triển T1/T3}}{37}{table.caption.10}%
-\contentsline {table}{\numberline {4.5}{\ignorespaces Kết quả chẩn đoán truy vấn trên nhóm hiệu chuẩn T1/T3}}{39}{table.caption.13}%
-\contentsline {table}{\numberline {4.6}{\ignorespaces Kết quả bỏ bộ nhớ tại một truy vấn ở hai lượt T1}}{40}{table.caption.14}%
-\contentsline {table}{\numberline {4.7}{\ignorespaces Số lượt thành công của SmolVLA theo tác vụ LIBERO-10}}{41}{table.caption.15}%
-\contentsline {table}{\numberline {4.8}{\ignorespaces Số lượt thành công của X-VLA theo tác vụ LIBERO-10}}{43}{table.caption.18}%
-\contentsline {table}{\numberline {4.9}{\ignorespaces So sánh ghép cặp tỷ lệ thành công của X-VLA}}{43}{table.caption.19}%
+\contentsline {table}{\numberline {4.1}{\ignorespaces Tổng hợp các nhóm thực nghiệm trọng tâm theo mục tiêu và câu hỏi nghiên cứu}}{29}{table.caption.7}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Các cấu hình thực nghiệm}}{30}{table.4.2}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Đối sánh hiệu năng vòng kín giữa F0 và F1 trên SmolVLA và X-VLA (40 cặp unseen)}}{32}{table.caption.9}%
+\contentsline {table}{\numberline {4.4}{\ignorespaces Đánh giá cơ chế truy vấn theo sự kiện trên nhóm phát triển và hiệu chuẩn (SmolVLA)}}{33}{table.caption.11}%
+\contentsline {table}{\numberline {4.5}{\ignorespaces Độ phủ mốc trên E2 của X-VLA (35 mốc, sai lệch $\pm 20$ bước) và trên nhóm phát triển}}{36}{table.caption.14}%
+\contentsline {table}{\numberline {4.6}{\ignorespaces Thời điểm dừng và thành công toàn phần mô phỏng rẽ nhánh trên 40 lượt E2}}{37}{table.caption.15}%
+\contentsline {table}{\numberline {4.7}{\ignorespaces Kết quả can thiệp triệt tiêu bộ nhớ tại một truy vấn trên SmolVLA và X-VLA}}{38}{table.caption.16}%
+\contentsline {table}{\numberline {4.8}{\ignorespaces Số lượt thành công trên 10 tác vụ LIBERO-10 của SmolVLA và X-VLA}}{39}{table.caption.17}%
 \addvspace {10\p@ }
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

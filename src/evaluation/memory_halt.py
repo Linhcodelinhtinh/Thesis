@@ -38,6 +38,8 @@ import numpy as np
 
 HALT_VERSION = "memory_halt_v1"
 HALT_MODES = ("hold", "gripper_lock")
+# Where the halt reads its return count. "writer" is the original behaviour (the prompt writer's snapshot).
+COUNT_SOURCES = ("writer", "v4", "fused", "oracle")
 COMBINE_MODES = ("shadow", "or", "and")
 # Same released-gripper threshold as RelationMemoryWriter._measure (aperture >= .055).
 DEFAULT_OPEN_APERTURE = 0.055
@@ -113,6 +115,24 @@ def evaluate_halt(snapshot, obs, config: HaltConfig) -> Dict[str, Any]:
     return record
 
 
+def counted_snapshot(base, returns, subject="bowl_1"):
+    """Copy of a relation snapshot whose subject return count is replaced (status/reference/armed are kept)."""
+    from types import SimpleNamespace
+    states = {}
+    key_to_replace = subject if subject in base.relations else next(iter(base.relations), None)
+    for key, state in base.relations.items():
+        states[key] = (SimpleNamespace(returns=int(returns), status=state.status, reference=state.reference,
+                                       armed=state.armed) if key == key_to_replace else state)
+    return SimpleNamespace(as_of_observation=base.as_of_observation, profile=base.profile, relations=states)
+
+
+def oracle_snapshot(step, target_profile, confirmed_cycles, subject="bowl_1"):
+    """Privileged count from the simulator evaluator (upper bound only; never a deployable source)."""
+    from types import SimpleNamespace
+    state = SimpleNamespace(returns=int(confirmed_cycles), status="confirmed", reference="plate_1", armed=False)
+    return SimpleNamespace(as_of_observation=int(step), profile=target_profile, relations={subject: state})
+
+
 def xvla_hold_chunk_factory(env, chunk_size=30):
     """Build hold chunks with the same author decoder the X-VLA policy uses.
 
@@ -142,7 +162,14 @@ class MemoryHaltPolicy:
 
     def __init__(self, policy, config: HaltConfig, current_pose: Callable, make_hold_chunk: Callable,
                  observer: Optional[Callable] = None, termination_fn: Optional[Callable] = None,
-                 termination_threshold: float = 0.5, combine: str = "shadow"):
+                 termination_threshold: float = 0.5, combine: str = "shadow",
+                 count_source: str = "writer", oracle_count: Optional[Callable] = None,
+                 freeze_writer: bool = False):
+        if count_source not in COUNT_SOURCES:
+            raise ValueError(f"count_source must be one of {COUNT_SOURCES}")
+        if count_source == "oracle" and oracle_count is None:
+            raise ValueError("count_source 'oracle' needs oracle_count() -> confirmed cycles")
+        self.count_source, self._oracle_count, self._freeze_writer = count_source, oracle_count, freeze_writer
         if combine not in COMBINE_MODES:
             raise ValueError(f"combine must be one of {COMBINE_MODES}")
         if not 0.0 < termination_threshold < 1.0:
@@ -201,6 +228,10 @@ class MemoryHaltPolicy:
         if self._writer is None:
             raise RuntimeError("Memory halt requires a bound memory writer (memory-on condition)")
         snapshot = self._writer.get_snapshot()
+        if self.count_source in ("v4", "fused"):
+            snapshot = self._writer.halt_snapshot(self.count_source)
+        elif self.count_source == "oracle" and snapshot is not None:
+            snapshot = oracle_snapshot(snapshot.as_of_observation, snapshot.profile, self._oracle_count())
         step = None if snapshot is None else int(snapshot.as_of_observation)
         if not self.halted:
             record = evaluate_halt(snapshot, obs, self.config)
@@ -223,6 +254,9 @@ class MemoryHaltPolicy:
                 anchor = position.copy()
                 anchor[2] += self.config.retract_m
                 self._anchor = (anchor, rotation6d)
+                if self._freeze_writer and hasattr(self._writer, "freeze"):
+                    # Hold never reads memory again, so the detector can stop. Actions are unaffected.
+                    self._writer.freeze()
             decision = "halt" if latch else "continue"
             self._log(dict(step=step, query_id=query, decision=decision, treatment=HALT_VERSION,
                            mode=self.config.mode, streak=self._streak,
@@ -243,6 +277,7 @@ class MemoryHaltPolicy:
 
     def summary(self):
         return dict(treatment=HALT_VERSION, config=self.config.to_dict(), halted=self.halted,
+                    count_source=self.count_source, writer_frozen=self._freeze_writer and self.halted,
                     termination_head=(None if self._termination_fn is None else dict(
                         threshold=self.termination_threshold, combine=self.combine)),
                     halt_step=self.halt_step, halt_query=self.halt_query, queries=self._queries,

@@ -61,11 +61,18 @@ def main():
     p.add_argument("--tokenizer", type=Path, help="X-VLA checkpoint dir (tokenizer.json) for the 50-token check")
     p.add_argument("--rot-frame", default="panda_rz_m90", choices=["panda_rz_m90", "identity"])
     p.add_argument("--verify-shard-hashes", action="store_true", help="sha256 every shard (~12 GB read)")
+    p.add_argument("--memory-overlay", type=Path, help="Verified prompt and sample eligibility HDF5 for F1 Mem")
     p.add_argument("--allow-lock-mismatch", action="store_true")
     args = p.parse_args()
 
     root = find_root(args.shards_root)
     manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+    if args.memory_overlay:
+        with h5py.File(args.memory_overlay, "r") as overlay:
+            if overlay.attrs["manifest_sha256"] != sha256(root / "manifest.json"):
+                raise ValueError("Memory overlay was built from a different shard manifest")
+            if args.tokenizer and overlay.attrs["tokenizer_sha256"] != sha256(args.tokenizer / "tokenizer.json"):
+                raise ValueError("Memory overlay was checked with a different X-VLA tokenizer")
     if manifest.get("status") != "complete":
         raise SystemExit("manifest status is not complete")
     if manifest.get("split_lock_sha256") != EXPECTED_LOCK and not args.allow_lock_mismatch:
@@ -89,7 +96,10 @@ def main():
     t0 = time.time()
     per_ep, prompts_all = [], Counter()
     mem_frames = Counter()
-    with h5py.File(tmp, "w") as fo:
+    from contextlib import ExitStack
+    with ExitStack() as stack:
+        fo = stack.enter_context(h5py.File(tmp, "w"))
+        overlay = stack.enter_context(h5py.File(args.memory_overlay, "r")) if args.memory_overlay else None
         fo.attrs.update(split_lock_sha256=manifest["split_lock_sha256"], rot_frame=args.rot_frame,
                         layout="pos3 + rot6d(col0,col1 of controller goal_ori) + raw gripper action",
                         source="analytic robosuite-1.4 OSC_POSE goal from shard robot_states + actions")
@@ -116,6 +126,15 @@ def main():
                         raise SystemExit(f"has_memory/prompts disagree {rel}:{e['demo']}")
                     if e["domain"] == "base" and flags.any():
                         raise SystemExit(f"base episode carries memory prompts {rel}:{e['demo']}")
+                    if overlay is not None and e["domain"] == "mem":
+                        labels = overlay[rel][e["demo"]]
+                        eligible = labels["eligible"][()]
+                        prompts = labels["prompts"].asstr()[()]
+                        if eligible.shape != (n,) or prompts.shape != (n,):
+                            raise ValueError(f"Memory overlay length mismatch {rel}:{e['demo']}")
+                        flags = eligible & (prompts != instr)
+                        mem_frames["overlay_eligible_candidates"] += int(eligible[1:max(1, n - 9)].sum())
+                        prompts = prompts[eligible]
                     # frames the X-VLA sampler can actually show: image rows 1..n-10
                     shown = flags[1:max(1, n - 9)]
                     mem_frames["shown_with_memory"] += int(shown.sum())
@@ -153,6 +172,8 @@ def main():
                         split_lock_sha256=manifest["split_lock_sha256"],
                         datalist=[dict(shard=e["shard"], demo=e["demo"], domain=e["domain"], task=e["task"],
                                        length=e["length"]) for e in train if e["domain"] == domain])
+            if args.memory_overlay and arm == "f1" and domain == "mem":
+                meta["memory_overlay"] = str(args.memory_overlay.resolve())
             (d / f"{domain}.json").write_text(json.dumps(meta, indent=1), encoding="utf-8")
 
     def agg(key, dom):
@@ -170,6 +191,7 @@ def main():
         tracking={d: {k: agg(k, d) for k in ("pos_track_median_m", "pos_track_p95_m",
                                               "rot_track_median_deg", "rot_track_p95_deg")} for d in ("base", "mem")},
         token_check=token_report, actions_h5_sha256=sha256(actions_h5),
+        memory_overlay_sha256=sha256(args.memory_overlay) if args.memory_overlay else None,
         code_sha256={n: sha256(Path(__file__).parent / n) for n in
                      ("abs_actions.py", "shard_handler.py", "build_xvla_v2_dataset.py")},
         note="Analytic goals; confirm frame/offset with check_xvla_alignment.py (and optionally sim replay)")

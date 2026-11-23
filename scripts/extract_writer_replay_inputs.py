@@ -63,10 +63,15 @@ def extract_development(index, data_dir, verify_hdf5=False):
             name, demo = episode.rsplit("_demo_", 1)
             if name != task:
                 raise ValueError(f"Episode {episode} does not belong to {task}")
-            robot = np.asarray(source[f"data/demo_{demo}/robot_states"][:, :2], dtype=np.float32)
-            if robot.shape != (frames, 2) or not np.isfinite(robot).all():
-                raise ValueError(f"Unexpected gripper state for {episode}: {robot.shape}, expected {frames} frames")
-            episodes[episode] = dict(task=alias, frames=frames, gripper_qpos=robot.tolist())
+            full = np.asarray(source[f"data/demo_{demo}/robot_states"][:], dtype=np.float32)
+            if full.shape != (frames, 9) or not np.isfinite(full).all():
+                raise ValueError(f"Unexpected robot state for {episode}: {full.shape}, expected {frames} frames")
+            # robot_states = [gripper(2), eef_pos(3), eef_quat(4)]: the quaternion must be unit length.
+            if not np.allclose(np.linalg.norm(full[:, 5:9], axis=1), 1, atol=1e-4):
+                raise ValueError(f"robot_states layout differs from [gripper, eef_pos, eef_quat]: {episode}")
+            robot = full[:, :2]
+            episodes[episode] = dict(task=alias, frames=frames, gripper_qpos=robot.tolist(),
+                                     eef_pos=full[:, 2:5].tolist())
     checked = mismatched = 0
     worst = 0.0
     seen = set()
@@ -113,14 +118,18 @@ def extract_rollouts(root, output):
             for path in (trace, observations):
                 if sha256_file(path) != status["files_sha256"][path.name]:
                     raise ValueError(f"Source checksum mismatch: {path}")
-            evidence, recorded, milestones, grip = [], [], [], []
+            evidence, recorded, milestones, grip, eef = [], [], [], [], []
             previous = 0
             for step, (frame, observation) in enumerate(zip(rows(trace), rows(observations), strict=True)):
                 if frame["step"] != step or observation["step"] != step:
                     raise ValueError(f"Non-contiguous steps in {directory}")
                 evidence.append(frame["signals"]["visual_evidence"])
                 recorded.extend(step for event in frame["signals"]["new_events"] if event["type"] == "return")
-                grip.append(observation["raw_proprioception_pos_quatxyzw_gripper"][7:9])
+                proprio = observation["raw_proprioception_pos_quatxyzw_gripper"]
+                if len(proprio) != 9 or abs(sum(q * q for q in proprio[3:7]) - 1) > 1e-3:
+                    raise ValueError(f"Unexpected proprioception layout in {directory}")
+                grip.append(proprio[7:9])
+                eef.append(proprio[:3])
                 count = observation["info"]["eval_result"]["confirmed_cycles"]
                 if count not in (previous, previous + 1):
                     raise ValueError(f"Invalid benchmark progress in {directory}")
@@ -128,7 +137,7 @@ def extract_rollouts(root, output):
                     milestones.append(step)
                 previous = count
             stream.write(json.dumps(dict(
-                episode=directory.name, task=status["task"], frames=len(grip), gripper_qpos=grip,
+                episode=directory.name, task=status["task"], frames=len(grip), gripper_qpos=grip, eef_pos=eef,
                 evidence=evidence, recorded_return_steps=recorded, milestones=milestones,
                 source_receipt_sha256=sha256_file(directory / "status.json"))) + "\n")
             written.append(directory.name)

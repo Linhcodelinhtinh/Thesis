@@ -26,6 +26,7 @@ def make_index(tmp_path, shift=0.0):
     with h5py.File(data / f"{TASK}_demo.hdf5", "w") as target:
         for episode, frames in FRAMES.items():
             robot = rng.uniform(-.04, .04, size=(frames, 9)).astype(np.float32)
+            robot[:, 5:9] = np.array([0, 0, 0, 1], dtype=np.float32)  # unit quaternion, as in the demos
             target[f"data/demo_{episode.rsplit('_demo_', 1)[1]}/robot_states"] = robot
             qpos[episode] = robot[:, :2]
     (index / "manifest.json").write_text(json.dumps(dict(
@@ -49,6 +50,7 @@ def test_development_gripper_state_is_extracted_and_cross_checked(tmp_path):
     np.testing.assert_array_equal(np.array(episodes[f"{TASK}_demo_2"]["gripper_qpos"], dtype=np.float32),
                                   qpos[f"{TASK}_demo_2"])
     assert report["apertures_cross_checked"] == 3 + 2 and report["worst_aperture_difference"] == 0.0
+    assert np.asarray(episodes[f"{TASK}_demo_1"]["eef_pos"]).shape == (5, 3)
 
 
 def test_a_trace_from_a_different_run_fails_loudly(tmp_path):
@@ -62,7 +64,7 @@ def test_a_frame_count_that_disagrees_with_the_manifest_fails(tmp_path):
     manifest = json.loads((index / "manifest.json").read_text(encoding="utf-8"))
     manifest["episodes"][0]["frames"] = 6
     (index / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
-    with pytest.raises(ValueError, match="Unexpected gripper state"):
+    with pytest.raises(ValueError, match="Unexpected robot state"):
         extract_development(index, data)
 
 
@@ -73,7 +75,7 @@ def make_rollout(root, name="T1_F1_unseen_state0", frames=4, tamper=False):
     for step in range(frames):
         event = [dict(type="return")] if step == 3 else []
         trace.append(dict(step=step, signals=dict(visual_evidence=dict(step=step), new_events=event)))
-        observations.append(dict(step=step, raw_proprioception_pos_quatxyzw_gripper=[0] * 7 + [.02, -.02],
+        observations.append(dict(step=step, raw_proprioception_pos_quatxyzw_gripper=[.1, .2, .3 + step / 100, 0, 0, 0, 1, .02, -.02],
                                  info=dict(eval_result=dict(confirmed_cycles=int(step >= 2)))))
     write_jsonl(directory / "memory_trace.jsonl", trace)
     write_jsonl(directory / "observations.jsonl", observations)
@@ -94,6 +96,7 @@ def test_rollout_inputs_keep_evidence_gripper_and_reference_counts(tmp_path):
         episode = json.loads(stream.readline())
     assert episode["milestones"] == [2] and episode["recorded_return_steps"] == [3]
     assert episode["gripper_qpos"][0] == [.02, -.02] and len(episode["evidence"]) == 4
+    assert episode["eef_pos"][3] == pytest.approx([.1, .2, .33])
 
 
 def test_rollout_checksum_mismatch_is_refused(tmp_path):

@@ -18,18 +18,11 @@ hạn chế các notation giải thích theo kiểu mở ngoặc đóng ngoặc 
 
 tuyệt đối không dùng các kí tự gạch ngang lạ, dài hay double gạch ngang --, chỉ dùng gạch ngang ngắn và đơn "-".
 
-về training: Khi có bộ nhớ: loss là 0.2142. Khi bị cắt bộ nhớ (no_memory): loss tăng vọt lên 0.2487 (tăng tương đối ≈16%≈16%).👉 Ý nghĩa khoa học cốt lõi: Khi cắt bỏ bộ nhớ, sai số dự đoán hành động tăng đáng kể. Điều này chứng minh rằng mô hình đã thực sự học cách điều kiện hóa hành động dựa trên tín hiệu tiến độ trong bộ nhớ, chứ không bỏ qua thông tin này.
-
 giải thích về meaning của điều khiển vòng kín (closed loop manipulation)
 
-abstract khaongr 3/4 trang
 first mentioned cần viết rõ note rõ
 
 !!!chú ý đặt tên section subseection 
-
-3. nội dung 
-
-4. thực nghiệm
 
 trình bày thêm các kĩ thuật trong quá trình finetune, thiết kế balance data ngăn forgetting
 
@@ -40,3 +33,7 @@ vẽ lại hình và đẩy lên sớm trong mục 3.
 bảng để phông chữ nhỏ hơn, bảng kẻ dọc vào đóng khung
 
 verify citation chính xác, đầy đủ, tồn tại và uptodate. 
+
+đảm bảo các hình, bảng biểu nằm ở vị trí gần với phần nội dung đề cập đến chúng.
+
+không trùng lặp nội dung giữa các phần với nhau. 

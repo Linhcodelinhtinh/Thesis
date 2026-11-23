@@ -36,6 +36,7 @@ from src.memory.libero_mem_profiles import MemoryProfile
 from src.memory.relation_cycle_config import BowlCycleConfig
 from src.memory.relation_cycle_writer import BowlCycleWriter
 from src.memory.relation_cycle_writer_v3 import BowlCycleWriterV3
+from src.memory.relation_cycle_writer_v4 import PlateAnchorWriterV4, v4_source_hashes
 from src.memory.relation_memory import RelationMemoryWriter
 from src.memory.relation_sparse_config import SparseWriterConfig
 from src.memory.relation_sparse_versions import source_hashes_for
@@ -77,10 +78,14 @@ def writer_specs():
     def v3(episode, detector, **_):
         return BowlCycleWriterV3(episode, PROFILE, detector, CONVENTION, config=BowlCycleConfig.load())
 
+    def v4(episode, detector, **_):
+        return PlateAnchorWriterV4(episode, PROFILE, detector, CONVENTION, config=BowlCycleConfig.load())
+
     specs = {
         "v1": ("dense", 1, "v1", None, dense(RelationMemoryWriter)),
         "v2": ("dense", 1, "v1", None, dense(BowlCycleWriter, BowlCycleConfig())),
         "v3": ("dense", 1, "v3", None, v3),
+        "v4": ("dense", 1, "v3", "v3", v4),
         "sparse_v1_k8": ("sparse", 8, "v1", "v1", sparse_writer(SparseRelationWriterV1, 8)),
     }
     for interval in (4, 8, 16):
@@ -161,7 +166,7 @@ def run_writer(spec, name, episode, task, evidence, grip, query_interval=QUERY_I
     if len(set(detector.steps)) != len(detector.steps):
         raise ValueError(f"{name} asked for the same frame twice in {episode}")
     stats = getattr(writer, "stats", None)
-    if stats is not None and stats["detector_calls"] != len(detector.steps):
+    if stats is not None and "detector_calls" in stats and stats["detector_calls"] != len(detector.steps):
         raise ValueError(f"{name} miscounted its detector calls in {episode}")
     state = snapshot.relations.get("bowl_1")
     return dict(events=events, queries=queries, calls=len(detector.steps), frames=len(evidence),
@@ -337,7 +342,8 @@ def summarize(runs, references, scored, tolerance):
     sparse_stats = {}
     for e in episodes:
         for key, value in (runs[e]["stats"] or {}).items():
-            sparse_stats[key] = sparse_stats.get(key, 0) + value
+            sparse_stats[key] = (max(sparse_stats.get(key, 0), value) if key.startswith("longest")
+                                 else sparse_stats.get(key, 0) + value)
     return dict(
         schedule=dict(sorted(schedule.items())), sparse_stats=sparse_stats,
         tolerance=tolerance, episodes=len(episodes), reference_events=sum(len(references[e]["milestones"]) for e in episodes),
@@ -433,7 +439,7 @@ def evaluate(results, references, names, tolerances=TOLERANCES, checks=()):
     headline = scored_by_tolerance[HEADLINE_TOLERANCE]
     out["against_dense"] = {name: agreement(runs_by_writer[name], runs_by_writer[specs[name][3]])
                             for name in names if specs[name][3]}
-    pairs = [("v3", "v1"), ("v3", "v2"), ("v2", "v1"), ("sparse_v3_k8", "v3"), ("sparse_v1_k8", "v1"),
+    pairs = [("v4", "v3"), ("v4", "v1"), ("v3", "v1"), ("v3", "v2"), ("v2", "v1"), ("sparse_v3_k8", "v3"), ("sparse_v1_k8", "v1"),
              ("subsampled_v3_k8", "v3")]
     out["hit_comparison"] = {}
     for first, second in pairs:
@@ -443,7 +449,7 @@ def evaluate(results, references, names, tolerances=TOLERANCES, checks=()):
                                  headline[w][e]["false_negative"]] for e in references]
             row["bootstrap_difference_95"] = bootstrap(counts(first), counts(second))
             out["hit_comparison"][f"{first}_minus_{second}"] = row
-    core = [name for name in ("v1", "v2", "v3") if name in names]
+    core = [name for name in ("v1", "v2", "v3", "v4") if name in names]
     out["venn_dense_writers"] = venn(headline, core, references)
     out["fidelity"] = fidelity(runs_by_writer, references, checks)
     out["recorded_v1_events_equal_replay"] = dict(
@@ -507,6 +513,7 @@ def main(argv=None):
                            v2=versioned_relation_source_hashes(ROOT, BowlCycleWriter.VERSION),
                            v3=versioned_relation_source_hashes(ROOT, BowlCycleWriterV3.VERSION),
                            sparse_v3=source_hashes_for(ROOT, SparseBowlCycleWriterV3.VERSION),
+                           v4=v4_source_hashes(ROOT),
                            harness=sha256_file(Path(__file__))),
         inputs={name: sha256_file(args.inputs / name) for name in ("development_gripper.json",
                                                                      "rollout_replay_inputs.jsonl.gz",
