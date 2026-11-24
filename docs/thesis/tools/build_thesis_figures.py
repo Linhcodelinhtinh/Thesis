@@ -137,19 +137,25 @@ def smolvla():
 
 
 def availability():
-    fig, ax = canvas(2.04)
-    ax.plot([.55, 9.32], [.87, .87], color=INK, lw=1.5)
-    arrow(ax, (9.32, .87), (9.65, .87))
-    for x, symbol, title in [(1.45, r"$\tau$", "Sự kiện xảy ra"),
-                              (4.10, r"$\nu$", "Đủ bằng chứng"),
-                              (6.90, "$q$", "Truy vấn VLA")]:
-        ax.scatter([x], [.87], s=46, zorder=3, color=TEAL)
-        label(ax, x, .52, symbol, 15)
-        label(ax, x, 1.22, title, 14)
-    label(ax, 2.72, 1.69, "Thu thập bằng chứng", 12, GRAY)
-    label(ax, 5.50, 1.69, r"Đủ điều kiện thời gian: $\nu \leq q$", 12, TEAL)
-    label(ax, 8.33, 1.69, "Chưa khả dụng tại $q$", 12, RED,
-          bbox={"boxstyle": "round,pad=.25", "facecolor": ROSE, "edgecolor": "none"})
+    fig, ax = canvas(2.70)
+    ax.plot([.55, 9.30], [1.05, 1.05], color=INK, lw=2.2)
+    arrow(ax, (9.30, 1.05), (9.70, 1.05))
+    ax.plot([4.25, 7.15], [1.05, 1.05], color=TEAL, lw=5.0, solid_capstyle="butt", zorder=3)
+    for x, symbol, title in [(1.35, r"$\tau$", "Sự kiện xảy ra"),
+                              (4.25, r"$\nu$", "Xác nhận bằng chứng"),
+                              (7.15, "$q$", "Truy vấn VLA")]:
+        ax.scatter([x], [1.05], s=120, color="white", edgecolor=TEAL, linewidth=2.5, zorder=4)
+        ax.scatter([x], [1.05], s=40, color=TEAL, zorder=5)
+        label(ax, x, .48, symbol, 22)
+        label(ax, x, 1.50, title, 17.5, weight="bold")
+
+    bbox_gray = {"boxstyle": "round,pad=.32", "facecolor": "#f2f5f7", "edgecolor": "#c5cfd6", "linewidth": 1.1}
+    bbox_teal = {"boxstyle": "round,pad=.32", "facecolor": "#e7f3ef", "edgecolor": "#a3d2c4", "linewidth": 1.1}
+    bbox_red  = {"boxstyle": "round,pad=.32", "facecolor": ROSE,      "edgecolor": "#f5b7b1", "linewidth": 1.1}
+
+    label(ax, 2.80, 2.18, "Chưa đủ bằng chứng", 15.5, "#4a5568", weight="bold", bbox=bbox_gray)
+    label(ax, 5.70, 2.18, r"Đủ điều kiện: $\nu \leq q$", 15.5, TEAL, weight="bold", bbox=bbox_teal)
+    label(ax, 8.55, 2.18, r"Chưa khả dụng tại $q$", 15.5, RED, weight="bold", bbox=bbox_red)
     save(fig, "truc-bang-chung.pdf")
 
 

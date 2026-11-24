@@ -8,11 +8,11 @@
 \contentsline {figure}{\numberline {3.4}{\ignorespaces Phần đóng băng và phần tinh chỉnh LoRA trong SmolVLA}}{25}{figure.caption.5}%
 \contentsline {figure}{\numberline {3.5}{\ignorespaces Truy vấn sớm khi có bằng chứng mới}}{27}{figure.caption.6}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Cấu trúc lời nhắc tích hợp bộ nhớ và ví dụ thực tế từ lượt chạy T1}}{30}{figure.caption.8}%
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Ba mốc thao tác của lượt T3 thành công trong lần chạy thử sơ bộ}}{33}{figure.caption.10}%
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Chuỗi hành vi của lượt T1 thành công khi kích hoạt truy vấn sớm}}{34}{figure.caption.12}%
-\contentsline {figure}{\numberline {4.4}{\ignorespaces Cận cảnh quá trình kẹp và nhấc bát trong lượt chạy T1}}{34}{figure.caption.13}%
-\contentsline {figure}{\numberline {4.5}{\ignorespaces Phân bố số lượt thành công theo từng tác vụ của SmolVLA trên LIBERO-10}}{40}{figure.caption.18}%
-\contentsline {figure}{\numberline {4.6}{\ignorespaces Quá trình F1-off nhấc sách nhưng không thể đặt vào hộp ở tác vụ 5}}{40}{figure.caption.19}%
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Cấu trúc lời nhắc tích hợp bộ nhớ và ví dụ thực tế từ lượt chạy T1}}{31}{figure.caption.8}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Ba mốc thao tác của lượt T3 thành công của SmolVLA trong lần chạy thử sơ bộ}}{34}{figure.caption.10}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Chuỗi hành vi của lượt T1 thành công khi kích hoạt truy vấn sớm}}{35}{figure.caption.12}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Cận cảnh quá trình kẹp và nhấc bát trong lượt chạy T1}}{36}{figure.caption.13}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Phân bố số lượt thành công theo từng tác vụ của SmolVLA trên LIBERO-10}}{42}{figure.caption.19}%
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Quá trình SmolVLA F1-off nhấc sách nhưng không thể đặt vào hộp ở tác vụ 5}}{42}{figure.caption.20}%
 \addvspace {10\p@ }
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

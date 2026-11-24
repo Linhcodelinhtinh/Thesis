@@ -34,7 +34,7 @@ Tính an toàn của cơ chế này có thể được phân tích chặt chẽ 
 \label{eq:error-analysis}
 \end{equation}
 
-Phương trình~\eqref{eq:error-analysis} chỉ ra một kết quả lý thuyết quan trọng: kỳ vọng sai số toàn phần chỉ giảm so với chính sách phản xạ khi và chỉ khi tỷ lệ khẳng định sai thỏa mãn điều kiện $\epsilon < 1/2$. Ngược lại, nếu bộ nhớ đưa ra thông tin bị ảo giác với $\epsilon > 1/2$, việc tăng độ bao phủ $c$ sẽ làm tăng sai số toàn phần của hệ thống. Kết quả này chứng minh rằng việc giữ trạng thái \textit{chưa xác định} khi thiếu căn cứ quan sát là nguyên tắc an toàn vượt trội so với việc suy đoán hay ảo giác. Nhằm bảo đảm tính tin cậy tuyệt đối, kiến trúc thiết lập ranh giới phân tách độc lập hoàn toàn giữa nguồn thông tin của chính sách và nguồn đánh giá benchmark: bộ ghi và bộ đọc chỉ tiếp nhận dòng quan sát cảm biến được phép ($o_t$) mà không có quyền truy cập trạng thái môi trường đặc quyền, trong khi nhãn chân lý chỉ được sử dụng ở tầng đánh giá độc lập ngoại tuyến.
+Phương trình~\eqref{eq:error-analysis} chỉ ra một kết quả lý thuyết quan trọng: kỳ vọng sai số toàn phần chỉ giảm so với chính sách phản xạ khi và chỉ khi tỷ lệ khẳng định sai thỏa mãn điều kiện $\epsilon < 1/2$. Ngược lại, nếu bộ nhớ đưa ra thông tin bị ảo giác với $\epsilon > 1/2$, việc tăng độ bao phủ $c$ sẽ làm tăng sai số toàn phần của hệ thống. Trong mô hình đơn giản này, việc giữ trạng thái \textit{chưa xác định} khi thiếu căn cứ quan sát tốt hơn việc suy đoán khi tỷ lệ khẳng định sai vượt $1/2$; mô hình chưa được kiểm chứng trên dữ liệu thực. Để tránh rò rỉ thông tin, kiến trúc thiết lập ranh giới phân tách độc lập hoàn toàn giữa nguồn thông tin của chính sách và nguồn đánh giá benchmark: bộ ghi và bộ đọc chỉ tiếp nhận dòng quan sát cảm biến được phép ($o_t$) mà không có quyền truy cập trạng thái môi trường đặc quyền, trong khi nhãn chân lý chỉ được sử dụng ở tầng đánh giá độc lập ngoại tuyến.
 
 \section{Phương pháp bộ nhớ có bằng chứng}
 
@@ -108,7 +108,7 @@ J_t - \hat z_t - X_t = \chi_t,\qquad \chi_t \in \{0, 1\}.
 \label{eq:fsm-invariant}
 \end{equation}
 
-Phương trình Bất biến~\eqref{eq:fsm-invariant} bảo đảm rằng tại mọi bước thời gian, tổng số chu kỳ đã kết thúc và chu kỳ đang tiến hành luôn bằng đúng tổng số chu kỳ đã được khởi tạo, ngăn ngừa hoàn toàn tình trạng nhảy cóc trạng thái. Đặc tính nhân quả chặt chẽ của toàn bộ quy trình trích xuất và chiếu ngữ cảnh được khẳng định qua mệnh đề sau.
+Bất biến~\eqref{eq:fsm-invariant} cho biết tại mọi bước, tổng số chu kỳ đã hoàn thành, đã hủy và đang diễn ra luôn bằng số chu kỳ đã bắt đầu, nên máy trạng thái không thể bỏ qua một chuyển tiếp. Bất biến này được kiểm tra bằng quy nạp theo từng chuyển tiếp của FSM: mỗi chuyển tiếp hợp lệ chỉ làm thay đổi đúng một trong các đại lượng $J_t$, $\hat z_t$, $X_t$ và giữ $\chi_t \in \{0,1\}$. Đặc tính nhân quả chặt chẽ của toàn bộ quy trình trích xuất và chiếu ngữ cảnh được khẳng định qua mệnh đề sau.
 
 \textbf{Mệnh đề 1: Tính không nhìn trước của ngữ cảnh chiếu.} Giả sử hai quỹ đạo tương tác có cùng tiền tố quan sát và hành động đến bước truy vấn $q$, tức $h_q = h'_q$. Khi đó trạng thái bộ nhớ và ngữ cảnh chiếu tại bước $q$ là hoàn toàn đồng nhất:
 
@@ -210,7 +210,7 @@ Khi điều kiện Phương trình~\eqref{eq:event-rule-instantiation} thỏa m�
 
 Trước hết, từ tập dữ liệu quỹ đạo mẫu chuyên gia, hệ thống áp dụng cơ chế chạy lại bộ ghi ngoại tuyến để sinh các mẫu huấn luyện theo đúng tiền tố nhân quả. Tại mỗi điểm truy vấn mẫu $q$, bộ ghi chỉ xử lý chuỗi quan sát quá khứ $o_{0:q}$ để tạo ra trạng thái bộ nhớ $M_q$ và chuỗi văn bản tương ứng $C_q = R_B(\ell, M_q)$. Mẫu huấn luyện được cấu trúc thành bộ ba $(o_q, C_q, A_q^{\mathrm{demo}})$, trong đó $A_q^{\mathrm{demo}}$ là đoạn $H$ hành động liên tiếp của chuyên gia bắt đầu từ bước $q$. Việc tạo mẫu ngoại tuyến nghiêm ngặt này loại bỏ hoàn toàn nguy cơ rò rỉ thông tin tương lai vào ngữ cảnh huấn luyện.
 
-Thứ hai, để giải quyết hiện tượng quên thảm khốc khi tinh chỉnh trên dữ liệu mới, nghiên cứu áp dụng chiến lược lấy mẫu cân bằng đa miền Dual-Domain Balanced Sampling. Tập dữ liệu huấn luyện được hòa trộn đồng đều theo tỷ lệ $1:1$ giữa tập dữ liệu có bộ nhớ $\mathcal D_{\mathrm{mem}}$ (gồm các quỹ đạo thao tác đa chu kỳ kèm ngữ cảnh tiến độ) và tập dữ liệu thao tác cơ sở $\mathcal D_{\mathrm{base}}$ (các tác vụ đơn lẻ không kèm bộ nhớ). Mục tiêu tối ưu hóa được xác định bởi hàm mất mát Flow Matching kết hợp trên cả hai miền dữ liệu:
+Thứ hai, để giải quyết hiện tượng quên thảm khốc khi tinh chỉnh trên dữ liệu mới, nghiên cứu áp dụng chiến lược lấy mẫu cân bằng hai miền dữ liệu. Tập dữ liệu huấn luyện được hòa trộn đồng đều theo tỷ lệ $1:1$ giữa tập dữ liệu có bộ nhớ $\mathcal D_{\mathrm{mem}}$ (gồm các quỹ đạo thao tác đa chu kỳ kèm ngữ cảnh tiến độ) và tập dữ liệu thao tác cơ sở $\mathcal D_{\mathrm{base}}$ (các tác vụ đơn lẻ không kèm bộ nhớ). Mục tiêu tối ưu hóa được xác định bởi hàm mất mát Flow Matching kết hợp trên cả hai miền dữ liệu:
 
 \begin{equation}
 \min_\phi \frac{1}{2} \mathbb E_{(o, C, A) \sim \mathcal D_{\mathrm{base}}} \mathcal L_{\mathrm{flow}}(\theta, \phi; o, C, A) + \frac{1}{2} \mathbb E_{(o, C, A) \sim \mathcal D_{\mathrm{mem}}} \mathcal L_{\mathrm{flow}}(\theta, \phi; o, C, A).
@@ -239,16 +239,16 @@ S_q = \operatorname{Select}(\ell, M_q, B),\qquad C_q = \operatorname{Render}(\el
 \label{eq:context-projection}
 \end{equation}
 
-Ngân sách độ dài được ấn định nghiêm ngặt ở mức $B = 48$ token cho toàn bộ văn bản đầu vào. Quy định này bảo đảm số lượng token đưa vào mô hình VLA luôn là một hằng số cố định, không phụ thuộc vào độ dài thời gian của quỹ đạo hay số lượng sự kiện đã tích lũy trong quá khứ, triệt tiêu hoàn toàn rủi ro bùng nổ độ trễ tính toán khi tác vụ kéo dài.
+Ngân sách độ dài được ấn định nghiêm ngặt ở mức $B = 48$ token cho toàn bộ văn bản đầu vào. Quy định này bảo đảm số lượng token đưa vào mô hình VLA luôn là một hằng số cố định, không phụ thuộc vào độ dài thời gian của quỹ đạo hay số lượng sự kiện đã tích lũy trong quá khứ, nên chi phí văn bản không tăng theo độ dài lượt chạy.
 
-Về mặt điều phối thực thi, trong mô hình Action Chunking truyền thống, robot thực thi liên tục toàn bộ $H$ hành động trong đoạn theo chu kỳ cố định $s$ bước mới tái truy vấn VLA một lần. Nhược điểm lớn của cơ chế cố định này là độ trễ phản xạ cao: nếu một biến cố then chốt xảy ra ngay ở đầu đoạn hành động (chẳng hạn vật đã rơi vào đúng đích ở bước thứ 2 của đoạn $s = 10$), robot vẫn phải thực hiện mù quáng 8 hành động thừa còn lại trước khi nhận thức được trạng thái mới, dễ dẫn đến va chạm hoặc lãng phí thời gian. Để khắc phục, hệ thống triển khai cơ chế ngắt đoạn hành động động dựa trên bằng chứng: bộ điều phối giám sát liên tục diễn biến của $M_t$ sau mỗi bước thực thi hành động $t$. Khi phát hiện một thay đổi bằng chứng ngữ nghĩa có liên quan được duy trì ổn định qua $p$ quan sát liên tiếp và robot đã hoàn thành tối thiểu $k_{\min}$ hành động từ lần truy vấn trước, thời điểm truy vấn tiếp theo $q'$ được kích hoạt sớm. Gọi $e_t \in \{0,1\}$ là chỉ báo bằng chứng mới đã được xác nhận tại bước $t$, ta có:
+Về mặt điều phối thực thi, trong mô hình Action Chunking truyền thống, robot thực thi liên tục toàn bộ $H$ hành động trong đoạn theo chu kỳ cố định $s$ bước mới tái truy vấn VLA một lần. Nhược điểm lớn của cơ chế cố định này là độ trễ phản xạ cao: nếu một biến cố then chốt xảy ra ngay ở đầu đoạn hành động (chẳng hạn vật đã rơi vào đúng đích ở bước thứ 2 của đoạn $s = 10$), robot vẫn phải thực hiện 8 hành động còn lại trước khi nhận được trạng thái mới, gây lãng phí hoặc thao tác thừa. Để khắc phục, hệ thống triển khai cơ chế ngắt đoạn hành động động dựa trên bằng chứng: bộ điều phối giám sát liên tục diễn biến của $M_t$ sau mỗi bước thực thi hành động $t$. Khi phát hiện một thay đổi bằng chứng ngữ nghĩa có liên quan được duy trì ổn định qua $p$ quan sát liên tiếp và robot đã hoàn thành tối thiểu $k_{\min}$ hành động từ lần truy vấn trước, thời điểm truy vấn tiếp theo $q'$ được kích hoạt sớm. Gọi $e_t \in \{0,1\}$ là chỉ báo bằng chứng mới đã được xác nhận tại bước $t$, ta có:
 
 \begin{equation}
 q' = \min\!\left(q + s,\ \inf\{t > q : t - q \ge k_{\min},\ e_t = 1\}\right).
 \label{eq:dynamic-preemption}
 \end{equation}
 
-Khi điều kiện ngắt được thỏa mãn tại $q'$, bộ điều phối lập tức hủy bỏ các hành động chưa thực thi trong đoạn cũ, lấy quan sát mới $o_{q'}$, chiếu ngữ cảnh cập nhật $C_{q'}$ và kích hoạt VLA sinh đoạn hành động mới.
+Như minh họa tại Hình~\ref{fig:evidence-requery}, khi điều kiện ngắt được thỏa mãn tại $q'$, bộ điều phối lập tức hủy bỏ các hành động chưa thực thi trong đoạn cũ, lấy quan sát mới $o_{q'}$, chiếu ngữ cảnh cập nhật $C_{q'}$ và kích hoạt VLA sinh đoạn hành động mới.
 
 \begin{figure}[htbp]
 \centering
@@ -259,22 +259,43 @@ Khi điều kiện ngắt được thỏa mãn tại $q'$, bộ điều phối l
 
 Hiệu quả phản ứng của cơ chế ngắt động có thể được chứng minh qua định lý chặn trên thời gian trễ.
 
-\textbf{Mệnh đề 2: Upperbound của độ trễ với biến cố mới.} Giả sử robot đang thực thi đoạn hành động được sinh tại bước $q$. Một biến cố trạng thái mới xuất hiện trong môi trường tại thời điểm $r$ (với $q < r \le q + s$) và duy trì liên tục. Nếu không có biến cố nào khác kích hoạt trước đó, thời điểm tái truy vấn chính sách $q'$ thỏa mãn:
+\textbf{Mệnh đề 2: Chặn trên của độ trễ với biến cố mới.} Giả sử robot đang thực thi đoạn hành động được sinh tại bước $q$. Một biến cố trạng thái mới xuất hiện trong môi trường tại thời điểm $r$ (với $q < r \le q + s$) và duy trì liên tục. Nếu không có biến cố nào khác kích hoạt trước đó, thời điểm tái truy vấn chính sách $q'$ thỏa mãn:
 
 \begin{equation}
 q' = \min(q + s,\ \max(q + k_{\min},\ r + p - 1)).
 \label{eq:latency-formula}
 \end{equation}
 
-Hệ quả là số bước hành động robot tiếp tục sử dụng đoạn điều khiển cũ sau khi biến cố xuất hiện bị chặn trên bởi:
+Hệ quả là số bước hành động robot tiếp tục sử dụng đoạn điều khiển cũ sau khi biến cố xuất hiện, trong đó $r$ là thời điểm bộ ghi bắt đầu quan sát thấy biến cố, bằng:
 
 \begin{equation}
-q' - r \le q + s - r.
+q' - r = \min\!\big(q + s - r,\ \max(q + k_{\min} - r,\ p - 1)\big) \le q + s - r.
 \label{eq:latency-bound}
 \end{equation}
 
-\textbf{Chứng minh.} Biến cố xuất hiện tại bước $r$. Do quy tắc lọc trễ thời gian đòi hỏi $p$ quan sát liên tiếp để xác nhận, thời điểm sớm nhất biến cố được xác nhận là $t_{\mathrm{confirm}} = r + p - 1$, tại đó $e_t = 1$. Đồng thời, cơ chế điều phối đòi hỏi robot phải thực thi tối thiểu $k_{\min}$ hành động từ lần truy vấn trước, tức $t \ge q + k_{\min}$. Do đó, bước thời gian sớm nhất thỏa mãn đồng thời cả hai điều kiện là $t = \max(q + k_{\min}, r + p - 1)$. Mặt khác, lịch truy vấn định kỳ chặn trên thời điểm gọi tiếp theo tại $q + s$. Kết hợp hai điều kiện, ta thu được $q' = \min(q + s, \max(q + k_{\min}, r + p - 1))$. Vì $r > q$ và $q' \le q + s$, số bước trễ $q' - r \le q + s - r$. $\blacksquare$
+\textbf{Chứng minh.} Biến cố xuất hiện tại bước $r$. Do quy tắc lọc trễ thời gian đòi hỏi $p$ quan sát liên tiếp để xác nhận, thời điểm sớm nhất biến cố được xác nhận là $t_{\mathrm{confirm}} = r + p - 1$, tại đó $e_t = 1$. Đồng thời, cơ chế điều phối đòi hỏi robot phải thực thi tối thiểu $k_{\min}$ hành động từ lần truy vấn trước, tức $t \ge q + k_{\min}$. Do đó, bước thời gian sớm nhất thỏa mãn đồng thời cả hai điều kiện là $t = \max(q + k_{\min}, r + p - 1)$. Mặt khác, lịch truy vấn định kỳ chặn trên thời điểm gọi tiếp theo tại $q + s$. Kết hợp hai điều kiện, ta thu được $q' = \min(q + s, \max(q + k_{\min}, r + p - 1))$. Trừ $r$ ở hai vế của công thức trên ta được độ trễ nêu ở phương trình sau. Độ trễ thực tế của bộ ghi, được đo ở Chương 4 là từ 4 đến 30 bước đối với bộ ghi thị giác, cộng thêm vào $r$. $\blacksquare$
 
-Công thức Phương trình~\eqref{eq:latency-formula} cho thấy rõ sự linh hoạt của cơ chế: khi biến cố được xác nhận sớm ($r + p - 1 < q + s$), hệ thống sẽ ngắt ngay tại thời điểm an toàn gần nhất, giảm đáng kể độ trễ phản ứng so với việc thực thi cố định hết chu kỳ $s$.
+Công thức Phương trình~\eqref{eq:latency-formula} cho thấy rõ sự linh hoạt của cơ chế: khi biến cố được xác nhận sớm ($r + p - 1 < q + s$), hệ thống truy vấn lại ngay khi đã thực thi tối thiểu $k_{\min}$ hành động, nên độ trễ phản ứng nhỏ hơn so với việc thực thi hết chu kỳ $s$.
 
-Cơ chế điều phối đề xuất còn hỗ trợ mở rộng tự nhiên sang kiến trúc suy luận bất đồng bộ Asynchronous Inference nhằm triệt tiêu hoàn toàn thời gian dừng chờ của robot vật lý tốc độ cao. Trong kiến trúc này, luồng thực thi điều khiển và luồng truy vấn VLA vận hành song song trên hai tiến trình độc lập. Mỗi yêu cầu truy vấn gửi tới VLA được gắn thẻ mã định danh duy nhất kèm phiên bản bộ nhớ và dấu thời gian quan sát. Trong lúc VLA xử lý suy luận ở chế độ nền, robot tiếp tục thi hành các hành động an toàn từ đoạn trước. Khi VLA hoàn tất đoạn hành động mới, bộ điều phối kiểm định tính nhất quán của bộ nhớ: nếu trạng thái môi trường vẫn phù hợp với căn cứ đã dùng để sinh đoạn mới, các hành động quá hạn được cắt bỏ và phần còn lại được hòa trộn mượt mà vào hàng đợi điều khiển; ngược lại, nếu bằng chứng đã biến đổi làm mất hiệu lực giả định, đề xuất cũ lập tức bị hủy bỏ và một truy vấn mới được kích hoạt. Sự kết hợp chặt chẽ giữa cấu trúc bộ nhớ có căn cứ và cơ chế điều phối thời gian thực tạo nên một giải pháp hoàn chỉnh, vững chắc cho các bài toán thao tác chuỗi dài trên các mô hình VLA.
+Bộ điều phối có thể mở rộng sang suy luận bất đồng bộ, trong đó luồng điều khiển và luồng truy vấn chạy song song và mỗi đề xuất được kiểm tra lại với phiên bản bộ nhớ khi hoàn tất. Hướng này không được cài đặt và đánh giá trong khóa luận; các thực nghiệm đều dùng thực thi đồng bộ (xem Chương 5).
+
+\label{sec:method-memory-halt}
+\textbf{Cơ chế dừng thực thi dựa trên bằng chứng bộ nhớ.}
+
+Trong các bài toán thao tác chuỗi dài điều khiển liên tục, một điểm yếu cố hữu của các mô hình VLA là thiếu vắng tín hiệu tự ngắt khi nhiệm vụ đã hoàn thành, dẫn đến hiện tượng lặp lại thao tác thừa hoặc vi phạm quy tắc kết thúc (overshoot). Nhằm giải quyết vấn đề này mà không phá vỡ tính nguyên bản của mô hình nền, khóa luận đề xuất cơ chế dừng thực thi ngoại vi dựa trên bằng chứng bộ nhớ và tín hiệu proprioception.
+
+Cơ chế dừng vận hành tại các ranh giới truy vấn chính sách (chu kỳ $s$ bước) dựa trên hai điều kiện phối hợp:
+\begin{enumerate}
+    \item \textbf{Điều kiện tiến độ bộ nhớ:} Bộ đếm chu kỳ hợp lệ tích lũy trong bộ nhớ đạt hoặc vượt mục tiêu của tác vụ: $\hat z_t \ge z^*$ (với $z^* = 1$ ở tác vụ đơn chu kỳ T1 và $z^* = 3$ ở tác vụ ba chu kỳ T3).
+    \item \textbf{Điều kiện proprioception khi nhả vật thể:} Tay kẹp robot đã thực hiện thao tác nhả vật thể, được xác định thông qua độ mở hai khớp ngón kẹp $w_{\mathrm{grip}} \ge 0{,}055$~m.
+\end{enumerate}
+
+Để bảo đảm độ nhạy nhận diện chu kỳ trong điều kiện quan sát bị che khuất hoặc góc nhìn suy biến, bộ đếm tiến độ $\hat z_t$ được tính toán qua cơ chế hợp nhất theo pha kẹp giữa hai nguồn bằng chứng bổ trợ:
+\begin{itemize}
+    \item \textit{Bộ ghi thị giác V4:} Nhận diện mốc hoàn nguyên (return) khi vật thể được đưa về phạm vi đĩa đích và ổn định vị trí theo Phương trình~\eqref{eq:event-rule-instantiation}.
+    \item \textit{Tín hiệu proprioception khi chạm đáy (bottom-contact):} Trích xuất trực tiếp từ quỹ đạo động học đầu gắp. Một chu kỳ kẹp--nhấc--đặt được xác nhận khi đầu gắp nâng lên tối thiểu $0{,}08$~m so với độ cao kẹp ban đầu, sau đó hạ về trong phạm vi sai lệch $\le 0{,}03$~m theo phương thẳng đứng và $\le 0{,}06$~m trên mặt phẳng ngang. Tín hiệu này đạt độ trễ trung vị bằng 0 bước, khắc phục hiện tượng che khuất quang học khi bát che lấp đĩa đích, trong khi bộ ghi V4 bù đắp cho các lượt nhấc thấp không chạm ngưỡng $0{,}08$~m.
+\end{itemize}
+
+Khi cả hai điều kiện trên đồng thời thỏa mãn tại một ranh giới truy vấn, trạng thái dừng được chốt vĩnh viễn (\textit{latched}) cho đến hết lượt thực thi. Hệ thống ngắt hoàn toàn việc truy vấn chính sách VLA và chuyển sang \textit{chế độ giữ yên (hold mode)}: duy trì nguyên tư thế đầu gắp tại thời điểm dừng và giữ mở tay kẹp, triệt tiêu mọi khả năng robot vô tình tác động lại vào vật thể.
+
+\textbf{Nguyên tắc nhân quả và ranh giới thông tin.} Cơ chế dừng ngoại vi tuân thủ nguyên tắc nhân quả: toàn bộ quyết định dừng chỉ phụ thuộc vào lịch sử quan sát cảm biến và trạng thái động học đã qua của robot ($h_t$), không truy cập trạng thái ngầm, nhãn sự kiện đặc quyền hay cờ hoàn thành của môi trường mô phỏng. Đặc biệt, tín hiệu proprioception và các ngưỡng hình học chạm đáy đóng vai trò là một phần của hàm trạng thái bộ nhớ phục vụ riêng cho quyết định dừng ngoại vi, hoàn toàn \textit{không} được đưa vào chuỗi ngữ cảnh văn bản $C_q$ của mô hình VLA. Thiết kế này bảo đảm không làm phình to ngân sách token ($B \le 48$) và không làm xáo trộn phân phối ngôn ngữ mà chính sách đã học trong pha thích ứng.

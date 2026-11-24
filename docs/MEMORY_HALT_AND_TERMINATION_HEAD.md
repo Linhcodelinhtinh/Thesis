@@ -73,3 +73,22 @@ Action handler không bị thay đổi.
   - `observable_only=True`: bỏ các frame "đã xong nhưng memory chưa thấy", head học một rule mềm.
   - Giữ nguyên nhãn GT: head phải tự suy ra từ hình ảnh, nhưng làm vậy thực chất là học thay cho writer.
 - Đề xuất: dùng backbone ảnh nhỏ đóng băng cho hai view, kết hợp encoder text đã dùng cho prompt, cộng một MLP. Chạy ở chế độ `shadow` trên E2 trước khi cho phép `or`.
+
+## 3. Kết quả thực nghiệm Memory Halt vòng kín và kiểm chứng Seen (2026-11-24)
+
+### 3.1. Kết quả E2 vòng kín thật và đối chứng Placebo (40 episodes: T1 20, T3 20)
+- **H0 (Không dừng):** 0/40 success (mọi lượt hoàn thành đều overshoot).
+- **H3 (V4 + bản thể không chặn, chạy vòng kín thật):** 9/40 success (T1: 8/20, T3: 1/20), $p = 0{,}002$ (one-sided exact sign test). Toàn bộ 9 lượt dừng kịp lúc đều thành công; 2 lượt dừng sớm đều thất bại.
+- **Oracle (đếm của simulator):** 10/40 success (trần lý thuyết bị chặn bởi nhịp truy vấn chu kỳ 10 bước).
+- **Placebo halt (dừng ngẫu nhiên không bằng chứng):** 28 lượt rẽ nhánh (ranh giới truy vấn ngẫu nhiên, ranh giới có gripper mở, fixed steps 100/150/200) đạt 1--5/40 thành công, trung bình 3,7/40. Bằng chứng bộ nhớ nâng tỷ lệ thành công từ ~3,7/40 lên 9/40, sát trần oracle 10/40.
+
+### 3.2. Kiểm chứng trên 12 trạng thái Seen chốt trước (T1 & T3, states 0--5)
+- **Thiết lập:** Cấu hình V4 + bản thể không chặn, chạy vòng kín thật trên 12 trạng thái seen (chốt trước khi chạy), ghép cặp với H0 cùng seed.
+- **Kết quả:**
+  - H0: 8/12 lượt hoàn thành mốc (T1 6/6, T3 s0 và s2), cả 8 đều overshoot nên 0/12 success.
+  - H3: dừng kịp lúc 6/8 lượt hoàn thành (T1 s1--s5, T3 s0) -> 6/12 success (Wilson 95%: 25--75%). Bỏ lỡ 2 lượt: T1 s0 (overshoot bước 115) và T3 s2 (overshoot bước 445).
+  - Dừng sớm: 0/12. 4 lượt T3 chưa hoàn thành (s1, s3, s4, s5) không bị dừng, SCR giữ nguyên như H0.
+  - Tỉ lệ chuyển hóa hoàn thành thành thành công: 6/8 (75%) so với 9/16 (56%) trên E2.
+  - Kiểm định dấu chính xác hai phía 6/6 cặp lệch: $p = 0{,}031$ (6 có lợi, 0 bất lợi, 6 hòa).
+  - Tác hại: Số lượt dừng sớm = 0/12. Phép thử chưa đo được tác hại trên lượt tự thành công vì H0 = 0/12.
+

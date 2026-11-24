@@ -90,7 +90,7 @@ def fork_episode(env, state_idx, actions, eef, halt_step, retract_m=0.0, hold_ch
                 drift_at_halt_m=at_halt)
 
 
-def work_items(plan, jobs, tasks, shard, shards):
+def work_items(plan, jobs, tasks, shard, shards, skip_premature=False):
     """(episode, halt_step, retract) -> conditions, restricted to this shard; never-halting conditions are skipped."""
     items = {}
     for episode in plan["episodes"]:
@@ -99,6 +99,8 @@ def work_items(plan, jobs, tasks, shard, shards):
             continue
         for name, retract in jobs:
             halt_step = episode["conditions"][name]["halt_step"]
+            if skip_premature and episode["conditions"][name].get("category") == "premature":
+                continue    # a halt before the completion milestone cannot produce a success
             if halt_step is not None:
                 items.setdefault((ref["episode"], halt_step, retract), []).append(name)
     keys = sorted(items)
@@ -115,7 +117,7 @@ def run_shard(args, plan, jobs):
     if out.exists():
         done_keys = {(r["episode"], r["halt_step"], r["retract_m"]) for r in read_rows(out)}
     by_episode = {e["reference"]["episode"]: e["reference"] for e in plan["episodes"]}
-    items = work_items(plan, jobs, args.tasks, args.shard, args.shards)
+    items = work_items(plan, jobs, args.tasks, args.shard, args.shards, args.assume_premature_fails)
     if args.verify:
         chosen = sorted(e["reference"]["episode"] for e in plan["episodes"]
                         if e["reference"]["task"] in args.tasks and e["reference"]["state_idx"] in args.verify_states)
@@ -174,6 +176,8 @@ def summarize(args, plan, jobs):
                 success, overshot = bool(recorded[ref["episode"]]["success"]), bool(recorded[ref["episode"]]["overshot"])
             else:
                 row = index.get((ref["episode"], cond["halt_step"], retract))
+                if row is None and args.assume_premature_fails and cond["category"] == "premature":
+                    row = dict(success=False, overshot=False, drift_at_halt_m=0.0)
                 if row is None:
                     missing.append(ref["episode"])
                     continue
@@ -222,6 +226,8 @@ def main(argv=None):
     p.add_argument("--verify-states", type=int, nargs="+", default=[0, 4, 16, 17])
     p.add_argument("--drift-limit", type=float, default=1e-3,
                    help="summary flags forks whose EEF was further than this (m) from the recording at the halt step")
+    p.add_argument("--assume-premature-fails", action="store_true",
+                   help="do not simulate halts before the completion milestone; count them as failures (they cannot succeed)")
     p.add_argument("--summarize", action="store_true")
     args = p.parse_args(argv)
     plan = json.loads(args.plan.read_text(encoding="utf-8"))
@@ -234,7 +240,7 @@ def main(argv=None):
     if args.workers > 1:
         base = [sys.executable, str(Path(__file__).resolve()), "--run", str(args.run), "--plan", str(args.plan),
                 "--output-dir", str(args.output_dir), "--sim-python", args.sim_python, "--shards", str(args.workers),
-                "--tasks", *args.tasks, "--jobs", *args.jobs, "--timeout", str(args.timeout)]
+                "--tasks", *args.tasks, "--jobs", *args.jobs, "--timeout", str(args.timeout)] + (["--assume-premature-fails"] if args.assume_premature_fails else [])
         processes = [subprocess.Popen(base + ["--shard", str(i)] + (["--verify"] if args.verify else []))
                      for i in range(args.workers)]
         codes = [proc.wait() for proc in processes]
