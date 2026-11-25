@@ -109,6 +109,13 @@ Edward~J. Hu, Yuanzhi Li, Yelong Shen, Shean Wang, Phillip Wallis, Lu~Wang,
   Representations (ICLR 2022)}, 2022.
 \newblock \url{https://openreview.net/forum?id=nZeVKeeFYf9}.
 
+\bibitem{ross2010dagger}
+St{\'e}phane Ross and J.~Andrew Bagnell.
+\newblock Efficient reductions for imitation learning.
+\newblock In {\em Proceedings of the 13th International Conference on
+  Artificial Intelligence and Statistics (AISTATS)}, 2010.
+\newblock \url{https://proceedings.mlr.press/v9/ross10a.html}.
+
 \bibitem{saycan2022}
 Brian Ichter, Anthony Brohan, Yevgen Chebotar, Chelsea Finn, Karol Hausman,
   Alexander Herzog, Daniel Ho, Julian Ibarz, Alex Irpan, Eric Jang, Ryan

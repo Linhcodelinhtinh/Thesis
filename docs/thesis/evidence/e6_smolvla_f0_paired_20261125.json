@@ -1,0 +1,1444 @@
+{
+  "analysis_id": "e6-smolvla-b0-f0-f1off-paired-2026-11-25",
+  "generated_at_utc": "2026-11-25T13:53:19.155674+00:00",
+  "classification": "CUSTOM_LIBERO_LOCAL",
+  "comparability": "NON-COMPARABLE_OFFICIAL_PAPER",
+  "method": "exact two-sided McNemar on discordant pairs; 10,000 task-stratified paired bootstrap, seed 42, percentile 95%",
+  "totals": {
+    "B0": 37,
+    "F0": 32,
+    "F1-off": 23
+  },
+  "per_task": [
+    {
+      "task_id": 0,
+      "B0": 0,
+      "F0": 1,
+      "F1-off": 2
+    },
+    {
+      "task_id": 1,
+      "B0": 3,
+      "F0": 4,
+      "F1-off": 1
+    },
+    {
+      "task_id": 2,
+      "B0": 5,
+      "F0": 3,
+      "F1-off": 2
+    },
+    {
+      "task_id": 3,
+      "B0": 5,
+      "F0": 5,
+      "F1-off": 5
+    },
+    {
+      "task_id": 4,
+      "B0": 3,
+      "F0": 4,
+      "F1-off": 2
+    },
+    {
+      "task_id": 5,
+      "B0": 5,
+      "F0": 1,
+      "F1-off": 0
+    },
+    {
+      "task_id": 6,
+      "B0": 4,
+      "F0": 4,
+      "F1-off": 2
+    },
+    {
+      "task_id": 7,
+      "B0": 4,
+      "F0": 3,
+      "F1-off": 3
+    },
+    {
+      "task_id": 8,
+      "B0": 3,
+      "F0": 3,
+      "F1-off": 3
+    },
+    {
+      "task_id": 9,
+      "B0": 5,
+      "F0": 4,
+      "F1-off": 3
+    }
+  ],
+  "roster_checks": {
+    "B0": {
+      "same_task_state_seed_keys": true,
+      "same_task_name": true,
+      "same_pre_settling_eef": 50
+    },
+    "F0": {
+      "same_task_state_seed_keys": true,
+      "same_task_name": true,
+      "same_pre_settling_eef": 50
+    },
+    "F1-off": {
+      "same_task_state_seed_keys": true,
+      "same_task_name": true,
+      "same_pre_settling_eef": 50
+    }
+  },
+  "comparisons": [
+    {
+      "comparison": "F0 minus B0",
+      "pairs": 50,
+      "B0_successes": 37,
+      "F0_successes": 32,
+      "both_success": 26,
+      "B0_only": 11,
+      "F0_only": 6,
+      "both_failure": 7,
+      "paired_difference": -0.1,
+      "bootstrap_95": [
+        -0.24,
+        0.02
+      ],
+      "mcnemar_exact_two_sided_p": 0.332305908203125
+    },
+    {
+      "comparison": "F1-off minus B0",
+      "pairs": 50,
+      "B0_successes": 37,
+      "F1-off_successes": 23,
+      "both_success": 18,
+      "B0_only": 19,
+      "F1-off_only": 5,
+      "both_failure": 8,
+      "paired_difference": -0.28,
+      "bootstrap_95": [
+        -0.42,
+        -0.14
+      ],
+      "mcnemar_exact_two_sided_p": 0.006610751152038574
+    },
+    {
+      "comparison": "F1-off minus F0",
+      "pairs": 50,
+      "F0_successes": 32,
+      "F1-off_successes": 23,
+      "both_success": 20,
+      "F0_only": 12,
+      "F1-off_only": 3,
+      "both_failure": 15,
+      "paired_difference": -0.18,
+      "bootstrap_95": [
+        -0.3,
+        -0.04
+      ],
+      "mcnemar_exact_two_sided_p": 0.03515625
+    }
+  ],
+  "episodes": [
+    {
+      "task_id": 0,
+      "initial_state_id": 8,
+      "seed": 3050,
+      "B0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_8/episode.json",
+        "sha256": "66591de50b7cd66649ee35d1d22adb60aa90dd065e7e138fc033e6b3be1f7e74"
+      },
+      "F0": {
+        "success": true,
+        "steps": 351,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_0/libero_10_task0/init_8/episode.json",
+        "sha256": "4eb3bfc59caddd5ae3a816b7b5be7dfc23253e30b139db80e53115ec36d25cbe"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 412,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_0/libero_10_task0/init_8/episode.json",
+        "sha256": "298231e80cee2f93b55db0bc71723fda75972deb222d35608411dcca2da4ba84"
+      }
+    },
+    {
+      "task_id": 0,
+      "initial_state_id": 13,
+      "seed": 3055,
+      "B0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_13/episode.json",
+        "sha256": "098c5f0e80605c51542370bb3db2e8786c289bce01d7358f8402f4f72335a3cf"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_0/libero_10_task0/init_13/episode.json",
+        "sha256": "b11723ba496d413f791bc5e027ed9b2fac1943763e3af7e3d0aa72ab45b2cfb3"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 257,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_0/libero_10_task0/init_13/episode.json",
+        "sha256": "c39b78d32425ccb1fb43664143438c481a2ac50b0669d019de2e7118475bac09"
+      }
+    },
+    {
+      "task_id": 0,
+      "initial_state_id": 27,
+      "seed": 3069,
+      "B0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_27/episode.json",
+        "sha256": "563f8b30f546350beb04c1e57727773c18a1a29a7fda2dbc82e3ad1083633115"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_0/libero_10_task0/init_27/episode.json",
+        "sha256": "953956d83980cdc21a2ba3548623cd775cc2240cc9c074213bb9fdf49f1e414f"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_0/libero_10_task0/init_27/episode.json",
+        "sha256": "8794894b9bee15f9bc4520a81c9ac0ab4b570d0d6c137c256c9512725ce27a8b"
+      }
+    },
+    {
+      "task_id": 0,
+      "initial_state_id": 45,
+      "seed": 3087,
+      "B0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_45/episode.json",
+        "sha256": "cbd78b4c9e45a3445ac714fbcd458a3250ecc517a79f7b12ad6a76527214e36e"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_0/libero_10_task0/init_45/episode.json",
+        "sha256": "397d54bfcda3234c231bf5c6c5f075e2b458854095a522e9780d169776abf9d5"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_0/libero_10_task0/init_45/episode.json",
+        "sha256": "a44fca713905f830069c96ec2bc6b3cb3c8d3c5801e25b9f46876bc69ea6b076"
+      }
+    },
+    {
+      "task_id": 0,
+      "initial_state_id": 48,
+      "seed": 3090,
+      "B0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_0/libero_10_task0/init_48/episode.json",
+        "sha256": "567c302afd53da7cf8ca1291bbc4986a105c64c857065fbea3b21c10cf1024c5"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_0/libero_10_task0/init_48/episode.json",
+        "sha256": "02a3378b90148124634051325081ed3fa42e1a126abc2cea37fb63d9ba7e726f"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_0/libero_10_task0/init_48/episode.json",
+        "sha256": "261a329292f7bec6ef5ce6c7cc33f8fad5dfd76a7aff2d15c25f83ee56bd4042"
+      }
+    },
+    {
+      "task_id": 1,
+      "initial_state_id": 17,
+      "seed": 3159,
+      "B0": {
+        "success": true,
+        "steps": 250,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_17/episode.json",
+        "sha256": "6af40cc93e131875d542fd7dbcb5fd2dff6a52952fa468e063d861cba41fd5eb"
+      },
+      "F0": {
+        "success": true,
+        "steps": 774,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_1/libero_10_task1/init_17/episode.json",
+        "sha256": "4ecbb65be2fc16f9f66c43fa8e329b0dc51d258aa38a33469ebcc2ed4719b4af"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_1/libero_10_task1/init_17/episode.json",
+        "sha256": "e9781cc4942a213388d3b266a8ef6b24090d4919b7ce4a2cfbc563d842e40d2f"
+      }
+    },
+    {
+      "task_id": 1,
+      "initial_state_id": 21,
+      "seed": 3163,
+      "B0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_21/episode.json",
+        "sha256": "b181e41668da7e86578cdf6e7eda9b7d1619a5914dcac22672d89d91b63d7c6c"
+      },
+      "F0": {
+        "success": true,
+        "steps": 283,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_1/libero_10_task1/init_21/episode.json",
+        "sha256": "dc87c3d058e607f15a4a56f293cb96b42a72c0f68fdebd46da3a7f0c516bd4cb"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 245,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_1/libero_10_task1/init_21/episode.json",
+        "sha256": "9c52bbbb10625b12a29259efab491f9ddd9ec7396a9f9426f200ca1cb21e477b"
+      }
+    },
+    {
+      "task_id": 1,
+      "initial_state_id": 39,
+      "seed": 3181,
+      "B0": {
+        "success": true,
+        "steps": 276,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_39/episode.json",
+        "sha256": "52d669f8b9b52b754951eb5e6d15339855cd9333506945d161d85f501b5ce88b"
+      },
+      "F0": {
+        "success": true,
+        "steps": 298,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_1/libero_10_task1/init_39/episode.json",
+        "sha256": "dcbad166f30d05c49e304718420550068ecb21ac218ebbfdc365744456b31df9"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_1/libero_10_task1/init_39/episode.json",
+        "sha256": "c589b0176ba9cc99cacb5f552c1003f6d459bcfa4247bcb48a44160a60fa0454"
+      }
+    },
+    {
+      "task_id": 1,
+      "initial_state_id": 41,
+      "seed": 3183,
+      "B0": {
+        "success": true,
+        "steps": 242,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_41/episode.json",
+        "sha256": "e1d9723658410cd325a81007da5042f68b5df5492938f5d4eddce826113ab989"
+      },
+      "F0": {
+        "success": true,
+        "steps": 499,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_1/libero_10_task1/init_41/episode.json",
+        "sha256": "926adc2a62294c96a9f8acdb030bf60f6f08537ac02942aca9e0f430f0b66b27"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_1/libero_10_task1/init_41/episode.json",
+        "sha256": "4da29695b08a29573c49c117eca97ae87606e0c6282d921471ebf4ea4afbfa24"
+      }
+    },
+    {
+      "task_id": 1,
+      "initial_state_id": 47,
+      "seed": 3189,
+      "B0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_1/libero_10_task1/init_47/episode.json",
+        "sha256": "69cd7d389640ad23234a584dd22602e6fc5965ab59c8261b7aafaebb3d7c77a3"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_1/libero_10_task1/init_47/episode.json",
+        "sha256": "87e93b3a9449714746f2cdb08210c30803d0583c75cd6595d82f4a9357f40b8f"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_1/libero_10_task1/init_47/episode.json",
+        "sha256": "88e171ac0a1a80146f8ade895fb7540249e278655ad773da28bf8b58d37b39df"
+      }
+    },
+    {
+      "task_id": 2,
+      "initial_state_id": 3,
+      "seed": 3245,
+      "B0": {
+        "success": true,
+        "steps": 260,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_3/episode.json",
+        "sha256": "3f9fc6e0e32c4c11eb34e613aa934a7ea49ce29255cd662664b9e5913f3188df"
+      },
+      "F0": {
+        "success": true,
+        "steps": 277,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_2/libero_10_task2/init_3/episode.json",
+        "sha256": "e5cbda5d6084487b2f76e65803e4c8be9585f3650be584f787c98b66f78f9fbf"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 264,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_2/libero_10_task2/init_3/episode.json",
+        "sha256": "499e4d42df9aba403561e3db498dda1254a31537e24efc6b3e0fc0df9c501a8c"
+      }
+    },
+    {
+      "task_id": 2,
+      "initial_state_id": 6,
+      "seed": 3248,
+      "B0": {
+        "success": true,
+        "steps": 233,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_6/episode.json",
+        "sha256": "a6217219658dc23dc9b92f00b43005cb2473723a165e905f55e2cbd73983ec66"
+      },
+      "F0": {
+        "success": true,
+        "steps": 216,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_2/libero_10_task2/init_6/episode.json",
+        "sha256": "2263b716728f5b9dd750414c94b3efdcef782b335010daa05476de62bdbabdc3"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 222,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_2/libero_10_task2/init_6/episode.json",
+        "sha256": "8176934ba1695e8d659e189861e5ed1bf28d50648544a3a77b77c0d5685cf303"
+      }
+    },
+    {
+      "task_id": 2,
+      "initial_state_id": 12,
+      "seed": 3254,
+      "B0": {
+        "success": true,
+        "steps": 261,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_12/episode.json",
+        "sha256": "69890cd17d12a241934e3092a362779aac3696b0fe651c2ce2b326edc5665923"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_2/libero_10_task2/init_12/episode.json",
+        "sha256": "f331adf600060bed3c67bbbeacaa6ca217faa396b125a739aef7f8f3ac9d0d58"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_2/libero_10_task2/init_12/episode.json",
+        "sha256": "3687faaa53d0ca2001968f18a7da7fb5fbddb4b7a91061e238b4668dee149242"
+      }
+    },
+    {
+      "task_id": 2,
+      "initial_state_id": 15,
+      "seed": 3257,
+      "B0": {
+        "success": true,
+        "steps": 242,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_15/episode.json",
+        "sha256": "b3f65a78a5179d99f3c74a53ae6d75243c5c2513ab32200569d671bba0993867"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_2/libero_10_task2/init_15/episode.json",
+        "sha256": "839d2c7c9f7ba303715f005867d845940c189db1329819c92d75bcb879367119"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_2/libero_10_task2/init_15/episode.json",
+        "sha256": "c331c356793c0a90db283d8298f2cf576bec98f0c8c15ee8c66bc1ac978d018b"
+      }
+    },
+    {
+      "task_id": 2,
+      "initial_state_id": 40,
+      "seed": 3282,
+      "B0": {
+        "success": true,
+        "steps": 244,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_2/libero_10_task2/init_40/episode.json",
+        "sha256": "581e3fbe432584d06a217c50137b483b4a7d66cfabff0e52210d9cdbcc2cab13"
+      },
+      "F0": {
+        "success": true,
+        "steps": 238,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_2/libero_10_task2/init_40/episode.json",
+        "sha256": "d4010a843df8e5cd245c5988d32433bbe0c3bd1febcdfd7b0d98e093b16ba471"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_2/libero_10_task2/init_40/episode.json",
+        "sha256": "e60ed6fafbf96c65cbc3dbd45391b774019d48668243fbcbf5c7ab7a47113e42"
+      }
+    },
+    {
+      "task_id": 3,
+      "initial_state_id": 19,
+      "seed": 3361,
+      "B0": {
+        "success": true,
+        "steps": 281,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_19/episode.json",
+        "sha256": "28a7310fa87457da3a4a369596abe8b841889221c51193d96e89f0cbf94141ee"
+      },
+      "F0": {
+        "success": true,
+        "steps": 791,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_3/libero_10_task3/init_19/episode.json",
+        "sha256": "d2907297a23408f9ccc08fcc79f45d7fe41491ec2734b48daad571db24c2733a"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 277,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_3/libero_10_task3/init_19/episode.json",
+        "sha256": "2128eb9d3299cab3a1717d39d521edd5e004151359ceeeb483c57decc6cd68b4"
+      }
+    },
+    {
+      "task_id": 3,
+      "initial_state_id": 38,
+      "seed": 3380,
+      "B0": {
+        "success": true,
+        "steps": 246,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_38/episode.json",
+        "sha256": "c6e34e32981f0593b38470f3604e24a4cab5d5f4c596f596b8f3b49ccb108b25"
+      },
+      "F0": {
+        "success": true,
+        "steps": 273,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_3/libero_10_task3/init_38/episode.json",
+        "sha256": "851c6954aa1ff452202897f3ba3a18901b2e93b15ed9661cc76c8092063a8e8b"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 278,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_3/libero_10_task3/init_38/episode.json",
+        "sha256": "7893c0d386c76ad66548c62dff8818810870a37e0d18920f531e086028b51f98"
+      }
+    },
+    {
+      "task_id": 3,
+      "initial_state_id": 44,
+      "seed": 3386,
+      "B0": {
+        "success": true,
+        "steps": 211,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_44/episode.json",
+        "sha256": "5b0a97f13f4e22dcf24cb944e67fa9a0b0678ed8b4a9e168a5707b8a693a3a5d"
+      },
+      "F0": {
+        "success": true,
+        "steps": 256,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_3/libero_10_task3/init_44/episode.json",
+        "sha256": "c9a90aee541092d51d4118404fe3009df215cd2f686fa9abd752628156894a7e"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 367,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_3/libero_10_task3/init_44/episode.json",
+        "sha256": "7fc6355b5ed7d5dfcd026de6ce323bdd3dcea1f0b98d0b8f9ba9f08412561503"
+      }
+    },
+    {
+      "task_id": 3,
+      "initial_state_id": 47,
+      "seed": 3389,
+      "B0": {
+        "success": true,
+        "steps": 236,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_47/episode.json",
+        "sha256": "89bcccaf1fde20954725aff751ac09ed9e73fa3d1fb20bd6d6b472f1076906e3"
+      },
+      "F0": {
+        "success": true,
+        "steps": 334,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_3/libero_10_task3/init_47/episode.json",
+        "sha256": "4fb3bec2191c25789c3f1a2943a0d8a418be0db1418ae4ebb18c1c859a7f565f"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 314,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_3/libero_10_task3/init_47/episode.json",
+        "sha256": "a805818b598e0e578de536883d9f1c784c2fd92c736254958d2b3a2153c73e00"
+      }
+    },
+    {
+      "task_id": 3,
+      "initial_state_id": 49,
+      "seed": 3391,
+      "B0": {
+        "success": true,
+        "steps": 338,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_3/libero_10_task3/init_49/episode.json",
+        "sha256": "d70080a891de9ded9bf2d56eceaa313740716c1eb6d586eaddbe118db34d74b0"
+      },
+      "F0": {
+        "success": true,
+        "steps": 269,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_3/libero_10_task3/init_49/episode.json",
+        "sha256": "b3d88d6d7391afb1d6a10fcf48dc2a6af9932b8d4aa9e0c1920bad81c2e0fc39"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 249,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_3/libero_10_task3/init_49/episode.json",
+        "sha256": "b421ea1c0be9649a503d428264ee33f1bfbaa8ec2b8c84a67929ad0672b9167b"
+      }
+    },
+    {
+      "task_id": 4,
+      "initial_state_id": 3,
+      "seed": 3445,
+      "B0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_3/episode.json",
+        "sha256": "a7fc1d6a1f520a7810005261ec4d35f22c48e1c6e1bf62d910a2f7aa401dc296"
+      },
+      "F0": {
+        "success": true,
+        "steps": 206,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_4/libero_10_task4/init_3/episode.json",
+        "sha256": "ba6ddef0330d6972dbd017e0b877dd1e886cfe1e1c999d97c1dfae5667ba1bd8"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 212,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_4/libero_10_task4/init_3/episode.json",
+        "sha256": "2659ccf950601d2ca0c7fc68a3c68ef499d9e11f3f6118def2f4143aa2b2cf99"
+      }
+    },
+    {
+      "task_id": 4,
+      "initial_state_id": 14,
+      "seed": 3456,
+      "B0": {
+        "success": true,
+        "steps": 216,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_14/episode.json",
+        "sha256": "d87623cec9175d55609ba4f1c033a6f1075698721dd2bd64f391d131574ade34"
+      },
+      "F0": {
+        "success": true,
+        "steps": 269,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_4/libero_10_task4/init_14/episode.json",
+        "sha256": "1f25ac1e4310c6c97793210b9003d78f76cdbc989d1fe824bf59a617ce8c1c8c"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_4/libero_10_task4/init_14/episode.json",
+        "sha256": "421565388da48aa5ca9d643cccfc886824b809d52923b83f591af989a3162660"
+      }
+    },
+    {
+      "task_id": 4,
+      "initial_state_id": 26,
+      "seed": 3468,
+      "B0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_26/episode.json",
+        "sha256": "329eeff427a472605c6ff63b36b5ec67d02a13e2d380811314adc8c0531af96f"
+      },
+      "F0": {
+        "success": true,
+        "steps": 286,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_4/libero_10_task4/init_26/episode.json",
+        "sha256": "8fd97063b80b19d0b6f457f5ef33ddc217d35e847cb7104a8a14c85d7d57967e"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_4/libero_10_task4/init_26/episode.json",
+        "sha256": "7af1be98e9906c0d6db9082f85e093247ba8bb24c488821dd432d4a17cabe961"
+      }
+    },
+    {
+      "task_id": 4,
+      "initial_state_id": 33,
+      "seed": 3475,
+      "B0": {
+        "success": true,
+        "steps": 247,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_33/episode.json",
+        "sha256": "9b7f629fda5f43e3a130591022f473fbe2d543e4f15d046754f506ddcd1a97cf"
+      },
+      "F0": {
+        "success": true,
+        "steps": 274,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_4/libero_10_task4/init_33/episode.json",
+        "sha256": "b59584b1df0ecd2938267e701eb107ae0794b61f04d938f186a5fa20429c908c"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_4/libero_10_task4/init_33/episode.json",
+        "sha256": "c85ff6bbcb216975409e3b2c8dc2abce9ec2208728c9540f18885aaf59b836a8"
+      }
+    },
+    {
+      "task_id": 4,
+      "initial_state_id": 44,
+      "seed": 3486,
+      "B0": {
+        "success": true,
+        "steps": 233,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_4/libero_10_task4/init_44/episode.json",
+        "sha256": "cef7fe7bf62d04d96dea90b01dd60e2bf8900f82999f7589cf790df015b5bacb"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_4/libero_10_task4/init_44/episode.json",
+        "sha256": "2e006a2d7699e9c04732aeded669c2a5f85b1a54d6bc0042674c0e4208118a6d"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 240,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_4/libero_10_task4/init_44/episode.json",
+        "sha256": "d58239e941374ea69c4982ca449c320953cf471eb2f9ba0aee105eb11de5fb19"
+      }
+    },
+    {
+      "task_id": 5,
+      "initial_state_id": 6,
+      "seed": 3548,
+      "B0": {
+        "success": true,
+        "steps": 157,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_6/episode.json",
+        "sha256": "fc09c6dc71003b0b9ef80e37021ac74b29295d29a15fc812fd733bacfd845afa"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_5/libero_10_task5/init_6/episode.json",
+        "sha256": "c0b44017349bb4351c264c391c7a37322a304e55e8bfb443f149880d24b42fe7"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_5/libero_10_task5/init_6/episode.json",
+        "sha256": "334b800325abc209154935b9fa8610aec91b28e6fc13f3629597f36816bc878b"
+      }
+    },
+    {
+      "task_id": 5,
+      "initial_state_id": 17,
+      "seed": 3559,
+      "B0": {
+        "success": true,
+        "steps": 202,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_17/episode.json",
+        "sha256": "42bfc97a425ede3a3c6ebcda098d76e43b9f7a6ce8e6415cd340a9143bb70ec2"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_5/libero_10_task5/init_17/episode.json",
+        "sha256": "e11e61efc102a9781e6ae2cfbd886fe6b363947dd1a14252f64ed7fd82993f7d"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_5/libero_10_task5/init_17/episode.json",
+        "sha256": "dd6ddc9467a6860190353d0c6d1f23228779a47cc1d9a25ac56d40d86a25dc37"
+      }
+    },
+    {
+      "task_id": 5,
+      "initial_state_id": 28,
+      "seed": 3570,
+      "B0": {
+        "success": true,
+        "steps": 154,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_28/episode.json",
+        "sha256": "73535aea449a2f77dae36e9dd427c6443d591b1d8233ad1cbc12c3623c08c86e"
+      },
+      "F0": {
+        "success": true,
+        "steps": 154,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_5/libero_10_task5/init_28/episode.json",
+        "sha256": "c608dcd1a9e5a8b103fdee342e152e486aa2f1ae242a2440b7d7ea1c7507a3a3"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_5/libero_10_task5/init_28/episode.json",
+        "sha256": "92c1f3a2f349f50d536eb1d774a8ab8e8e7d0c4f5dc9290b80b919f38d9024e7"
+      }
+    },
+    {
+      "task_id": 5,
+      "initial_state_id": 31,
+      "seed": 3573,
+      "B0": {
+        "success": true,
+        "steps": 241,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_31/episode.json",
+        "sha256": "cb3a048bc1b7205be07b2c7332a138d58dbee4988bbefb93aeb9db7469a05646"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_5/libero_10_task5/init_31/episode.json",
+        "sha256": "ad20a0d87d9e6eb2d99c915201a9aee80f6a0938fbeb1b620023cfb499d300a6"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_5/libero_10_task5/init_31/episode.json",
+        "sha256": "31926328fbd77cf96d5e315355880d26b02127a4798a542123f380e1a36ea00b"
+      }
+    },
+    {
+      "task_id": 5,
+      "initial_state_id": 42,
+      "seed": 3584,
+      "B0": {
+        "success": true,
+        "steps": 169,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_5/libero_10_task5/init_42/episode.json",
+        "sha256": "70f67ea290db38df2c1076fcbf2004d43414365ec6f96f21d174c40f3bdabcd5"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_5/libero_10_task5/init_42/episode.json",
+        "sha256": "9c106a8be56aed5e73476bf09e900efc6d1946cff81f730d71e782d1c7a61057"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_5/libero_10_task5/init_42/episode.json",
+        "sha256": "dc5515593ce41df421e5daea1c778a0de86d84bcc0da10aea1edd322d1aa756d"
+      }
+    },
+    {
+      "task_id": 6,
+      "initial_state_id": 3,
+      "seed": 3645,
+      "B0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_3/episode.json",
+        "sha256": "cee5c461de00c53d4fce0f42e5cb6d31ab579fa4f5d6e689f896052b1f60592f"
+      },
+      "F0": {
+        "success": true,
+        "steps": 471,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_6/libero_10_task6/init_3/episode.json",
+        "sha256": "d50d7955b1545cab7992a4623f59905b2d9349e1041f80a6a05ff8fd36f6be9f"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_6/libero_10_task6/init_3/episode.json",
+        "sha256": "efbf925de6863e7a0b16ebfde164bafeedcfbc1179d8581762d4ca067e470bb7"
+      }
+    },
+    {
+      "task_id": 6,
+      "initial_state_id": 5,
+      "seed": 3647,
+      "B0": {
+        "success": true,
+        "steps": 222,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_5/episode.json",
+        "sha256": "83ab71d07729a787317cfbc9cdee111d0e0e9faa80b97902d8f29b70fb162699"
+      },
+      "F0": {
+        "success": true,
+        "steps": 232,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_6/libero_10_task6/init_5/episode.json",
+        "sha256": "0139c3ded3fd375963f81a64500fda1c0565acc3c917a2e31df45a83cf6e19d9"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_6/libero_10_task6/init_5/episode.json",
+        "sha256": "6de024ebb3254001843d4a0769c84acef834005f716af67bfc20eeb8878d2039"
+      }
+    },
+    {
+      "task_id": 6,
+      "initial_state_id": 17,
+      "seed": 3659,
+      "B0": {
+        "success": true,
+        "steps": 224,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_17/episode.json",
+        "sha256": "31e77813b3c6a38e259b9b7f66416e9a2f21c2d63ecb893c7883769197d7c92d"
+      },
+      "F0": {
+        "success": true,
+        "steps": 222,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_6/libero_10_task6/init_17/episode.json",
+        "sha256": "786a357ab4aa8f7fd264965aa0e2ede5155631d9a838e51457e4882c36bcee46"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 206,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_6/libero_10_task6/init_17/episode.json",
+        "sha256": "6a8b026fd2d522b79cd0de7040f671824fbb8d689038dbd2e638698c009c3de8"
+      }
+    },
+    {
+      "task_id": 6,
+      "initial_state_id": 33,
+      "seed": 3675,
+      "B0": {
+        "success": true,
+        "steps": 223,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_33/episode.json",
+        "sha256": "edf9f186fd16a7c70ddb6949dfc1bac7aa3f0ab61f0403fba244a7c8f89d69c9"
+      },
+      "F0": {
+        "success": true,
+        "steps": 311,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_6/libero_10_task6/init_33/episode.json",
+        "sha256": "711dd03cd94cee9740c0b0c4731a860b98014ec29e6315c68c39fe69f928d0a8"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_6/libero_10_task6/init_33/episode.json",
+        "sha256": "185eee86c1f31f356d6b0546b8cdd80e8eee70153b849582827d45647a8c311d"
+      }
+    },
+    {
+      "task_id": 6,
+      "initial_state_id": 42,
+      "seed": 3684,
+      "B0": {
+        "success": true,
+        "steps": 217,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_6/libero_10_task6/init_42/episode.json",
+        "sha256": "7ddde14b018125c1d35a09aa0002412a0021c0031a819dd270c4c906e6701e22"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_6/libero_10_task6/init_42/episode.json",
+        "sha256": "8c3a59587c7a56008a77819c363687dab84bba47c60410bff8e1672dd0b469e2"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 201,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_6/libero_10_task6/init_42/episode.json",
+        "sha256": "ab1e4e5ac51912b222b5980bfd80181bc2630deb7a5cafcd833ed415abab2b53"
+      }
+    },
+    {
+      "task_id": 7,
+      "initial_state_id": 2,
+      "seed": 3744,
+      "B0": {
+        "success": true,
+        "steps": 532,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_2/episode.json",
+        "sha256": "df1c8a812f631cc3a43e66a52d98476944fc9b157af014149fe6ddceb52e0b43"
+      },
+      "F0": {
+        "success": true,
+        "steps": 255,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_7/libero_10_task7/init_2/episode.json",
+        "sha256": "76d8c83ca4887a984e2fd707c1c3b33eca91568b6d5ef3d7dbe6622cd18cb4c2"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 264,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_7/libero_10_task7/init_2/episode.json",
+        "sha256": "04b9ec98b7396c25653a5c66f229326e1269437e42dc1d0f21b5a2bbc7a78818"
+      }
+    },
+    {
+      "task_id": 7,
+      "initial_state_id": 12,
+      "seed": 3754,
+      "B0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_12/episode.json",
+        "sha256": "11ae65a2e51f389792808bc26464f8be4efcca56d4f1ba48012ef335e876c545"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_7/libero_10_task7/init_12/episode.json",
+        "sha256": "0609135d2fa410a092b89bd45a6fc95e897a4b642e690f88c2c3fd107672f3e2"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_7/libero_10_task7/init_12/episode.json",
+        "sha256": "5614fdd664874f90d73cc59cbd3cde978bb4db6f93eb590e6ab9a9c98f313f96"
+      }
+    },
+    {
+      "task_id": 7,
+      "initial_state_id": 40,
+      "seed": 3782,
+      "B0": {
+        "success": true,
+        "steps": 330,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_40/episode.json",
+        "sha256": "5b99ae7880bb8a925053dac14362d5a00dd04036bc52100be3e5f6600d1ab35a"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_7/libero_10_task7/init_40/episode.json",
+        "sha256": "23998e1b8cee97648f24e60b67f3275a01f230bdc9a3b6281fcc5f9bb28164cb"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_7/libero_10_task7/init_40/episode.json",
+        "sha256": "789fa711327cd691ed9e80c42db90f389bf3bc47107b0f4d93e235add83ba955"
+      }
+    },
+    {
+      "task_id": 7,
+      "initial_state_id": 41,
+      "seed": 3783,
+      "B0": {
+        "success": true,
+        "steps": 339,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_41/episode.json",
+        "sha256": "2159861c5b645b5e527fefaad42a7785643784bcf07e487da0cf9adbcea1dd46"
+      },
+      "F0": {
+        "success": true,
+        "steps": 337,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_7/libero_10_task7/init_41/episode.json",
+        "sha256": "8ede55e1be11aeae97dd539d59907eb2725d2d2f8bb4fd93ea59f6e1094c7d7f"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 312,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_7/libero_10_task7/init_41/episode.json",
+        "sha256": "e5f12e2bfb41f087ffb60be355a5f09540e44c2b582e70190db30ed664e26ee8"
+      }
+    },
+    {
+      "task_id": 7,
+      "initial_state_id": 42,
+      "seed": 3784,
+      "B0": {
+        "success": true,
+        "steps": 287,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_7/libero_10_task7/init_42/episode.json",
+        "sha256": "e2e28d802d2fb6c598b3356f2a8a237ad22b90da177229886dd1eb08bfad9b8f"
+      },
+      "F0": {
+        "success": true,
+        "steps": 232,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_7/libero_10_task7/init_42/episode.json",
+        "sha256": "7d13516f2e415e87b93ec252f96c5005bf4f2bb75861f249fcfa874033595f9a"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 249,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_7/libero_10_task7/init_42/episode.json",
+        "sha256": "f002a4d1b5bcb26307a4b41477d4ca02fa395a256bc19e2249d317468811be6f"
+      }
+    },
+    {
+      "task_id": 8,
+      "initial_state_id": 3,
+      "seed": 3845,
+      "B0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_3/episode.json",
+        "sha256": "18fbfd330bc11dcdaaf69ad383f0309bffe063f678fc1f467953f6e7ec0219f4"
+      },
+      "F0": {
+        "success": true,
+        "steps": 784,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_8/libero_10_task8/init_3/episode.json",
+        "sha256": "a5785c71417fb01dd2178e8ce3a1d94465ff67c7a5bc5af7a4a02cc64d7e1226"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 418,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_8/libero_10_task8/init_3/episode.json",
+        "sha256": "ad614f93466f8b475d2c81ee4af398eba2fe03be7276a1eaad5ca5131e9c2b32"
+      }
+    },
+    {
+      "task_id": 8,
+      "initial_state_id": 8,
+      "seed": 3850,
+      "B0": {
+        "success": true,
+        "steps": 520,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_8/episode.json",
+        "sha256": "baccc56ce978d5b49e59fd3e531eb2e167f19984357508169e6874328895c2d3"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_8/libero_10_task8/init_8/episode.json",
+        "sha256": "7d6c8c96a221ab4243e824f0576a519b1fd5b067aacd11f0ba7cb3681e076ede"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_8/libero_10_task8/init_8/episode.json",
+        "sha256": "81098d70b289890ae47f1db93397f5331fe9e82589a50a4d2637ffe1b7708560"
+      }
+    },
+    {
+      "task_id": 8,
+      "initial_state_id": 22,
+      "seed": 3864,
+      "B0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_22/episode.json",
+        "sha256": "4bd8381e9b524b824251045b66dbd8250f9a3cdb111c9ffdc8fe621edf80fcb3"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_8/libero_10_task8/init_22/episode.json",
+        "sha256": "8916319232982a68bc6456a9d73ffe252169dd1e9e9caea909f112f9fa205590"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_8/libero_10_task8/init_22/episode.json",
+        "sha256": "d590c09858d02dff7f18569581f09c8a2089fad0c936dc9e976961a85a7c0f13"
+      }
+    },
+    {
+      "task_id": 8,
+      "initial_state_id": 33,
+      "seed": 3875,
+      "B0": {
+        "success": true,
+        "steps": 473,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_33/episode.json",
+        "sha256": "ea0e78fbf20526ec385f26dfb0509d4ffdd9d3ddced2998b05bf2dabfe24cb96"
+      },
+      "F0": {
+        "success": true,
+        "steps": 464,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_8/libero_10_task8/init_33/episode.json",
+        "sha256": "0c328911b0a2db13f7bbeaed2970783a0b4d3446d0205d9f0979e4cbf46a7974"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 586,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_8/libero_10_task8/init_33/episode.json",
+        "sha256": "8e6952499e18c348a3dc1a7d29959614b7103d082ed2290076243fedc89b1be7"
+      }
+    },
+    {
+      "task_id": 8,
+      "initial_state_id": 35,
+      "seed": 3877,
+      "B0": {
+        "success": true,
+        "steps": 389,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_8/libero_10_task8/init_35/episode.json",
+        "sha256": "79e77515720a0089038e19cb2d66b86ed9ad9a587ac4b3702d1df183dc2b4517"
+      },
+      "F0": {
+        "success": true,
+        "steps": 370,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_8/libero_10_task8/init_35/episode.json",
+        "sha256": "09ba08012b592226b53632ba80bd74f21871ebf270a8d292e543b8e0824603fb"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 367,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_8/libero_10_task8/init_35/episode.json",
+        "sha256": "bda08008a989b7764532b9f8531d3cf3cc8a7dffbb9c23b44c5f1e0f091a0a5a"
+      }
+    },
+    {
+      "task_id": 9,
+      "initial_state_id": 3,
+      "seed": 3945,
+      "B0": {
+        "success": true,
+        "steps": 260,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_3/episode.json",
+        "sha256": "76229b16fac5e674368fb1013898e33692c572a48314633f69ddf9c62590dd74"
+      },
+      "F0": {
+        "success": true,
+        "steps": 324,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_9/libero_10_task9/init_3/episode.json",
+        "sha256": "89e893c69a7908817f87d84a48af25480b9a2e6f85c145c2c73b914be6fade7a"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_9/libero_10_task9/init_3/episode.json",
+        "sha256": "61a94f53325ebadab5db35bda924ec000d3c6584946c4f236e16666fe50c2b6e"
+      }
+    },
+    {
+      "task_id": 9,
+      "initial_state_id": 14,
+      "seed": 3956,
+      "B0": {
+        "success": true,
+        "steps": 918,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_14/episode.json",
+        "sha256": "a0ea813ea56ce8ac6ea1bf37d3b3bbab40195160f1286c199dbbcd802e243f31"
+      },
+      "F0": {
+        "success": true,
+        "steps": 352,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_9/libero_10_task9/init_14/episode.json",
+        "sha256": "8ce2955e9962b04294acf79386077df6abc7b1ff0dc07caa36d7833347166e09"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 333,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_9/libero_10_task9/init_14/episode.json",
+        "sha256": "f3042ed80b799883e51db33051931395fea20695ad2cf7426adcffed598a296a"
+      }
+    },
+    {
+      "task_id": 9,
+      "initial_state_id": 43,
+      "seed": 3985,
+      "B0": {
+        "success": true,
+        "steps": 500,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_43/episode.json",
+        "sha256": "6f7af222ad4dc893164ccd2b0a29168688b622814d26d122acd2e3ba697e46e7"
+      },
+      "F0": {
+        "success": true,
+        "steps": 238,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_9/libero_10_task9/init_43/episode.json",
+        "sha256": "40e3b7405c75c3f55098a86094c99ffa0c82ea19aee3ad68247d5fb13df07faa"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 241,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_9/libero_10_task9/init_43/episode.json",
+        "sha256": "3e73d9319365f08f3e63bdac49dbe066e0d5cfedd033bab4d478712d2727b4ff"
+      }
+    },
+    {
+      "task_id": 9,
+      "initial_state_id": 45,
+      "seed": 3987,
+      "B0": {
+        "success": true,
+        "steps": 288,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_45/episode.json",
+        "sha256": "d9b0b9c575af8e04f2b9b8cb3540cfbb0d6f6786e6f38a1493811b6e76f23233"
+      },
+      "F0": {
+        "success": true,
+        "steps": 319,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_9/libero_10_task9/init_45/episode.json",
+        "sha256": "5dfcfd63c689851b86db129cce055c530c247256e99d76327339fc57792611da"
+      },
+      "F1-off": {
+        "success": true,
+        "steps": 403,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_9/libero_10_task9/init_45/episode.json",
+        "sha256": "761e69129b9c3054a9ed135abacd1356a6f8e1e8f1b843ea0e116158232d5026"
+      }
+    },
+    {
+      "task_id": 9,
+      "initial_state_id": 49,
+      "seed": 3991,
+      "B0": {
+        "success": true,
+        "steps": 264,
+        "term": "SUCCESS",
+        "path": "experiments/results/e6_retention_locked_50/B0_task_9/libero_10_task9/init_49/episode.json",
+        "sha256": "5fa6c0e793c6183fa51f655cac8db5f0196ee326f3986412187185c1cb5ba5da"
+      },
+      "F0": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_f0_windows_20261125/F0_task_9/libero_10_task9/init_49/episode.json",
+        "sha256": "3ef6b7170da21961376a639f29d4d6f6747250ec0a2bb9d083ef9268b1539233"
+      },
+      "F1-off": {
+        "success": false,
+        "steps": 1000,
+        "term": "MAX_STEPS",
+        "path": "experiments/results/e6_retention_locked_50/F1_actual_task_9/libero_10_task9/init_49/episode.json",
+        "sha256": "f13c6a1c91a58ef05e1ca5ba01017ecb351094521bf0c7bfaa13ada791d9e490"
+      }
+    }
+  ],
+  "analysis_code_sha256": "226ed4672161e7505922d73dddefc1b458ae5adbb60ee4b8c94e432f16646ac4"
+}

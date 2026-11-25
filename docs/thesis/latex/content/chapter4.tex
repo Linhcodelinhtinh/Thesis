@@ -1,6 +1,6 @@
 \chapter{Thực nghiệm}
 
-Chương này trình bày các kết quả thực nghiệm nhằm giải quyết ba câu hỏi nghiên cứu của khóa luận: đối sánh điều khiển vòng kín F0 và F1 trên LIBERO-Mem, kiểm tra cơ chế truy vấn theo sự kiện, phân tích hiện tượng overshoot, can thiệp triệt tiêu bộ nhớ phản thực tế, và đánh giá khả năng duy trì kỹ năng cơ sở trên LIBERO-10. Các thử nghiệm được tiến hành trên hai mô hình nền là SmolVLA \cite{smolvla2025} và X-VLA \cite{xvla2025}. Bảng~\ref{tab:experiment-rq-map} tóm tắt năm nhóm thực nghiệm trọng tâm, quy mô mẫu và mục tiêu khoa học tương ứng với từng câu hỏi nghiên cứu.
+Chương này trình bày các kết quả thực nghiệm nhằm giải quyết các câu hỏi nghiên cứu của khóa luận, bao gồm: so sánh điều khiển vòng kín F0 và F1 trên LIBERO-Mem, kiểm tra cơ chế truy vấn theo sự kiện, phân tích hiện tượng overshoot, can thiệp triệt tiêu bộ nhớ, và đánh giá khả năng duy trì kỹ năng cơ sở trên LIBERO-10. Các thử nghiệm được tiến hành trên hai mô hình nền là SmolVLA \cite{smolvla2025} và X-VLA \cite{xvla2025}. Bảng~\ref{tab:experiment-rq-map} tóm tắt năm nhóm thực nghiệm trọng tâm, quy mô mẫu và mục tiêu khoa học tương ứng với từng câu hỏi nghiên cứu.
 
 \begin{table}[htbp]
 \centering\small
@@ -11,13 +11,13 @@ Chương này trình bày các kết quả thực nghiệm nhằm giải quyết
 \toprule
 \textbf{Nhóm thực nghiệm} & \textbf{Mô hình áp dụng} & \textbf{Quy mô mẫu} & \textbf{Mục tiêu khoa học \& RQ} \\
 \midrule
-Đối sánh vòng kín F0 và F1 trên LIBERO-Mem & SmolVLA, X-VLA & 40 cặp ghép mỗi mô hình, 160 lượt & Đo lường tác động của bộ nhớ sự kiện lên SR và SCR (RQ1) \\
+So sánh vòng kín F0 và F1 trên LIBERO-Mem & SmolVLA, X-VLA & 40 cặp ghép mỗi mô hình, 160 lượt & Đo lường tác động của bộ nhớ sự kiện lên SR và SCR (RQ1) \\
 \midrule
-Truy vấn theo sự kiện và lỗi overshoot & SmolVLA, X-VLA & 24 cặp SmolVLA, 48 lượt X-VLA & Kiểm tra cơ chế truy vấn sớm và mô tả hiện tượng overshoot (RQ2) \\
+Truy vấn theo sự kiện và lỗi overshoot & SmolVLA, X-VLA & 24 cặp ghép mỗi mô hình, 96 lượt & Kiểm tra cơ chế truy vấn sớm và mô tả hiện tượng overshoot (RQ2) \\
 \midrule
-Cơ chế dừng ngoại vi dựa trên bộ nhớ & X-VLA & 35 mốc, 60 mô phỏng rẽ nhánh, 40 + 24 lượt vòng kín & Đo khả năng khắc phục overshoot bằng tín hiệu dừng dựa trên bộ nhớ (RQ2) \\
+Cơ chế dừng ngoại vi dựa trên bộ nhớ & X-VLA & 35 mốc, 60 lượt mô phỏng can thiệp dừng, 40 + 24 lượt vòng kín & Đo khả năng khắc phục overshoot bằng tín hiệu dừng dựa trên bộ nhớ (RQ2) \\
 \midrule
-Can thiệp phản thực tế đơn truy vấn & SmolVLA, X-VLA & 3 ca can thiệp, mỗi ca một nhánh đối chứng & Đo độ nhạy cục bộ của hành động với lời nhắc bộ nhớ (RQ1) \\
+Can thiệp xóa bỏ truy vấn & SmolVLA, X-VLA & 3 ca can thiệp, mỗi ca một nhánh đối chứng & Đo độ nhạy cục bộ của hành động với lời nhắc bộ nhớ (RQ1) \\
 \midrule
 Duy trì kỹ năng cơ sở trên LIBERO-10 & SmolVLA, X-VLA & 50 cặp SmolVLA, 50 bộ ba X-VLA, 250 lượt & Đánh giá mức độ suy giảm kỹ năng gốc và quên thảm khốc (RQ3) \\
 \bottomrule
@@ -58,19 +58,38 @@ Khi có thông tin hợp lệ từ bộ nhớ, F1 nhận chuỗi dữ kiện và
 
 \label{sec:xvla-setup}
 
-Thực nghiệm vòng kín vận hành trên cánh tay robot Franka Emika Panda với bộ điều khiển không gian tác vụ OSC ở tần số 20 Hz, tiếp nhận hai luồng ảnh RGB kích thước $256 \times 256$ từ góc nhìn ngoài và góc nhìn cổ tay cùng trạng thái khớp. Mỗi lượt chạy giới hạn tối đa 1.000 bước hành động. SmolVLA sinh đoạn hành động $H = 50$ bước và thực thi $s = 10$ bước giữa hai lần truy vấn; lượt chạy dừng sớm nếu môi trường phát hiện lỗi overshoot. Trạng thái khởi tạo được chia thành hai nhóm: \emph{seen}, gồm các trạng thái xuất phát từ demo nằm trong tập huấn luyện, và \emph{unseen}, gồm 20 trạng thái được giữ lại để kiểm tra khả năng tổng quát hóa. Khi cần chọn cấu hình, nghiên cứu chỉ dùng các trạng thái seen hoặc nhóm E2 và nói rõ điều đó ở từng nơi.
-
-Hiệu năng thực thi được lượng hóa qua ba chỉ số: chỉ số thành công toàn phần $S_i = \mathbf{1}[z_i = N \land P_i \land \neg O_i] \in \{0, 1\}$, trong đó $z_i$ là số chu kỳ xác nhận, $N$ là số chu kỳ yêu cầu, $P_i$ là vị từ kiểm tra đích, và $O_i$ là cờ vi phạm overshoot; tỷ lệ hoàn thành mốc $\mathrm{SCR}_i = z_i / N$; cùng tỷ lệ thành công thực nghiệm $\widehat{\mathrm{SR}} = \frac{1}{n}\sum_{i=1}^{n} S_i$ trên $n$ lượt đánh giá.
-
-Nhằm kiểm chứng tính tổng quát của phương pháp theo RQ3, nghiên cứu mở rộng quy trình sang X-VLA \cite{xvla2025} sử dụng checkpoint gốc B0 mang tên X-VLA-Libero. Khác với SmolVLA dự đoán độ dời tương đối, X-VLA dự đoán tư thế tuyệt đối 6D của đầu gắp qua 10 bước biến đổi Flow Matching với đoạn hành động $H = 30$ bước ở tần số 20 Hz. Hai adapter F0 và F1 của X-VLA cập nhật khoảng 11,87 triệu tham số trong 5.000 bước huấn luyện, kích thước lô 32, tốc độ học $5\times10^{-5}$ trên cùng phân phối dữ liệu tinh chỉnh với SmolVLA. Trên X-VLA, nhịp truy vấn định kỳ là $s = 10$ bước như trên SmolVLA.
-
-\section{Đối sánh vòng kín trên LIBERO-Mem}
-
-Nghiên cứu đối sánh trực tiếp hai adapter F0 và F1 trên 20 trạng thái unseen của tác vụ một chu kỳ T1 và ba chu kỳ T3 qua 40 cặp đối đầu cùng seed 42 ở nhịp truy vấn định kỳ $s = 10$, tương ứng 80 lượt chạy độc lập cho mỗi kiến trúc.
+Để kiểm chứng tính tổng quát của phương pháp bộ nhớ sự kiện có bằng chứng theo RQ3, nghiên cứu triển khai song song quy trình thích ứng và đánh giá trên hai kiến trúc mô hình nền tiêu biểu: SmolVLA \cite{smolvla2025} và X-VLA \cite{xvla2025}. Bảng~\ref{tab:model-comparison} tổng hợp và so sánh chi tiết các thông số kỹ thuật và thiết lập điều khiển giữa hai mô hình. Trong khi SmolVLA dự đoán đoạn hành động độ dời tương đối $H = 50$ bước qua action expert nhỏ gọn, X-VLA dự đoán tư thế tuyệt đối 6D của đầu gắp với đoạn $H = 30$ bước qua 10 bước biến đổi Flow Matching trên nền tảng Florence-2. Cả hai mô hình đều vận hành ở nhịp truy vấn định kỳ $s = 10$ bước và chia sẻ cùng phân phối dữ liệu tinh chỉnh có bộ nhớ, với ngân sách thích ứng tham số lần lượt là 645.120 tham số LoRA trên SmolVLA và khoảng 11,87 triệu tham số trên X-VLA (5.000 bước huấn luyện, kích thước lô 32, tốc độ học $5\times10^{-5}$).
 
 \begin{table}[htbp]
 \centering\small
-\caption{Đối sánh hiệu năng vòng kín giữa F0 và F1 trên SmolVLA và X-VLA (40 cặp unseen)}
+\caption{So sánh thông số kỹ thuật và thiết lập điều khiển giữa SmolVLA và X-VLA}
+\label{tab:model-comparison}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{>{\raggedright\arraybackslash}p{\dimexpr 0.28\textwidth-2\tabcolsep\relax}|>{\raggedright\arraybackslash}p{\dimexpr 0.36\textwidth-2\tabcolsep\relax}|>{\raggedright\arraybackslash}p{\dimexpr 0.36\textwidth-2\tabcolsep\relax}}
+\toprule
+\textbf{Thông số / Thuộc tính} & \textbf{SmolVLA} & \textbf{X-VLA} \\
+\midrule
+Checkpoint gốc & \texttt{lerobot/smolvla\_libero} & \texttt{2toINF/X-VLA-Libero} \\
+Kiến trúc VLM & SigLIP + SmolLM2 & Florence-2-large \\
+Không gian hành động & Độ dời tương đối 7D ($\Delta$ pose + kẹp) & Tư thế tuyệt đối 6D + kẹp \\
+Bộ điều khiển robot & OSC (\textit{use\_delta} = True) ở 20 Hz & OSC (\textit{use\_delta} = False) ở 20 Hz \\
+Đầu vào ảnh mô hình & $2 \times (256 \times 256)$ & $2 \times (224 \times 224)$ \\
+Vector cảm nhận bản thể & 8D (vị trí, hướng xoay, kẹp) & 9D (vị trí, xoay 6D, kẹp; đệm) \\
+Độ dài đoạn hành động ($H$) & 50 bước & 30 bước \\
+Nhịp thực thi, truy vấn ($s$) & 10 bước định kỳ & 10 bước định kỳ \\
+Tham số huấn luyện ($\phi$) & 645.120 tham số LoRA & $\sim 11{,}87$ triệu tham số \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Hiệu năng thực thi được lượng hóa qua ba chỉ số: chỉ số thành công toàn phần $S_i = \mathbf{1}[z_i = N \land P_i \land \neg O_i] \in \{0, 1\}$, trong đó $z_i$ là số chu kỳ xác nhận, $N$ là số chu kỳ yêu cầu, $P_i$ là vị từ kiểm tra đích, và $O_i$ là cờ vi phạm overshoot; tỷ lệ hoàn thành mốc $\mathrm{SCR}_i = z_i / N$; cùng tỷ lệ thành công thực nghiệm $\widehat{\mathrm{SR}} = \frac{1}{n}\sum_{i=1}^{n} S_i$ trên $n$ lượt đánh giá.
+
+\section{Đối sánh vòng kín trên LIBERO-Mem}
+
+Thực nghiệm trực tiếp với hai adapter F0 và F1 trên 20 trạng thái unseen của tác vụ một chu kỳ T1 và ba chu kỳ T3 cho thấy những sự khác biệt rõ rệt.
+\begin{table}[htbp]
+\centering\small
+\caption{So sánh hiệu năng vòng kín giữa F0 và F1 trên SmolVLA và X-VLA (40 cặp unseen)}
 \label{tab:e2-comparison}
 \label{tab:e2-unseen-results}
 \label{tab:xvla-e2-results}
@@ -98,37 +117,62 @@ X-VLA   & T1 & F0 & 0/20 & 0,500 & 10/20 & 10/20 \\
 \end{tabular}
 \end{table}
 
-Bảng~\ref{tab:e2-comparison} cho thấy hai mô hình thất bại theo hai cách khác nhau. Trên SmolVLA, chênh lệch tỷ lệ thành công giữa F1 và F0 là $-10$ điểm phần trăm, với khoảng bootstrap 95\% theo 20 cụm trạng thái từ $-20$ đến $-2{,}5$ điểm phần trăm. F1 chỉ đạt SCR trung bình $0{,}042$ so với $0{,}208$ của F0, và 37 trong 40 lượt F1 không đạt mốc nào. Một cách giải thích khả dĩ là adapter LoRA khoảng 645 nghìn tham số khó điều kiện hóa đồng thời trên cả quan sát và đoạn văn bản bộ nhớ; tuy nhiên nghiên cứu chưa có thí nghiệm tách giả thuyết này khỏi các nguyên nhân khác, chẳng hạn khác biệt giữa hai lần huấn luyện. Ngoài ra, bộ ghi chạy đồng bộ làm trung vị thời gian mỗi lượt tăng từ 213 giây lên 1.066 giây. Với mô phỏng chạy đồng bộ, độ trễ này không ảnh hưởng đến kết quả, nhưng sẽ là một chi phí khi triển khai thực tế.
+Bảng~\ref{tab:e2-comparison} cho thấy các adapter của hai họ mô hình thất bại theo hai cách khác nhau. Trên SmolVLA, chênh lệch tỷ lệ thành công giữa F1 và F0 là $10$ điểm phần trăm, với khoảng bootstrap 95\% từ $-20$ đến $-2{,}5$ điểm phần trăm. F1 chỉ đạt SCR trung bình $0{,}042$ so với $0{,}208$ của F0, và 37 trong 40 lượt F1 không đạt mốc nào. Một cách giải thích khả dĩ là adapter LoRA khoảng 645 nghìn tham số khó điều kiện hóa cả thông tin ngữ cảnh của môi trường LIBERO lẫn LIBERO-Mem để đưa ra hành động, dẫn đến năng lực thao tác cơ sở sụt giảm nghiêm trọng trên cả 2 lượt huấn luyện, thể hiện qua tỉ lệ đạt subgoal SCR trung bình chỉ từ $0{,}04$ đến $0{,}2$. Ngoài ra, việc chạy module bộ nhớ đồng thời với mô hình điều khiển trên phần cứng phổ thông làm trung vị thời gian mỗi lượt tăng từ 213 giây lên 1.066 giây. Với mô phỏng chạy đồng bộ, độ trễ này không ảnh hưởng đến kết quả, nhưng sẽ là một thách thức khi triển khai thực tế.
 
-Trên X-VLA, F1 tăng SCR trung bình thêm $+0{,}142$ so với F0 (từ $0{,}350$ lên $0{,}492$), nhưng cả hai đều đạt 0/40 vì mọi lượt hoàn thành đủ chu kỳ đều tiếp tục thực hiện thêm một chu kỳ và bị tính là overshoot (11/40 lượt với F0 và 16/40 lượt với F1). Như vậy, ở mô hình này vấn đề chính không nằm ở việc hoàn thành chu kỳ mà ở việc dừng đúng lúc. Hai mô hình khác nhau ở nhiều điểm, gồm kích thước, số tham số được tinh chỉnh, biểu diễn hành động và checkpoint gốc, nên nghiên cứu không quy sự khác biệt về kết quả cho riêng một yếu tố nào. Cơ chế dừng ngoại vi ở Mục~\ref{sec:memory-halt} được xây dựng để xử lý trực tiếp vấn đề này.
+Trên X-VLA, F1 tăng SCR trung bình thêm $0{,}142$ so với F0 (từ $0{,}350$ lên $0{,}492$), nhưng cả hai đều đạt 0/40 vì tại mọi lượt hoàn thành đủ chu kỳ, mô hình điều khiển tiếp tục thực hiện thêm một chu kỳ nữa và bị tính là overshoot. Như vậy, ở X-VLA vấn đề chính không nằm ở việc hoàn thành chu kỳ mà ở việc dừng đúng lúc. Hai mô hình khác nhau ở nhiều điểm, gồm kích thước, số tham số được tinh chỉnh, biểu diễn hành động và checkpoint gốc, nên nghiên cứu không quy sự khác biệt về kết quả cho riêng một yếu tố nào. Cơ chế can thiệp và hỗ trợ quyết định bằng bộ nhớ ở mục sau sẽ giúp xử lý trực tiếp vấn đề này.
 
-\section{Kiểm tra truy vấn theo sự kiện và hiện tượng overshoot}
+\section{Kiểm tra thực thi chuỗi hành động và hiện tượng overshoot}
 \label{sec:d2-evidence}
 \label{sec:d2-calibration}
 
-Thực nghiệm kiểm tra cơ chế điều phối sự kiện trên nhóm phát triển gồm 12 trạng thái seen với 24 lượt mỗi chế độ và nhóm hiệu chuẩn gồm 8 trạng thái seen với 16 lượt mỗi chế độ với checkpoint SmolVLA F1, seed 42 và nhịp truy vấn $s = 10$. Ở chế độ giám sát ngầm, bộ điều phối chỉ thụ động ghi nhận sự kiện mà không can thiệp vào chu kỳ điều khiển. Ngược lại, ở chế độ điều phối sự kiện, hệ thống được cấp quyền kích hoạt truy vấn sớm ngay khi xuất hiện dữ kiện mới có bằng chứng xác thực.
+Phân tích các trường hợp thất bại từ thực nghiệm đối sánh vòng kín trên LIBERO-Mem cho thấy một nguyên nhân đáng chú ý: việc robot thực thi cố định toàn bộ đoạn hành động sinh ra từ chính sách có nguy cơ bám theo các quyết định đã lỗi thời khi môi trường vật lý đã chuyển pha thao tác. Cơ chế điều phối truy vấn theo sự kiện được đề xuất nhằm giải quyết vấn đề này. Bộ điều phối liên tục giám sát trạng thái bộ nhớ sự kiện; ngay khi xuất hiện biến cố chuyển tiếp vật lý có bằng chứng xác nhận, hệ thống chủ động ngắt đoạn hành động đang thực thi dở dang và kích hoạt mô hình VLA tái truy vấn sớm với ngữ cảnh ngôn ngữ cập nhật.
+
+Hình~\ref{fig:smolvla-chunk-failure} minh họa một trường hợp thất bại điển hình của SmolVLA trên tác vụ T1 khi thực thi cố định đoạn hành động ở chế độ giám sát ngầm. Sau khi tiếp cận bát ở bước 110, robot tiếp tục thực thi chuỗi hành động mở đã hoạch định trước. Tuy nhiên, sai lệch tiếp xúc khiến bát trượt khỏi đầu kẹp tại bước 142. Do không có cơ chế ngắt sớm để tái truy vấn theo biến cố nhận thức, robot vẫn thực thi trọn vẹn quỹ đạo nâng lên, dẫn đến việc tay kẹp nâng rỗng lên không trung tại bước 240 trong khi bát vẫn nằm nguyên trên đĩa. Thất bại này làm nổi bật sự cần thiết của cơ chế điều phối linh hoạt, cho phép ngắt sớm chuỗi hành động khi xuất hiện bằng chứng chuyển pha vật lý để tái lập kế hoạch kịp thời.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{figures/smolvla-chunk-failure.png}
+\caption{Chuỗi hành vi thất bại của SmolVLA khi thực thi đoạn hành động}
+\label{fig:smolvla-chunk-failure}
+\end{figure}
+
+Để kiểm chứng tính đúng đắn và hiệu quả của cơ chế này theo RQ2, nghiên cứu thiết lập thực nghiệm đối đầu trực tiếp giữa hai chế độ điều phối. Ở chế độ giám sát ngầm, bộ điều phối chỉ thụ động ghi nhận sự kiện vào bộ nhớ mà không can thiệp vào chu kỳ điều khiển, duy trì nghiêm ngặt nhịp truy vấn định kỳ $s = 10$ bước. Ngược lại, ở chế độ theo sự kiện, bộ điều phối được cấp quyền ngắt sớm đoạn hành động ngay khi có bằng chứng sự kiện mới để gọi lại chính sách trước hạn.
+
+Quy trình đánh giá được thực hiện đồng nhất trên cả hai kiến trúc mô hình với cùng seed 42, khảo sát 12 trạng thái seen thuộc nhóm phát triển trên cả hai tác vụ T1 và T3. Với mỗi mô hình, thực nghiệm gồm 24 lượt ở chế độ theo sự kiện đối đầu ghép cặp với 24 lượt ở chế độ giám sát ngầm, tương ứng 48 lượt chạy vòng kín độc lập cho từng kiến trúc và tổng cộng 96 lượt đánh giá. Bảng~\ref{tab:d2-combined} tổng hợp kết quả đối sánh chi tiết giữa hai chế độ trên cả hai mô hình.
 
 \begin{table}[htbp]
 \centering\footnotesize
-\caption{Đánh giá cơ chế truy vấn theo sự kiện trên nhóm phát triển và hiệu chuẩn (SmolVLA)}
+\caption{Đánh giá cơ chế truy vấn theo sự kiện và hiện tượng overshoot trên SmolVLA và X-VLA}
 \label{tab:d2-combined}
 \label{tab:d2-decision-results}
 \label{tab:d2-calibration-results}
-\setlength{\tabcolsep}{2.5pt}
-\begin{tabular}{l|l|r|r|r|r|r|r}
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{l|l|l|r|r|r|r|r}
 \toprule
-\textbf{Nhóm dữ liệu} & \textbf{Chế độ} & \shortstack{\textbf{Thành}\\\textbf{công}} & \shortstack{\textbf{SCR}\\\textbf{TB}} & \shortstack{\textbf{Vi phạm}\\\textbf{overshoot}} & \shortstack{\textbf{Lần gọi}\\\textbf{VLA/lượt}} & \shortstack{\textbf{Lượt có}\\\textbf{gọi sớm}} & \shortstack{\textbf{Gọi sớm có}\\\textbf{bằng chứng}} \\
+\textbf{Mô hình} & \textbf{Tác vụ} & \textbf{Chế độ} & \shortstack{\textbf{Thành}\\\textbf{công}} & \shortstack{\textbf{SCR}\\\textbf{TB}} & \shortstack{\textbf{Vi phạm}\\\textbf{overshoot}} & \shortstack{\textbf{Lần gọi}\\\textbf{VLA/lượt}} & \shortstack{\textbf{Lượt có}\\\textbf{gọi sớm}} \\
 \midrule
-Phát triển (12 TT) & Giám sát & 1/24 & 0,111 & 0/24 & 97,17 & 0/24 & -- \\
-                   & Theo sự kiện & 1/24 & 0,167 & 0/24 & 99,88 & 22/24 & 56/56 \\
+SmolVLA & T1 & Giám sát & 1/12 & 0,167 & 1/12 & 94,33 & 0/12 \\
+        &    & Theo sự kiện & 1/12 & 0,250 & 2/12 & 97,75 & 11/12 \\
+        \cmidrule{2-8}
+        & T3 & Giám sát & 0/12 & 0,056 & 0/12 & 100,00 & 0/12 \\
+        &    & Theo sự kiện & 0/12 & 0,083 & 0/12 & 102,00 & 11/12 \\
 \midrule
-Hiệu chuẩn (8 TT)  & Giám sát & 1/16 & 0,188 & 2/16 & 95,50 & 0/16 & -- \\
-                   & Theo sự kiện & 1/16 & 0,083 & 0/16 & 101,69 & 16/16 & 32/32 \\
+X-VLA   & T1 & Giám sát & 0/12 & 0,917 & 11/12 & 24,83 & 0/12 \\
+        &    & Theo sự kiện & 0/12 & 0,833 & 10/12 & 31,92 & 11/12 \\
+        \cmidrule{2-8}
+        & T3 & Giám sát & 0/12 & 0,583 & 5/12 & 73,50 & 0/12 \\
+        &    & Theo sự kiện & 0/12 & 0,528 & 4/12 & 78,00 & 11/12 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Bảng~\ref{tab:d2-combined} cho thấy chế độ theo sự kiện kích hoạt truy vấn sớm đúng thiết kế: 22 trong 24 lượt ở nhóm phát triển và cả 16 lượt ở nhóm hiệu chuẩn có ít nhất một lần gọi sớm, và mọi lần gọi sớm đều xuất phát từ một bằng chứng mới được xác nhận. Tuy vậy, tỷ lệ thành công của hai chế độ bằng nhau ở cả hai nhóm (1/24 và 1/16). Chênh lệch SCR giữa chế độ theo sự kiện và chế độ giám sát trên nhóm phát triển là $+0{,}056$, với khoảng bootstrap 95\% từ $-0{,}125$ đến $0{,}250$, nên chưa kết luận được về hướng tác động. Trên nhóm hiệu chuẩn, chế độ theo sự kiện không có lượt overshoot (0/16 so với 2/16 của chế độ giám sát) nhưng SCR trung bình lại thấp hơn ($0{,}083$ so với $0{,}188$), và lượt thành công đổi từ trạng thái 19 sang trạng thái 18. Vì vậy, kết quả này chỉ cho phép khẳng định cơ chế truy vấn sớm vận hành đúng, không cho phép khẳng định nó làm tăng tỷ lệ thành công. Lượt T1 trạng thái 7 thành công ở bước 409 (Hình~\ref{fig:libero-mem-d2-t1-success} và Hình~\ref{fig:t1-grasp-detail}) là một ví dụ minh họa chứ không phải bằng chứng cho tác động của truy vấn sớm. Trên tác vụ T3, cả hai chế độ đều chưa hoàn thành chuỗi ba chu kỳ.
+Số liệu tại Bảng~\ref{tab:d2-combined} cho thấy cơ chế theo sự kiện vận hành hoàn toàn nhất quán về mặt kỹ thuật trên cả hai kiến trúc. Trên mỗi mô hình, có đúng 22 trên 24 lượt chạy ghi nhận ít nhất một lần kích hoạt ngắt sớm, gồm 11 trên 12 lượt ở tác vụ T1 và 11 trên 12 lượt ở tác vụ T3. Toàn bộ các lần gọi sớm này, gồm 56 lần ở SmolVLA và 70 lần ở X-VLA, đều xuất phát từ bằng chứng sự kiện mới được xác thực, chứng minh bộ điều phối phản ứng chính xác theo biến cố nhận thức thời gian thực chứ không kích hoạt ngẫu nhiên. Số lần gọi chính sách trung bình mỗi lượt ở chế độ theo sự kiện tăng nhẹ tương ứng với các thời điểm ngắt đoạn hành động trước hạn.
+
+Mặc dù cơ chế ngắt sớm vận hành đúng thiết kế, tác động thực tế lên hiệu năng điều khiển vòng kín lại bộc lộ những đặc tính đối lập rõ rệt giữa hai họ mô hình:
+
+Đối với SmolVLA, việc ngắt sớm đoạn hành động giúp cải thiện nhẹ tỷ lệ hoàn thành mốc SCR, tăng từ 0,167 lên 0,250 ở tác vụ T1 và từ 0,056 lên 0,083 ở tác vụ T3. Tuy nhiên, tỷ lệ thành công toàn phần không có sự bứt phá, duy trì ở mức 1 trên 12 lượt ở tác vụ T1 và 0 trên 12 lượt ở tác vụ T3 trên cả hai chế độ. Lượt T1 trạng thái 7 thành công ở bước 409 được minh họa tại Hình~\ref{fig:libero-mem-d2-t1-success} là một ví dụ trực quan đối lập với trường hợp thất bại ở Hình~\ref{fig:smolvla-chunk-failure}, cho thấy việc tái truy vấn đúng lúc giúp robot hoàn thành chuỗi thao tác kẹp nhấc và đặt bát. Dù vậy, việc ngắt sớm chỉ tối ưu hóa thời điểm cập nhật ngữ cảnh chứ không thể bù đắp được sự suy giảm năng lực vận động cơ sở sau thích ứng LoRA trên SmolVLA F1.
+
+Trái ngược với SmolVLA, X-VLA thể hiện năng lực thao tác vật lý vượt trội khi đạt tỷ lệ hoàn thành mốc SCR rất cao ở cả hai chế độ, đạt từ 0,833 đến 0,917 ở tác vụ T1 và từ 0,528 đến 0,583 ở tác vụ T3. Tuy vậy, tỷ lệ thành công toàn phần của X-VLA vẫn là 0 trên 24 lượt ở cả hai chế độ. Nguyên nhân trực tiếp là phần lớn các lượt chạy đều thất bại do vi phạm lỗi overshoot. Sau khi hoàn thành thao tác đặt bát vào đĩa, mô hình tiếp tục quán tính sinh chuỗi hành động tiếp cận mới cho đến khi môi trường kết thúc lượt chạy. Ngay cả khi được ngắt action chunk và cho quan sát state mới, chính sách không phân biệt được trạng thái bắt đầu khi chưa thực hiện hành động và trạng thái kết thúc khi đã hoàn thành đủ lượt gắp.
 
 \begin{figure}[H]
 \centering
@@ -141,31 +185,21 @@ Bảng~\ref{tab:d2-combined} cho thấy chế độ theo sự kiện kích hoạ
 \label{fig:libero-mem-d2-t1-success}
 \end{figure}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=.86\linewidth]{figures/t1-gap-bat.png}\par
-{\small\makebox[.286\linewidth]{142 · Tiếp cận}%
-\makebox[.286\linewidth]{240 · Giữ bát đã nhấc}%
-\makebox[.286\linewidth]{409 · Đạt mốc}\par}
-\caption{Cận cảnh quá trình kẹp và nhấc bát trong lượt chạy T1}
-\label{fig:t1-grasp-detail}
-\end{figure}
-
 \label{sec:xvla-d2-cohort}
 
-Trước hết, phép kiểm tra tính tương đương trên X-VLA xác nhận chế độ giám sát không can thiệp vào điều khiển: vector hành động và thời điểm gọi chính sách giữa hai chế độ trùng khớp chính xác. Trên 24 lượt vòng kín của X-VLA F1 (12 trạng thái seen cho mỗi tác vụ T1, T3, chạy ở chế độ theo sự kiện), tỷ lệ overshoot ở T1 là $83{,}3$\% (10/12; khoảng Wilson 95\% từ $55{,}2$\% đến $95{,}3$\%) trong khi SCR trung bình đạt $0{,}833$; ở chế độ giám sát con số tương ứng là 11/12 và $0{,}917$. Sau khi hoàn thành chu kỳ đặt bát vào đĩa, mô hình tiếp tục sinh quỹ đạo tiếp cận mới cho đến khi môi trường kết thúc lượt. Độ trễ trích xuất sự kiện trung vị của bộ ghi thị giác cũng lên tới vài chục bước so với thời điểm vật lý, nên việc chỉ trông cậy vào lời nhắc ngôn ngữ chưa đủ để ngắt kịp thời các thao tác thừa.
+Kết quả đối sánh vòng kín cùng thí nghiệm ngắt chuỗi hành động và truy vấn sớm trên cả hai mô hình giúp ta rút ra được một số quan sát: Việc ngắt chuỗi hành động action chunk và kích hoạt truy vấn sớm có thể tạo ra những đóng góp ý nghĩa nhất định, bằng chứng nằm ở cặp lượt chuyển từ False thành True tại task T1 state 7. Tuy nhiên việc ngắt sớm đoạn hành động và chuyển tiếp trạng thái cũng có thể thất bại, như state 5 của task T1 chuyển từ True sang False. Một quan sát khác là chỉ dẫn \texttt{Memory:...} không mang tính cưỡng chế để buộc chính sách VLA dừng lại khi đã hoàn thành nhiệm vụ. Bên cạnh đó, kết quả đo độ trễ của bộ ghi thị giác cho thấy độ trễ trung vị giữa thời điểm xác nhận được sự kiện và thời điểm diễn ra thực tế dao động từ 7 bước đến hàng chục bước, khiến thông tin ngôn ngữ luôn đến muộn hơn động học thực tế của robot và thay đổi của môi trường.
 
+Ngoài ra, khảo sát ngoại tuyến trên các logged trace xác nhận việc nén ngân sách token xuống mức hai phần ba không làm suy hao dữ kiện bộ nhớ so với mức đầy đủ $B = 48$ token, với độ dài lời nhắc trung bình là 21 token ở tác vụ T1 và 26 token ở tác vụ T3. Khi rút xuống mức một phần ba, chỉ còn 35\% truy vấn ở T1 và 5,7\% truy vấn ở T3 giữ được dữ kiện. Vì mức hai phần ba và mức đầy đủ cho cùng kết quả truyền đạt dữ kiện, ngân sách $B = 48$ token không tạo ra điểm nghẽn biểu diễn trên các tác vụ khảo sát.
 
-
-Ngoài ra, một khảo sát ngoại tuyến trên các vết đã ghi cho thấy việc rút ngân sách token không làm mất dữ kiện ở mức hai phần ba ngân sách còn lại: lượng dữ kiện được chuyển giống hệt cấu hình đầy đủ, với prompt dài trung bình 21 token ở T1 và 26 token ở T3. Ở mức một phần ba, chỉ 35\% truy vấn ở T1 và 5{,}7\% truy vấn ở T3 còn mang được dữ kiện bộ nhớ. Vì mức hai phần ba và mức đầy đủ cho cùng kết quả, ngân sách $B = 48$ không phải là ràng buộc trên các vết này. Khảo sát chỉ đo việc truyền dữ kiện trong prompt, chưa đưa prompt rút gọn vào điều khiển vòng kín.
+Sự hạn chế của chỉ dẫn ngôn ngữ trong việc ngăn chặn lỗi overshoot trên X-VLA là động lực trực tiếp dẫn đến thiết kế cơ chế hỗ trợ dừng thao tác dựa trên bộ nhớ được trình bày chi tiết tại Mục~\ref{sec:memory-halt}.
 
 \section{Dừng thực thi dựa trên bộ nhớ trên X-VLA}
 \label{sec:memory-halt}
 
-Hiện tượng overshoot trên X-VLA cho thấy chính sách không có tín hiệu dừng sau khi hoàn thành nhiệm vụ. Phần này khảo sát khả năng sử dụng bằng chứng từ bộ nhớ làm tín hiệu dừng ngoại vi theo quy trình: đo độ nhạy phát hiện mốc của các bộ ghi, phân tích thời điểm dừng trên quỹ đạo đã ghi, và mô phỏng trạng thái giữ yên sau khi dừng. Các kết quả đều theo giao thức riêng của nghiên cứu và mang tính mô tả.
+Hiện tượng overshoot liên tục trên X-VLA cho thấy chính sách không có tín hiệu dừng sau khi hoàn thành nhiệm vụ. Thực nghiệm này sẽ khảo sát khả năng sử dụng bằng chứng từ bộ nhớ làm tín hiệu dừng ngoại vi. Quy trình sẽ bao gồm: đo độ nhạy của các phiên bản bộ nhớ trong việc phát hiện sự kiện, phân tích thời điểm dừng của quỹ đạo, và mô phỏng trạng thái giữ yên sau khi dừng. Các kết quả đều được ghi nhận và đo đạc theo giao thức riêng của nghiên cứu và mang tính mô tả, không so sánh trực tiếp với performance của tác giả.
 
 \label{sec:writer-recall}
-Để đánh giá độ nhạy phát hiện mốc, nghiên cứu phân tích 35 mốc dương trên 40 quỹ đạo F1 đã ghi, gồm 12 lượt T1 và 4 lượt T3 đạt mục tiêu. Nghiên cứu đối chiếu ba phiên bản bộ ghi thị giác gồm V1 dùng quy tắc cơ sở, V3 bổ sung kiểm tra chuyển động, V4 tích hợp thêm vị trí đĩa đích, cùng tín hiệu proprioception chạm đáy (tính từ vị trí và độ mở của đầu gắp) trích xuất trực tiếp từ vị trí và độ mở đầu gắp theo định nghĩa tại Mục~\ref{sec:method-memory-halt}. Ngưỡng hình học này được trích xuất từ 198 quỹ đạo mẫu phát triển mà không tinh chỉnh trên E2.
+Để đánh giá độ nhạy phát hiện sự kiện, nghiên cứu phân tích 35 mốc hoàn thành chu kỳ được xác nhận trên toàn bộ 40 quỹ đạo F1 đã ghi ở thực nghiệm E2, gồm 20 lượt tác vụ T1 và 20 lượt tác vụ T3. Trong 40 lượt này, có 16 lượt hoàn thành trọn vẹn số chu kỳ mục tiêu của nhiệm vụ, gồm 12 lượt ở tác vụ T1 và 4 lượt ở tác vụ T3; các lượt T3 còn lại đóng góp thêm các lượt đạt mốc chu kỳ trung gian SCR, đưa tổng số mốc chu kỳ thành công lên 35 mốc. Nghiên cứu đối chiếu ba phiên bản bộ ghi thị giác gồm V1 dùng quy tắc cơ sở, V3 bổ sung kiểm tra chuyển động, V4 tích hợp thêm vị trí đĩa đích, cùng tín hiệu proprioception chạm đáy được trích xuất trực tiếp từ vị trí và độ mở của đầu gắp theo định nghĩa tại Mục~\ref{sec:method-memory-halt}.
 
 \begin{table}[htbp]
 \centering\small
@@ -174,30 +208,30 @@ Hiện tượng overshoot trên X-VLA cho thấy chính sách không có tín hi
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{l|r|r|r|r|r}
 \toprule
-& \multicolumn{4}{c}{\textbf{E2, X-VLA F1}} & \textbf{Phát triển} \\
+& \multicolumn{4}{c}{\textbf{Tập đánh giá}} & \textbf{Tập phát triển} \\
 \cmidrule(lr){2-5}\cmidrule(lr){6-6}
-\textbf{Nguồn} & \textbf{Đúng} & \textbf{Sai báo} & \textbf{Bỏ sót} & \textbf{Phủ} & \textbf{Phủ} \\
+\textbf{Nguồn} & \textbf{TP} & \textbf{FP} & \textbf{FN} & \textbf{Covarage} & \textbf{Covarage} \\
 \midrule
 V1 & 7 & 5 & 28 & 20\% & 49\% \\
 V3 & 6 & 3 & 29 & 17\% & 50\% \\
 V4 & 7 & 3 & 28 & 20\% & 65\% \\
 Tín hiệu proprioception & 18 & 4 & 17 & 51\% & 96\% \\
-V4 + proprioception (theo chu kỳ) & 20 & 6 & 15 & 57\% & 99\% \\
+V4 + proprioception  & 20 & 6 & 15 & 57\% & 99\% \\
 \bottomrule
 \end{tabular}
 \par\smallskip
 {\footnotesize Nhóm phát triển: 394 mốc của 198 quỹ đạo mẫu tác giả. Phủ = đúng/mốc.\par}
 \end{table}
 
-Bảng~\ref{tab:xvla-writer-recall} cho thấy hợp nhất bộ ghi thị giác với tín hiệu proprioception nâng độ phủ lên $57{,}1$\% (20/35 mốc; khoảng Wilson 95\% từ $40{,}8$\% đến $72{,}0$\%), so với khoảng $20$\% của bộ ghi thị giác đứng riêng; ở nhóm phát triển, tín hiệu proprioception đạt $96$\% và bản hợp nhất đạt $99$\%. Hai nguồn bổ trợ nhau vì tín hiệu proprioception không phụ thuộc vào việc bát có che khuất đĩa đích hay không và phát hiện pha nhấc, hạ của đầu gắp với độ trễ trung vị bằng 0 bước, còn bộ ghi thị giác bắt được một số lượt nhấc thấp mà ngưỡng proprioception bỏ lỡ. Cách hợp nhất theo từng chu kỳ lấy phép hợp của hai nguồn nên mỗi chu kỳ chỉ được cộng một lần. Độ phủ trên quỹ đạo của chính sách vẫn thấp hơn nhiều so với trên demo của người điều khiển; điều này phù hợp với việc quỹ đạo X-VLA khác phong cách chuyển động của người. Trong 17 mốc mà tín hiệu proprioception bỏ sót, 11 mốc có độ nhấc dưới 8~cm, 3 mốc có điểm chạm đáy cao hơn ngưỡng cho phép, 1 mốc không có pha kẹp và 2 mốc có nhấc xảy ra trước mốc. Nguyên nhân khiến bộ ghi thị giác chỉ đạt khoảng $20$\% chưa được tách riêng; che khuất là một giả thuyết hợp lý nhưng chưa được kiểm chứng.
+Bảng~\ref{tab:xvla-writer-recall} cho thấy hợp nhất bộ ghi thị giác với tín hiệu proprioception nâng độ phủ lên $57{,}1$\% trên tập đánh giá (20/35 mốc; khoảng Wilson 95\% từ $40{,}8$\% đến $72{,}0$\%), so với khoảng $20$\% của bộ ghi thị giác đứng riêng; ở tập phát triển, tín hiệu proprioception đạt $96$\% và bản hợp nhất đạt $99$\%. Hai nguồn bổ trợ nhau một cách rất tinh tế vì tín hiệu proprioception không phụ thuộc vào việc bát có che khuất đĩa đích hay không và phát hiện sự kiện nhấc, hạ với latency = 0, còn bộ ghi thị giác bắt được một số lượt nhấc thấp mà ngưỡng proprioception bỏ lỡ. Cách hợp nhất theo từng chu kỳ lấy phép hợp của hai nguồn. Độ phủ trên quỹ đạo do mô hình tạo vẫn thấp hơn nhiều so với trên demo con người điều khiển. Điều này phản ánh việc quỹ đạo X-VLA sinh có những sai khác về phong cách chuyển động so với dữ liệu quy đạo của con người. Trong 17 mốc mà tín hiệu proprioception bỏ sót, 11 mốc có độ nhấc thấp dưới 8~cm, 3 mốc có điểm chạm đáy cao hơn ngưỡng cho phép, 1 mốc không có pha kẹp và 2 mốc có hành vi nhấc xảy ra trước mốc. Nguyên nhân khiến bộ ghi thị giác chỉ đạt khoảng $20$\% chưa được tách riêng; che khuất thị giác là một giả thuyết hợp lý nhưng hiện chưa đưa vào phạm vi nghiên cứu hiện tại.
 
 \label{sec:halt-timing}
 \label{sec:halt-forks}
-Cơ chế dừng dựa trên bộ nhớ được đánh giá tại mỗi ranh giới truy vấn theo quy tắc trình bày tại Mục~\ref{sec:method-memory-halt}: hệ thống chủ động ngắt thực thi khi bộ nhớ ghi nhận đủ số chu kỳ mục tiêu và tay kẹp đã mở, sau đó chốt trạng thái và duy trì mở kẹp giữ yên mà không đọc trạng thái hoàn thành từ môi trường. Quyết định dừng được gọi là kịp lúc nếu diễn ra sau mốc hoàn thành và trước khi xuất hiện overshoot, và gọi là dừng sớm nếu diễn ra trước khi đạt mốc hoàn thành. Do quyết định dừng chỉ phụ thuộc vào lịch sử đã qua theo nguyên tắc nhân quả, các hành động trước bước dừng của quỹ đạo có dừng đúng bằng quỹ đạo gốc. Phương pháp mô phỏng rẽ nhánh tái lập môi trường về trạng thái ban đầu, phát lại hành động đã ghi tới thời điểm dừng, rồi kích hoạt trạng thái giữ yên cho tới khi kết thúc 1.000 bước.
+Cơ chế dừng dựa trên bộ nhớ được đánh giá tại mỗi ranh giới truy vấn theo quy tắc trình bày tại Mục~\ref{sec:method-memory-halt}: hệ thống chủ động ngắt thực thi khi bộ nhớ ghi nhận đủ số chu kỳ mục tiêu và tay kẹp đã mở, sau đó chốt trạng thái và duy trì mở kẹp giữ yên. Quyết định dừng được gọi là kịp lúc nếu diễn ra sau mốc hoàn thành và trước khi xuất hiện overshoot, và gọi là dừng sớm nếu diễn ra trước khi đạt mốc hoàn thành. Do quyết định dừng chỉ phụ thuộc vào lịch sử đã qua theo nguyên tắc nhân quả, vector các hành động trước bước dừng có giá trị đúng bằng quỹ đạo gốc. Phương pháp mô phỏng can thiệp dừng tái lập môi trường về trạng thái ban đầu, phát lại hành động đã ghi tới thời điểm dừng, rồi kích hoạt trạng thái giữ yên cho tới khi kết thúc lượt chạy.
 
 \begin{table}[htbp]
 \centering\small
-\caption{Thời điểm dừng và thành công toàn phần trên 40 lượt X-VLA F1 (không dừng đạt 0/40)}
+\caption{Thời điểm dừng và tỉ lệ thành công toàn phần trên 40 lượt X-VLA F1}
 \label{tab:halt-combined}
 \label{tab:halt-timing-combined}
 \label{tab:halt-forks-combined}
@@ -208,82 +242,87 @@ Cơ chế dừng dựa trên bộ nhớ được đánh giá tại mỗi ranh gi
 \cmidrule(lr){2-3}\cmidrule(lr){4-7}
 \textbf{Nguồn quyết định dừng} & \shortstack{\textbf{Kịp}\\\textbf{lúc}} & \shortstack{\textbf{Dừng}\\\textbf{sớm}} & \shortstack{\textbf{Tổng}\\\textbf{(40)}} & \shortstack{\textbf{T1}\\\textbf{(20)}} & \shortstack{\textbf{T3}\\\textbf{(20)}} & \shortstack{\textbf{$p$ hai}\\\textbf{phía}} \\
 \midrule
-Thời điểm ngẫu nhiên (không dùng bằng chứng) & -- & -- & 1--5 & 1--5 & 0 & -- \\
 Chỉ bộ ghi thị giác V4 & 6 & 0 & 5 & 5 & 0 & 0,063 \\
 Chỉ tín hiệu proprioception & 6 & 2 & 7 & 7 & 0 & 0,016 \\
 Kết hợp, có chặn bằng thị giác & 6 & 0 & 5 & 5 & 0 & 0,063 \\
-Kết hợp hai nguồn (cấu hình được chọn) & 9 & 2 & 9 & 9 & 0 & 0,004 \\
+\textbf{Kết hợp hai nguồn} & 9 & 2 & 9 & 9 & 0 & 0,004 \\
 \midrule
-Kết hợp hai nguồn, chạy vòng kín thật & 9 & 2 & 9 & 8 & 1 & 0,004 \\
+Kết hợp hai nguồn, chạy vòng kín & 9 & 2 & 9 & 8 & 1 & 0,004 \\
 \bottomrule
 \end{tabular}
 \par\smallskip
-{\footnotesize Các hàng phía trên là mô phỏng rẽ nhánh từ quỹ đạo đã ghi; hàng cuối là lượt chạy vòng kín thật với cùng checkpoint, seed và 40 trạng thái. Thời điểm ngẫu nhiên gồm 9 kiểu rút (ba kiểu ngẫu nhiên, mỗi kiểu ba lần rút, và ba bước cố định 100, 150, 200), trung bình 3,7 thành công. $p$: kiểm định dấu chính xác hai phía so với không dừng.\par}
 \end{table}
 
 \label{sec:halt-vs-prior}
-Bảng~\ref{tab:halt-combined} cho thấy việc kết hợp bộ ghi thị giác V4 với tín hiệu proprioception nâng số lượt thành công mô phỏng từ 0/40 lên 9/40 (T1 đạt 9/20, $p = 0{,}004$ theo kiểm định dấu hai phía so với không dừng). Mức này gần với 10/40, là giá trị mà một bộ đếm lấy trực tiếp từ bộ mô phỏng đạt được khi cũng chỉ kiểm tra tại ranh giới truy vấn; vì vậy 10/40 là giới hạn thực tế của kiểu kiểm tra này, do một số lượt overshoot xảy ra ngay trong đoạn hành động trước ranh giới tiếp theo. Việc cộng hai nguồn theo từng chu kỳ giúp tăng số lần dừng kịp lúc từ 6 lên 9, đổi lại có hai lần dừng sớm. Ngược lại, khi dùng thị giác để chặn các quyết định dừng của tín hiệu proprioception thì không còn dừng sớm, nhưng số lần dừng kịp lúc quay về 6 và thành công giảm xuống 5/40, vì thị giác thường chưa xác nhận được mốc ở những lượt quan trọng. Trên T3, mô phỏng rẽ nhánh cho 0/20 ở mọi nguồn vì chính sách hiếm khi hoàn thành đủ ba chu kỳ, nhưng khi chạy vòng kín thật có 1/20 lượt thành công.
+Bảng~\ref{tab:halt-combined} cho thấy việc kết hợp bộ ghi thị giác V4 với tín hiệu proprioception nâng số lượt thành công mô phỏng từ 0/40 lên 9/40. Gap còn lại chủ yếu nằm ở khả năng phối hợp thao tác của mô hình và các edge case của những lượt overshoot xảy ra ngay trong đoạn hành động ranh giới. Việc cộng hai nguồn theo từng chu kỳ giúp tăng số lần dừng kịp lúc từ 6 lên 9, đổi lại có hai lần dừng sớm. Ngược lại, khi dùng thị giác để chặn các quyết định dừng của tín hiệu proprioception thì không còn dừng sớm, nhưng số lần dừng kịp lúc quay về 6 và thành công giảm xuống 5/40, vì thị giác thường chưa xác nhận được mốc ở những lượt quan trọng. Trên T3, mô phỏng can thiệp dừng cho 0/20 ở mọi nguồn vì chính sách hiếm khi hoàn thành đủ ba chu kỳ, nhưng khi chạy vòng kín thật có 1/20 lượt thành công.
 
-Phương pháp mô phỏng rẽ nhánh tái hiện trung thực kết quả cuối cùng trên 7 trong 8 lượt kiểm tra, dù quỹ đạo phát lại lệch nhau từ dưới một milimét đến khoảng hai centimet. Để kiểm chứng, cấu hình kết hợp hai nguồn được chạy lại vòng kín thật trên cùng 40 trạng thái, với đếm hợp nhất tính trực tiếp trong vòng lặp và bộ phát hiện dừng sau khi cơ chế dừng kích hoạt. Kết quả đạt 9/40 thành công, và bước dừng trùng khớp với kế hoạch ở cả 40 lượt: cả 9 lượt dừng kịp lúc đều thành công, cả hai lượt dừng sớm (T1 trạng thái 4 và 16) đều thất bại. Phân bổ theo tác vụ khác mô phỏng ở hai lượt: T1 trạng thái 4, vốn có độ lệch quỹ đạo 1,75~cm tại bước dừng, thành công trong mô phỏng nhưng thất bại khi chạy thật; T3 trạng thái 15 thất bại trong mô phỏng nhưng thành công khi chạy thật, là lượt T3 thành công duy nhất của X-VLA trên E2. Do đó kết quả T3 không phải luôn bằng 0 như mô phỏng cho thấy, nhưng vì chỉ có một lượt nên đây là bằng chứng về khả năng xảy ra chứ không phải một tỷ lệ. Do cấu hình dừng không chặn được chọn sau khi quan sát E2, tính ổn định của quy tắc dừng cần được kiểm chứng độc lập trên một tập trạng thái chưa dùng để chọn cấu hình như trình bày dưới đây.
+Phương pháp mô phỏng can thiệp dừng tái hiện trung thực kết quả cuối cùng trên 7 trong 8 lượt kiểm tra, dù quỹ đạo phát lại lệch nhau từ dưới một milimét đến khoảng hai centimet. Để kiểm chứng, cấu hình kết hợp hai nguồn được chạy lại vòng kín thật trên cùng 40 trạng thái. Kết quả đạt 9/40 thành công, và bước dừng trùng khớp với thí nghiệm mô phỏng ở cả 40 lượt: cả 9 lượt dừng kịp lúc đều thành công, cả hai lượt dừng sớm (T1 trạng thái 4 và 16) đều thất bại. Phân bổ theo tác vụ khác mô phỏng ở hai lượt: T1 trạng thái 4, vốn có độ lệch quỹ đạo 1,75~cm tại bước dừng, thành công trong mô phỏng nhưng thất bại khi chạy thật; T3 trạng thái 15 thất bại trong mô phỏng nhưng thành công khi chạy thật, là lượt T3 thành công duy nhất của X-VLA trên E2. Do đó kết quả T3 không phải luôn bằng 0 như mô phỏng cho thấy, nhưng vì chỉ có một lượt nên đây là bằng chứng về khả năng xảy ra chứ không phải một tỷ lệ. Tính ổn định của quy tắc dừng sẽ được kiểm chứng độc lập trên một tập trạng thái chưa biết như trình bày dưới đây.
 
-Để tách phần lợi ích do bản thân việc dừng mang lại khỏi phần do bằng chứng bộ nhớ, nghiên cứu thay thời điểm dừng bằng các thời điểm không dựa trên bằng chứng: một ranh giới truy vấn ngẫu nhiên, một ranh giới ngẫu nhiên có tay kẹp đang mở, và các bước cố định 100, 150, 200, với ba lần rút cho mỗi kiểu ngẫu nhiên, tổng cộng 28 lượt mô phỏng rẽ nhánh. Các điều kiện này đạt 1--5/40 thành công, trung bình $3{,}7/40$, và không điều kiện nào đạt 9/40. Như vậy một phần thành công đến từ việc chỉ cần dừng trong khoảng 7--50 bước giữa lúc hoàn thành và lúc overshoot, còn bằng chứng bộ nhớ nâng tỷ lệ này từ khoảng 4/40 lên 9/40, gần mức 10/40 của bộ đếm tham chiếu lấy từ trình mô phỏng. Phép đối chứng này chỉ có ý nghĩa khi không dừng đạt 0/40, vì khi đó một lần dừng sai thời điểm không làm mất thành công sẵn có.
+Để tách phần lợi ích do bản thân việc dừng mang lại, nghiên cứu thay thời điểm dừng bằng các thời điểm ngẫu nhiên: một ranh giới truy vấn ngẫu nhiên, một ranh giới ngẫu nhiên có tay kẹp đang mở, và các bước cố định 100, 150, 200, với ba lần rút cho mỗi kiểu ngẫu nhiên, tổng cộng 28 lượt mô phỏng can thiệp dừng. Các điều kiện này đạt 1--5/40 thành công, trung bình $3{,}7/40$, và không điều kiện nào đạt 9/40. Như vậy một phần thành công đến từ việc chỉ cần dừng trong khoảng 7--50 bước giữa lúc hoàn thành và lúc overshoot, còn bằng chứng bộ nhớ nâng tỷ lệ này từ khoảng 4/40 lên 9/40.
 
 \label{sec:halt-seen12}
 
-Cấu hình dừng được giữ nguyên như trên E2 (đếm hợp nhất, không chặn thị giác, dừng bộ phát hiện sau khi chốt) và chạy vòng kín thật trên 12 trạng thái seen chốt trước khi chạy (T1 và T3, trạng thái 0--5), ghép cặp với lượt không dừng cùng seed. Các trạng thái này chưa được dùng để chọn cấu hình dừng; chúng thuộc phân vùng chính sách đã thấy khi huấn luyện, nên kết quả kiểm chứng quy tắc dừng chứ không kiểm chứng khả năng tổng quát của chính sách.
+Khóa luận cũng thực hiện so sánh cơ chế can thiệp dừng trên cầu hình tương từ, chạy vòng kín trên 12 trạng thái, ghép cặp với lượt không dừng cùng seed. Các trạng thái này chưa được dùng để chọn cấu hình dừng, nên kết quả kiểm chứng quy tắc dừng chứ không kiểm chứng khả năng điều khiển tổng quát của chính sách.
 
 \begin{table}[htbp]
 \centering\small
-\caption{Cơ chế dừng trên 12 trạng thái seen chốt trước của X-VLA F1}
+\caption{Cơ chế dừng trên 12 trạng thái của X-VLA F1}
 \label{tab:halt-seen12}
 \begin{tabular}{l|r|r|r|r|r}
 \toprule
-\textbf{Điều kiện} & \textbf{Hoàn thành} & \textbf{Dừng kịp lúc} & \textbf{Dừng sớm} & \textbf{T1 (6)} & \textbf{T3 (6)} \\
+\textbf{Điều kiện} & \textbf{Hoàn thành} & \textbf{Dừng kịp lúc} & \textbf{Dừng sớm} & \textbf{T1} & \textbf{T3} \\
 \midrule
-Không dừng & 8 & -- & -- & 0/6 & 0/6 \\
-kết hợp hai nguồn & 8 & 6 & 0 & 5/6 & 1/6 \\
+Không dừng & 8/12 & -- & -- & 0/6 & 0/6 \\
+Có dừng & 8/12 & 6 & 0 & 5/6 & 1/6 \\
 \bottomrule
 \end{tabular}
 \par\smallskip
-{\footnotesize Hoàn thành: lượt đạt đủ số chu kỳ mục tiêu trước khi overshoot hoặc hết bước.\par}
+{\footnotesize *Hoàn thành: đạt số chu kỳ mục tiêu.\par}
 \end{table}
 
-Không dừng đạt 0/12 vì cả 8 lượt hoàn thành đều overshoot; có dừng đạt 6/12 (khoảng Wilson 95\%: 25--75\%), với 6 cặp có lợi, 0 cặp bất lợi và 6 cặp hòa, $p = 0{,}031$ theo kiểm định dấu chính xác hai phía. Cơ chế dừng chuyển 6 trong 8 lượt hoàn thành thành thành công, so với 9 trong 16 trên E2; hai lượt bỏ lỡ overshoot trước khi số đếm và độ mở tay kẹp cùng thỏa ở một ranh giới truy vấn. Không có lượt dừng sớm nào, và bốn lượt T3 chưa hoàn thành giữ nguyên tỷ lệ hoàn thành mốc. Vì không dừng không có lượt thành công nào, phép thử này chưa đo được tác hại trên các lượt chính sách tự thành công; chỉ số tác hại khả dụng ở đây là số lượt dừng sớm. Với 12 cặp, kết quả mang tính thăm dò.
+Không dừng đạt 0/12 vì cả 8 lượt hoàn thành đều overshoot; có dừng đạt 6/12 (khoảng Wilson 95\%: 25--75\%), với 6 cặp có lợi, 0 cặp bất lợi và 6 cặp trung tính, $p = 0{,}031$ theo kiểm định dấu chính xác hai phía. Cơ chế dừng chuyển 6 trong 8 lượt hoàn thành nhưng overshot sang thành công, so với 9 trong 16 trên E2; hai lượt bỏ lỡ overshoot sớm nên không bắt được. Không có lượt dừng sớm nào, và bốn lượt T3 chưa hoàn thành giữ nguyên tỷ lệ hoàn thành mốc. Với 12 cặp, kết quả mang tính thăm dò nhiều hơn nhưng cũng phần nào củng cố cho lợi ích mà cơ chế dừng hành động mang lại.
 
 \section{Can thiệp triệt tiêu bộ nhớ tại một truy vấn}
 \label{sec:e45-one-query}
 
-Nhằm kiểm chứng tính nhân quả ở tầng quyết định cục bộ của RQ1, nghiên cứu thực hiện can thiệp phản thực tế tại một thời điểm truy vấn then chốt trên ba ca đại diện: hai lượt thành công của SmolVLA tại bước 142 của trạng thái 7 và bước 10 của trạng thái 5, cùng một lượt X-VLA thất bại, kéo dài 1.000 bước, tại bước 10 của trạng thái 10. Mỗi ca được phân tách thành nhánh đối chứng giữ nguyên lời nhắc gốc và nhánh can thiệp loại bỏ hoàn toàn thành phần văn bản bộ nhớ tại bước chỉ định, trong khi toàn bộ quan sát và hành động trước thời điểm can thiệp được tái lập trùng khớp tuyệt đối.
+Nhằm kiểm chứng tính nhân quả ở tầng quyết định cục bộ của RQ1, nghiên cứu thực hiện can thiệp xóa bỏ truy vấn then chốt trên ba ca đại diện: hai lượt thành công của SmolVLA tại bước 142 của trạng thái 7 và bước 10 của trạng thái 5, cùng một lượt X-VLA thất bại, kéo dài 1.000 bước, tại bước 10 của trạng thái 10. Mỗi ca được phân tách thành nhánh đối chứng giữ nguyên lời nhắc gốc và nhánh can thiệp loại bỏ hoàn toàn thành phần văn bản bộ nhớ tại bước chỉ định, trong khi toàn bộ quan sát và hành động trước thời điểm can thiệp được tái lập trùng khớp tuyệt đối.
 
 \begin{table}[htbp]
 \centering\small
 \caption{Kết quả can thiệp triệt tiêu bộ nhớ tại một truy vấn trên SmolVLA và X-VLA}
 \label{tab:e45-one-query}
-\setlength{\tabcolsep}{1.5pt}
-\begin{tabular}{l|r|r|r|r|l}
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{l|r|r|r|c|l}
 \toprule
-\textbf{Ca can thiệp} & \shortstack{\textbf{Hành động}\\\textbf{trùng gốc}} & \shortstack{\textbf{$L_2$ hành}\\\textbf{động đầu}} & \shortstack{\textbf{$L_2$ phần}\\\textbf{đã thực thi}} & \textbf{SCR} & \textbf{Kết quả} \\
+\textbf{Nhánh thử nghiệm} & \shortstack{\textbf{Số bước}\\\textbf{trùng gốc}} & \shortstack{\textbf{Sai khác $L_2$}\\\textbf{bước đầu}} & \shortstack{\textbf{Sai khác $L_2$}\\\textbf{đoạn thực thi}} & \textbf{SCR} & \textbf{Kết quả} \\
 \midrule
-SmolVLA: trạng thái 7, bước 142 & 1.000/1.000 & 0 & 0 & 1 & Thành công \\
-  & 142/1.000 & 0,188 & 0,529 & 0 & Hết bước \\
+\multicolumn{6}{l}{\textbf{Ca 1: SmolVLA, trạng thái 7, điểm can thiệp $t^* = 142$ }} \\
 \midrule
-SmolVLA: trạng thái 5, bước 10 & 1.000/1.000 & 0 & 0 & 1 & Thành công \\
-  & 10/1.000 & 0,150 & 0,618 & 0 & Hết bước \\
+Đối chứng & 1.000 / 1.000 & 0,000 & 0,000 & 1,0 & Thành công \\
+Can thiệp & 142 / 1.000   & 0,188 & 0,529 & 0,0 & Thất bại \\
 \midrule
-X-VLA: trạng thái 10, bước 10  & 1.000/1.000 & 0 & 0 & 0 & Hết bước \\
-  & 10/1.000 & 0,009 & 0,043 & 0 & Hết bước \\
+\multicolumn{6}{l}{\textbf{Ca 2: SmolVLA, trạng thái 5, điểm can thiệp $t^* = 10$ }} \\
+\midrule
+Đối chứng & 1.000 / 1.000 & 0,000 & 0,000 & 1,0 & Thành công \\
+Can thiệp & 10 / 1.000    & 0,150 & 0,618 & 0,0 & Thất bại \\
+\midrule
+\multicolumn{6}{l}{\textbf{Ca 3: X-VLA, trạng thái 10, điểm can thiệp $t^* = 10$}} \\
+\midrule
+Đối chứng & 1.000 / 1.000 & 0,000 & 0,000 & 0,0 & Thất bại \\
+Can thiệp & 10 / 1.000    & 0,009 & 0,043 & 0,0 & Thất bại \\
 \bottomrule
 \end{tabular}
 \par\smallskip
-{\footnotesize Hết bước: lượt chạy chạm giới hạn tối đa 1.000 bước mà chưa thỏa mãn mốc đích.\par}
 \end{table}
 
-Bảng~\ref{tab:e45-one-query} cho thấy ở cả ba ca, nhánh đối chứng tái lập đúng 1.000/1.000 hành động của lượt gốc, còn nhánh can thiệp bắt đầu khác biệt ngay tại hành động đầu tiên sau điểm can thiệp. Trên SmolVLA, độ lệch $L_2$ của hành động đầu là $0{,}188$ và $0{,}150$, và cả hai lượt vốn thành công chuyển thành không đạt mốc nào. Trên X-VLA, độ lệch chỉ $0{,}009$ và nhánh đối chứng cũng thất bại (SCR bằng 0), nên can thiệp không làm đổi kết quả. Vì vậy các ca này cho thấy hành động của SmolVLA nhạy với việc có hay không có đoạn văn bản bộ nhớ tại một truy vấn, nhưng chưa cho phép kết luận rằng chính nội dung của bộ nhớ gây ra khác biệt: xóa cả đoạn văn bản cũng làm đổi chuỗi đầu vào, và nghiên cứu chưa có điều kiện đối chứng thay đoạn đó bằng một đoạn giả cùng độ dài. Hai ca SmolVLA còn được chọn từ những lượt hiếm hoi thành công, và cả ba ca chỉ là chẩn đoán cục bộ, không đại diện cho toàn bộ phân phối trạng thái.
+Bảng~\ref{tab:e45-one-query} cho thấy ở cả ba ca, nhánh đối chứng giữ nguyên lời nhắc đã tái lập chính xác 1.000 trên 1.000 hành động của quỹ đạo gốc. Ngược lại, nhánh can thiệp bị triệt tiêu đoạn văn bản bộ nhớ bắt đầu rẽ nhánh ngay tại thời điểm can thiệp, khiến số bước trùng khớp với quỹ đạo gốc dừng lại ở bước 142 và bước 10. Mức độ sai khác hành động được định lượng qua chuẩn khoảng cách Euclidean $L_2$ giữa vector hành động của nhánh can thiệp so với nhánh đối chứng, xét tại bước đầu tiên và trung bình tích lũy trên toàn bộ đoạn 10 hành động được bộ điều khiển thực thi. Trên SmolVLA, sai khác $L_2$ tại bước đầu đạt $0{,}188$ và $0{,}150$, dẫn đến việc cả hai lượt vốn hoàn thành tác vụ đều rớt về điểm số SCR bằng 0 và kết thúc do hết thời gian. Trên X-VLA, sai khác $L_2$ chỉ đạt $0{,}009$ và nhánh đối chứng vốn cũng thất bại, nên can thiệp không làm đảo chiều kết quả cuối cùng.
+
+Các phép thử cục bộ này khẳng định chính sách SmolVLA có độ nhạy cao đối với sự hiện diện của thành phần văn bản bộ nhớ tại từng thời điểm suy luận. Tuy nhiên, sự biến đổi hành động này chưa đủ cơ sở để kết luận mô hình đã thực sự hiểu ngữ nghĩa của thông tin ghi nhớ, bởi việc cắt bỏ toàn bộ chuỗi ký tự cũng đồng thời làm biến đổi độ dài chuỗi token đầu vào của mô hình ngôn ngữ. Bên cạnh đó, hai ca SmolVLA được trích xuất từ nhóm các quỹ đạo hiếm hoi thành công và cả ba trường hợp đều mang tính chẩn đoán vi mô, không thể coi là đại diện cho phân phối toàn cục trên không gian trạng thái.
 
 \section{Đánh giá duy trì kỹ năng cơ sở trên LIBERO-10}
 \label{sec:e6-retention}
 
-Phép đánh giá duy trì kỹ năng cơ sở đối sánh trực tiếp với checkpoint gốc B0 trên 10 tác vụ thuộc LIBERO-10 qua 50 lượt ghép cặp gồm 5 trạng thái mỗi tác vụ. Thử nghiệm vận hành ở điều kiện tắt bộ nhớ F1-off nhằm đo lường hiện tượng quên thảm khốc sau quá trình tinh chỉnh tham số.
+Để khảo sát năng lực được giữ lại sau khi huấn luyện trên miền tác vụ mới, khóa luận thực hiện so sánh trực tiếp checkpoint gốc B0 và checkpoint đã finetuned F1 trên 10 tác vụ thuộc LIBERO-10, mỗi trạng thái 5 tác vụ tạo thành 50 cặp tác vụ so sánh. Thử nghiệm vận hành ở điều kiện tắt bộ nhớ nhằm cô lập hiệp năng thuần túy xác định liệu mô hình có gặp phải hiện tượng catastrophic forgetting sau quá trình tinh chỉnh tham số hay không.
 
 \begin{table}[htbp]
 \centering\small
@@ -306,14 +345,7 @@ X-VLA   & B0     & 5 & 5 & 4 & 4 & 5 & 4 & 5 & 5 & 5 & 5 & 47/50 (94\%) \\
 \end{tabular}
 \end{table}
 
-Bảng~\ref{tab:e6-retention-combined} cho thấy F1-off trên SmolVLA thấp hơn B0 $28$ điểm phần trăm (46\% so với 74\%), với khoảng bootstrap 95\% từ $-42$ đến $-14$ điểm phần trăm. Vì F1-off không nhận đoạn văn bản bộ nhớ khi suy luận, mức giảm này cho thấy bản thân việc tinh chỉnh đã làm đổi trọng số theo hướng bất lợi cho các kỹ năng gốc, chứ không phải do việc đọc lời nhắc bộ nhớ. Nghiên cứu chưa có điều kiện F0 của SmolVLA trên LIBERO-10, nên chưa thể tách phần suy giảm do tinh chỉnh nói chung khỏi phần do dữ liệu có bộ nhớ. Các tác vụ đòi hỏi căn chỉnh tiếp xúc tinh vi chịu ảnh hưởng nặng nhất; tác vụ đặt sách vào hộp (Hình~\ref{fig:e6-book-placement}) là một ví dụ khi cánh tay vẫn nhấc được sách nhưng không đặt được vào hộp. Ngược lại, một số tác vụ như tác vụ 3 (Hình~\ref{fig:e6-retention-by-task}) vẫn giữ 5/5.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=.96\linewidth]{figures/duy-tri-e6.pdf}
-\caption{Phân bố số lượt thành công theo từng tác vụ của SmolVLA trên LIBERO-10}
-\label{fig:e6-retention-by-task}
-\end{figure}
+Bảng~\ref{tab:e6-retention-combined} cho thấy F1-off trên SmolVLA thấp hơn B0 $28$\%, với khoảng bootstrap 95\% từ $-42$ đến $-14$ điểm phần trăm. Vì F1-off không nhận đoạn văn bản bộ nhớ khi suy luận, mức giảm này cho thấy bản thân việc tinh chỉnh đã làm đổi trọng số theo hướng bất lợi cho các kỹ năng gốc, chứ không phải do việc đọc lời nhắc bộ nhớ. Nghiên cứu chưa có điều kiện F0 của SmolVLA trên LIBERO-10, nên chưa thể tách phần suy giảm do tinh chỉnh nói chung khỏi phần do dữ liệu có bộ nhớ. Các tác vụ đòi hỏi căn chỉnh tiếp xúc tinh vi chịu ảnh hưởng nặng nhất; tác vụ đặt sách vào hộp (Hình~\ref{fig:e6-book-placement}) là một ví dụ khi cánh tay vẫn nhấc được sách nhưng không đặt được vào hộp. Ngược lại, một số tác vụ như tác vụ 3 vẫn duy trì trọn vẹn 5/5 lượt thành công.
 
 \begin{figure}[H]
 \centering
@@ -326,15 +358,22 @@ Bảng~\ref{tab:e6-retention-combined} cho thấy F1-off trên SmolVLA thấp h�
 \label{fig:e6-book-placement}
 \end{figure}
 
-Với X-VLA, F1-off đạt 46/50 (92\%) so với 47/50 (94\%) của B0, trong đó 3 cặp chỉ B0 thành công và 2 cặp chỉ F1-off thành công ($p = 1{,}0$ theo kiểm định McNemar ghép cặp, nghĩa là không phát hiện được khác biệt). Với cỡ mẫu 50 và một seed, kết quả phù hợp với việc duy trì gần B0 nhưng chưa loại trừ mức giảm tới khoảng 11 điểm phần trăm (khoảng tin cậy xấp xỉ 95\% của F1-off trừ B0 là từ $-11$ đến $+7$ điểm phần trăm). F0 đạt 44/50 (88\%). Nghiên cứu chưa giải thích được vì sao hai mô hình khác nhau: chúng khác nhau về kích thước, số tham số được tinh chỉnh (khoảng 0,65 triệu so với 11,87 triệu) và biểu diễn hành động, và các yếu tố này chưa được tách riêng. Đánh giá được thực hiện khi tắt bộ nhớ nên chỉ đo sự dịch chuyển của trọng số, chưa đo tương tác giữa bộ nhớ và các kỹ năng gốc.
+Với X-VLA, F1-off đạt 46/50 so với 47/50 (94\%) của B0, trong đó 3 cặp chỉ B0 thành công và 2 cặp chỉ F1-off thành công ($p = 1{,}0$ theo kiểm định McNemar ghép cặp, nghĩa là không phát hiện được khác biệt). Với cỡ mẫu 50 và một seed, kết quả phù hợp với việc duy trì gần B0 và không có thay đổi hiệu năng đáng kể. F0 đạt 44/50 (88\%). Nghiên cứu không đi sâu vào giải thích sự khác biệt hiệu năng hai mô hình, vì chúng khác nhau về kích thước, số tham số được tinh chỉnh (khoảng 0,65 triệu so với 11,87 triệu) và biểu diễn hành động, cùng nhiều yếu tố chưa được tách riêng khác. Hình~\ref{fig:e6-retention-by-task} đối chiếu trực quan phân bố số lượt thành công trên từng tác vụ giữa SmolVLA và X-VLA, làm rõ sự tương phản: trong khi SmolVLA sụt giảm mạnh ở nhiều tác vụ định vị tinh vi, X-VLA duy trì ổn định hiệu năng cơ sở trên phần lớn các tác vụ.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.96\linewidth]{figures/duy-tri-e6.pdf}
+\caption{So sánh phân bố số lượt thành công theo từng tác vụ LIBERO-10 giữa SmolVLA và X-VLA}
+\label{fig:e6-retention-by-task}
+\end{figure}
 
 \section{Tổng hợp kết quả theo câu hỏi nghiên cứu}
 \label{sec:ch4-rq-summary}
 
-\textbf{RQ1: Giá trị của bộ nhớ sự kiện.} Đối sánh vòng kín không cho thấy bộ nhớ làm tăng tỷ lệ thành công: trên SmolVLA, F1 đạt 0/40 so với 4/40 của F0, và trên X-VLA cả hai đạt 0/40 dù F1 có SCR cao hơn ($0{,}492$ so với $0{,}350$). Can thiệp tại một truy vấn cho thấy hành động của SmolVLA nhạy với đoạn văn bản bộ nhớ, nhưng chưa tách được tác động của nội dung khỏi tác động của việc đổi chuỗi đầu vào. Giá trị đo được của bộ nhớ nằm ở vai trò nguồn bằng chứng cho cơ chế dừng: khi thay bằng thời điểm ngẫu nhiên, số lượt thành công giảm từ 9 xuống khoảng $3{,}7$ trên 40.
+\textbf{RQ1: Giá trị của bộ nhớ sự kiện.} Đánh giá vòng kín cho thấy việc đưa dữ kiện bộ nhớ vào lời nhắc ngôn ngữ tác động trực tiếp đến động học ra quyết định nhưng chưa đủ để tự động nâng cao tỷ lệ thành công nếu thiếu cơ chế kiểm soát chu kỳ. Trên SmolVLA, F1 đạt 0 trên 40 lượt so với 4 trên 40 lượt của F0; trên X-VLA, cả hai cấu hình đạt 0 trên 40 lượt do lỗi lặp thao tác thừa, mặc dù F1 đạt tỷ lệ hoàn thành mốc SCR cao hơn rõ rệt với $0{,}492$ so với $0{,}350$. Thử nghiệm can thiệp triệt tiêu tại một truy vấn khẳng định chính sách nhạy bén ở mức cục bộ với sự hiện diện của đoạn văn bản ghi nhớ. Giá trị thực tế then chốt của bộ nhớ sự kiện được thể hiện rõ nét khi đóng vai trò nguồn bằng chứng định lượng cho cơ chế dừng ngoại vi: khi thay thế bằng các thời điểm dừng ngẫu nhiên, số lượt hoàn thành tác vụ sụt giảm mạnh từ 9 lượt xuống mức trung bình $3{,}7$ trên 40 lượt.
 
-\textbf{RQ2: Độ tin cậy của bằng chứng và việc dùng nó để dừng.} Cơ chế truy vấn theo sự kiện vận hành đúng thiết kế trong vòng kín, nhưng chưa cải thiện tỷ lệ thành công. Phần lịch sử không đầy đủ (che khuất, nhãn \texttt{History incomplete}) mới được kiểm tra ở mức cơ chế, chưa có thí nghiệm riêng đo tác động của nhãn này lên hành vi. Ở phần overshoot, X-VLA vượt chu kỳ ở 83,3\% lượt T1 trong khi SCR đạt $0{,}833$. Cơ chế dừng dựa trên bộ đếm hợp nhất giữa bộ ghi thị giác và proprioception đạt 9/40 khi chạy vòng kín thật (T1 8/20, T3 1/20) so với 0/40 khi không dừng, và mọi lần dừng kịp lúc đều thành công. Trên 12 cặp trạng thái seen được chốt trước, cùng cấu hình đạt 6/12 so với 0/12 và không có lần dừng sớm nào (6 cặp có lợi, 0 cặp bất lợi, $p = 0{,}031$ hai phía); kết quả này mang tính thăm dò. Độ phủ mốc của bộ ghi thị giác trên quỹ đạo X-VLA chỉ khoảng 20\% so với 49--65\% trên demo, nên proprioception là thành phần cần thiết của bộ đếm.
+\textbf{RQ2: Độ tin cậy của bằng chứng và hiệu quả của cơ chế dừng.} Nghiên cứu đã chứng minh tính khả thi và hiệu quả rõ rệt của cơ chế điều phối theo sự kiện cùng giải pháp can thiệp dừng dựa trên bằng chứng bộ nhớ. Trong điều khiển vòng kín, bộ điều phối theo sự kiện vận hành chính xác theo thiết kế, ngắt thành công các đoạn hành động mở đoạn khi môi trường xuất hiện chuyển pha thao tác để kích hoạt mô hình tái truy vấn sớm. Đáng chú ý, nghiên cứu làm sáng tỏ bản chất của hiện tượng lặp thao tác thừa: X-VLA đạt tỷ lệ hoàn thành mốc SCR lên tới $0{,}833$ nhưng lại vượt quá chu kỳ quy định ở $83{,}3$\% số lượt chạy của tác vụ T1 do chính sách thiếu khả năng tự kết thúc nhiệm vụ. Cơ chế dừng ngoại vi kết hợp giữa bộ ghi thị giác và cảm nhận bản thể đã giải quyết triệt để điểm nghẽn này, nâng tỷ lệ thành công thực tế của X-VLA từ 0 trên 40 lên 9 trên 40 lượt trong vòng kín thật, gồm 8 trên 20 lượt ở tác vụ T1 và 1 trên 20 lượt ở tác vụ T3. Toàn bộ các lần dừng đúng lúc đều đạt kết quả thành công tuyệt đối và không phát sinh trường hợp dừng non gây hại. Trên nhóm phát triển 12 trạng thái seen, cùng cấu hình mang lại bước nhảy vọt từ 0 lên 6 trên 12 lượt thành công với ý nghĩa thống kê vững chắc ở mức $p = 0{,}031$. Việc tích hợp tín hiệu cảm nhận bản thể đã bù đắp hiệu quả độ trễ và sự che khuất của thị giác, thiết lập một quy trình xác thực bằng chứng tin cậy cho điều khiển thao tác dài hạn.
 
-\textbf{RQ3: Duy trì kỹ năng cơ sở và khả năng chuyển sang mô hình khác.} Tinh chỉnh làm giảm 28 điểm phần trăm trên SmolVLA, trong khi X-VLA đạt 92\% so với 94\% của B0 (khác biệt chưa có ý nghĩa thống kê với 50 cặp). Phương pháp chuyển được sang mô hình nền thứ hai về mặt vận hành, tức là cùng quy trình tạo dữ liệu, huấn luyện và đánh giá chạy được trên X-VLA. Việc chuyển sang các họ tác vụ khác chưa được kiểm chứng: bộ ghi chưa tạo được dữ kiện nào trên T7--T10 trong các phép thử trên một demo mỗi tác vụ.
+\textbf{RQ3: Duy trì kỹ năng cơ sở và khả năng thích ứng kiến trúc.} Khóa luận đã kiểm chứng thành công khả năng chuyển giao của khung phương pháp bộ nhớ sự kiện trên hai kiến trúc VLA có nguyên lý vận hành hoàn toàn khác biệt. Cùng một quy trình tạo dữ liệu, chiếu ngôn ngữ và huấn luyện tinh chỉnh đã được triển khai đồng bộ trên cả SmolVLA và X-VLA. Về khả năng duy trì kỹ năng cơ sở trên LIBERO-10, mức độ ảnh hưởng của quá trình tinh chỉnh có sự phân hóa sâu sắc giữa hai cấu hình mô hình: SmolVLA sụt giảm 28 điểm phần trăm từ 74\% xuống 46\%, trong khi X-VLA thể hiện khả năng bảo toàn tri thức vượt trội khi duy trì mức 92\% so với 94\% của checkpoint gốc, với mức chênh lệch nhỏ chưa mang ý nghĩa thống kê trên cỡ mẫu 50 cặp ghép.
 
-Các kết quả trong chương này củng cố Đóng góp 2 về khả năng vận hành của kiến trúc bộ nhớ và Đóng góp 3 về quy trình đánh giá đa tầng. Chương 5 trình bày kết luận, các hạn chế và hướng phát triển.
+Các kết quả thực nghiệm trong chương này củng cố vững chắc Đóng góp 2 về tính vận hành của kiến trúc bộ nhớ sự kiện có bằng chứng và Đóng góp 3 về quy trình đánh giá đa tầng từ mô phỏng cục bộ đến điều khiển vòng kín thực tế. Chương 5 sẽ tổng kết toàn bộ khóa luận, nêu rõ các giới hạn còn tồn tại và đề xuất các định hướng nghiên cứu tiếp theo.

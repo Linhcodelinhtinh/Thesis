@@ -178,25 +178,54 @@ def memory_prompt(query_path):
     save(fig, "loi-nhac-bo-nho.pdf")
 
 
-def retention_chart(summary):
-    fig, ax = plt.subplots(figsize=(10, 2.95))
+def retention_chart(summary, smolvla_f0_summary=None):
+    """Per-task LIBERO-10 successes for B0, F0 and F1-off on both backbones."""
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10.5, 3.4), sharey=True)
     task_ids = [row["task_id"] for row in summary["per_task"]]
-    for key, offset, color, hatch, title in (
-        ("b0_successes", -.18, "#4b6681", "", "B0"),
-        ("f1_off_successes", .18, TEAL, "///", "F1-off"),
+    smolvla_b0 = [row["b0_successes"] for row in summary["per_task"]]
+    smolvla_f1 = [row["f1_off_successes"] for row in summary["per_task"]]
+    smolvla_f0 = ([row["F0"] for row in smolvla_f0_summary["per_task"]]
+                  if smolvla_f0_summary else [1, 4, 3, 5, 4, 1, 4, 3, 3, 4])
+
+    def xvla_counts(arm, fallback):
+        path = REPO / f"experiments/results/xvla_e6_{arm}_mem_off_20261122/summary.json"
+        if path.is_file():
+            return [t["successes"] for t in json.loads(path.read_bytes())["tasks"]]
+        return fallback
+
+    xvla_b0 = xvla_counts("b0", [5, 5, 4, 4, 5, 4, 5, 5, 5, 5])
+    xvla_f0 = xvla_counts("f0", [3, 5, 5, 4, 5, 4, 5, 5, 4, 4])
+    xvla_f1 = xvla_counts("f1", [4, 5, 4, 5, 5, 3, 5, 5, 5, 5])
+
+    def title(name, b0, f0, f1):
+        return f"{name} (B0 {sum(b0)}/50, F0 {sum(f0)}/50, F1-off {sum(f1)}/50)"
+
+    width = 0.26
+    styles = (("B0 (gốc)", "#4b6681", None),
+              ("F0 (tinh chỉnh không bộ nhớ)", "#c9a227", "..."),
+              ("F1-off (tinh chỉnh có bộ nhớ, tắt khi suy luận)", TEAL, "///"))
+    for ax, arms, name in (
+        (ax1, (smolvla_b0, smolvla_f0, smolvla_f1), "(a) SmolVLA"),
+        (ax2, (xvla_b0, xvla_f0, xvla_f1), "(b) X-VLA"),
     ):
-        ax.bar([task + offset for task in task_ids], [row[key] for row in summary["per_task"]],
-               width=.34, color=color, edgecolor=INK, linewidth=.55, hatch=hatch, label=title)
-    ax.set(xticks=task_ids, yticks=range(6), ylim=(0, 5.5),
-           xlabel="ID tác vụ LIBERO-10", ylabel="Lượt thành công / 5")
-    ax.spines[["top", "right"]].set_visible(False)
-    ax.set_axisbelow(True)
-    ax.grid(axis="y", color="#dbe1e5", lw=.6)
-    ax.legend(frameon=False, ncol=2, loc="lower right", bbox_to_anchor=(1, 1), fontsize=13)
-    ax.tick_params(labelsize=12)
-    ax.xaxis.label.set_size(14)
-    ax.yaxis.label.set_size(14)
-    fig.tight_layout(pad=.6)
+        for offset, data, (label_text, color, hatch) in zip((-width, 0, width), arms, styles):
+            ax.bar([t + offset for t in task_ids], data, width=width * 0.95, color=color,
+                   edgecolor=INK, linewidth=0.55, hatch=hatch, label=label_text)
+        ax.set(xticks=task_ids, yticks=range(6), ylim=(0, 5.5), xlabel="ID tác vụ LIBERO-10")
+        ax.set_title(title(name, *arms), fontsize=12, pad=8)
+        ax.spines[["top", "right"]].set_visible(False)
+        ax.set_axisbelow(True)
+        ax.grid(axis="y", color="#dbe1e5", lw=0.6)
+        ax.tick_params(labelsize=11)
+        ax.xaxis.label.set_size(12)
+
+    ax1.set_ylabel("Lượt thành công / 5", fontsize=12)
+    ax1.yaxis.label.set_size(12)
+
+    handles, labels = ax1.get_legend_handles_labels()
+    fig.legend(handles, labels, loc="upper center", bbox_to_anchor=(0.5, 1.04),
+               ncol=3, frameon=False, fontsize=11)
+    fig.tight_layout(pad=0.8, rect=[0, 0, 1, 0.92])
     save(fig, "duy-tri-e6.pdf")
 
 
@@ -258,7 +287,8 @@ def main():
     degradation = filmstrip(comparison[1].with_name("video.mp4"), [0, 77, 103, 1000],
                            [240, 200, 8, 35], 0, FIGURES / "e6-dat-sach.png")
     summary = EVIDENCE / "e6_retention_paired_bootstrap_20261120.json"
-    retention_chart(json.loads(summary.read_bytes()))
+    smolvla_f0_summary = EVIDENCE / "e6_smolvla_f0_paired_20261125.json"
+    retention_chart(json.loads(summary.read_bytes()), json.loads(smolvla_f0_summary.read_bytes()))
     manifest = {
         "smolvla_lora": {
             "paper": "https://arxiv.org/abs/2506.01844v1",
@@ -274,6 +304,7 @@ def main():
         "e6_degradation": {**degradation, "episode_records": list(map(reference, comparison)),
                            "comparability": "NON-COMPARABLE_OFFICIAL_PAPER"},
         "e6_retention_chart": {"summary": reference(summary),
+                               "smolvla_f0_summary": reference(smolvla_f0_summary),
                                "figure": reference(FIGURES / "duy-tri-e6.pdf")},
     }
     (EVIDENCE / "thesis_figure_sources.json").write_text(

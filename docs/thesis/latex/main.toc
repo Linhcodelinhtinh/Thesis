@@ -16,22 +16,17 @@
 \contentsline {section}{\numberline {3.2}Phương pháp bộ nhớ có bằng chứng}{17}{section.3.2}%
 \contentsline {subsection}{\numberline {3.2.1}Cấu trúc bản ghi và tổ chức trạng thái}{17}{subsection.3.2.1}%
 \contentsline {subsection}{\numberline {3.2.2}Nguyên lý trích xuất và kiểm định bằng chứng}{19}{subsection.3.2.2}%
-\contentsline {subsection}{\numberline {3.2.3}Các trường hợp cụ thể với tác vụ}{21}{subsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.2.3}Các trường hợp cụ thể với tác vụ}{22}{subsection.3.2.3}%
 \contentsline {section}{\numberline {3.3}Quy trình huấn luyện thích ứng}{24}{section.3.3}%
-\contentsline {section}{\numberline {3.4}Suy luận và điều phối hành động theo thời gian thực}{25}{section.3.4}%
-\contentsline {subsection}{\numberline {3.4.1}Cơ chế dừng thực thi dựa trên bằng chứng bộ nhớ}{28}{subsection.3.4.1}%
-\contentsline {chapter}{\numberline {4}Thực nghiệm}{30}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Thiết lập thực nghiệm và chỉ số đánh giá}{31}{section.4.1}%
-\contentsline {subsection}{\numberline {4.1.1}Các điều kiện thực nghiệm}{31}{subsection.4.1.1}%
-\contentsline {subsection}{\numberline {4.1.2}Điều kiện mô phỏng và mô hình thực nghiệm}{32}{subsection.4.1.2}%
-\contentsline {section}{\numberline {4.2}Đối sánh vòng kín trên LIBERO-Mem}{32}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Kiểm tra truy vấn theo sự kiện và hiện tượng overshoot}{34}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Đánh giá vòng kín và hiện tượng overshoot trên X-VLA}{36}{subsection.4.3.1}%
-\contentsline {section}{\numberline {4.4}Dừng thực thi dựa trên bộ nhớ trên X-VLA}{37}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Kiểm chứng trên trạng thái chưa dùng để chọn cấu hình}{40}{subsection.4.4.1}%
-\contentsline {section}{\numberline {4.5}Can thiệp triệt tiêu bộ nhớ tại một truy vấn}{40}{section.4.5}%
-\contentsline {section}{\numberline {4.6}Đánh giá duy trì kỹ năng cơ sở trên LIBERO-10}{41}{section.4.6}%
-\contentsline {section}{\numberline {4.7}Tổng hợp kết quả theo câu hỏi nghiên cứu}{43}{section.4.7}%
-\contentsline {chapter}{\numberline {5}Kết luận và thảo luận}{45}{chapter.5}%
-\contentsline {chapter}{Tài liệu tham khảo}{47}{section*.21}%
+\contentsline {section}{\numberline {3.4}Suy luận và điều phối hành động theo thời gian thực}{26}{section.3.4}%
+\contentsline {chapter}{\numberline {4}Thực nghiệm}{32}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Thiết lập thực nghiệm và chỉ số đánh giá}{32}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Đối sánh vòng kín trên LIBERO-Mem}{34}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Kiểm tra thực thi chuỗi hành động và hiện tượng overshoot}{35}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Dừng thực thi dựa trên bộ nhớ trên X-VLA}{39}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Can thiệp triệt tiêu bộ nhớ tại một truy vấn}{42}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Đánh giá duy trì kỹ năng cơ sở trên LIBERO-10}{44}{section.4.6}%
+\contentsline {section}{\numberline {4.7}Tổng hợp kết quả theo câu hỏi nghiên cứu}{45}{section.4.7}%
+\contentsline {chapter}{\numberline {5}Kết luận}{47}{chapter.5}%
+\contentsline {chapter}{Tài liệu tham khảo}{49}{section*.21}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

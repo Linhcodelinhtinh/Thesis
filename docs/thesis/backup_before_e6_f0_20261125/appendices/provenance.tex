@@ -1,0 +1,114 @@
+\chapter{Nguồn dữ liệu và chi tiết tái lập}
+\label{app:provenance}
+% claim-id: reference-env-smoke
+\section{Cấu hình và nguồn thực nghiệm}
+Trong đợt thử nghiệm pilot lịch sử trên hai tác vụ T1 và T3, hệ thống sử dụng cùng mười nhóm trạng thái
+khởi tạo cho hai tác vụ và hạt giống chính sách 42. Mỗi lượt bắt đầu
+sau 20 bước làm nóng, dùng tối đa 1.000 bước điều khiển ở 20 Hz và
+truy vấn chính sách sau mỗi 10 hành động. Bộ chấm đọc tiến độ từ mã
+nguồn LIBERO-Mem đã khóa phiên bản. Tiêu chí cuối lượt và phạm vi
+đối chiếu được mô tả trong Chương 4.
+Trong đợt đối sánh dữ liệu và phân tích V2, hệ thống đối chiếu trạng thái hoàn tất,
+tính toàn vẹn của các bản tóm tắt lượt chạy, artifact F0 V2 và các kiểm tra runtime.
+
+Môi trường tham chiếu được dựng lại trong WSL với Python 3.8.13, robosuite 1.4.0,
+BDDL 1.0.1, robomimic 0.2.0, MuJoCo 3.2.3 và NumPy 1.22.4. Validator strict
+đạt và 14/14 smoke simulator đạt với assertion provenance đúng patch đã pin.
+EGL báo fallback sang \texttt{kms\_swrast}. Đây chỉ là kiểm tra môi trường và simulator.
+Suy luận policy cho E0 chạy trong WSL với Python 3.12.3, torch 2.11.0+cu128,
+torchvision 0.26.0+cu128, LeRobot 0.6.1, transformers 5.5.4, PEFT 0.21.2,
+accelerate 1.15.0 và NumPy 2.2.6. CUDA 12.8 khả dụng trên NVIDIA GeForce RTX 4060
+Laptop GPU. Môi trường policy không cài robosuite, BDDL, MuJoCo hoặc robomimic;
+simulator tiếp tục chạy riêng trong Python 3.8.13 đã khóa ở trên. Bản kê chi tiết các gói
+phần mềm và môi trường suy luận đã được xác minh toàn vẹn trong sổ kiểm định bằng chứng.
+Artifact F0 V2 đã tồn tại trước cập nhật này; manifest huấn luyện ghi torch
+2.11.0+cu130, LeRobot 0.6.1, transformers 5.5.4, PEFT 0.21.2 và accelerate 1.15.0.
+Inference dùng CUDA 12.8 để phù hợp driver máy cục bộ. Phiên bản mô hình SmolVLA và
+nguồn tác vụ LIBERO-Mem được ghi trong danh mục tài liệu tham khảo và bản kê từng lần chạy.
+
+Pilot E0 V2 dùng cùng seen initial-state hash cho T1/T3 và seed 42 ở B0/F0.
+Bốn episode đều chạy đủ 1.000 policy actions, hoàn thành 0 subgoal và dừng tại horizon.
+Các con số được giữ tách biệt khỏi pilot lịch sử B0/F1; chúng chỉ là phát hiện development.
+
+Đối với chiến dịch đối sánh vòng kín E2 gồm 40 cặp trên 20 nhóm trạng thái raw unseen,
+mô hình F0 V2 và F1 V2 được nạp từ các export đã xác minh; simulator chạy trong WSL
+với robosuite 1.4.0 và policy chạy trên Windows. Đối với chiến dịch đánh giá duy trì
+năng lực E6 trên LIBERO-10 gồm 50 cặp local, kết quả được ghi nhận từ việc nạp lần lượt
+trọng số chính sách cơ sở B0 và trọng số adapter F1-off tương ứng theo từng tác vụ trên môi trường Windows với
+robosuite 1.5.2 và BDDL 3.6.0; 50/50 ID thực thi trùng hậu tố \texttt{demo\_N} nhưng
+giá trị băm byte của vector trạng thái từ tệp vector trạng thái khởi tạo \texttt{.pruned\_init} không trùng với trạng thái demo trong
+tập khóa dữ liệu, xác lập đây là phép đo đối chứng trên tập 50 cặp trạng thái cục bộ. Phép thăm dò
+can thiệp lời nhắc trực tuyến tại T1 state 16 ghi nhận tám nhánh từ truy vấn 670 có
+độ nhạy hành động với khoảng cách $L_2$ từ 2,715 đến 4,306.
+
+\section{Nguồn public và định danh protocol}
+
+Bảng~\ref{tab:public-provenance} phân biệt nguồn benchmark chuẩn với các lựa chọn giao thức thực nghiệm cục bộ. Danh sách mẫu khởi tạo, ngưỡng kết thúc và lịch điều khiển được gắn nhãn custom khi có sự khác biệt với các phép đánh giá công bố chính thức. Toàn bộ mã băm Git commit và mã băm SHA-256 xác thực tính toàn vẹn của các tệp nguồn, artifact mô hình và báo cáo kiểm định được lưu trữ tập trung trong sổ kiểm định bằng chứng của đề tài.
+
+\begingroup\footnotesize\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.05}
+\begin{longtable}{>{\raggedright\arraybackslash}p{.23\textwidth}|>{\raggedright\arraybackslash}p{.38\textwidth}|>{\raggedright\arraybackslash}p{.31\textwidth}}
+\caption{Nguồn và định danh thực nghiệm}\label{tab:public-provenance}\\
+\toprule
+\textbf{Thành phần} & \textbf{Định danh public hoặc nội dung} & \textbf{Phạm vi} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Thành phần} & \textbf{Định danh public hoặc nội dung} & \textbf{Phạm vi} \\
+\midrule\endhead
+\bottomrule\endfoot
+LIBERO & Bản phát hành chính thức \cite{liberoSource} & Benchmark theo nguồn tác giả công bố \\
+LIBERO-Mem task/evaluator & Mã nguồn và bộ đánh giá đã khóa \cite{liberomemSource} & Bản đồ tác vụ, tệp BDDL và logic evaluator \\
+LIBERO-Mem refined data & Bộ dữ liệu mẫu refined chính thức \cite{liberomemData} & Dữ liệu Mem phục vụ huấn luyện trong split V2 \\
+LIBERO-Mem raw data & Bộ dữ liệu trạng thái thô chính thức \cite{liberomemRawData} & Trạng thái raw T1/T3/T7; unseen tách khỏi tiền tố train \\
+SmolVLA LIBERO checkpoint & Trọng số chính thức từ tác giả \cite{smolvlaCheckpoint} & Mô hình nền gốc cho pilot T1/T3 \\
+Split V2 T1/T3/base & Bản kê phân chia tập dữ liệu V2 & Khóa trạng thái, danh sách mẫu và phân bổ; phân loại custom \\
+Alignment audit V2 & Báo cáo đối chuẩn dữ liệu V2 & 180.447 cặp observation-action và 1.396 mẫu kiểm tra parity \\
+F0 V2 no-memory adapter & Bản kê trọng số adapter F0 V2 & Artifact 5.000 bước đã được xác minh toàn vẹn \\
+E0 runtime check & Bản ghi thực thi kiểm tra E0 & B0/F0 nạp và thực thi 2 action trên T1/T3 ở chế độ chẩn đoán \\
+E0 B0/F0 pilot & Bản ghi thử nghiệm pilot E0 & Bốn lượt custom, 0/4 thành công; không phải điểm chính thức \\
+Decision development protocol & Giao thức phát triển quyết định & Tập Seen gồm 12 trạng thái phát triển và 8 trạng thái hiệu chỉnh \\
+T7 refined source & Tệp quỹ đạo mẫu T7 từ nguồn công bố & 88 quỹ đạo mẫu tác giả; không phải điểm đánh giá chính sách \\
+T9 refined source & Tệp quỹ đạo mẫu T9 từ nguồn công bố & Dữ liệu quỹ đạo mẫu đã kiểm tra tính toàn vẹn \\
+T7 raw state inventory & Bản kê trạng thái khởi tạo thô T7 & 120 trạng thái raw phục vụ phát triển runtime \\
+T8 raw source & Tệp dữ liệu thô T8 từ nguồn công bố & Dữ liệu HDF5 thô đã kiểm tra tính toàn vẹn \\
+T8 refined source & Tệp quỹ đạo mẫu T8 từ nguồn công bố & Dữ liệu quỹ đạo mẫu đã kiểm tra tính toàn vẹn \\
+T10 raw source & Tệp dữ liệu thô T10 từ nguồn công bố & Dữ liệu HDF5 thô đã kiểm tra tính toàn vẹn \\
+T10 refined source & Tệp quỹ đạo mẫu T10 từ nguồn công bố & Dữ liệu quỹ đạo mẫu đã kiểm tra tính toàn vẹn \\
+T8 author-action replay & Báo cáo phát lại hành động tác giả T8 & Đạt ba mốc; không dừng terminal dù siêu dữ liệu ghi thành công \\
+T8 state-parity replay & Báo cáo đối sánh trạng thái T8 & Hành động và trạng thái đầu vào khớp; trạng thái robot lệch tại bước 219 \\
+T8 state-parity audit code & Mã nguồn kiểm định trạng thái T8 & So sánh trạng thái robot trước hành động với vết refined \\
+T9 author-action replay & Báo cáo phát lại hành động tác giả T9 & Một quỹ đạo mẫu; đạt trạng thái kết thúc thành công \\
+T10 author-action replay & Báo cáo phát lại hành động tác giả T10 & Một quỹ đạo mẫu; đạt trạng thái kết thúc thành công \\
+Author replay audit code & Mã nguồn kiểm định phát lại tác giả & Kiểm tra mã nguồn phụ trợ và chạy hành động tác giả \\
+T7 RGB relation writer & Bản ghi bộ ghi quan hệ RGB trên T7 & Một quỹ đạo refined; quan hệ chưa xác định, phục vụ chẩn đoán \\
+T8 RGB relation writer & Bản ghi bộ ghi quan hệ RGB trên T8 & Một quỹ đạo refined; quan hệ chưa xác định, phục vụ chẩn đoán \\
+T9 RGB relation writer & Bản ghi bộ ghi quan hệ RGB trên T9 & Một quỹ đạo refined; quan hệ chưa xác định, phục vụ chẩn đoán \\
+T10 RGB relation writer & Bản ghi bộ ghi quan hệ RGB trên T10 & Một quỹ đạo refined; quan hệ chưa xác định, phục vụ chẩn đoán \\
+T7 detector audit & Báo cáo kiểm định bộ phát hiện T7 & So sánh hộp bao trên 425 khung hình; chỉ đo phát hiện đối tượng \\
+T7 audit code & Mã nguồn kiểm định bộ phát hiện T7 & Quy tắc khớp hộp và kiểm tra khung hình nguồn \\
+F0/E0 image preprocessing audit & Báo cáo kiểm định tiền xử lý ảnh & Không phát hiện sai khác về hướng ảnh trong pipeline \\
+\end{longtable}
+\endgroup
+
+\clearpage
+Protocol vòng kín T1/T3 và replay author-action T7-T10 là thực nghiệm custom, không so sánh trực tiếp với điểm trong paper LIBERO-Mem. Với T8 demo\_1, raw action sau transform và initial state trùng chính xác nguồn refined; state parity trong replay bắt đầu vượt dung sai $10^{-5}$ ở bước 219. Sai khác terminal với metadata refined vẫn chưa được giải thích. Các report T8-T10 chỉ là một author-action demo/task. Bản bài báo của LIBERO-Mem được trích riêng trong danh mục tài liệu tham khảo; các phiên bản mã nguồn và dữ liệu công bố xác định chính xác các artifact được sử dụng trong nghiên cứu này.
+
+\section{Bối cảnh V1}
+Ở giai đoạn V1, báo cáo nội bộ ghi 77/160 lượt thành công trên 40 tác vụ,
+28/40 trên tập nghiệm thu, và 11/40 trên LIBERO-10. Trong 83 lượt thất bại,
+71 lượt chưa được quy nguyên nhân gốc theo tiêu chí chẩn đoán của báo cáo.
+Tại mốc tổng hợp, các bản ghi từng lượt vắng mặt ở đường dẫn báo cáo dẫn chiếu.
+Các số liệu này được dẫn theo báo cáo V1 và dùng làm bối cảnh lịch sử.
+V1 dùng $s=50$ giữa hai lần truy vấn, còn đánh giá T1/T3 dùng $s=10$.
+Khác biệt về nhịp điều khiển và tập tác vụ giới hạn khả năng đối chiếu giữa hai giai đoạn.
+
+\section{Bản kê thực nghiệm X-VLA V2 trên LIBERO-Mem}
+Chiến dịch đánh giá V2 trên mô hình X-VLA được triển khai nhằm kiểm chứng tính mở rộng kiến trúc và hiện tượng thao tác thừa chu kỳ, bao gồm 6 thực nghiệm thành phần:
+\begin{itemize}
+    \item \textbf{D1 Parity (\texttt{xvla\_d1\_parity\_20261123})}: Kiểm tra tính tương đương luồng quan sát giữa text và shadow tại trạng thái 0 của T1 (115 bước) và T3 (404 bước). Kết quả đạt 100\% parity về truy vấn, prompt và action chunk.
+    \item \textbf{D2 Cohort (\texttt{xvla\_d2\_event\_dev12\_t1\_t3\_20261123\_wsl})}: Hoàn tất 24/24 lượt chạy (12 T1, 12 T3) dưới F1-mem-on. Ghi nhận SR = 0/12, Mean SCR = 0,833 ở T1 và 0,528 ở T3; tỷ lệ overshot là 83,3\% (T1) và 33,3\% (T3).
+    \item \textbf{D3/D5 Cycle Alignment (\texttt{xvla\_d3\_d5\_d2\_trace\_analysis\_20261123\_results})}: Phân tích căn chỉnh chu kỳ trên 48 vết chạy D2 (xác minh hash toàn vẹn), ghi nhận độ trễ trích xuất chu kỳ trung vị từ -7 đến -83,5 bước so với evaluator.
+    \item \textbf{Writer Halt Replay (\texttt{xvla-e2-writer-halt-replay-20261123})}: Phân tích tái lập cơ chế dừng trên 40 lượt chạy (16 hoàn tất, 16 overshot), chứng minh cơ chế dừng dựa trên sự kiện có thể cứu vãn kịp thời 5-6 lượt T1 khỏi lỗi overshoot.
+    \item \textbf{E3 Token Budget Sweep (\texttt{xvla\_e3\_token\_budget\_d2\_20261123})}: Quét 1.319 truy vấn cố định, xác lập mức ngân sách 2/3 truyền tải trọn vẹn 100\% dữ kiện (272/272 T1, 825/825 T3) với độ dài prompt 21-26 tokens.
+    \item \textbf{E4/E5 Counterfactual Intervention (\texttt{xvla\_e4\_e5\_one\_query\_20261123})}: Can thiệp phản thực tế tại truy vấn 10 trên T1 state 10 (1.000 bước). Nhánh đối chứng tái lập 1.000/1.000 action; nhánh can thiệp gây sai khác ngay tại bước đầu ($L_2 = 0{,}0092$), phân kỳ hoàn toàn 990 bước tiếp theo.
+\end{itemize}
+Toàn bộ các thực nghiệm trên đều được phân loại \texttt{CUSTOM\_V2} và \texttt{NON-COMPARABLE\_OFFICIAL\_PAPER}.
