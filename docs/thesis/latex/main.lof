@@ -11,7 +11,7 @@
 \contentsline {figure}{\numberline {4.1}{\ignorespaces Cấu trúc lời nhắc tích hợp bộ nhớ và ví dụ thực tế từ lượt chạy T1}}{33}{figure.caption.8}%
 \contentsline {figure}{\numberline {4.2}{\ignorespaces Chuỗi hành vi thất bại của SmolVLA khi thực thi đoạn hành động}}{36}{figure.caption.11}%
 \contentsline {figure}{\numberline {4.3}{\ignorespaces Chuỗi hành vi của lượt T1 thành công khi kích hoạt truy vấn sớm}}{38}{figure.caption.13}%
-\contentsline {figure}{\numberline {4.4}{\ignorespaces Quá trình SmolVLA F1-off nhấc sách nhưng không thể đặt vào hộp ở tác vụ 5}}{44}{figure.caption.19}%
-\contentsline {figure}{\numberline {4.5}{\ignorespaces So sánh phân bố số lượt thành công theo từng tác vụ LIBERO-10 giữa SmolVLA và X-VLA}}{45}{figure.caption.20}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Quá trình SmolVLA F1-off nhấc sách nhưng không thể đặt vào hộp ở tác vụ 5}}{45}{figure.caption.19}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Số lượt thành công theo từng tác vụ LIBERO-10 của B0, F0 và F1-off trên SmolVLA và X-VLA}}{45}{figure.caption.20}%
 \addvspace {10\p@ }
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

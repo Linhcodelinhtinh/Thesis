@@ -26,7 +26,7 @@
 \contentsline {section}{\numberline {4.4}Dừng thực thi dựa trên bộ nhớ trên X-VLA}{39}{section.4.4}%
 \contentsline {section}{\numberline {4.5}Can thiệp triệt tiêu bộ nhớ tại một truy vấn}{42}{section.4.5}%
 \contentsline {section}{\numberline {4.6}Đánh giá duy trì kỹ năng cơ sở trên LIBERO-10}{44}{section.4.6}%
-\contentsline {section}{\numberline {4.7}Tổng hợp kết quả theo câu hỏi nghiên cứu}{45}{section.4.7}%
-\contentsline {chapter}{\numberline {5}Kết luận}{47}{chapter.5}%
-\contentsline {chapter}{Tài liệu tham khảo}{49}{section*.21}%
+\contentsline {section}{\numberline {4.7}Tổng hợp kết quả theo câu hỏi nghiên cứu}{46}{section.4.7}%
+\contentsline {chapter}{\numberline {5}Kết luận}{48}{chapter.5}%
+\contentsline {chapter}{Tài liệu tham khảo}{50}{section*.21}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

@@ -34,10 +34,13 @@ Các con số được giữ tách biệt khỏi pilot lịch sử B0/F1; chúng
 mô hình F0 V2 và F1 V2 được nạp từ các export đã xác minh; simulator chạy trong WSL
 với robosuite 1.4.0 và policy chạy trên Windows. Đối với chiến dịch đánh giá duy trì
 năng lực E6 trên LIBERO-10 gồm 50 cặp local, kết quả được ghi nhận từ việc nạp lần lượt
-trọng số chính sách cơ sở B0 và trọng số adapter F1-off tương ứng theo từng tác vụ trên môi trường Windows với
+trọng số chính sách cơ sở B0, adapter F0 và adapter F1-off tương ứng theo từng tác vụ trên môi trường Windows với
 robosuite 1.5.2 và BDDL 3.6.0; 50/50 ID thực thi trùng hậu tố \texttt{demo\_N} nhưng
 giá trị băm byte của vector trạng thái từ tệp vector trạng thái khởi tạo \texttt{.pruned\_init} không trùng với trạng thái demo trong
-tập khóa dữ liệu, xác lập đây là phép đo đối chứng trên tập 50 cặp trạng thái cục bộ. Phép thăm dò
+tập khóa dữ liệu, xác lập đây là phép đo đối chứng trên tập 50 cặp trạng thái cục bộ. Điều kiện F0 được chạy bổ sung ngày 25/11/2026
+(\texttt{e6\_f0\_windows\_20261125}) trên cùng 50 bộ tác vụ, trạng thái khởi tạo và seed, cùng cấu hình đánh giá
+(robosuite 1.5.2, ảnh 256, đoạn 50 hành động, tắt bộ nhớ); vị trí đầu cuối trước pha ổn định trùng với B0 ở cả 50 lượt.
+Lượt F0 dùng commit mã nguồn \texttt{55c63bf}, khác commit \texttt{657f325} của B0 và F1-off, và cả hai đều có thay đổi chưa commit. Phép thăm dò
 can thiệp lời nhắc trực tuyến tại T1 state 16 ghi nhận tám nhánh từ truy vấn 670 có
 độ nhạy hành động với khoảng cách $L_2$ từ 2,715 đến 4,306.
 

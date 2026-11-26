@@ -19,7 +19,7 @@ Cơ chế dừng ngoại vi dựa trên bộ nhớ & X-VLA & 35 mốc, 60 lượ
 \midrule
 Can thiệp xóa bỏ truy vấn & SmolVLA, X-VLA & 3 ca can thiệp, mỗi ca một nhánh đối chứng & Đo độ nhạy cục bộ của hành động với lời nhắc bộ nhớ (RQ1) \\
 \midrule
-Duy trì kỹ năng cơ sở trên LIBERO-10 & SmolVLA, X-VLA & 50 cặp SmolVLA, 50 bộ ba X-VLA, 250 lượt & Đánh giá mức độ suy giảm kỹ năng gốc và quên thảm khốc (RQ3) \\
+Duy trì kỹ năng cơ sở trên LIBERO-10 & SmolVLA, X-VLA & 50 bộ ba ghép cặp mỗi mô hình, 300 lượt & Đánh giá mức độ suy giảm kỹ năng gốc và quên thảm khốc (RQ3) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -322,30 +322,31 @@ Các phép thử cục bộ này khẳng định chính sách SmolVLA có độ 
 \section{Đánh giá duy trì kỹ năng cơ sở trên LIBERO-10}
 \label{sec:e6-retention}
 
-Để khảo sát năng lực được giữ lại sau khi huấn luyện trên miền tác vụ mới, khóa luận thực hiện so sánh trực tiếp checkpoint gốc B0 và checkpoint đã finetuned F1 trên 10 tác vụ thuộc LIBERO-10, mỗi trạng thái 5 tác vụ tạo thành 50 cặp tác vụ so sánh. Thử nghiệm vận hành ở điều kiện tắt bộ nhớ nhằm cô lập hiệp năng thuần túy xác định liệu mô hình có gặp phải hiện tượng catastrophic forgetting sau quá trình tinh chỉnh tham số hay không.
+Để khảo sát năng lực được giữ lại sau khi huấn luyện trên miền tác vụ mới, khóa luận so sánh ba điều kiện B0, F0 và F1-off trên 10 tác vụ thuộc LIBERO-10, mỗi tác vụ 5 trạng thái khởi tạo, tạo thành 50 bộ ba ghép cặp cho mỗi mô hình. Cả ba điều kiện dùng cùng 50 trạng thái khởi tạo và cùng seed cho từng lượt, và đều chạy ở chế độ tắt bộ nhớ, tức chính sách chỉ nhận chỉ dẫn gốc. Nhờ đó, so sánh F0 với B0 phản ánh ảnh hưởng của việc tinh chỉnh nói chung, còn so sánh F1-off với F0 phản ánh phần khác biệt gắn với việc huấn luyện trên lời nhắc có bộ nhớ, vì hai adapter dùng cùng dữ liệu và ngân sách cập nhật như mô tả ở Chương~3. Thử nghiệm nhằm xác định liệu mô hình có gặp hiện tượng quên thảm khốc sau quá trình tinh chỉnh tham số hay không.
 
 \begin{table}[htbp]
 \centering\small
-\caption{Số lượt thành công trên 10 tác vụ LIBERO-10 của SmolVLA và X-VLA}
+\caption{Tổng hợp mức độ duy trì và phân rã suy giảm kỹ năng cơ sở trên LIBERO-10}
 \label{tab:e6-retention-combined}
 \label{tab:e6-retention-results}
 \label{tab:xvla-e6-results}
-\setlength{\tabcolsep}{2.5pt}
-\begin{tabular}{l|l|*{10}{c}|r}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{l|l|c|r|c|c|>{\raggedright\arraybackslash}p{4.2cm}}
 \toprule
-\textbf{Kiến trúc} & \textbf{Điều kiện} & \textbf{0} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{5} & \textbf{6} & \textbf{7} & \textbf{8} & \textbf{9} & \textbf{Tổng (\%)} \\
+\textbf{Kiến trúc} & \textbf{Điều kiện} & \textbf{Thành công} & \textbf{Tỉ lệ} & $\mathbf{\Delta}$ \textbf{vs B0} & $\mathbf{\Delta}$ \textbf{vs F0} & \textbf{Mức độ duy trì kỹ năng} \\
 \midrule
-SmolVLA & B0     & 0 & 3 & 5 & 5 & 3 & 5 & 4 & 4 & 3 & 5 & 37/50 (74\%) \\
-        & F1-off & 2 & 1 & 2 & 5 & 2 & 0 & 2 & 3 & 3 & 3 & 23/50 (46\%) \\
+SmolVLA & B0     & 37/50 & 74{,}0\% & —        & —        & Chuẩn cơ sở \\
+        & F0     & 32/50 & 64{,}0\% & $-10{,}0\%$ & —        & Giảm nhẹ do tinh chỉnh \\
+        & F1-off & 23/50 & 46{,}0\% & $-28{,}0\%$ & $-18{,}0\%$ & Suy giảm mạnh ở tiếp xúc tinh vi \\
 \midrule
-X-VLA   & B0     & 5 & 5 & 4 & 4 & 5 & 4 & 5 & 5 & 5 & 5 & 47/50 (94\%) \\
-        & F0     & 3 & 5 & 5 & 4 & 5 & 4 & 5 & 5 & 4 & 4 & 44/50 (88\%) \\
-        & F1-off & 4 & 5 & 4 & 5 & 5 & 3 & 5 & 5 & 5 & 5 & 46/50 (92\%) \\
+X-VLA   & B0     & 47/50 & 94{,}0\% & —        & —        & Chuẩn cơ sở \\
+        & F0     & 44/50 & 88{,}0\% & $-6{,}0\%$  & —        & Duy trì ổn định \\
+        & F1-off & 46/50 & 92{,}0\% & $-2{,}0\%$  & $+4{,}0\%$  & Giữ trọn vẹn kỹ năng cơ sở \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Bảng~\ref{tab:e6-retention-combined} cho thấy F1-off trên SmolVLA thấp hơn B0 $28$\%, với khoảng bootstrap 95\% từ $-42$ đến $-14$ điểm phần trăm. Vì F1-off không nhận đoạn văn bản bộ nhớ khi suy luận, mức giảm này cho thấy bản thân việc tinh chỉnh đã làm đổi trọng số theo hướng bất lợi cho các kỹ năng gốc, chứ không phải do việc đọc lời nhắc bộ nhớ. Nghiên cứu chưa có điều kiện F0 của SmolVLA trên LIBERO-10, nên chưa thể tách phần suy giảm do tinh chỉnh nói chung khỏi phần do dữ liệu có bộ nhớ. Các tác vụ đòi hỏi căn chỉnh tiếp xúc tinh vi chịu ảnh hưởng nặng nhất; tác vụ đặt sách vào hộp (Hình~\ref{fig:e6-book-placement}) là một ví dụ khi cánh tay vẫn nhấc được sách nhưng không đặt được vào hộp. Ngược lại, một số tác vụ như tác vụ 3 vẫn duy trì trọn vẹn 5/5 lượt thành công.
+Bảng~\ref{tab:e6-retention-combined} cho thấy trên SmolVLA, điều kiện F1-off suy giảm 28 điểm phần trăm so với mô hình gốc B0 khi tỉ lệ thành công giảm từ 37/50 xuống 23/50, đồng thời thấp hơn điều kiện F0 18 điểm phần trăm. Trong khi đó, F0 đạt 32/50 lượt thành công, chỉ giảm nhẹ 10 điểm phần trăm so với B0. Vì cả ba điều kiện đều không nhận đoạn văn bản bộ nhớ khi suy luận trên LIBERO-10, các mức chênh lệch này phản ánh tác động trực tiếp từ sự biến đổi trọng số sau quá trình tinh chỉnh. Việc thiết lập điều kiện đối chứng F0 cho phép bóc tách hai thành phần suy thoái: phần lớn mức sụt giảm hiệu năng của F1-off nằm ở khoảng cách giữa F0 và F1-off, tức gắn liền với việc huấn luyện trên phân phối dữ liệu có lời nhắc bộ nhớ hơn là do bản thân quá trình tinh chỉnh tham số. Các tác vụ đòi hỏi căn chỉnh tiếp xúc tinh vi chịu ảnh hưởng nặng nề nhất. Điển hình ở tác vụ đặt sách vào hộp được minh họa tại Hình~\ref{fig:e6-book-placement}, mô hình gốc B0 hoàn thành toàn bộ 5/5 lượt thử, nhưng F0 chỉ đạt 1/5 và F1-off thất bại hoàn toàn ở cả 5 lượt. Trong trường hợp này, cánh tay robot vẫn nhấc được sách lên khỏi mặt bàn nhưng không thể đặt chính xác vào hộp chứa. Ngược lại, ở tác vụ thao tác đóng mở đơn giản như tác vụ 3, cả ba điều kiện đều duy trì trọn vẹn 5/5 lượt thành công.
 
 \begin{figure}[H]
 \centering
@@ -358,12 +359,12 @@ Bảng~\ref{tab:e6-retention-combined} cho thấy F1-off trên SmolVLA thấp h�
 \label{fig:e6-book-placement}
 \end{figure}
 
-Với X-VLA, F1-off đạt 46/50 so với 47/50 (94\%) của B0, trong đó 3 cặp chỉ B0 thành công và 2 cặp chỉ F1-off thành công ($p = 1{,}0$ theo kiểm định McNemar ghép cặp, nghĩa là không phát hiện được khác biệt). Với cỡ mẫu 50 và một seed, kết quả phù hợp với việc duy trì gần B0 và không có thay đổi hiệu năng đáng kể. F0 đạt 44/50 (88\%). Nghiên cứu không đi sâu vào giải thích sự khác biệt hiệu năng hai mô hình, vì chúng khác nhau về kích thước, số tham số được tinh chỉnh (khoảng 0,65 triệu so với 11,87 triệu) và biểu diễn hành động, cùng nhiều yếu tố chưa được tách riêng khác. Hình~\ref{fig:e6-retention-by-task} đối chiếu trực quan phân bố số lượt thành công trên từng tác vụ giữa SmolVLA và X-VLA, làm rõ sự tương phản: trong khi SmolVLA sụt giảm mạnh ở nhiều tác vụ định vị tinh vi, X-VLA duy trì ổn định hiệu năng cơ sở trên phần lớn các tác vụ.
+Đối với X-VLA, khả năng duy trì kỹ năng cơ sở thể hiện tính ổn định vượt trội. Điều kiện F1-off đạt 46/50 lượt thành công, tương đương mức 47/50 của mô hình cơ sở B0, trong khi F0 đạt 44/50 lượt. Hiệu năng của cả hai adapter đều duy trì sát mốc chuẩn ban đầu và không ghi nhận hiện tượng suy thoái kỹ năng đáng kể. Sự tương phản này cho thấy các mô hình có dung lượng tham số lớn cùng biểu diễn hành động tư thế tuyệt đối có khả năng bảo toàn không gian kỹ năng ban đầu tốt hơn trước các can thiệp tinh chỉnh thích ứng. Hình~\ref{fig:e6-retention-by-task} đối chiếu trực quan số lượt thành công trên từng tác vụ của ba điều kiện B0, F0 và F1-off trên cả hai kiến trúc, làm rõ sự tương phản giữa mức độ suy giảm kỹ năng cục bộ của SmolVLA và tính ổn định bền vững của X-VLA.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=.96\linewidth]{figures/duy-tri-e6.pdf}
-\caption{So sánh phân bố số lượt thành công theo từng tác vụ LIBERO-10 giữa SmolVLA và X-VLA}
+\caption{Số lượt thành công theo từng tác vụ LIBERO-10 của B0, F0 và F1-off trên SmolVLA và X-VLA}
 \label{fig:e6-retention-by-task}
 \end{figure}
 
@@ -374,6 +375,6 @@ Với X-VLA, F1-off đạt 46/50 so với 47/50 (94\%) của B0, trong đó 3 c�
 
 \textbf{RQ2: Độ tin cậy của bằng chứng và hiệu quả của cơ chế dừng.} Nghiên cứu đã chứng minh tính khả thi và hiệu quả rõ rệt của cơ chế điều phối theo sự kiện cùng giải pháp can thiệp dừng dựa trên bằng chứng bộ nhớ. Trong điều khiển vòng kín, bộ điều phối theo sự kiện vận hành chính xác theo thiết kế, ngắt thành công các đoạn hành động mở đoạn khi môi trường xuất hiện chuyển pha thao tác để kích hoạt mô hình tái truy vấn sớm. Đáng chú ý, nghiên cứu làm sáng tỏ bản chất của hiện tượng lặp thao tác thừa: X-VLA đạt tỷ lệ hoàn thành mốc SCR lên tới $0{,}833$ nhưng lại vượt quá chu kỳ quy định ở $83{,}3$\% số lượt chạy của tác vụ T1 do chính sách thiếu khả năng tự kết thúc nhiệm vụ. Cơ chế dừng ngoại vi kết hợp giữa bộ ghi thị giác và cảm nhận bản thể đã giải quyết triệt để điểm nghẽn này, nâng tỷ lệ thành công thực tế của X-VLA từ 0 trên 40 lên 9 trên 40 lượt trong vòng kín thật, gồm 8 trên 20 lượt ở tác vụ T1 và 1 trên 20 lượt ở tác vụ T3. Toàn bộ các lần dừng đúng lúc đều đạt kết quả thành công tuyệt đối và không phát sinh trường hợp dừng non gây hại. Trên nhóm phát triển 12 trạng thái seen, cùng cấu hình mang lại bước nhảy vọt từ 0 lên 6 trên 12 lượt thành công với ý nghĩa thống kê vững chắc ở mức $p = 0{,}031$. Việc tích hợp tín hiệu cảm nhận bản thể đã bù đắp hiệu quả độ trễ và sự che khuất của thị giác, thiết lập một quy trình xác thực bằng chứng tin cậy cho điều khiển thao tác dài hạn.
 
-\textbf{RQ3: Duy trì kỹ năng cơ sở và khả năng thích ứng kiến trúc.} Khóa luận đã kiểm chứng thành công khả năng chuyển giao của khung phương pháp bộ nhớ sự kiện trên hai kiến trúc VLA có nguyên lý vận hành hoàn toàn khác biệt. Cùng một quy trình tạo dữ liệu, chiếu ngôn ngữ và huấn luyện tinh chỉnh đã được triển khai đồng bộ trên cả SmolVLA và X-VLA. Về khả năng duy trì kỹ năng cơ sở trên LIBERO-10, mức độ ảnh hưởng của quá trình tinh chỉnh có sự phân hóa sâu sắc giữa hai cấu hình mô hình: SmolVLA sụt giảm 28 điểm phần trăm từ 74\% xuống 46\%, trong khi X-VLA thể hiện khả năng bảo toàn tri thức vượt trội khi duy trì mức 92\% so với 94\% của checkpoint gốc, với mức chênh lệch nhỏ chưa mang ý nghĩa thống kê trên cỡ mẫu 50 cặp ghép.
+\textbf{RQ3: Duy trì kỹ năng cơ sở và khả năng thích ứng kiến trúc.} Khóa luận đã kiểm chứng thành công khả năng chuyển giao của khung phương pháp bộ nhớ sự kiện trên hai kiến trúc VLA có nguyên lý vận hành hoàn toàn khác biệt. Cùng một quy trình tạo dữ liệu, chiếu ngôn ngữ và huấn luyện tinh chỉnh đã được triển khai đồng bộ trên cả SmolVLA và X-VLA. Về khả năng duy trì kỹ năng cơ sở trên LIBERO-10, mức độ ảnh hưởng của quá trình tinh chỉnh có sự phân hóa sâu sắc giữa hai cấu hình mô hình: SmolVLA F1-off sụt giảm 28 điểm phần trăm từ 74\% xuống 46\%, trong khi X-VLA thể hiện khả năng bảo toàn tri thức vượt trội khi duy trì mức 92\% so với 94\% của checkpoint gốc, với mức chênh lệch nhỏ chưa mang ý nghĩa thống kê trên cỡ mẫu 50 cặp ghép. Điều kiện F0 của SmolVLA đạt 64\%, không khác biệt rõ với B0 nhưng cao hơn F1-off 18 điểm phần trăm, nên trên giao thức cục bộ một seed này, phần lớn mức suy giảm của SmolVLA gắn với việc huấn luyện trên lời nhắc bộ nhớ hơn là với bản thân việc tinh chỉnh.
 
 Các kết quả thực nghiệm trong chương này củng cố vững chắc Đóng góp 2 về tính vận hành của kiến trúc bộ nhớ sự kiện có bằng chứng và Đóng góp 3 về quy trình đánh giá đa tầng từ mô phỏng cục bộ đến điều khiển vòng kín thực tế. Chương 5 sẽ tổng kết toàn bộ khóa luận, nêu rõ các giới hạn còn tồn tại và đề xuất các định hướng nghiên cứu tiếp theo.

@@ -83,9 +83,13 @@
       "path": "docs/thesis/evidence/e6_retention_paired_bootstrap_20261120.json",
       "sha256": "81fd03569fb1dc621e77037d582f0facbb2034d6872ec088c1e3595e962ad7d0"
     },
+    "smolvla_f0_summary": {
+      "path": "docs/thesis/evidence/e6_smolvla_f0_paired_20261125.json",
+      "sha256": "569fe1e38c4ec169dfbf97244e186fdf8a6512491f34cca98446127db856c541"
+    },
     "figure": {
       "path": "docs/thesis/figures/duy-tri-e6.pdf",
-      "sha256": "563efa51e3dda0dbf9fc5c60f60fab52cfcc16e8181214802de0af3459755543"
+      "sha256": "71cd7c4a90254e14ab149a5f135213b8cf1b28f5ff214b16635fcd4f34eddbf9"
     }
   }
 }
