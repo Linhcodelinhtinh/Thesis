@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (MiKTeX 26.5) (preloaded format=xelatex 2026.11.12)  25 NOV 2026 21:08
+This is XeTeX, Version 3.141592653-2.6-0.999998 (MiKTeX 26.5) (preloaded format=xelatex 2026.11.12)  26 NOV 2026 12:00
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1241,7 +1241,10 @@ chapter without number
 
  [2]
 chapter without number
-(main.lof)
+(main.lof
+LaTeX Font Info:    Font shape `TU/LatinModernMono(0)/m/n' will be
+(Font)              scaled to size 13.49055pt on input line 11.
+)
 \tf@lof=\write6
 \openout6 = `main.lof'.
 
@@ -1325,62 +1328,65 @@ chapter 4.
 [32
 
 ]
-LaTeX Font Info:    Font shape `TU/LatinModernMono(0)/m/n' will be
-(Font)              scaled to size 13.49055pt on input line 50.
+File: figures/tai-lap-chai-replay.png Graphic file (type bmp)
+<figures/tai-lap-chai-replay.png>
+File: figures/tai-lap-chai-cong-bo.png Graphic file (type bmp)
+<figures/tai-lap-chai-cong-bo.png>
+ [33]
 File: figures/loi-nhac-bo-nho.pdf Graphic file (type pdf)
 <use figures/loi-nhac-bo-nho.pdf>
- [33]
+ [34]
 LaTeX Font Info:    Font shape `TU/LatinModernMono(0)/m/n' will be
-(Font)              scaled to size 12.31021pt on input line 72.
+(Font)              scaled to size 12.31021pt on input line 91.
 
-Overfull \hbox (0.79997pt too wide) in paragraph at lines 68--83
+Overfull \hbox (0.79997pt too wide) in paragraph at lines 87--102
  [][] 
  []
 
-[34] [35]
+[35] [36]
 File: figures/smolvla-chunk-failure.png Graphic file (type bmp)
 <figures/smolvla-chunk-failure.png>
- [36]
-LaTeX Font Info:    Calculating math sizes for size <10.83347> on input line 15
-0.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.83347> on input line 150.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7.58339> on input line 150.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5.41673> on input line 150.
  [37]
+LaTeX Font Info:    Calculating math sizes for size <10.83347> on input line 16
+9.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10.83347> on input line 169.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <7.58339> on input line 169.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5.41673> on input line 169.
+ [38]
 File: figures/t1-truy-van-som.png Graphic file (type bmp)
 <figures/t1-truy-van-som.png>
- [38] [39] [40] [41] [42] [43] [44]
+ [39] [40] [41] [42] [43] [44] [45]
 File: figures/e6-dat-sach.png Graphic file (type bmp)
 <figures/e6-dat-sach.png>
 File: figures/duy-tri-e6.pdf Graphic file (type pdf)
 <use figures/duy-tri-e6.pdf>
- [45] [46])
-(content/chapter5.tex [47]
+ [46] [47])
+(content/chapter5.tex [48]
 chapter 5.
-[48
+[49
 
-]) [49] (main.bbl
+]) [50] [51] (main.bbl
 chapter without number
-[50
+[52
 
 
 
-] [51] [52] [53] [54]) [55] (main.aux)
+] [53] [54] [55] [56]) [57] (main.aux)
  ***********
 LaTeX2e <2026-11-01>
 L3 programming layer <2026-09-09>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 31574 strings out of 402429
- 675488 string characters out of 5433152
- 1258471 words of memory out of 5000000
- 60329 multiletter control sequences out of 15000+600000
+ 31594 strings out of 402429
+ 676178 string characters out of 5433152
+ 1259662 words of memory out of 5000000
+ 60347 multiletter control sequences out of 15000+600000
  693148 words of font info for 145 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 108i,20n,113p,11229b,641s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 108i,20n,113p,11229b,623s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on main.pdf (66 pages).
+Output written on main.pdf (68 pages).

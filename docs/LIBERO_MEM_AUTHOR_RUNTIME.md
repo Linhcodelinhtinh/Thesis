@@ -52,6 +52,45 @@ under `scratch/libero_mem_author_candidate/bottle_warmup/`.
 
 ## Comparison history
 
+### Preserved replay (2026-11-26)
+
+The diagnostic was rerun with the command below. The stored trace records a
+state restore maximum absolute error of 0.0, a bottle tilt of 90.345 degrees
+at step 13 and 107.261 degrees at step 20. The saved frame comparison shows
+the bottle lying down in the replay and upright in the released refined frame.
+The released frame has no numeric bottle pose for a direct pose comparison.
+
+```bash
+MUJOCO_GL=osmesa .venv_libero_mem_author_candidate/bin/python scripts/diagnose_libero_mem_author_bottle.py --demo demo_33 --output experiments/runtime/libero_mem_author_candidate/bottle_warmup_20261126
+```
+
+The [trace](../experiments/runtime/libero_mem_author_candidate/bottle_warmup_20261126/diagnostic.json)
+and [comparison image](../experiments/runtime/libero_mem_author_candidate/bottle_warmup_20261126/post_warmup_vs_train_frame.png)
+are local runtime artifacts and are excluded by `.gitignore`; preserve them
+separately when transferring this evidence. The source HDF5 download metadata
+records dataset revision `6df130c05b82e09294fa9534e84a069687b72d33`.
+SHA-256 identities for this replay are:
+
+| Artifact | SHA-256 |
+| --- | --- |
+| Refined T1 HDF5 | `1737ddd2f460fc2f9f2fef735cb0f373c2ac86b5d4e9ed7a6ebe9a2f00742b22` |
+| Input split lock | `a887b8c8699b13236e146660693dab5efc7ca09b1ed7045b66e5d4b67007d25d` |
+| Diagnostic script | `78429db7cc5599682388bc4317ad020ed453af87b343df50e1f87311e62d446c` |
+| Diagnostic trace | `020273beff3ac2a7753a4a136a17b3ba84ef6065c3dc927e7b9c518f38105b2f` |
+| Comparison image | `833f5999c5264255c962fadb39a92468a64a8ec343f2f6c56e6df5ebf0ea5b97` |
+
+The state comes from the existing metadata-backed split lock. Independently
+hashing the T1 `demo_33` initial state in `data/libero_mem/metainfo.json` as
+little-endian float64 yielded the same `b8a0272f0b2aa2472e5d549823e2b3168ccd19954c3f91fc4e72503de365e499`.
+The author
+refinement script records its first observation after 20 settling actions,
+before executing the first recorded action. The comparison concerns this one
+T1 episode and does not establish which physical or software difference caused
+the mismatch. This rerun used the headless renderer; earlier renderer and
+version comparisons described below remain historical observations without
+their original traces in this location. The author checkout had an untracked
+`libero/__init__.py` when checked after the run.
+
 An earlier comparison used MuJoCo 3.2.3, which was mistakenly treated as a
 project comparison pin before the author's script requirements were checked.
 In that run, the bottle started upright at z=1.080 m and lay sideways after 20

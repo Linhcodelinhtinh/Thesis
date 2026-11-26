@@ -28,6 +28,25 @@ Duy trì kỹ năng cơ sở trên LIBERO-10 & SmolVLA, X-VLA & 50 bộ ba ghép
 
 \label{sec:conditions}
 
+\label{sec:reproduction-scene}
+
+Việc khôi phục trạng thái ban đầu và ổn định môi trường là một phần quan trọng trong quy trình đánh giá. Mã nguồn LIBERO-Mem công bố các phụ thuộc cho bước thu thập dữ liệu, trong đó có MuJoCo 3.2.2 và phiên bản robosuite đi kèm. Hướng dẫn cũng ghi nhận một số quỹ đạo có thể phát lại không thành công dù dùng cùng trạng thái ban đầu và seed khởi tạo \cite{liberomemSource}. Đây cũng là vấn đề chính mà khóa luận gặp phải khi cố tái lập thí nghiệm. Phiên bản thư viện được khai báo trong mã nguồn cung cấp cơ sở dựng môi trường, còn tập demonstration được kiểm tra không ghi phiên bản MuJoCo cùng các thư viện liên quan nào đã thực sự tạo ra dữ liệu đó.
+
+Để kiểm tra trạng thái môi trường trước khi chính sách hoạt động, nghiên cứu phát lại riêng \texttt{demo\_33} của tác vụ T1 với mã nguồn LIBERO-Mem đã khóa phiên bản, robosuite 1.4.1 đi kèm và MuJoCo 3.2.2; Python 3.10.22 là lựa chọn của nghiên cứu. Phép kiểm tra dùng robot Panda, bộ điều khiển OSC\_POSE và tần số 20 Hz. Vector trạng thái lấy từ metadata của demonstration được khôi phục với sai số cực đại bằng 0, sau đó môi trường thực hiện 20 bước khởi động theo quy trình ổn định môi trường của tác giả. Chai rượu trong khung cảnh thí nghiệm ban đầu đứng thẳng, bắt đầu nghiêng quá $90^\circ$ ở bước 13 và đạt khoảng $107{,}26^\circ$ ở bước 20. Trong khung hình đầu tiên của demonstration đã tinh chỉnh, chai vẫn đứng thẳng như Hình~\ref{fig:bottle-replay}. Quan sát ảnh được đối chiếu sau khi áp dụng phép biến đổi hướng ảnh của tác giả.
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{cc}
+\includegraphics[width=.34\linewidth]{figures/tai-lap-chai-replay.png} &
+\includegraphics[width=.34\linewidth]{figures/tai-lap-chai-cong-bo.png} \\
+(a) Phát lại sau 20 bước & (b) Khung hình đầu công bố
+\end{tabular}
+\caption{Tư thế chai trong phép kiểm chứng T1 \texttt{demo\_33} và demonstration LIBERO-Mem đã tinh chỉnh.}
+\label{fig:bottle-replay}
+\end{figure}
+
+Sai khác được ghi nhận trước hành động đầu tiên của policy trong episode được kiểm tra nên có thể loại bỏ khả năng policy làm hỏng set up thí nghiệm. Nguyên nhân cụ thể chưa được xác định nhưng có thể rơi vào 1 trong các khả năng như: sự khác biệt về môi trường mô phỏng hoặc điều kiện tạo dữ liệu. Hình học vật thể, tiếp xúc và chuỗi hành động khởi động được giữ nguyên theo tác giả trong phép kiểm tra. Sự sai khác về tái lập môi trường này ảnh hưởng trực tiếp đến quyết định chọn tác vụ trong thí nghiệm do tư thế khác biệt của chai rượu ảnh hưởng trực tiếp đến các task gắp chai rượu trong LIBERO-Mem. 
+
 Nhằm bóc tách ảnh hưởng của từng thành phần kiến trúc, nghiên cứu thiết lập bốn điều kiện về mô hình như tổng hợp tại Bảng~\ref{tab:experimental-conditions}.
 
 \begingroup\small\setlength{\tabcolsep}{4pt}\renewcommand{\arraystretch}{1.15}

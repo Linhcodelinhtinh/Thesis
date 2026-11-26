@@ -21,12 +21,12 @@
 \contentsline {section}{\numberline {3.4}Suy luận và điều phối hành động theo thời gian thực}{26}{section.3.4}%
 \contentsline {chapter}{\numberline {4}Thực nghiệm}{32}{chapter.4}%
 \contentsline {section}{\numberline {4.1}Thiết lập thực nghiệm và chỉ số đánh giá}{32}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Đối sánh vòng kín trên LIBERO-Mem}{34}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Kiểm tra thực thi chuỗi hành động và hiện tượng overshoot}{35}{section.4.3}%
-\contentsline {section}{\numberline {4.4}Dừng thực thi dựa trên bộ nhớ trên X-VLA}{39}{section.4.4}%
-\contentsline {section}{\numberline {4.5}Can thiệp triệt tiêu bộ nhớ tại một truy vấn}{42}{section.4.5}%
-\contentsline {section}{\numberline {4.6}Đánh giá duy trì kỹ năng cơ sở trên LIBERO-10}{44}{section.4.6}%
-\contentsline {section}{\numberline {4.7}Tổng hợp kết quả theo câu hỏi nghiên cứu}{46}{section.4.7}%
-\contentsline {chapter}{\numberline {5}Kết luận}{48}{chapter.5}%
-\contentsline {chapter}{Tài liệu tham khảo}{50}{section*.21}%
+\contentsline {section}{\numberline {4.2}Đối sánh vòng kín trên LIBERO-Mem}{35}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Kiểm tra thực thi chuỗi hành động và hiện tượng overshoot}{37}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Dừng thực thi dựa trên bộ nhớ trên X-VLA}{40}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Can thiệp triệt tiêu bộ nhớ tại một truy vấn}{43}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Đánh giá duy trì kỹ năng cơ sở trên LIBERO-10}{45}{section.4.6}%
+\contentsline {section}{\numberline {4.7}Tổng hợp kết quả theo câu hỏi nghiên cứu}{47}{section.4.7}%
+\contentsline {chapter}{\numberline {5}Kết luận}{49}{chapter.5}%
+\contentsline {chapter}{Tài liệu tham khảo}{52}{section*.22}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 
