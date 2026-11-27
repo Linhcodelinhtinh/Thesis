@@ -65,16 +65,6 @@ Jingjiao Zhao, Dong Jing, Mingyu Cao, Ruochuan Shi, Xiansheng Chen, Pengwei
 \newblock arXiv:2610.27917v1, 2026.
 \newblock \url{https://arxiv.org/abs/2610.27917}.
 
-\bibitem{xvla2025}
-Jinliang Zheng, Jianxiong Li, Zhihao Wang, Dongxiu Liu, Xirui Kang, Yuchun
-  Feng, Yinan Zheng, Jiayin Zou, Yilun Chen, Jia Zeng, Ya-Qin Zhang, Jiangmiao
-  Pang, Jingjing Liu, Tai Wang, and Xianyu Zhan.
-\newblock {X-VLA}: Soft-prompted transformer as scalable cross-embodiment
-  vision-language-action model.
-\newblock In {\em The Fourteenth International Conference on Learning
-  Representations (ICLR 2026)}, 2026.
-\newblock \url{https://openreview.net/forum?id=kt51kZH4aG}.
-
 \bibitem{liberomemSource}
 {LIBERO-Mem contributors}.
 \newblock {LIBERO-Mem}: Mã nguồn task và evaluator được sử dụng.
@@ -90,6 +80,16 @@ Jinliang Zheng, Jianxiong Li, Zhihao Wang, Dongxiu Liu, Xirui Kang, Yuchun
 \newblock Revision \path{8f1084e3132a39270c3a13ebe37270a43ece2a01}; truy cập
   11/11/2026.
   \url{https://github.com/Lifelong-Robot-Learning/LIBERO/tree/8f1084e3132a39270c3a13ebe37270a43ece2a01}.
+
+\bibitem{xvla2025}
+Jinliang Zheng, Jianxiong Li, Zhihao Wang, Dongxiu Liu, Xirui Kang, Yuchun
+  Feng, Yinan Zheng, Jiayin Zou, Yilun Chen, Jia Zeng, Ya-Qin Zhang, Jiangmiao
+  Pang, Jingjing Liu, Tai Wang, and Xianyu Zhan.
+\newblock {X-VLA}: Soft-prompted transformer as scalable cross-embodiment
+  vision-language-action model.
+\newblock In {\em The Fourteenth International Conference on Learning
+  Representations (ICLR 2026)}, 2026.
+\newblock \url{https://openreview.net/forum?id=kt51kZH4aG}.
 
 \bibitem{groundingdino2024}
 Shilong Liu, Zhaoyang Zeng, Tianhe Ren, Feng Li, Hao Zhang, Jie Yang, Qing

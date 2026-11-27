@@ -264,7 +264,8 @@ def main():
             draw.__globals__["save"] = save_outline
             draw.__globals__["OUT"] = Path(preview_dir)
             draw()
-    architecture()
+    # Hình 3.1 (vong-dieu-khien.pdf) được vẽ bởi build_overview_figure.py
+    runpy.run_path(str(Path(__file__).with_name("build_overview_figure.py")), run_name="overview")["overview"]()
     smolvla()
     availability()
     receipt = json.loads((EVIDENCE / "d2_t1_event_success_video_20261121.json").read_bytes())

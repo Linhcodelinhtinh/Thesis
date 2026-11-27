@@ -13,6 +13,8 @@ Bộ ghi của runner ghi một khung ở quan sát ban đầu và sau mỗi act
 | 863 | 43,15 s | 3/3 | Sự kiện có thời điểm ước lượng 880, khả dụng ở 882. Truy vấn 890 lần đầu nhận cận dưới 2. |
 | 1.000 | 50,00 s | 3/3 | Kết thúc thành công. Bộ ghi xác nhận 2 và báo lịch sử chưa đầy đủ. |
 
+Hình mở đầu dùng hai khung camera ngoài tại bước 190 và 863, cắt lần lượt vùng `(4, 0, 244, 180)` và `(500, 0, 740, 180)` từ `docs/thesis/latex/figures/t3-ba-moc.png` (SHA-256 `0803b26d802e59b7e09c50addc3817ea32b282cd006d8ad8110133b9f3f1ac98`). Hai ảnh `nhap-nhang-t3-1.png` và `nhap-nhang-t3-3.png` có SHA-256 tương ứng `0eac7a7289e2f099844faa57bc55c2b1a39113dd00d64f2f908ffcd7adf7a6f6` và `a3495f3e69c16bf5e5682af9c650c4d831d35cf3937e773dc60a3fa7eac634b4`. Các mốc 1/3 và 3/3 là tiến độ của bộ chấm, không phải khẳng định bộ ghi đã xác nhận đủ lịch sử tại các thời điểm đó. Quyết định tiếp tục hay kết thúc trong hình là yêu cầu của tác vụ, không phải một lệnh dừng độc lập của chính sách.
+
 Đếm mốc theo `info.eval_result` trong `observations.jsonl`. Lấy thời điểm sự kiện và khả dụng từ trường `events` trong `memory_trace.jsonl`, rồi đối chiếu nội dung thực sự cấp ở `queries.jsonl`. Lượt B0 cùng trạng thái kết thúc tại bước 1.000 với 0/3 mốc. Cả hai bản tóm tắt trùng mã băm trong `status.json` tương ứng.
 
 ## E2 và E6

@@ -1,0 +1,32 @@
+\contentsline {chapter}{\nonumberline Danh mục ký hiệu và chữ viết tắt}{v}{chapter*.1}%
+\contentsline {chapter}{\numberline {1}Mở đầu}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Bối cảnh nghiên cứu}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Khoảng trống nghiên cứu và định vị đề tài}{2}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Mục tiêu và câu hỏi nghiên cứu}{3}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Phạm vi và đóng góp}{4}{section.1.4}%
+\contentsline {chapter}{\numberline {2}Cơ sở lý thuyết và nghiên cứu liên quan}{6}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Bài toán thao tác chuỗi dài trong điều khiển robot}{6}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Quyết định phụ thuộc lịch sử dưới quan sát một phần}{8}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Biểu diễn lịch sử trong các mô hình VLA}{9}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Trừu tượng hóa lịch sử và tiến trình theo sự kiện}{11}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Mô hình VLA nền và thích ứng tham số}{12}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Tác vụ và các phép đo}{14}{section.2.6}%
+\contentsline {chapter}{\numberline {3}Phương pháp đề xuất}{15}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Phát biểu bài toán và tổng quan kiến trúc}{15}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Phương pháp bộ nhớ có bằng chứng}{17}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Cấu trúc bản ghi và tổ chức trạng thái}{17}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Nguyên lý trích xuất và kiểm định bằng chứng}{19}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Các trường hợp cụ thể với tác vụ}{22}{subsection.3.2.3}%
+\contentsline {section}{\numberline {3.3}Quy trình huấn luyện thích ứng}{24}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Suy luận và điều phối hành động theo thời gian thực}{26}{section.3.4}%
+\contentsline {chapter}{\numberline {4}Thực nghiệm}{32}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Thiết lập thực nghiệm và chỉ số đánh giá}{32}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Đối sánh vòng kín trên LIBERO-Mem}{35}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Kiểm tra thực thi chuỗi hành động và hiện tượng overshoot}{37}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Dừng thực thi dựa trên bộ nhớ trên X-VLA}{40}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Can thiệp triệt tiêu bộ nhớ tại một truy vấn}{43}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Đánh giá duy trì kỹ năng cơ sở trên LIBERO-10}{45}{section.4.6}%
+\contentsline {section}{\numberline {4.7}Tổng hợp kết quả theo câu hỏi nghiên cứu}{47}{section.4.7}%
+\contentsline {chapter}{\numberline {5}Kết luận}{49}{chapter.5}%
+\contentsline {chapter}{Tài liệu tham khảo}{52}{section*.22}%
+\providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

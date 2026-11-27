@@ -49,46 +49,46 @@ can thiệp lời nhắc trực tuyến tại T1 state 16 ghi nhận tám nhánh
 Bảng~\ref{tab:public-provenance} phân biệt nguồn benchmark chuẩn với các lựa chọn giao thức thực nghiệm cục bộ. Danh sách mẫu khởi tạo, ngưỡng kết thúc và lịch điều khiển được gắn nhãn custom khi có sự khác biệt với các phép đánh giá công bố chính thức. Toàn bộ mã băm Git commit và mã băm SHA-256 xác thực tính toàn vẹn của các tệp nguồn, artifact mô hình và báo cáo kiểm định được lưu trữ tập trung trong sổ kiểm định bằng chứng của đề tài.
 
 \begingroup\footnotesize\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.05}
-\begin{longtable}{>{\raggedright\arraybackslash}p{.23\textwidth}|>{\raggedright\arraybackslash}p{.38\textwidth}|>{\raggedright\arraybackslash}p{.31\textwidth}}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{.23\textwidth}|>{\raggedright\arraybackslash}p{.38\textwidth}|>{\raggedright\arraybackslash}p{.31\textwidth}|}
 \caption{Nguồn và định danh thực nghiệm}\label{tab:public-provenance}\\
-\toprule
-\textbf{Thành phần} & \textbf{Định danh public hoặc nội dung} & \textbf{Phạm vi} \\
-\midrule\endfirsthead
-\toprule
-\textbf{Thành phần} & \textbf{Định danh public hoặc nội dung} & \textbf{Phạm vi} \\
-\midrule\endhead
-\bottomrule\endfoot
-LIBERO & Bản phát hành chính thức \cite{liberoSource} & Benchmark theo nguồn tác giả công bố \\
-LIBERO-Mem task/evaluator & Mã nguồn và bộ đánh giá đã khóa \cite{liberomemSource} & Bản đồ tác vụ, tệp BDDL và logic evaluator \\
-LIBERO-Mem refined data & Bộ dữ liệu mẫu refined chính thức \cite{liberomemData} & Dữ liệu Mem phục vụ huấn luyện trong split V2 \\
-LIBERO-Mem raw data & Bộ dữ liệu trạng thái thô chính thức \cite{liberomemRawData} & Trạng thái raw T1/T3/T7; unseen tách khỏi tiền tố train \\
-SmolVLA LIBERO checkpoint & Trọng số chính thức từ tác giả \cite{smolvlaCheckpoint} & Mô hình nền gốc cho pilot T1/T3 \\
-Split V2 T1/T3/base & Bản kê phân chia tập dữ liệu V2 & Khóa trạng thái, danh sách mẫu và phân bổ; phân loại custom \\
-Alignment audit V2 & Báo cáo đối chuẩn dữ liệu V2 & 180.447 cặp observation-action và 1.396 mẫu kiểm tra parity \\
-F0 V2 no-memory adapter & Bản kê trọng số adapter F0 V2 & Artifact 5.000 bước đã được xác minh toàn vẹn \\
-E0 runtime check & Bản ghi thực thi kiểm tra E0 & B0/F0 nạp và thực thi 2 action trên T1/T3 ở chế độ chẩn đoán \\
-E0 B0/F0 pilot & Bản ghi thử nghiệm pilot E0 & Bốn lượt custom, 0/4 thành công; không phải điểm chính thức \\
-Decision development protocol & Giao thức phát triển quyết định & Tập Seen gồm 12 trạng thái phát triển và 8 trạng thái hiệu chỉnh \\
-T7 refined source & Tệp quỹ đạo mẫu T7 từ nguồn công bố & 88 quỹ đạo mẫu tác giả; không phải điểm đánh giá chính sách \\
-T9 refined source & Tệp quỹ đạo mẫu T9 từ nguồn công bố & Dữ liệu quỹ đạo mẫu đã kiểm tra tính toàn vẹn \\
-T7 raw state inventory & Bản kê trạng thái khởi tạo thô T7 & 120 trạng thái raw phục vụ phát triển runtime \\
-T8 raw source & Tệp dữ liệu thô T8 từ nguồn công bố & Dữ liệu HDF5 thô đã kiểm tra tính toàn vẹn \\
-T8 refined source & Tệp quỹ đạo mẫu T8 từ nguồn công bố & Dữ liệu quỹ đạo mẫu đã kiểm tra tính toàn vẹn \\
-T10 raw source & Tệp dữ liệu thô T10 từ nguồn công bố & Dữ liệu HDF5 thô đã kiểm tra tính toàn vẹn \\
-T10 refined source & Tệp quỹ đạo mẫu T10 từ nguồn công bố & Dữ liệu quỹ đạo mẫu đã kiểm tra tính toàn vẹn \\
-T8 author-action replay & Báo cáo phát lại hành động tác giả T8 & Đạt ba mốc; không dừng terminal dù siêu dữ liệu ghi thành công \\
-T8 state-parity replay & Báo cáo đối sánh trạng thái T8 & Hành động và trạng thái đầu vào khớp; trạng thái robot lệch tại bước 219 \\
-T8 state-parity audit code & Mã nguồn kiểm định trạng thái T8 & So sánh trạng thái robot trước hành động với vết refined \\
-T9 author-action replay & Báo cáo phát lại hành động tác giả T9 & Một quỹ đạo mẫu; đạt trạng thái kết thúc thành công \\
-T10 author-action replay & Báo cáo phát lại hành động tác giả T10 & Một quỹ đạo mẫu; đạt trạng thái kết thúc thành công \\
-Author replay audit code & Mã nguồn kiểm định phát lại tác giả & Kiểm tra mã nguồn phụ trợ và chạy hành động tác giả \\
-T7 RGB relation writer & Bản ghi bộ ghi quan hệ RGB trên T7 & Một quỹ đạo refined; quan hệ chưa xác định, phục vụ chẩn đoán \\
-T8 RGB relation writer & Bản ghi bộ ghi quan hệ RGB trên T8 & Một quỹ đạo refined; quan hệ chưa xác định, phục vụ chẩn đoán \\
-T9 RGB relation writer & Bản ghi bộ ghi quan hệ RGB trên T9 & Một quỹ đạo refined; quan hệ chưa xác định, phục vụ chẩn đoán \\
-T10 RGB relation writer & Bản ghi bộ ghi quan hệ RGB trên T10 & Một quỹ đạo refined; quan hệ chưa xác định, phục vụ chẩn đoán \\
-T7 detector audit & Báo cáo kiểm định bộ phát hiện T7 & So sánh hộp bao trên 425 khung hình; chỉ đo phát hiện đối tượng \\
-T7 audit code & Mã nguồn kiểm định bộ phát hiện T7 & Quy tắc khớp hộp và kiểm tra khung hình nguồn \\
-F0/E0 image preprocessing audit & Báo cáo kiểm định tiền xử lý ảnh & Không phát hiện sai khác về hướng ảnh trong pipeline \\
+\hline
+\textbf{Thành phần} & \textbf{Định danh public hoặc nội dung} & \textbf{Phạm vi} \\ \hline
+\endfirsthead
+\hline
+\textbf{Thành phần} & \textbf{Định danh public hoặc nội dung} & \textbf{Phạm vi} \\ \hline
+\endhead
+\hline\endfoot
+LIBERO & Bản phát hành chính thức \cite{liberoSource} & Benchmark theo nguồn tác giả công bố \\ \hline
+LIBERO-Mem task/evaluator & Mã nguồn và bộ đánh giá đã khóa \cite{liberomemSource} & Bản đồ tác vụ, tệp BDDL và logic evaluator \\ \hline
+LIBERO-Mem refined data & Bộ dữ liệu mẫu refined chính thức \cite{liberomemData} & Dữ liệu Mem phục vụ huấn luyện trong split V2 \\ \hline
+LIBERO-Mem raw data & Bộ dữ liệu trạng thái thô chính thức \cite{liberomemRawData} & Trạng thái raw T1/T3/T7; unseen tách khỏi tiền tố train \\ \hline
+SmolVLA LIBERO checkpoint & Trọng số chính thức từ tác giả \cite{smolvlaCheckpoint} & Mô hình nền gốc cho pilot T1/T3 \\ \hline
+Split V2 T1/T3/base & Bản kê phân chia tập dữ liệu V2 & Khóa trạng thái, danh sách mẫu và phân bổ; phân loại custom \\ \hline
+Alignment audit V2 & Báo cáo đối chuẩn dữ liệu V2 & 180.447 cặp observation-action và 1.396 mẫu kiểm tra parity \\ \hline
+F0 V2 no-memory adapter & Bản kê trọng số adapter F0 V2 & Artifact 5.000 bước đã được xác minh toàn vẹn \\ \hline
+E0 runtime check & Bản ghi thực thi kiểm tra E0 & B0/F0 nạp và thực thi 2 action trên T1/T3 ở chế độ chẩn đoán \\ \hline
+E0 B0/F0 pilot & Bản ghi thử nghiệm pilot E0 & Bốn lượt custom, 0/4 thành công; không phải điểm chính thức \\ \hline
+Decision development protocol & Giao thức phát triển quyết định & Tập Seen gồm 12 trạng thái phát triển và 8 trạng thái hiệu chỉnh \\ \hline
+T7 refined source & Tệp quỹ đạo mẫu T7 từ nguồn công bố & 88 quỹ đạo mẫu tác giả; không phải điểm đánh giá chính sách \\ \hline
+T9 refined source & Tệp quỹ đạo mẫu T9 từ nguồn công bố & Dữ liệu quỹ đạo mẫu đã kiểm tra tính toàn vẹn \\ \hline
+T7 raw state inventory & Bản kê trạng thái khởi tạo thô T7 & 120 trạng thái raw phục vụ phát triển runtime \\ \hline
+T8 raw source & Tệp dữ liệu thô T8 từ nguồn công bố & Dữ liệu HDF5 thô đã kiểm tra tính toàn vẹn \\ \hline
+T8 refined source & Tệp quỹ đạo mẫu T8 từ nguồn công bố & Dữ liệu quỹ đạo mẫu đã kiểm tra tính toàn vẹn \\ \hline
+T10 raw source & Tệp dữ liệu thô T10 từ nguồn công bố & Dữ liệu HDF5 thô đã kiểm tra tính toàn vẹn \\ \hline
+T10 refined source & Tệp quỹ đạo mẫu T10 từ nguồn công bố & Dữ liệu quỹ đạo mẫu đã kiểm tra tính toàn vẹn \\ \hline
+T8 author-action replay & Báo cáo phát lại hành động tác giả T8 & Đạt ba mốc; không dừng terminal dù siêu dữ liệu ghi thành công \\ \hline
+T8 state-parity replay & Báo cáo đối sánh trạng thái T8 & Hành động và trạng thái đầu vào khớp; trạng thái robot lệch tại bước 219 \\ \hline
+T8 state-parity audit code & Mã nguồn kiểm định trạng thái T8 & So sánh trạng thái robot trước hành động với vết refined \\ \hline
+T9 author-action replay & Báo cáo phát lại hành động tác giả T9 & Một quỹ đạo mẫu; đạt trạng thái kết thúc thành công \\ \hline
+T10 author-action replay & Báo cáo phát lại hành động tác giả T10 & Một quỹ đạo mẫu; đạt trạng thái kết thúc thành công \\ \hline
+Author replay audit code & Mã nguồn kiểm định phát lại tác giả & Kiểm tra mã nguồn phụ trợ và chạy hành động tác giả \\ \hline
+T7 RGB relation writer & Bản ghi bộ ghi quan hệ RGB trên T7 & Một quỹ đạo refined; quan hệ chưa xác định, phục vụ chẩn đoán \\ \hline
+T8 RGB relation writer & Bản ghi bộ ghi quan hệ RGB trên T8 & Một quỹ đạo refined; quan hệ chưa xác định, phục vụ chẩn đoán \\ \hline
+T9 RGB relation writer & Bản ghi bộ ghi quan hệ RGB trên T9 & Một quỹ đạo refined; quan hệ chưa xác định, phục vụ chẩn đoán \\ \hline
+T10 RGB relation writer & Bản ghi bộ ghi quan hệ RGB trên T10 & Một quỹ đạo refined; quan hệ chưa xác định, phục vụ chẩn đoán \\ \hline
+T7 detector audit & Báo cáo kiểm định bộ phát hiện T7 & So sánh hộp bao trên 425 khung hình; chỉ đo phát hiện đối tượng \\ \hline
+T7 audit code & Mã nguồn kiểm định bộ phát hiện T7 & Quy tắc khớp hộp và kiểm tra khung hình nguồn \\ \hline
+F0/E0 image preprocessing audit & Báo cáo kiểm định tiền xử lý ảnh & Không phát hiện sai khác về hướng ảnh trong pipeline \\ \hline
 \end{longtable}
 \endgroup
 

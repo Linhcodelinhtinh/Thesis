@@ -7,7 +7,7 @@
 \setsansfont{TeX Gyre Heros}
 \setmonofont{Latin Modern Mono}[Scale=MatchLowercase]
 \usepackage[a4paper,top=2.5cm,bottom=3cm,left=3cm,right=2cm,headheight=21pt]{geometry}
-\usepackage{amsmath,amssymb,graphicx,booktabs,longtable,array}
+\usepackage{amsmath,amssymb,graphicx,booktabs,longtable,array,multirow}
 \usepackage{float}
 \usepackage{setspace,indentfirst,caption,scrlayer-scrpage,xurl}
 \usepackage[unicode,hidelinks,breaklinks=true]{hyperref}
@@ -105,5 +105,8 @@ $K$ & Số khung hình quan sát trong cửa sổ lịch sử (Chương 2)\\
 \addcontentsline{toc}{chapter}{Tài liệu tham khảo}
 \bibliographystyle{unsrt}
 \bibliography{references}
+
+\appendix
+\input{appendices/proofs}
 % Phu luc duoc luu giu cuc bo tai appendices/provenance.tex, khong render ra ban in theo yeu cau.
 \end{document}

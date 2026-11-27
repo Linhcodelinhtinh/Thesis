@@ -1,0 +1,184 @@
+\chapter{PHỤ LỤC}
+\label{app:proofs}
+
+Phụ lục này trình bày các chứng minh toán học đầy đủ, mô hình phân tích sai số, các giả định chi tiết của cơ chế dừng ngoại vi và bảng thông số ngưỡng hiện thực phục vụ cho Chương~3.
+
+\section{Phân tích sai số mô hình phân biệt hai trạng thái}
+\label{sec:app-error-analysis}
+
+Xét tình huống robot cần phân biệt hai trạng thái tiềm ẩn đồng xác suất, chẳng hạn vật nằm ở hộp X hoặc hộp Y khi quan sát tức thời hoàn toàn đồng nhất. Sai số quyết định của chính sách phản xạ ngẫu nhiên không có bộ nhớ là $1/2$. Giả sử bộ nhớ cung cấp câu trả lời với tỷ lệ bao phủ $c \in [0, 1]$ và tỷ lệ khẳng định sai là $\epsilon \in [0, 1]$. Khi bộ nhớ trả về trạng thái chưa xác định (với xác suất $1 - c$), hệ thống buộc phải đoán ngẫu nhiên với xác suất sai $1/2$.
+
+Áp dụng công thức xác suất toàn phần, kỳ vọng sai số quyết định của hệ thống được xác định bởi:
+\begin{equation}
+\mathbb E[\text{err}] = c\epsilon + \frac{1-c}{2} = \frac{1}{2} - c\left(\frac{1}{2} - \epsilon\right).
+\label{eq:app-error-analysis}
+\end{equation}
+
+Từ Phương trình~\eqref{eq:app-error-analysis}, kỳ vọng sai số toàn phần $\mathbb E[\text{err}] < 1/2$ khi và chỉ khi tỷ lệ khẳng định sai thỏa mãn $\epsilon < 1/2$. Ngược lại, nếu bộ nhớ cung cấp thông tin sai lệch với $\epsilon > 1/2$, việc tăng độ bao phủ $c$ sẽ làm trầm trọng thêm sai số của toàn hệ thống. Kết quả này biện minh cho nguyên tắc thiết kế then chốt của bộ nhớ: trả về trạng thái \textit{chưa xác định} khi thiếu căn cứ quan sát thay vì đưa ra phỏng đoán thiếu bằng chứng.
+
+\section{Chứng minh quy nạp bất biến của máy trạng thái hữu hạn}
+\label{sec:app-fsm-invariant}
+
+Tiến trình thao tác tổng thể được quản lý bởi máy trạng thái hữu hạn với bất biến:
+\begin{equation}
+J_t - \hat z_t - X_t = \chi_t,\qquad \chi_t \in \{0, 1\},
+\label{eq:app-fsm-invariant}
+\end{equation}
+trong đó $J_t$ là số chu kỳ đã bắt đầu, $\hat z_t$ là số chu kỳ hoàn thành hợp lệ, $X_t$ là số chu kỳ bị hủy do vi phạm an toàn, và $\chi_t$ là chỉ báo chu kỳ hiện tại đang diễn ra.
+
+\textbf{Chứng minh bằng quy nạp:}
+\begin{itemize}
+\item \textit{Bước cơ sở ($t = 0$):} Robot ở trạng thái nghỉ, chưa có chu kỳ nào diễn ra. Ta có $J_0 = 0$, $\hat z_0 = 0$, $X_0 = 0$ và $\chi_0 = 0$. Đẳng thức $0 - 0 - 0 = 0$ thỏa mãn.
+\item \textit{Bước quy nạp ($t \to t+1$):} Giả sử bất biến đúng tại bước $t$. Xét các chuyển tiếp hợp lệ của FSM:
+  \begin{enumerate}
+  \item \textit{Bắt đầu chu kỳ mới:} Hệ thống phát hiện điều kiện nhấc vật thể từ trạng thái nghỉ ($\chi_t = 0$). FSM chuyển sang trạng thái đang thực thi ($\chi_{t+1} = 1$) và tăng $J_{t+1} = J_t + 1$. Vế trái trở thành $(J_t + 1) - \hat z_t - X_t = \chi_t + 1 = 1 = \chi_{t+1}$.
+  \item \textit{Hoàn thành chu kỳ hợp lệ:} Điều kiện hoàn thành chu kỳ được thỏa mãn từ trạng thái đang thực thi ($\chi_t = 1$). FSM chuyển về trạng thái nghỉ ($\chi_{t+1} = 0$) và tăng $\hat z_{t+1} = \hat z_t + 1$. Vế trái trở thành $J_t - (\hat z_t + 1) - X_t = \chi_t - 1 = 0 = \chi_{t+1}$.
+  \item \textit{Hủy chu kỳ do vi phạm:} Vật thể bị rơi hoặc rời khỏi quỹ đạo hợp lệ khi $\chi_t = 1$. FSM chuyển về trạng thái nghỉ ($\chi_{t+1} = 0$) và tăng $X_{t+1} = X_t + 1$. Vế trái trở thành $J_t - \hat z_t - (X_t + 1) = \chi_t - 1 = 0 = \chi_{t+1}$.
+  \item \textit{Giữ nguyên trạng thái:} Không có biến cố chuyển tiếp nào kích hoạt, bốn đại lượng giữ nguyên giá trị, đẳng thức hiển nhiên bảo toàn.
+  \end{enumerate}
+\end{itemize}
+Do mọi chuyển tiếp hợp lệ đều bảo toàn bất biến, đẳng thức~\eqref{eq:app-fsm-invariant} luôn đúng tại mọi bước thời gian $t$. $\blacksquare$
+
+\section{Chứng minh chặn trên độ trễ phản xạ của truy vấn sớm}
+\label{sec:app-latency-proof}
+
+Xét một biến cố xuất hiện tại bước thời gian vật lý $r$ trong đoạn thực thi sinh tại bước $q$, với $q < r \le q + s$. Quy tắc trích xuất đòi hỏi $p$ quan sát liên tiếp để xác nhận biến cố, do đó thời điểm sớm nhất chỉ báo $e_t = 1$ được kích hoạt là $t_{\mathrm{confirm}} = r + p - 1$. Đồng thời, cơ chế điều phối yêu cầu robot thực thi tối thiểu $k_{\min}$ hành động trước khi cho phép ngắt đoạn, tức $t \ge q + k_{\min}$. Do đó, thời điểm sớm nhất thỏa mãn cả hai điều kiện là:
+\begin{equation}
+t^* = \max(q + k_{\min},\ r + p - 1).
+\end{equation}
+
+Mặt khác, chu kỳ truy vấn định kỳ chặn trên thời điểm gọi tiếp theo tại $q + s$. Kết hợp lại, thời điểm tái truy vấn chính sách $q'$ được xác định chính xác bởi:
+\begin{equation}
+q' = \min(q + s,\ \max(q + k_{\min},\ r + p - 1)).
+\label{eq:app-latency-formula}
+\end{equation}
+
+Trừ hai vế cho $r$, độ trễ từ lúc biến cố xuất hiện đến khi chính sách được tái truy vấn thỏa mãn:
+\begin{equation}
+q' - r = \min(q + s - r,\ \max(q + k_{\min} - r,\ p - 1)) \le q + s - r.
+\label{eq:app-latency-bound}
+\end{equation}
+Bất đẳng thức~\eqref{eq:app-latency-bound} khẳng định độ trễ của cơ chế truy vấn động luôn bị chặn trên bởi độ trễ của nhịp cố định $q + s - r$, và giảm đi rõ rệt khi biến cố được xác nhận sớm. $\blacksquare$
+
+\section{Mô hình xác suất và các chặn độ tin cậy của cơ chế dừng}
+\label{sec:app-halt-bounds}
+
+\subsection{Các giả định của mô hình xác suất}
+Mô hình đánh giá lợi ích kỳ vọng của cơ chế dừng dựa trên các giả định sau:
+\begin{itemize}
+\item \textit{Giả định 1 (Tính nhân quả):} Thời điểm can thiệp dừng $\tau_h$ là một thời điểm dừng hợp lệ đối với dòng thông tin lịch sử quan sát, không phụ thuộc vào trạng thái tương lai hoặc thông tin đặc quyền của môi trường.
+\item \textit{Giả định 2 (Bảo toàn trạng thái đích):} Khi can thiệp dừng được kích hoạt trong cửa sổ hợp lệ $W = [T_c, T_o)$, trạng thái thành công được duy trì đến cuối lượt chạy với xác suất $\rho \in (0, 1]$.
+\item \textit{Giả định 3 (Tính dừng non):} Mọi can thiệp dừng trước thời điểm hoàn thành thực tế $T_c$ đều dẫn tới thất bại do robot chưa hoàn thành đủ các mốc thao tác yêu cầu.
+\item \textit{Giả định 4 (Tính hấp thụ của thao tác thừa):} Khi thời gian vượt quá $T_o$, hành vi thao tác thừa gây biến đổi không thể phục hồi lên môi trường, khiến kết quả lượt chạy chắc chắn thất bại.
+\item \textit{Giả định 5 (Phân rã quỹ đạo):} Không gian quỹ đạo được phân hoạch thành các lớp rời nhau: quỹ đạo không bao giờ đạt $T_c$; quỹ đạo đạt $T_c$ nhưng sau đó mắc lỗi overshoot tại $T_o$; và quỹ đạo đạt $T_c$ và tự duy trì thành công mà không overshoot ($T_o = \infty$).
+\end{itemize}
+
+\subsection{Chứng minh phân rã lợi ích và các cận độ tin cậy}
+Gọi $p_c = \Pr(T_c \le T)$ là xác suất hoàn thành chu kỳ, $p_o = \Pr(T_o \le T \mid T_c \le T)$ là xác suất xảy ra lỗi lặp thao tác thừa, $r = \Pr(\tau_h \in W \mid T_c \le T, T_o \le T)$ là xác suất dừng kịp thời trong cửa sổ hợp lệ, $f = \Pr(\tau_h < T_c \mid T_c \le T)$ là xác suất dừng non, và $r'$ là xác suất dừng trong $W$ đối với những lượt vốn tự thành công.
+
+Khi không có cơ chế dừng, xác suất thành công gốc là:
+\begin{equation}
+P_0 = p_c (1 - p_o).
+\end{equation}
+
+Khi tích hợp cơ chế dừng ngoại vi, xác suất thành công mới là tổng xác suất của hai biến cố rời nhau:
+\begin{equation}
+P_{\mathrm{halt}} = p_c p_o \rho r + p_c (1 - p_o) \big( (1 - f - r') + \rho r' \big).
+\end{equation}
+
+Lấy hiệu số $\Delta = P_{\mathrm{halt}} - P_0$, ta thu được biểu thức phân rã:
+\begin{equation}
+\Delta = p_c \Big[ p_o \rho r - (1 - p_o)\big(f + (1 - \rho)r'\big) \Big].
+\end{equation}
+
+\textbf{Chặn trên của xác suất dừng non $f$:}
+Trước thời điểm $T_c$, số chu kỳ thực tế hoàn thành nhỏ hơn $N$. Để điều kiện dừng $\hat z_q \ge N$ kích hoạt trước $T_c$, bộ ghi nhận sự kiện phải tích lũy ít nhất một tín dụng sai. Gọi $\bar m$ là số pha kẹp kỳ vọng trước $T_c$ và $\varepsilon$ là xác suất ghi nhận sai trên mỗi pha kẹp. Theo bất đẳng thức Markov, xác suất xuất hiện ít nhất một tín dụng sai bị chặn trên bởi:
+\begin{equation}
+f \le \bar m \varepsilon.
+\end{equation}
+
+\textbf{Chặn dưới của xác suất can thiệp thành công $r$:}
+Để việc dừng diễn ra thành công trong cửa sổ $[T_c, T_o)$, ba điều kiện sau phải đồng thời thỏa mãn:
+1. Toàn bộ $N$ chu kỳ thực tế được bộ ghi nhận đúng với độ trễ tối đa $D$, biến cố này có xác suất ít nhất là $c^N$, trong đó $c$ là độ phủ trên mỗi chu kỳ.
+2. Không có tín dụng sai nào kích hoạt dừng non trước $T_c$, biến cố này có xác suất ít nhất là $1 - \bar m \varepsilon$.
+3. Tồn tại ít nhất một ranh giới truy vấn của bộ điều phối rơi vào khoảng $[T_c + D, T_o)$, biến cố này có xác suất là $\kappa_s$.
+Áp dụng bất đẳng thức Fréchet, xác suất dừng kịp thời thỏa mãn chặn dưới:
+\begin{equation}
+r \ge c^N (1 - \bar m \varepsilon) \kappa_s.
+\end{equation}
+$\blacksquare$
+
+\section{Giá trị lý thuyết của bằng chứng bộ nhớ so với quy tắc mù}
+\label{sec:app-value-of-evidence}
+
+Xét phiếm hàm giá trị $V(\mathcal H) = \sup_{\tau_h} \Pr(\tau_h \in W)$ đại diện cho xác suất dừng thành công tối ưu dưới dòng thông tin $\mathcal H$.
+Do dòng thông tin thời gian thô $\mathcal H_{\text{time}} = \sigma(t)$ là không gian con của dòng thông tin bộ nhớ sự kiện $\mathcal H_{\text{mem}} = \sigma(\{M_s\}_{s \le t})$, và $\mathcal H_{\text{mem}}$ lại là không gian con của dòng thông tin trạng thái đầy đủ $\mathcal H^* = \sigma(\{x_s\}_{s \le t})$, theo tính chất của cận trên tối cao trên các không gian con lồng nhau, ta có thứ tự thông tin:
+\begin{equation}
+V(\text{thời gian cố định}) \le V(\text{bằng chứng bộ nhớ}) \le V(\text{nguồn hoàn hảo}).
+\end{equation}
+
+Đối với một quy tắc dừng mù $\tilde\tau$ độc lập với trạng thái tương tác của lượt chạy, xác suất rơi vào cửa sổ dừng $W = [T_c, T_o)$ thỏa mãn:
+\begin{equation}
+\Pr(\tilde\tau \in W) = \sum_t \Pr(\tilde\tau = t) \Pr(T_c \le t < T_o) \le \max_t \Pr(T_c \le t < T_o).
+\end{equation}
+
+Gọi $L_{\max}$ là độ dài lớn nhất của cửa sổ dừng hợp lệ. Biến cố $T_c \le t < T_o$ đòi hỏi $T_c$ phải nằm trong khoảng $[t - L_{\max}, t]$. Do đó:
+\begin{equation}
+\Pr(T_c \le t < T_o) \le \sum_{u = t - L_{\max}}^t \Pr(T_c = u) \le L_{\max} \max_u \Pr(T_c = u).
+\end{equation}
+Khi thời điểm hoàn thành $T_c$ phân tán rộng trên không gian thời gian (tức $\max_u \Pr(T_c = u)$ rất nhỏ), chặn trên của quy tắc dừng mù trở nên rất bé, chứng minh rằng không thể tồn tại một mốc thời gian dừng cố định hiệu quả cho mọi quỹ đạo. $\blacksquare$
+
+\section{Bảng tổng hợp ngưỡng tham số hệ thống}
+\label{sec:app-threshold-table}
+
+Bảng~\ref{tab:app-unified-thresholds} tổng hợp toàn bộ các ngưỡng tham số hình học và cảm nhận bản thể được sử dụng trong các thực nghiệm của khóa luận.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Tổng hợp các ngưỡng tham số hình học và cảm nhận bản thể}
+\label{tab:app-unified-thresholds}
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{|>{\raggedright\arraybackslash}p{4.8cm}|c|>{\raggedright\arraybackslash}p{7.6cm}|}
+\hline
+\textbf{Tham số kiểm tra} & \textbf{Ngưỡng} & \textbf{Ý nghĩa vật lý và vai trò nhận thức} \\ \hline
+Điểm tin cậy phát hiện $s_{\mathrm{det}}$ & $\ge 0{,}15$ & Lọc đề xuất hộp bao đạt chất lượng từ Grounding DINO \\ \hline
+Khoảng cách rời mốc $L_t$ & $\ge 0{,}40$ & Xác nhận vật thể đã được nhấc lên khỏi mốc \\ \hline
+Khoảng cách ngang về mốc $D_t$ & $\le 0{,}30$ & Nhận diện vật thể đã quay về vùng không gian của mốc \\ \hline
+Độ nâng thẳng đứng về mốc $L_t$ & $\le 0{,}15$ & Xác nhận vật thể đã hạ thấp xuống bề mặt mốc \\ \hline
+Độ mở tay kẹp thị giác & $\ge 0{,}055$~m & Căn cứ xác nhận robot đã nhả vật thể \\ \hline
+Độ ổn định tiếp xúc $\operatorname{Stable}(t, p)$ & $\le 0{,}15$ & Độ dịch chuyển mép dưới chuẩn hóa ổn định qua $p$ bước \\ \hline
+Cửa sổ xác nhận trễ $p$ & 3 bước & Cửa sổ thời gian lọc nhiễu quan sát đơn khung hình \\ \hline
+Độ nâng đầu gắp proprioception & $\ge 0{,}08$~m & Tín hiệu kinematic xác nhận đầu kẹp đã nhấc lên \\ \hline
+Độ rơi thẳng đứng proprioception & $\le 0{,}03$~m & Tín hiệu kinematic xác nhận đầu kẹp đã chạm đáy mốc \\ \hline
+Sai lệch mặt bằng proprioception & $\le 0{,}06$~m & Kiểm tra vị trí nhả kẹp nằm trong dung sai mặt phẳng \\ \hline
+Ngưỡng mở kẹp proprioception $\theta_g$ & $\ge 0{,}055$~m & Điều kiện kích hoạt cơ chế dừng ngoại vi \\ \hline
+\end{tabular}
+\end{table}
+
+\section{Dạng thông tin lịch sử trên mười tác vụ LIBERO-Mem}
+\label{sec:app-task-families}
+
+Bảng~\ref{tab:app-memory-task-families} tổng hợp nhóm năng lực bộ nhớ và các primitive lịch sử cần thiết cho mười tác vụ thuộc benchmark LIBERO-Mem.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Dạng thông tin lịch sử theo tác vụ LIBERO-Mem}
+\label{tab:app-memory-task-families}
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{|l|l|>{\raggedright\arraybackslash}p{7.5cm}|}
+\hline
+\textbf{Tác vụ} & \textbf{Nhóm năng lực} & \textbf{Primitive trừu tượng cần biểu diễn} \\ \hline
+T1 & Đơn chu kỳ (OM) & Một chu kỳ nhấc và hoàn nguyên vật thể về mốc ban đầu \\ \hline
+T2 & Tương tác trạng thái (OM) & Trạng thái tương tác tiếp xúc giữa hai vật thể \\ \hline
+T3 & Đa chu kỳ ngắn (OM, OS) & Đếm và phân biệt tiến độ ba chu kỳ thao tác lặp lại \\ \hline
+T4 & Đa chu kỳ tương tác (OM, OS) & Đếm số lần tương tác có chủ đích với vật thể \\ \hline
+T5 & Đa chu kỳ trung bình (OM, OS) & Duy trì bộ đếm sự kiện qua năm chu kỳ liên tiếp \\ \hline
+T6 & Đa chu kỳ dài (OM, OS) & Duy trì bộ đếm sự kiện qua bảy chu kỳ liên tiếp \\ \hline
+T7 & Hoán đổi không gian (OM, OR) & Theo dõi quan hệ vị trí của hai vật thể qua ba mốc hoán đổi \\ \hline
+T8 & Xoay vòng vị trí (OM, OR) & Theo dõi danh tính và vị trí của ba vật thể qua chuỗi xoay vòng \\ \hline
+T9 & Vật chứa di chuyển (OM, OO) & Duy trì quan hệ chứa khi đối tượng chứa bị di chuyển \\ \hline
+T10 & Phân biệt vật chứa (OM, OO) & Phân biệt vật chứa có chứa đồ vật với vật chứa rỗng sau che khuất \\ \hline
+\end{tabular}
+\end{table}

@@ -1,0 +1,19 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {1.1}{\ignorespaces Nhập nhằng quan sát trong tác vụ T3 của LIBERO-Mem: hai khung hình từ cùng một lượt chạy tại các mốc hoàn trả bát thứ nhất và thứ ba. Quan sát tương tự không cho biết số chu kỳ đã hoàn thành; quyết định tiếp tục hay kết thúc cần dựa vào lịch sử. Ảnh trích từ lượt chạy thực nghiệm của khóa luận.}}{1}{figure.caption.2}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Vòng điều khiển VLA có bộ nhớ sự kiện}}{18}{figure.caption.3}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Sự kiện lịch sử và quan hệ hiện tại khi vật bị che khuất}}{20}{figure.caption.4}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Thời điểm xảy ra, xác nhận và truy vấn sự kiện}}{23}{figure.caption.5}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Phần đóng băng và phần tinh chỉnh LoRA trong SmolVLA}}{27}{figure.caption.6}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Truy vấn sớm khi có bằng chứng mới}}{28}{figure.caption.7}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Tư thế chai trong phép kiểm chứng T1 \texttt {demo\_33} và demonstration LIBERO-Mem đã tinh chỉnh.}}{34}{figure.caption.9}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Cấu trúc lời nhắc tích hợp bộ nhớ và ví dụ thực tế từ lượt chạy T1}}{35}{figure.caption.10}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Chuỗi hành vi thất bại của SmolVLA khi thực thi đoạn hành động}}{38}{figure.caption.13}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Chuỗi hành vi của lượt T1 thành công khi kích hoạt truy vấn sớm}}{40}{figure.caption.15}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Quá trình SmolVLA F1-off nhấc sách nhưng không thể đặt vào hộp ở tác vụ 5}}{46}{figure.caption.21}%
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Số lượt thành công theo từng tác vụ LIBERO-10 của B0, F0 và F1-off trên SmolVLA và X-VLA}}{47}{figure.caption.22}%
+\addvspace {10\p@ }
+\providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 
